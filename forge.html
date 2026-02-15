@@ -1392,30 +1392,31 @@ Update this file as you learn about the workspace and user preferences.</textare
             <div class="model-provider">Mistral AI</div>
             <span class="model-badge">FREE</span>
           </div>
-          <!-- Paid models — coming soon -->
-          <!--
-          <div class="model-card" data-model="anthropic/claude-sonnet-4">
+          <!-- Pro models — visible in preview mode -->
+          <div class="model-card pro-model" data-model="anthropic/claude-sonnet-4" style="display:none;">
             <div class="model-header">
               <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l3 3 5-5"/></svg>
               <div class="model-name">Claude Sonnet 4</div>
             </div>
             <div class="model-provider">Anthropic</div>
+            <span class="model-badge" style="background:linear-gradient(135deg,rgba(255,92,92,0.15),rgba(255,150,50,0.15));color:var(--accent);border-color:rgba(255,92,92,0.3);">PRO</span>
           </div>
-          <div class="model-card" data-model="google/gemini-2.5-pro-preview">
+          <div class="model-card pro-model" data-model="google/gemini-2.5-pro" style="display:none;">
             <div class="model-header">
               <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l1.5 4.5H18l-3.5 2.5L16 15l-4-3-4 3 1.5-5L6 7.5h4.5z"/></svg>
               <div class="model-name">Gemini 2.5 Pro</div>
             </div>
             <div class="model-provider">Google</div>
+            <span class="model-badge" style="background:linear-gradient(135deg,rgba(255,92,92,0.15),rgba(255,150,50,0.15));color:var(--accent);border-color:rgba(255,92,92,0.3);">PRO</span>
           </div>
-          <div class="model-card" data-model="openai/gpt-4o">
+          <div class="model-card pro-model" data-model="openai/gpt-4o" style="display:none;">
             <div class="model-header">
               <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
               <div class="model-name">GPT-4o</div>
             </div>
             <div class="model-provider">OpenAI</div>
+            <span class="model-badge" style="background:linear-gradient(135deg,rgba(255,92,92,0.15),rgba(255,150,50,0.15));color:var(--accent);border-color:rgba(255,92,92,0.3);">PRO</span>
           </div>
-          -->
         </div>
       </div>
 
@@ -2377,6 +2378,10 @@ openclaw gateway start
       VibeclawFeatures.renderUpgradeButton('upgrade-container');
       VibeclawFeatures.checkPro();
     });
+    // Show Pro models in preview mode
+    if (VibeclawFeatures && VibeclawFeatures.isPreview()) {
+      document.querySelectorAll('.pro-model').forEach(el => el.style.display = '');
+    }
   </script>
 
 </body>

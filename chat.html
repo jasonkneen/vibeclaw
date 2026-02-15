@@ -556,7 +556,8 @@
             <a href="https://x.com/i/communities/2022846557700145266" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;">Community</a>
           </div>
         </li>
-        <li id="auth-container" style="margin-left:8px;"></li>
+        <li id="upgrade-container" style="margin-left:4px;"></li>
+        <li id="auth-container" style="margin-left:4px;"></li>
       </ul>
     </div>
   </nav>
@@ -1032,9 +1033,12 @@
   </script>
 
   <script src="/auth.js"></script>
+    <script src="/features.js"></script>
   <script>
     VibeclawAuth.init().then(() => {
       VibeclawAuth.renderButton('auth-container');
+      VibeclawFeatures.renderUpgradeButton('upgrade-container');
+      VibeclawFeatures.checkPro();
     });
   </script>
 

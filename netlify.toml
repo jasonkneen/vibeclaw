@@ -38,6 +38,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/subscription/webhook"
+  to = "/.netlify/functions/subscription"
+  status = 200
+
+[[redirects]]
+  from = "/api/subscription"
+  to = "/.netlify/functions/subscription"
+  status = 200
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200

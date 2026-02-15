@@ -21,6 +21,11 @@
   to = "/forge.html"
   status = 200
 
+[[redirects]]
+  from = "/library"
+  to = "/library.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]

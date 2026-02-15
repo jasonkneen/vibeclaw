@@ -280,6 +280,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         forge: resolve(__dirname, 'forge.html'),
+        library: resolve(__dirname, 'library.html'),
         'examples/index': resolve(__dirname, 'examples/index.html'),
         'examples/next-demo': resolve(__dirname, 'examples/next-demo.html'),
         'examples/vite-demo': resolve(__dirname, 'examples/vite-demo.html'),

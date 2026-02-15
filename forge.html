@@ -747,6 +747,9 @@
 
     /* ── Left Preview Chat Panel ── */
     .forge-preview-chat {
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
       display: flex;
       flex-direction: column;
       border-right: 1px solid var(--border);
@@ -755,6 +758,7 @@
       width: 0;
       opacity: 0;
       transition: width 0.3s ease, opacity 0.3s ease;
+      align-self: start;
     }
     .forge-preview-chat.active {
       width: 320px;
@@ -942,6 +946,9 @@
       .forge-preview-chat.active {
         width: 280px;
       }
+      .forge-preview-chat {
+        height: calc(100vh - 60px);
+      }
     }
     @media (max-width: 900px) {
       .forge-layout {
@@ -957,11 +964,13 @@
         right: 0;
         bottom: 0;
         width: 100% !important;
+        height: calc(100vh - 60px);
         z-index: 200;
         border-right: none;
       }
       .forge-preview-chat.active {
         width: 100% !important;
+        opacity: 1;
       }
       .forge-sidebar {
         position: relative;

@@ -701,6 +701,41 @@
     }
     .command-copy:hover { border-color: var(--accent); color: var(--accent); }
 
+    /* ── Toast notifications ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 24px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text-bright);
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+    .toast.success {
+      border-color: var(--green);
+      background: rgba(74,222,128,0.05);
+      color: var(--green);
+    }
+    .toast.error {
+      border-color: #f44;
+      background: rgba(255,68,68,0.05);
+      color: #f44;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 900px) {
       .forge-layout {
@@ -724,6 +759,7 @@
       .agent-row { grid-template-columns: 36px 1fr auto; }
       .agent-row > :nth-child(2) { grid-column: 2 / 4; }
       .agent-row > :nth-child(3) { grid-column: 2 / 4; }
+      .toast { bottom: 16px; }
     }
   </style>
 </head>
@@ -1150,7 +1186,20 @@ Update this file as you learn about the workspace and user preferences.</textare
     </div>
   </div>
 
+  <!-- Toast notification -->
+  <div id="toast" class="toast"></div>
+
   <script>
+    // ── Toast notification system ──
+    function showToast(message, type = 'success', duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast show ' + type;
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
     // ── State ──
     const state = {
       emoji: '🦀',
@@ -1420,22 +1469,45 @@ Update this file as you learn about the workspace and user preferences.</textare
     });
 
     // ── Save to library ──
-    $('save-btn').addEventListener('click', () => {
+    $('save-btn').addEventListener('click', async () => {
       const spec = buildSpec();
-      // Save to localStorage
+      const user = VibeclawAuth.getUser();
+      
+      // Save to localStorage as cache (always)
       let library = [];
       try { library = JSON.parse(localStorage.getItem('clawforge-library') || '[]'); } catch {}
-      // Check if already saved (update)
-      const existing = library.findIndex(s => s.name === spec.name);
-      if (existing >= 0) {
-        spec.id = library[existing].id;
-        library[existing] = spec;
+      const existingIdx = library.findIndex(s => s.name === spec.name);
+      if (existingIdx >= 0) {
+        spec.id = library[existingIdx].id;
+        library[existingIdx] = spec;
       } else {
         library.push(spec);
       }
       localStorage.setItem('clawforge-library', JSON.stringify(library));
-      if (confirm(`Saved "${spec.emoji} ${spec.name}" to your library!\n\nView your servers?`)) {
-        window.location.href = '/library.html';
+      
+      // If logged in, also save to cloud
+      if (user) {
+        try {
+          const result = await VibeclawAPI.saveServer({
+            id: spec.id,
+            name: spec.name,
+            spec: spec,
+            template: null
+          });
+          showToast(`☁️ Saved "${spec.emoji} ${spec.name}" to cloud!`, 'success');
+          setTimeout(() => {
+            window.location.href = '/library.html';
+          }, 1200);
+        } catch (err) {
+          console.error('Cloud save error:', err);
+          showToast(`⚠️ Saved locally, but cloud sync failed: ${err.message}`, 'error', 4000);
+        }
+      } else {
+        // Not logged in - saved locally only
+        showToast(`💾 Saved "${spec.emoji} ${spec.name}" locally`, 'success');
+        setTimeout(() => {
+          window.location.href = '/library.html';
+        }, 1200);
       }
     });
 

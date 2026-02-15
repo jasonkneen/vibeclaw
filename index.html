@@ -961,6 +961,70 @@
       }
 
       /* ── Entrance animations ── */
+      /* ── News Ticker ── */
+      .news-ticker {
+        display: flex;
+        align-items: center;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        overflow: hidden;
+        height: 32px;
+        position: relative;
+      }
+      .ticker-label {
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: #000;
+        background: var(--accent);
+        padding: 0 12px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        z-index: 2;
+        flex-shrink: 0;
+      }
+      .ticker-track {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+        mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+      }
+      .ticker-content {
+        display: flex;
+        gap: 0;
+        white-space: nowrap;
+        animation: ticker-scroll 60s linear infinite;
+        width: max-content;
+      }
+      .ticker-content:hover { animation-play-state: paused; }
+      .ticker-item {
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        color: var(--text);
+        padding: 0 24px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: default;
+        transition: color 0.15s;
+      }
+      .ticker-item:hover { color: var(--text-bright); }
+      .ticker-item a { color: inherit; text-decoration: none; }
+      .ticker-item a:hover { color: var(--accent); text-decoration: none; }
+      .ticker-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: 0.5; flex-shrink: 0; }
+      .ticker-dot.green { background: #4ade80; }
+      .ticker-dot.blue { background: #60a5fa; }
+      .ticker-dot.purple { background: #a78bfa; }
+      .ticker-dot.orange { background: #fb923c; }
+      @keyframes ticker-scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+
       @keyframes hero-crab-float {
         0%, 100% { transform: translateY(0) rotate(0deg); }
         50% { transform: translateY(-10px) rotate(3deg); }
@@ -1009,6 +1073,17 @@
         </ul>
       </div>
     </nav>
+
+    <!-- AI News Ticker -->
+    <div class="news-ticker" id="news-ticker">
+      <div class="ticker-label">AI NEWS</div>
+      <div class="ticker-track">
+        <div class="ticker-content" id="ticker-content">
+          <span class="ticker-item">Loading latest AI news…</span>
+        </div>
+      </div>
+    </div>
+
     <script>
       (function() {
         const btn = document.getElementById('nav-more-btn');
@@ -1390,6 +1465,64 @@ entirely in a browser sandbox.
           activeTab = id;
         });
       });
+
+      // ── News Ticker ──
+      (async function loadTicker() {
+        const colors = ['', 'green', 'blue', 'purple', 'orange'];
+        const feeds = [
+          'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ftechcrunch.com%2Fcategory%2Fartificial-intelligence%2Ffeed%2F&count=8',
+          'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.ycombinator.com%2Frss&count=10',
+        ];
+        const fallback = [
+          { title: 'Claude Opus 4.6 redefines reasoning benchmarks', source: 'Anthropic' },
+          { title: 'GPT-5.2 ships with native tool use and real-time vision', source: 'OpenAI' },
+          { title: 'Gemini 3 Pro brings 2M context window to production', source: 'Google' },
+          { title: 'DeepSeek R1 leads open-source reasoning models', source: 'DeepSeek' },
+          { title: 'OpenClaw hits 200K GitHub stars', source: 'GitHub' },
+          { title: 'Llama 4 Scout: 10M token context on a single GPU', source: 'Meta' },
+          { title: 'MCP protocol adopted by 50+ AI frameworks', source: 'Anthropic' },
+          { title: 'AI coding agents now write 40% of new code at Google', source: 'Bloomberg' },
+          { title: 'Qwen3 tops multilingual benchmarks across 119 languages', source: 'Alibaba' },
+          { title: 'Solar Pro 3 delivers GPT-4 quality at zero cost', source: 'Upstage' },
+        ];
+
+        let items = [];
+        try {
+          const results = await Promise.allSettled(feeds.map(f => fetch(f).then(r => r.json())));
+          for (const r of results) {
+            if (r.status === 'fulfilled' && r.value.items) {
+              items.push(...r.value.items.map(i => ({
+                title: i.title.replace(/<[^>]*>/g, '').slice(0, 80),
+                source: new URL(i.link).hostname.replace('www.', '').split('.')[0],
+                link: i.link
+              })));
+            }
+          }
+        } catch {}
+
+        if (!items.length) items = fallback;
+
+        // Shuffle and take 15
+        items = items.sort(() => Math.random() - 0.5).slice(0, 15);
+
+        // Build ticker HTML — duplicate for seamless loop
+        const html = items.map((item, i) => {
+          const dot = colors[i % colors.length];
+          const title = item.link
+            ? `<a href="${item.link}" target="_blank" rel="noopener">${item.title}</a>`
+            : item.title;
+          return `<span class="ticker-item"><span class="ticker-dot ${dot}"></span>${title}<span style="color:var(--text-dim);font-size:0.6rem;margin-left:4px;">${item.source}</span></span>`;
+        }).join('');
+
+        const el = document.getElementById('ticker-content');
+        if (el) {
+          el.innerHTML = html + html; // duplicate for seamless scroll
+          // Adjust speed based on content width
+          const w = el.scrollWidth / 2;
+          const speed = Math.max(30, w / 60); // ~60px/sec
+          el.style.animationDuration = speed + 's';
+        }
+      })();
 
       // ── Boot sandbox ──
       async function launchSandbox() {

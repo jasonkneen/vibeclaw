@@ -1,3 +1,9 @@
+[dev]
+  port = 9888
+  targetPort = 5174
+  framework = "#custom"
+  command = "npx vite --port 5174"
+
 [build]
   command = "npm run flavours:build && npm run build"
   publish = "dist-site"

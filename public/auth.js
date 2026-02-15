@@ -5,6 +5,31 @@
 
 const AUTH_WIDGET_URL = 'https://identity.netlify.com/v1/netlify-identity-widget.js';
 
+// Ensure the Identity widget modal renders above everything
+const authStyles = document.createElement('style');
+authStyles.textContent = `
+  .netlifyIdentityButton,
+  .netlify-identity-signup,
+  .netlify-identity-login,
+  .netlify-identity-widget, 
+  .netlify-identity-menu,
+  [class*="netlify-identity"],
+  [data-netlify-identity-menu],
+  [data-netlify-identity-button] {
+    z-index: 99999 !important;
+    position: relative !important;
+  }
+  /* The widget creates a React root div — force it visible */
+  div[style*="position: fixed"][style*="background"] {
+    z-index: 99999 !important;
+  }
+  /* Also target the modal backdrop the widget injects */
+  body > div:last-of-type[style*="position"] {
+    z-index: 99999 !important;
+  }
+`;
+document.head.appendChild(authStyles);
+
 // Load the Netlify Identity widget script
 function loadWidget() {
   return new Promise((resolve, reject) => {

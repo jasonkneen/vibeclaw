@@ -584,20 +584,21 @@
     })();
   </script>
 
-  <div class="chat-layout">
-    <!-- Sidebar -->
-    <div class="chat-sidebar">
-      <div class="sidebar-header">
-        <span class="sidebar-title">Sessions</span>
-        <button class="btn-new-chat" id="new-chat-btn">+ New</button>
+  <div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;">
+    <div class="chat-layout">
+      <!-- Sidebar -->
+      <div class="chat-sidebar">
+        <div class="sidebar-header">
+          <span class="sidebar-title">Sessions</span>
+          <button class="btn-new-chat" id="new-chat-btn">+ New</button>
+        </div>
+        <div class="session-list" id="session-list">
+          <div class="sidebar-empty" id="sidebar-empty">No sessions yet</div>
+        </div>
       </div>
-      <div class="session-list" id="session-list">
-        <div class="sidebar-empty" id="sidebar-empty">No sessions yet</div>
-      </div>
-    </div>
 
-    <!-- Main -->
-    <div class="chat-main">
+      <!-- Main -->
+      <div class="chat-main">
       <!-- Hidden fields for compatibility -->
       <input type="hidden" id="endpoint-url" value="/api/chat" />
       <select id="endpoint-model" style="display:none;">
@@ -636,6 +637,13 @@
           </button>
         </div>
       </div>
+    </div>
+
+    <div class="chat-footer">
+      <a href="https://vibeclaw.dev">vibeclaw</a>
+      <a href="https://openclaw.ai">OpenClaw</a>
+      <a href="https://github.com/jasonkneen/vibeclaw">GitHub</a>
+      <span>MIT License</span>
     </div>
   </div>
 
@@ -1029,13 +1037,6 @@
       VibeclawAuth.renderButton('auth-container');
     });
   </script>
-
-  <div class="chat-footer">
-    <a href="https://vibeclaw.dev">vibeclaw</a>
-    <a href="https://openclaw.ai">OpenClaw</a>
-    <a href="https://github.com/jasonkneen/vibeclaw">GitHub</a>
-    <span>MIT License</span>
-  </div>
 
 </body>
 </html>

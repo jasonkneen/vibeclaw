@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>VibeClaw Pro — Premium AI Models & Cloud Sync</title>
+  <meta name="description" content="Upgrade to VibeClaw Pro for Claude Opus 4.6, GPT-5.2, Gemini 3 Pro, cloud sync, unlimited messages, and more." />
+  <style>
+    :root {
+      --accent: #ff5c5c;
+      --accent-dim: rgba(255,92,92,0.7);
+      --accent-bg: rgba(255,92,92,0.06);
+      --surface: #111;
+      --surface-2: #1a1a1a;
+      --border: #222;
+      --border-bright: #333;
+      --black: #0a0a0a;
+      --text: #999;
+      --text-dim: #555;
+      --text-bright: #e0e0e0;
+      --mono: 'Fragment Mono', 'JetBrains Mono', 'Menlo', monospace;
+      --sans: 'DM Sans', system-ui, sans-serif;
+      --code: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
+      --green: #4ade80;
+      --warn: #e8c872;
+    }
+    html { scroll-behavior: smooth; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--sans); background: var(--black); color: var(--text); min-height: 100vh; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Nav */
+    .nav { display: flex; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--black); position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-family: var(--mono); font-size: 0.85rem; font-weight: 700; color: var(--text-bright); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+    .nav-logo:hover { text-decoration: none; color: var(--accent); }
+    .nav-links { display: flex; gap: 20px; margin-left: auto; align-items: center; }
+    .nav-links a { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); text-decoration: none; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text-bright); text-decoration: none; }
+
+    /* Hero */
+    .hero { text-align: center; padding: 80px 24px 60px; max-width: 800px; margin: 0 auto; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 20px; background: linear-gradient(135deg, rgba(255,92,92,0.12), rgba(255,150,50,0.12)); border: 1px solid rgba(255,92,92,0.25); font-family: var(--mono); font-size: 0.65rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 24px; }
+    .hero h1 { font-family: var(--sans); font-size: 2.8rem; font-weight: 800; color: var(--text-bright); line-height: 1.15; margin-bottom: 16px; }
+    .hero h1 span { background: linear-gradient(135deg, #ff5c5c, #ff8844); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { font-size: 1.1rem; color: var(--text); line-height: 1.6; max-width: 600px; margin: 0 auto 32px; }
+    .hero-price { font-family: var(--sans); font-size: 3rem; font-weight: 800; color: var(--text-bright); margin-bottom: 4px; }
+    .hero-price span { font-size: 1rem; font-weight: 400; color: var(--text-dim); }
+    .hero-annual { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); margin-bottom: 32px; }
+
+    /* CTA */
+    .cta-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 8px; background: var(--accent); color: #000; font-family: var(--mono); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; border: none; cursor: pointer; transition: all 0.15s; text-decoration: none; }
+    .cta-btn:hover { background: #ff7070; box-shadow: 0 0 25px rgba(255,92,92,0.3); text-decoration: none; color: #000; }
+    .cta-btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-bright); }
+    .cta-btn-outline:hover { border-color: var(--accent); color: var(--accent); background: transparent; }
+
+    /* Features */
+    .features { max-width: 1000px; margin: 0 auto; padding: 60px 24px; }
+    .features h2 { font-family: var(--sans); font-size: 1.6rem; font-weight: 800; color: var(--text-bright); text-align: center; margin-bottom: 40px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .feature-card { border: 1px solid var(--border); border-radius: 10px; padding: 24px; background: var(--surface); transition: border-color 0.15s; }
+    .feature-card:hover { border-color: var(--border-bright); }
+    .feature-card .icon { font-size: 1.5rem; margin-bottom: 12px; }
+    .feature-card h3 { font-family: var(--sans); font-size: 0.95rem; font-weight: 700; color: var(--text-bright); margin-bottom: 6px; }
+    .feature-card p { font-family: var(--mono); font-size: 0.75rem; color: var(--text); line-height: 1.6; }
+
+    /* Models */
+    .models { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
+    .models h2 { font-family: var(--sans); font-size: 1.6rem; font-weight: 800; color: var(--text-bright); text-align: center; margin-bottom: 12px; }
+    .models-sub { text-align: center; color: var(--text-dim); font-size: 0.85rem; margin-bottom: 32px; }
+    .model-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .model-item { border: 1px solid var(--border); border-radius: 8px; padding: 16px; background: var(--surface); display: flex; align-items: center; gap: 12px; }
+    .model-item .model-name { font-family: var(--mono); font-size: 0.8rem; font-weight: 600; color: var(--text-bright); }
+    .model-item .model-provider { font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); }
+    .model-item .model-badge { font-family: var(--mono); font-size: 0.55rem; padding: 2px 8px; border-radius: 10px; margin-left: auto; text-transform: uppercase; letter-spacing: 0.04em; }
+    .model-badge.free { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
+    .model-badge.pro { background: linear-gradient(135deg, rgba(255,92,92,0.12), rgba(255,150,50,0.12)); color: var(--accent); border: 1px solid rgba(255,92,92,0.25); }
+
+    /* Comparison */
+    .compare { max-width: 800px; margin: 0 auto; padding: 60px 24px; }
+    .compare h2 { font-family: var(--sans); font-size: 1.6rem; font-weight: 800; color: var(--text-bright); text-align: center; margin-bottom: 32px; }
+    .compare-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.75rem; }
+    .compare-table th { padding: 12px 16px; text-align: left; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+    .compare-table th:nth-child(3) { color: var(--accent); }
+    .compare-table td { padding: 10px 16px; border-bottom: 1px solid rgba(34,34,34,0.5); color: var(--text); }
+    .compare-table tr:hover td { background: rgba(255,255,255,0.01); }
+    .check { color: var(--green); }
+    .cross { color: var(--text-dim); }
+    .pro-col { background: rgba(255,92,92,0.03); }
+
+    /* Signup form */
+    .signup { max-width: 500px; margin: 0 auto; padding: 60px 24px 80px; text-align: center; }
+    .signup h2 { font-family: var(--sans); font-size: 1.6rem; font-weight: 800; color: var(--text-bright); margin-bottom: 8px; }
+    .signup p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 24px; }
+    .signup-form { display: flex; gap: 8px; max-width: 400px; margin: 0 auto; }
+    .signup-input { flex: 1; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-family: var(--mono); font-size: 0.8rem; color: var(--text-bright); outline: none; }
+    .signup-input:focus { border-color: var(--accent); }
+    .signup-input::placeholder { color: var(--text-dim); }
+    .signup-submit { padding: 12px 24px; border-radius: 8px; background: var(--accent); color: #000; font-family: var(--mono); font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .signup-submit:hover { background: #ff7070; }
+    .signup-note { font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); margin-top: 12px; }
+    .signup-success { display: none; padding: 16px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); border-radius: 8px; color: var(--green); font-family: var(--mono); font-size: 0.8rem; }
+
+    /* Footer */
+    .footer { border-top: 1px solid var(--border); padding: 24px; text-align: center; font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); }
+    .footer a { color: var(--text-dim); }
+    .footer a:hover { color: var(--accent); }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2rem; }
+      .hero-price { font-size: 2.2rem; }
+      .signup-form { flex-direction: column; }
+      .nav-links { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav-logo">🦀 vibeclaw</a>
+    <div class="nav-links">
+      <a href="/forge">Forge</a>
+      <a href="/library">Library</a>
+      <a href="/chat">Chat</a>
+      <span id="auth-container"></span>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge">⚡ VibeClaw Pro</div>
+    <h1>The best AI models.<br><span>No limits.</span></h1>
+    <p>Upgrade to Pro for premium models, cloud sync, unlimited messages, and peer-to-peer sharing. Build better agents, faster.</p>
+    <div class="hero-price">$20<span>/month</span></div>
+    <div class="hero-annual">or $200/year — save $40</div>
+    <a href="#signup" class="cta-btn">⚡ Get VibeClaw Pro</a>
+  </div>
+
+  <!-- Models -->
+  <div class="models">
+    <h2>Premium models included</h2>
+    <p class="models-sub">All the flagship models, no API keys needed. We handle the billing.</p>
+    <div class="model-list">
+      <div class="model-item">
+        <div><div class="model-name">Claude Opus 4.6</div><div class="model-provider">Anthropic</div></div>
+        <span class="model-badge pro">PRO</span>
+      </div>
+      <div class="model-item">
+        <div><div class="model-name">Claude Sonnet 4.5</div><div class="model-provider">Anthropic</div></div>
+        <span class="model-badge pro">PRO</span>
+      </div>
+      <div class="model-item">
+        <div><div class="model-name">GPT-5.2</div><div class="model-provider">OpenAI</div></div>
+        <span class="model-badge pro">PRO</span>
+      </div>
+      <div class="model-item">
+        <div><div class="model-name">o3</div><div class="model-provider">OpenAI</div></div>
+        <span class="model-badge pro">PRO</span>
+      </div>
+      <div class="model-item">
+        <div><div class="model-name">Gemini 3 Pro</div><div class="model-provider">Google</div></div>
+        <span class="model-badge pro">PRO</span>
+      </div>
+      <div class="model-item">
+        <div><div class="model-name">Solar Pro 3</div><div class="model-provider">Upstage</div></div>
+        <span class="model-badge free">FREE</span>
+      </div>
+      <div class="model-item">
+        <div><div class="model-name">DeepSeek R1</div><div class="model-provider">DeepSeek</div></div>
+        <span class="model-badge free">FREE</span>
+      </div>
+      <div class="model-item">
+        <div><div class="model-name">Llama 3.1 8B</div><div class="model-provider">Meta</div></div>
+        <span class="model-badge free">FREE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features">
+    <h2>Everything in Pro</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon">🧠</div>
+        <h3>Premium AI Models</h3>
+        <p>Claude Opus 4.6, GPT-5.2, Gemini 3 Pro, o3 — the most capable models available. Switch models per-server.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">☁️</div>
+        <h3>Cloud Sync</h3>
+        <p>Save your server configs to the cloud. Access them from any device, any browser. Never lose a build.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">💬</div>
+        <h3>Unlimited Messages</h3>
+        <p>No daily message limits. Chat as much as you need in the sandbox, preview, or full chat page.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🔗</div>
+        <h3>P2P Server Sharing</h3>
+        <p>Publish your server configs for others to import. Connect directly to friends' live OpenClaw gateways.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🏪</div>
+        <h3>Community Library</h3>
+        <p>Browse and fork server configs from the community. Security auditors, creative studios, DevOps squads — discover what works.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🚀</div>
+        <h3>Priority Support</h3>
+        <p>Get help faster. Email support with 24-hour response time. Early access to new features and models.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison -->
+  <div class="compare">
+    <h2>Free vs Pro</h2>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Feature</th><th>Free</th><th class="pro-col">Pro — $20/mo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Build server configs</td><td class="check">✓ Unlimited</td><td class="pro-col check">✓ Unlimited</td></tr>
+        <tr><td>Free AI models</td><td class="check">✓ 7 models</td><td class="pro-col check">✓ 7 models</td></tr>
+        <tr><td>Premium AI models</td><td class="cross">✗</td><td class="pro-col check">✓ 5+ flagships</td></tr>
+        <tr><td>Sandbox messages</td><td>50/day</td><td class="pro-col check">✓ Unlimited</td></tr>
+        <tr><td>Storage</td><td>Local only</td><td class="pro-col check">✓ Cloud sync</td></tr>
+        <tr><td>P2P sharing</td><td>Browse only</td><td class="pro-col check">✓ Publish & connect</td></tr>
+        <tr><td>Gateway connection</td><td class="cross">✗</td><td class="pro-col check">✓ P2P to friends</td></tr>
+        <tr><td>Support</td><td>Community</td><td class="pro-col check">✓ Priority email</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Signup / Waitlist -->
+  <div class="signup" id="signup">
+    <h2>Get early access</h2>
+    <p>Pro is launching soon. Join the waitlist and get notified — plus 50% off your first 3 months.</p>
+    <div class="signup-form" id="signup-form">
+      <input type="email" class="signup-input" id="signup-email" placeholder="you@email.com" required />
+      <button class="signup-submit" id="signup-btn" onclick="submitWaitlist()">Join Waitlist</button>
+    </div>
+    <div class="signup-success" id="signup-success">
+      🎉 You're on the list! We'll email you when Pro launches.
+    </div>
+    <div class="signup-note">No spam. Unsubscribe anytime. Launch ETA: Q1 2026.</div>
+  </div>
+
+  <div class="footer">
+    <a href="/">vibeclaw.dev</a> · <a href="/forge">Forge</a> · <a href="/chat">Chat</a> · <a href="https://github.com/jasonkneen/vibeclaw">GitHub</a> · <a href="https://discord.com/invite/clawd">Discord</a>
+  </div>
+
+  <script src="/auth.js"></script>
+  <script src="/features.js"></script>
+  <script>
+    VibeclawAuth.init().then(() => {
+      VibeclawAuth.renderButton('auth-container');
+    });
+
+    async function submitWaitlist() {
+      const email = document.getElementById('signup-email').value.trim();
+      if (!email || !email.includes('@')) return;
+
+      const btn = document.getElementById('signup-btn');
+      btn.textContent = 'Joining...';
+      btn.disabled = true;
+
+      try {
+        // Store waitlist signup (can wire to DB later)
+        const existing = JSON.parse(localStorage.getItem('vibeclaw-waitlist') || '[]');
+        existing.push({ email, ts: Date.now() });
+        localStorage.setItem('vibeclaw-waitlist', JSON.stringify(existing));
+
+        // Try cloud save if authenticated
+        try {
+          const token = await VibeclawAuth.getToken();
+          if (token) {
+            await fetch('/api/waitlist', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+              body: JSON.stringify({ email })
+            });
+          }
+        } catch {}
+
+        document.getElementById('signup-form').style.display = 'none';
+        document.getElementById('signup-success').style.display = 'block';
+      } catch (err) {
+        btn.textContent = 'Join Waitlist';
+        btn.disabled = false;
+      }
+    }
+
+    document.getElementById('signup-email').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitWaitlist();
+    });
+  </script>
+
+</body>
+</html>

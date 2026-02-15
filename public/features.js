@@ -91,24 +91,9 @@ const VibeclawFeatures = (() => {
       return freeModels;
     },
 
-    // Open Lemon Squeezy checkout
+    // Open Pro page / checkout
     openCheckout() {
-      // TODO: Replace with actual Lemon Squeezy store URL when account is created
-      const CHECKOUT_URL = 'https://vibeclaw.lemonsqueezy.com/checkout/buy/PRODUCT_ID';
-      
-      // Pre-fill email if logged in
-      const user = VibeclawAuth?.getUserInfo();
-      let url = CHECKOUT_URL;
-      if (user?.email) {
-        url += '?checkout[email]=' + encodeURIComponent(user.email);
-      }
-
-      // Use Lemon Squeezy overlay if loaded, otherwise redirect
-      if (window.LemonSqueezy) {
-        window.LemonSqueezy.Url.Open(url);
-      } else {
-        window.open(url, '_blank');
-      }
+      window.location.href = '/pro';
     },
 
     // Render upgrade button (only in preview mode)
@@ -166,13 +151,7 @@ const VibeclawFeatures = (() => {
   };
 })();
 
-// Load Lemon Squeezy JS (lightweight, only in preview mode)
-if (VibeclawFeatures.isPreview()) {
-  const ls = document.createElement('script');
-  ls.src = 'https://assets.lemonsqueezy.com/lemon.js';
-  ls.defer = true;
-  document.head.appendChild(ls);
-}
+// Pro checkout is now handled on /pro page
 
 // Attach to window
 window.VibeclawFeatures = VibeclawFeatures;

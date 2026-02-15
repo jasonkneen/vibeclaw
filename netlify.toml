@@ -38,6 +38,11 @@
   status = 200
 
 [[redirects]]
+  from = "/pro"
+  to = "/pro.html"
+  status = 200
+
+[[redirects]]
   from = "/api/subscription/webhook"
   to = "/.netlify/functions/subscription"
   status = 200

@@ -1093,7 +1093,7 @@
       </div>
     </div>
     <div class="news-ticker" id="news-ticker-2" style="border-bottom:1px solid var(--border);">
-      <div class="ticker-label">TRENDING</div>
+      <div class="ticker-label">MODELS</div>
       <div class="ticker-track">
         <div class="ticker-content ticker-reverse" id="ticker-content-2">
           <span class="ticker-item">Loading…</span>
@@ -1536,18 +1536,18 @@ entirely in a browser sandbox.
         const items1 = items.slice(0, half);
         const items2 = items.slice(half);
 
-        // Trending/model items for second ticker
+        // Latest open-source model releases for second ticker
         const trending = [
-          { title: 'Claude Opus 4.6', source: '↑ 12%', link: '' },
-          { title: 'GPT-5.2', source: '↑ 8%', link: '' },
-          { title: 'Gemini 3 Pro', source: '↑ 15%', link: '' },
-          { title: 'DeepSeek R1', source: '↑ 22%', link: '' },
-          { title: 'Llama 4 Scout', source: '↑ 31%', link: '' },
-          { title: 'Solar Pro 3', source: 'FREE', link: '' },
-          { title: 'Qwen3 8B', source: 'FREE', link: '' },
-          { title: 'Phi-4 Reasoning', source: '↑ 9%', link: '' },
-          { title: 'Mistral Small 3.1', source: 'FREE', link: '' },
-          { title: 'o3', source: '↑ 18%', link: '' },
+          { title: 'Llama 4 Scout 109B — 10M context, 16 experts', source: 'Meta', link: 'https://huggingface.co/meta-llama' },
+          { title: 'Qwen3 235B — hybrid thinking, 119 languages', source: 'Alibaba', link: 'https://huggingface.co/Qwen' },
+          { title: 'DeepSeek R1 0528 — beats o3 on math/code', source: 'DeepSeek', link: 'https://huggingface.co/deepseek-ai' },
+          { title: 'Gemma 3 27B — fits on a single GPU', source: 'Google', link: 'https://huggingface.co/google/gemma-3-27b-it' },
+          { title: 'Phi-4 Reasoning 14B — MIT licensed', source: 'Microsoft', link: 'https://huggingface.co/microsoft' },
+          { title: 'Mistral Small 3.1 24B — Apache 2.0', source: 'Mistral', link: 'https://huggingface.co/mistralai' },
+          { title: 'Solar Pro 3 — free on OpenRouter', source: 'Upstage', link: 'https://huggingface.co/upstage' },
+          { title: 'Llama 3.3 70B — best open weights at size', source: 'Meta', link: 'https://huggingface.co/meta-llama' },
+          { title: 'Command R+ 104B — RAG optimised', source: 'Cohere', link: 'https://huggingface.co/CohereForAI' },
+          { title: 'Kimi VL A3B — open-source vision+thinking', source: 'Moonshot', link: 'https://huggingface.co/moonshotai' },
         ];
 
         function renderTicker(el, data) {
@@ -1568,7 +1568,7 @@ entirely in a browser sandbox.
         if (el1) renderTicker(el1, items1.length ? items1 : items);
 
         const el2 = document.getElementById('ticker-content-2');
-        if (el2) renderTicker(el2, items2.length ? [...items2, ...trending] : trending);
+        if (el2) renderTicker(el2, trending);
       })();
 
       // ── Boot sandbox ──

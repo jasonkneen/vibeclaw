@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm run flavours:build && npm run build"
   publish = "dist-site"
   functions = "netlify/functions"
 

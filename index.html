@@ -945,7 +945,7 @@
           <li><a href="https://openclaw.ai">OpenClaw</a></li>
           <li><a href="https://github.com/nicholasgriffintn/almostnode">almostnode</a></li>
           <li><a href="https://github.com/jasonkneen/vibeclaw">GitHub</a></li>
-          <li><a href="https://x.com/vibeclaw" style="display:inline-flex;align-items:center;gap:4px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Community</a></li>
+          <li><a href="https://x.com/i/communities/2022846557700145266" style="display:inline-flex;align-items:center;gap:4px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Community</a></li>
         </ul>
       </div>
     </nav>
@@ -982,6 +982,11 @@
 
         <!-- Credential bars (swap based on mode) -->
         <div id="pg-creds-sandbox" style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--border);background:var(--black);">
+          <label style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">Flavour</label>
+          <select id="pg-flavour-select" style="padding:6px 10px;background:var(--surface);border:1px solid var(--border);color:var(--text-bright);font-family:var(--mono);font-size:0.72rem;outline:none;opacity:0.9;max-width:180px;">
+            <option value="default">🦀 Claw</option>
+          </select>
+          <div style="width:1px;height:18px;background:var(--border);"></div>
           <label style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">Model</label>
           <select id="pg-model-select" disabled style="flex:1;padding:6px 10px;background:var(--surface);border:1px solid var(--border);color:var(--text-bright);font-family:var(--mono);font-size:0.72rem;outline:none;opacity:0.9;">
             <option value="upstage/solar-pro-3:free">☀️ Solar Pro 3 (free · reasoning)</option>
@@ -1109,11 +1114,38 @@ entirely in a browser sandbox.
       const chatInput = $('pg-chat-input');
       const chatSend  = $('pg-chat-send');
       const modelSelect = $('pg-model-select');
+      const flavourSelect = $('pg-flavour-select');
       const connectLink = $('pg-connect-link');
 
       let activeTab = 'boot';
       let pgStreamEl = null;
       let sandboxContainer = null;
+      let activeFlavour = null;  // loaded flavour manifest
+      let allFlavours = [];      // all available flavours
+
+      // Load flavours
+      (async () => {
+        try {
+          const resp = await fetch('/flavours.json');
+          if (resp.ok) {
+            allFlavours = await resp.json();
+            flavourSelect.innerHTML = '';
+            for (const f of allFlavours) {
+              const opt = document.createElement('option');
+              opt.value = f.id;
+              opt.textContent = `${f.emoji} ${f.name}`;
+              flavourSelect.appendChild(opt);
+            }
+            // Restore saved choice
+            try { const s = localStorage.getItem('vc-flavour'); if (s && allFlavours.find(f => f.id === s)) flavourSelect.value = s; } catch {}
+            activeFlavour = allFlavours.find(f => f.id === flavourSelect.value) || allFlavours[0];
+          }
+        } catch {}
+      })();
+      flavourSelect.addEventListener('change', () => {
+        activeFlavour = allFlavours.find(f => f.id === flavourSelect.value) || allFlavours[0];
+        try { localStorage.setItem('vc-flavour', flavourSelect.value); } catch {}
+      });
 
       function ts() { return new Date().toLocaleTimeString('en-US', { hour12: false }); }
       function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -1181,10 +1213,12 @@ entirely in a browser sandbox.
         chatBar.style.display = 'none';
         statusEl.textContent = 'Booting…';
         disableBtns(true);
+        flavourSelect.disabled = true;
 
         try {
           const t0 = performance.now();
-          log('Booting OpenClaw sandbox…', 'info');
+          const flLabel = activeFlavour ? `${activeFlavour.emoji} ${activeFlavour.name}` : '🦀 OpenClaw';
+          log(`Booting ${flLabel} sandbox…`, 'info');
           const resp = await fetch('/dist/openclaw/openclaw-vfs-snapshot.json');
           if (!resp.ok) throw new Error('Failed to load OpenClaw runtime (' + resp.status + ')');
           const snapshot = await resp.json();
@@ -1224,8 +1258,12 @@ entirely in a browser sandbox.
           } catch (e) { log('init: ' + e.message, 'info'); }
 
           const bootMs = Math.round(performance.now() - t0);
+          const flLabel = activeFlavour ? `${activeFlavour.emoji} ${activeFlavour.name}` : '🦀 OpenClaw';
           log('', 'ok');
-          log(`🦀 OpenClaw sandbox is live (${bootMs}ms)`, 'ok');
+          log(`${flLabel} sandbox is live (${bootMs}ms)`, 'ok');
+          if (activeFlavour && activeFlavour.id !== 'default') {
+            log(`Flavour: ${activeFlavour.name} — ${activeFlavour.agents.length} agents, ${activeFlavour.skills.length} skills`, 'info');
+          }
           log('', 'info');
           log('Type a message below to start chatting', 'ok');
 
@@ -1245,6 +1283,7 @@ entirely in a browser sandbox.
           chatBar.style.display = '';
           chatInput.disabled = false;
           chatSend.disabled = false;
+          flavourSelect.disabled = true;
 
           // Auto-send first message
           chatInput.value = 'Hey! What can you do?';
@@ -1255,17 +1294,87 @@ entirely in a browser sandbox.
         } catch (e) {
           log('Boot failed: ' + e.message, 'err');
           statusEl.textContent = 'Error';
+          flavourSelect.disabled = false;
         }
         disableBtns(false);
       }
 
       // ── Local gateway bridge (BroadcastChannel between tabs) ──
       function setupGatewayBridge() {
+        const fl = activeFlavour || allFlavours[0] || { id: 'default', name: 'Claw', emoji: '🦀', agents: [
+          { id: 'main', name: 'Claw', emoji: '🦀', description: 'Squad lead — orchestrator and coding assistant' }
+        ], skills: [], systemPrompt: '' };
+
+        // Build agent lookup from flavour manifest
+        const agentList = fl.agents || [];
+        const agentMap = {};
+        for (const a of agentList) agentMap[a.id] = { name: a.name, emoji: a.emoji, description: a.description };
+
+        // Build skills list from flavour
+        const skillList = (fl.skills || []).map(s => ({ name: s.name, emoji: s.emoji, description: s.description, eligible: true, source: 'flavour' }));
+        // Always include base skills
+        if (!skillList.find(s => s.name === 'chat')) skillList.unshift({ name: 'chat', emoji: '💬', description: 'Chat via OpenRouter (Solar Pro 3)', eligible: true, source: 'builtin' });
+        if (!skillList.find(s => s.name === 'filesystem')) skillList.push({ name: 'filesystem', emoji: '📁', description: 'Virtual filesystem read/write', eligible: true, source: 'builtin' });
+        if (!skillList.find(s => s.name === 'execute')) skillList.push({ name: 'execute', emoji: '⚡', description: 'Run commands in container', eligible: true, source: 'builtin' });
+
+        // Build session list from agents
+        const buildSessions = () => {
+          const h = window.__sandboxHistory || [];
+          const now = Date.now();
+          return agentList.map((a, i) => ({
+            key: `agent:${a.id}:main`,
+            displayName: `${a.emoji} ${a.name}`,
+            label: a.name,
+            model: 'solar-pro-3',
+            updatedAt: now - (i * 60000),
+            totalTokens: i === 0 ? h.length * 100 : 0,
+            contextTokens: 4096
+          }));
+        };
+
+        // Build workspace files
+        const wsFiles = [
+          { name: 'SOUL.md', size: 420 },
+          { name: 'AGENTS.md', size: 380 },
+          { name: 'TOOLS.md', size: 520 },
+          { name: 'USER.md', size: 180 },
+          { name: '.bashrc', size: 220 },
+          { name: 'hostname', size: 12 },
+          { name: 'sandbox.log', size: 45 }
+        ];
+        // Add team files if flavour has teams
+        if (fl.teams?.length) {
+          for (const t of fl.teams) wsFiles.push({ name: `teams/${t.id}.md`, size: 300 });
+        }
+        // Add agent files
+        for (const a of agentList) {
+          if (a.id !== 'main') wsFiles.push({ name: `agents/${a.id}.md`, size: 250 });
+        }
+
+        const wsContents = {
+          'SOUL.md': fl.systemPrompt || `# ${fl.emoji} ${fl.name}\n\nSandbox agent.`,
+          'AGENTS.md': `# Agents\n\n${agentList.map(a => `- **${a.emoji} ${a.name}** (${a.id}) — ${a.description}`).join('\n')}`,
+          'TOOLS.md': `# Tools\n\n${skillList.map(s => `- **${s.emoji} ${s.name}** — ${s.description}`).join('\n')}`,
+          'USER.md': '# User\n\nA developer exploring the sandbox.',
+          '.bashrc': `# ~/.bashrc\nexport PS1="${fl.emoji} sandbox $ "\nalias ll="ls -la"`,
+          'hostname': `vibeclaw-${fl.id}`,
+          'sandbox.log': 'Sandbox started at ' + new Date().toISOString()
+        };
+        if (fl.teams) {
+          for (const t of fl.teams) {
+            wsContents[`teams/${t.id}.md`] = `# Team: ${t.name}\n\nLeader: ${t.leader}\nAgents: ${t.agents.join(', ')}`;
+          }
+        }
+        for (const a of agentList) {
+          if (a.id !== 'main') {
+            wsContents[`agents/${a.id}.md`] = `# Agent: ${a.emoji} ${a.name}\n\n${a.description}\n\nSession: agent:${a.id}:main`;
+          }
+        }
+
         const ch = new BroadcastChannel('vibeclaw-gw');
         ch.onmessage = (evt) => {
           const msg = evt.data;
           if (msg.type === 'ping') {
-            // Gateway demo checking if sandbox is alive
             const nonce = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2,'0')).join('');
             ch.postMessage({ type: 'event', event: 'connect.challenge', payload: { nonce } });
             return;
@@ -1275,76 +1384,45 @@ entirely in a browser sandbox.
             const m = msg.method;
             if (m === 'connect') {
               ch.postMessage({ type: 'res', id, ok: true, payload: {
-                server: { host: 'vibeclaw-sandbox', version: '1.0.0' },
+                server: { host: `vibeclaw-${fl.id}`, version: '1.0.0' },
                 mainSessionKey: 'agent:main:main', protocolVersion: 3
               }});
             } else if (m === 'status') {
               ch.postMessage({ type: 'res', id, ok: true, payload: {
-                sessions: { count: 1, defaults: { model: 'upstage/solar-pro-3:free' } },
+                sessions: { count: agentList.length, defaults: { model: 'upstage/solar-pro-3:free' } },
                 channelSummary: [],
-                heartbeat: { defaultAgentId: 'main' }
+                heartbeat: { defaultAgentId: 'main' },
+                flavour: { id: fl.id, name: fl.name, emoji: fl.emoji }
               }});
             } else if (m === 'agents.list') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: { agents: [
-                { id: 'main' }, { id: 'inky' }, { id: 'pixel' }, { id: 'scout' }
-              ]}});
+              ch.postMessage({ type: 'res', id, ok: true, payload: { agents: agentList.map(a => ({ id: a.id })) }});
             } else if (m === 'agent.identity.get') {
-              const agents = {
-                main:  { name: 'Claw', emoji: '🦀', description: 'Squad lead — orchestrator and coding assistant' },
-                inky:  { name: 'Inky', emoji: '✍️', description: 'Content writer — blog posts, copy, documentation' },
-                pixel: { name: 'Pixel', emoji: '🎨', description: 'Graphic designer — images, diagrams, visual assets' },
-                scout: { name: 'Scout', emoji: '🔍', description: 'SEO specialist — search optimization, keywords, rankings' }
-              };
-              ch.postMessage({ type: 'res', id, ok: true, payload: agents[msg.params?.agentId] || agents.main });
+              const a = agentMap[msg.params?.agentId] || agentMap.main || agentList[0];
+              ch.postMessage({ type: 'res', id, ok: true, payload: a });
             } else if (m === 'sessions.list') {
-              const h = window.__sandboxHistory || [];
-              const now = Date.now();
-              ch.postMessage({ type: 'res', id, ok: true, payload: { sessions: [
-                { key: 'agent:main:main', displayName: '🦀 Claw', label: 'Claw', model: 'solar-pro-3', updatedAt: now, totalTokens: h.length * 100, contextTokens: 4096 },
-                { key: 'agent:inky:main', displayName: '✍️ Inky', label: 'Inky', model: 'solar-pro-3', updatedAt: now - 60000, totalTokens: 0, contextTokens: 4096 },
-                { key: 'agent:pixel:main', displayName: '🎨 Pixel', label: 'Pixel', model: 'solar-pro-3', updatedAt: now - 120000, totalTokens: 0, contextTokens: 4096 },
-                { key: 'agent:scout:main', displayName: '🔍 Scout', label: 'Scout', model: 'solar-pro-3', updatedAt: now - 180000, totalTokens: 0, contextTokens: 4096 }
-              ]}});
+              ch.postMessage({ type: 'res', id, ok: true, payload: { sessions: buildSessions() }});
             } else if (m === 'skills.status' || m === 'skills.list') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: { skills: [
-                { name: 'chat', emoji: '💬', description: 'Chat via OpenRouter (Solar Pro 3)', eligible: true, source: 'builtin' },
-                { name: 'filesystem', emoji: '📁', description: 'Virtual filesystem read/write', eligible: true, source: 'builtin' },
-                { name: 'execute', emoji: '⚡', description: 'Run commands in container', eligible: true, source: 'builtin' },
-                { name: 'web-search', emoji: '🔍', description: 'Search the web', eligible: false, disabled: true }
-              ]}});
+              ch.postMessage({ type: 'res', id, ok: true, payload: { skills: skillList }});
             } else if (m === 'models.list') {
               ch.postMessage({ type: 'res', id, ok: true, payload: { models: [{ id: 'upstage/solar-pro-3:free', name: 'Solar Pro 3', active: true }] }});
             } else if (m === 'cron.list') {
               ch.postMessage({ type: 'res', id, ok: true, payload: { jobs: [] }});
             } else if (m === 'agents.files.list') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: { workspace: 'sandbox', files: [
-                { name: '.bashrc', size: 220 },
-                { name: '.profile', size: 180 },
-                { name: 'hostname', size: 12 },
-                { name: 'os-release', size: 280 },
-                { name: 'sandbox.log', size: 45 }
-              ]}});
+              ch.postMessage({ type: 'res', id, ok: true, payload: { workspace: fl.id, files: wsFiles }});
             } else if (m === 'agents.files.get') {
               const name = msg.params?.name || '';
-              const contents = {
-                '.bashrc': '# ~/.bashrc\nexport PS1="🦀 sandbox $ "\nalias ll="ls -la"',
-                '.profile': '# ~/.profile\nexport PATH="/usr/local/bin:$PATH"',
-                'hostname': 'vibeclaw-sandbox',
-                'os-release': 'NAME="Vibeclaw Sandbox"\nVERSION="1.0"\nID=vibeclaw',
-                'sandbox.log': 'Sandbox started at ' + new Date().toISOString()
-              };
-              ch.postMessage({ type: 'res', id, ok: true, payload: { workspace: 'sandbox', file: { name, content: contents[name] || '(empty)' } }});
+              ch.postMessage({ type: 'res', id, ok: true, payload: { workspace: fl.id, file: { name, content: wsContents[name] || '(empty)' } }});
             } else if (m === 'logs.tail' || m === 'logs.query') {
               const ts = new Date().toISOString();
               ch.postMessage({ type: 'res', id, ok: true, payload: { lines: [
-                JSON.stringify({ time: ts, '2': 'Sandbox gateway started', _meta: { logLevelName: 'INFO' } }),
-                JSON.stringify({ time: ts, '2': 'Agent ready: 🦀 Sandbox Agent', _meta: { logLevelName: 'INFO' } }),
+                JSON.stringify({ time: ts, '2': `${fl.emoji} ${fl.name} sandbox gateway started`, _meta: { logLevelName: 'INFO' } }),
+                JSON.stringify({ time: ts, '2': `Flavour: ${fl.name} (${agentList.length} agents)`, _meta: { logLevelName: 'INFO' } }),
                 JSON.stringify({ time: ts, '2': 'Model: solar-pro-3 (free)', _meta: { logLevelName: 'INFO' } }),
                 JSON.stringify({ time: ts, '2': 'BroadcastChannel bridge active', _meta: { logLevelName: 'DEBUG' } })
               ], cursor: 'sandbox-0' }});
             } else if (m === 'system-presence') {
               ch.postMessage({ type: 'res', id, ok: true, payload: [
-                { host: 'vibeclaw-sandbox', mode: 'sandbox', platform: 'browser', reason: 'connect', ts: Date.now(), ip: '127.0.0.1' }
+                { host: `vibeclaw-${fl.id}`, mode: 'sandbox', platform: 'browser', reason: 'connect', ts: Date.now(), ip: '127.0.0.1' }
               ]});
             } else if (m === 'usage.cost') {
               ch.postMessage({ type: 'res', id, ok: true, payload: { daily: [
@@ -1355,10 +1433,11 @@ entirely in a browser sandbox.
               const userMsg = msg.params?.message || '';
               if (!window.__sandboxHistory) window.__sandboxHistory = [];
               window.__sandboxHistory.push({ role: 'user', content: userMsg });
+              const sysPrompt = fl.systemPrompt || `You are ${fl.emoji} ${fl.name}, a helpful assistant running in a browser sandbox.`;
               fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: window.__sandboxHistory, model: 'upstage/solar-pro-3:free' })
+                body: JSON.stringify({ messages: [{ role: 'system', content: sysPrompt }, ...window.__sandboxHistory], model: 'upstage/solar-pro-3:free' })
               }).then(r => r.json()).then(data => {
                 const text = data.choices?.[0]?.message?.content || data.error || 'No response';
                 window.__sandboxHistory.push({ role: 'assistant', content: text });
@@ -1378,7 +1457,7 @@ entirely in a browser sandbox.
         connectLink.href = '/examples/openclaw-gateway-demo.html?url=sandbox';
         connectLink.target = '_blank';
         connectLink.style.display = '';
-        log('🔴 Gateway ready — click Connect → to open dashboard', 'ok');
+        log(`🔴 Gateway ready (${fl.emoji} ${fl.name}) — click Connect → to open dashboard`, 'ok');
       }
 
       // ── Chat (direct Anthropic streaming) ──
@@ -1388,6 +1467,7 @@ entirely in a browser sandbox.
         chatInput.value = '';
         chatInput.disabled = true;
         chatSend.disabled = true;
+        startChatSafetyTimer();
         log(`You: ${text}`, 'log');
 
         if (!window.__sandboxHistory) window.__sandboxHistory = [];
@@ -1406,7 +1486,7 @@ entirely in a browser sandbox.
             max_tokens: 4096,
             stream: true,
             messages: [
-              { role: 'system', content: 'You are 🦀 Sandbox Agent, a helpful coding assistant running in a browser sandbox powered by OpenClaw + almostnode. Be concise and helpful.' },
+              { role: 'system', content: (activeFlavour?.systemPrompt) || 'You are 🦀 Sandbox Agent, a helpful coding assistant running in a browser sandbox powered by OpenClaw + almostnode. Be concise and helpful.' },
               ...window.__sandboxHistory,
             ],
           };
@@ -1475,6 +1555,19 @@ entirely in a browser sandbox.
         }
         pgStreamEl = null;
         chatInput.disabled = false; chatSend.disabled = false; chatInput.focus();
+        // Safety: ensure re-enabled after 30s max
+        clearTimeout(window.__chatUnlockTimer);
+      }
+
+      // Safety timeout — if chat stays locked >30s, force unlock
+      function startChatSafetyTimer() {
+        clearTimeout(window.__chatUnlockTimer);
+        window.__chatUnlockTimer = setTimeout(() => {
+          if (chatInput.disabled) {
+            chatInput.disabled = false; chatSend.disabled = false; chatInput.focus();
+            log('(Chat unlocked — response timeout)', 'info');
+          }
+        }, 30000);
       }
 
       chatSend.addEventListener('click', sendChat);
@@ -1535,6 +1628,14 @@ entirely in a browser sandbox.
           </div>
           <h3>Full Dashboard</h3>
           <p>3-column gateway dashboard with streaming chat, session management, workspace file browser, skill status, cron jobs, cost tracking, and live logs.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3>Flavours</h3>
+          <p>Swap sandbox personalities in one click. TinyClaw multi-agent orchestrator, default Claw assistant, or build your own — different agents, skills, and system prompts per flavour.</p>
         </div>
 
         <div class="feature-card">
@@ -1619,6 +1720,11 @@ entirely in a browser sandbox.
         </details>
 
         <details class="faq-item">
+          <summary>What are Flavours?</summary>
+          <div class="faq-answer">Flavours are preconfigured sandbox personalities. Each flavour defines its own agents, skills, system prompt, and workspace layout. The default <strong>🦀 Claw</strong> is a coding assistant. <strong>🦞 TinyClaw</strong> is a multi-agent orchestrator with 5 agents, team routing, and parallel fan-out. Select a flavour from the dropdown before booting — the entire sandbox (and gateway dashboard) adapts to match.</div>
+        </details>
+
+        <details class="faq-item">
           <summary>What about WebGPU / local models?</summary>
           <div class="faq-answer">Coming soon. We're integrating <a href="https://github.com/mlc-ai/web-llm">WebLLM</a> to run <strong>Qwen2.5-Coder 1.5B</strong> (4-bit quantized, ~900MB) entirely via WebGPU compute shaders. One download, then fully offline — no API key, no network. The almostnode container runtime is ready, we're wiring up the inference engine.</div>
         </details>
@@ -1637,7 +1743,7 @@ entirely in a browser sandbox.
         <a href="https://openclaw.ai">OpenClaw</a>
         <a href="https://github.com/nicholasgriffintn/almostnode">almostnode</a>
         <a href="https://github.com/jasonkneen/vibeclaw">GitHub</a>
-        <a href="https://x.com/vibeclaw" style="display:inline-flex;align-items:center;gap:4px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Community</a>
+        <a href="https://x.com/i/communities/2022846557700145266" style="display:inline-flex;align-items:center;gap:4px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Community</a>
         <a href="./docs/">Docs</a>
       </div>
       <span class="footer-byline">🦀 <a href="https://vibeclaw.dev">vibeclaw.dev</a></span>

@@ -43,3 +43,4 @@ temp/
 !public/dist/
 !public/dist/openclaw/
 !public/dist/openclaw/openclaw-vfs-snapshot.json
+gw-interact.mjs

@@ -85,6 +85,8 @@
     "openclaw:snapshot": "node --import tsx scripts/openclaw-pipeline/build.ts --snapshot-only",
     "openclaw:rebuild": "node --import tsx scripts/openclaw-pipeline/build.ts --skip-fetch",
     "openclaw:clean": "rm -rf .openclaw-staging dist/openclaw",
+    "flavours:build": "node scripts/build-flavours.mjs",
+    "vfs:merge": "node scripts/build-vfs-extra.mjs",
     "prepublishOnly": "npm run test:run && npm run build:publish"
   },
   "dependencies": {

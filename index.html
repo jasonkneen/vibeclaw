@@ -1279,38 +1279,66 @@ entirely in a browser sandbox.
               }});
             } else if (m === 'status') {
               ch.postMessage({ type: 'res', id, ok: true, payload: {
-                agent: { name: '🦀 Sandbox Agent', model: 'solar-pro-3' },
-                sessions: 1, channels: 0
+                sessions: { count: 1, defaults: { model: 'upstage/solar-pro-3:free' } },
+                channelSummary: [],
+                heartbeat: { defaultAgentId: 'main' }
               }});
+            } else if (m === 'agents.list') {
+              ch.postMessage({ type: 'res', id, ok: true, payload: { agents: [{ id: 'main' }] }});
+            } else if (m === 'agent.identity.get') {
+              ch.postMessage({ type: 'res', id, ok: true, payload: { name: 'Sandbox Agent', emoji: '🦀', description: 'In-browser OpenClaw sandbox' }});
             } else if (m === 'sessions.list') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: [
-                { key: 'sandbox-session', title: 'Sandbox', createdAt: Date.now(), messageCount: window.__sandboxHistory?.length || 0 }
-              ]});
-            } else if (m === 'agent.identity') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: { name: '🦀 Sandbox Agent', description: 'In-browser OpenClaw sandbox powered by almostnode' }});
-            } else if (m === 'skills.list') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: [
-                { name: 'chat', description: 'Chat with the agent via OpenRouter' },
-                { name: 'filesystem', description: 'Read/write files in the virtual filesystem' },
-                { name: 'execute', description: 'Execute commands in the container' }
-              ]});
+              const h = window.__sandboxHistory || [];
+              ch.postMessage({ type: 'res', id, ok: true, payload: { sessions: [
+                { key: 'sandbox-session', displayName: 'Sandbox Session', label: 'Sandbox', model: 'solar-pro-3', updatedAt: Date.now(), totalTokens: h.length * 100, contextTokens: 4096 }
+              ]}});
+            } else if (m === 'skills.status' || m === 'skills.list') {
+              ch.postMessage({ type: 'res', id, ok: true, payload: { skills: [
+                { name: 'chat', emoji: '💬', description: 'Chat via OpenRouter (Solar Pro 3)', eligible: true, source: 'builtin' },
+                { name: 'filesystem', emoji: '📁', description: 'Virtual filesystem read/write', eligible: true, source: 'builtin' },
+                { name: 'execute', emoji: '⚡', description: 'Run commands in container', eligible: true, source: 'builtin' },
+                { name: 'web-search', emoji: '🔍', description: 'Search the web', eligible: false, disabled: true }
+              ]}});
             } else if (m === 'models.list') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: [{ id: 'upstage/solar-pro-3:free', name: 'Solar Pro 3', active: true }]});
+              ch.postMessage({ type: 'res', id, ok: true, payload: { models: [{ id: 'upstage/solar-pro-3:free', name: 'Solar Pro 3', active: true }] }});
             } else if (m === 'cron.list') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: [] });
-            } else if (m === 'agent.files' || m === 'files.list') {
-              const files = window.__container?.fs ? Object.keys(window.__container.fs._files || {}).slice(0, 20).map(f => ({ path: f })) : [];
-              ch.postMessage({ type: 'res', id, ok: true, payload: files });
-            } else if (m === 'logs.query') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: { lines: [], cursor: null }});
-            } else if (m === 'presence.list') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: [{ name: 'You', role: 'operator', connectedAt: Date.now() }]});
+              ch.postMessage({ type: 'res', id, ok: true, payload: { jobs: [] }});
+            } else if (m === 'agents.files.list') {
+              ch.postMessage({ type: 'res', id, ok: true, payload: { workspace: 'sandbox', files: [
+                { name: '.bashrc', size: 220 },
+                { name: '.profile', size: 180 },
+                { name: 'hostname', size: 12 },
+                { name: 'os-release', size: 280 },
+                { name: 'sandbox.log', size: 45 }
+              ]}});
+            } else if (m === 'agents.files.get') {
+              const name = msg.params?.name || '';
+              const contents = {
+                '.bashrc': '# ~/.bashrc\nexport PS1="🦀 sandbox $ "\nalias ll="ls -la"',
+                '.profile': '# ~/.profile\nexport PATH="/usr/local/bin:$PATH"',
+                'hostname': 'vibeclaw-sandbox',
+                'os-release': 'NAME="Vibeclaw Sandbox"\nVERSION="1.0"\nID=vibeclaw',
+                'sandbox.log': 'Sandbox started at ' + new Date().toISOString()
+              };
+              ch.postMessage({ type: 'res', id, ok: true, payload: { workspace: 'sandbox', file: { name, content: contents[name] || '(empty)' } }});
+            } else if (m === 'logs.tail' || m === 'logs.query') {
+              const ts = new Date().toISOString();
+              ch.postMessage({ type: 'res', id, ok: true, payload: { lines: [
+                JSON.stringify({ time: ts, '2': 'Sandbox gateway started', _meta: { logLevelName: 'INFO' } }),
+                JSON.stringify({ time: ts, '2': 'Agent ready: 🦀 Sandbox Agent', _meta: { logLevelName: 'INFO' } }),
+                JSON.stringify({ time: ts, '2': 'Model: solar-pro-3 (free)', _meta: { logLevelName: 'INFO' } }),
+                JSON.stringify({ time: ts, '2': 'BroadcastChannel bridge active', _meta: { logLevelName: 'DEBUG' } })
+              ], cursor: 'sandbox-0' }});
+            } else if (m === 'system-presence') {
+              ch.postMessage({ type: 'res', id, ok: true, payload: [
+                { host: 'vibeclaw-sandbox', mode: 'sandbox', platform: 'browser', reason: 'connect', ts: Date.now(), ip: '127.0.0.1' }
+              ]});
             } else if (m === 'usage.cost') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: { total: 0, currency: 'USD' }});
+              ch.postMessage({ type: 'res', id, ok: true, payload: { daily: [
+                { date: new Date().toISOString().slice(0,10), totalCost: 0, totalTokens: (window.__sandboxHistory||[]).length * 150 }
+              ]}});
             } else if (m === 'chat.send') {
-              // Acknowledge immediately
               ch.postMessage({ type: 'res', id, ok: true, payload: {} });
-              // Stream response via OpenRouter
               const userMsg = msg.params?.message || '';
               if (!window.__sandboxHistory) window.__sandboxHistory = [];
               window.__sandboxHistory.push({ role: 'user', content: userMsg });
@@ -1328,7 +1356,7 @@ entirely in a browser sandbox.
               });
             } else if (m === 'chat.history') {
               const msgs = (window.__sandboxHistory || []).map((m, i) => ({ id: String(i), role: m.role, content: m.content, createdAt: Date.now() }));
-              ch.postMessage({ type: 'res', id, ok: true, payload: msgs });
+              ch.postMessage({ type: 'res', id, ok: true, payload: { messages: msgs }});
             } else {
               ch.postMessage({ type: 'res', id, ok: true, payload: {} });
             }

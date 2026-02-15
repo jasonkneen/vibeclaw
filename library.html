@@ -310,7 +310,7 @@
           return currentLibrary;
         } catch (err) {
           console.error('Cloud load error:', err);
-          showToast(`⚠️ Cloud sync failed, using local cache: ${err.message}`, 'error', 4000);
+          showToast(`Cloud sync failed, using local cache: ${err.message}`, 'error', 4000);
           // Fall back to localStorage
           isCloudMode = false;
           try {
@@ -350,9 +350,11 @@
       // Add sync indicator to page title
       const subtitle = document.querySelector('.page-subtitle');
       if (subtitle) {
+        const cloudIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:3px;"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>';
+        const localIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:3px;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>';
         const indicator = isCloudMode 
-          ? '<span style="color:var(--green);font-family:var(--mono);font-size:0.75rem;margin-left:8px;">☁️ Synced</span>' 
-          : '<span style="color:var(--text-dim);font-family:var(--mono);font-size:0.75rem;margin-left:8px;">💾 Local only</span>';
+          ? `<span style="color:var(--green);font-family:var(--mono);font-size:0.75rem;margin-left:8px;">${cloudIcon}Synced</span>` 
+          : `<span style="color:var(--text-dim);font-family:var(--mono);font-size:0.75rem;margin-left:8px;">${localIcon}Local only</span>`;
         subtitle.innerHTML = 'Your saved OpenClaw server configurations. Boot, edit, or deploy any of them. ' + indicator;
       }
 
@@ -425,13 +427,13 @@
               if (isCloudMode && srv._cloudId) {
                 try {
                   await VibeclawAPI.deleteServer(srv._cloudId);
-                  showToast(`☁️ Deleted "${srv.name}" from cloud`, 'success');
+                  showToast(`Deleted "${srv.name}" from cloud`, 'success');
                 } catch (err) {
                   console.error('Cloud delete error:', err);
-                  showToast(`⚠️ Cloud delete failed: ${err.message}`, 'error', 4000);
+                  showToast(`Cloud delete failed: ${err.message}`, 'error', 4000);
                 }
               } else {
-                showToast(`💾 Deleted "${srv.name}" locally`, 'success');
+                showToast(`Deleted "${srv.name}" locally`, 'success');
               }
               // Remove from local library
               currentLibrary.splice(idx, 1);

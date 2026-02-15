@@ -1174,6 +1174,26 @@ entirely in a browser sandbox.
               opt.textContent = `${f.emoji} ${f.name}`;
               flavourSelect.appendChild(opt);
             }
+            // Load user's saved servers from library
+            try {
+              const lib = JSON.parse(localStorage.getItem('clawforge-library') || '[]');
+              if (lib.length > 0) {
+                const sep = document.createElement('option');
+                sep.disabled = true;
+                sep.textContent = '── My Servers ──';
+                flavourSelect.appendChild(sep);
+                for (const srv of lib) {
+                  const spec = srv.spec || srv;
+                  const id = 'lib:' + (srv.id || spec.id || spec.name);
+                  const opt = document.createElement('option');
+                  opt.value = id;
+                  opt.textContent = `${spec.emoji || '🔧'} ${spec.name || 'Custom'}`;
+                  opt.dataset.libSpec = JSON.stringify(spec);
+                  flavourSelect.appendChild(opt);
+                }
+              }
+            } catch {}
+
             // Restore saved choice
             try { const s = localStorage.getItem('vc-flavour'); if (s && allFlavours.find(f => f.id === s)) flavourSelect.value = s; } catch {}
             activeFlavour = allFlavours.find(f => f.id === flavourSelect.value) || allFlavours[0];
@@ -1181,8 +1201,37 @@ entirely in a browser sandbox.
         } catch {}
       })();
       flavourSelect.addEventListener('change', () => {
-        activeFlavour = allFlavours.find(f => f.id === flavourSelect.value) || allFlavours[0];
-        try { localStorage.setItem('vc-flavour', flavourSelect.value); } catch {}
+        const val = flavourSelect.value;
+        if (val.startsWith('lib:')) {
+          // Load from library server spec
+          const opt = flavourSelect.querySelector(`option[value="${CSS.escape(val)}"]`);
+          if (opt && opt.dataset.libSpec) {
+            const spec = JSON.parse(opt.dataset.libSpec);
+            activeFlavour = {
+              id: val,
+              name: spec.name || 'Custom Server',
+              emoji: spec.emoji || '🔧',
+              description: 'Saved server',
+              agents: (spec.agents || []).map(a => ({
+                id: a.id || 'main',
+                name: a.name,
+                emoji: a.emoji,
+                description: a.description || a.role || ''
+              })),
+              teams: [],
+              skills: (spec.skills || []).map(s => ({
+                name: s.source ? s.source.replace('builtin:', '') : s.name || 'unknown',
+                emoji: '',
+                description: ''
+              })),
+              systemPrompt: (spec.agents && spec.agents[0] && spec.agents[0].systemPrompt) || '',
+              workspace: spec.workspace || {}
+            };
+          }
+        } else {
+          activeFlavour = allFlavours.find(f => f.id === val) || allFlavours[0];
+        }
+        try { localStorage.setItem('vc-flavour', val); } catch {}
       });
 
       // ── ClawForge preview mode ──

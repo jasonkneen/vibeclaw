@@ -1342,6 +1342,7 @@ entirely in a browser sandbox.
 
       // ── Boot sandbox ──
       async function launchSandbox() {
+        document.querySelector('.pg').scrollIntoView({ behavior: 'smooth', block: 'start' });
         terminal.innerHTML = '';
         terminal.style.display = '';
         terminal.style.alignItems = '';

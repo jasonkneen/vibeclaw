@@ -896,18 +896,9 @@
       state.model = 'upstage/solar-pro-3:free';
       state.connected = true;
 
-      // Update UI
-      const statusEl = $('chat-status');
-      statusEl.className = 'chat-status connected';
-      statusEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px;"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><circle cx="12" cy="20" r="1"/></svg>
-      <span>Connected</span>`;
-
+      // Update header name quietly — no status toasts
       const label = chatFlavour ? `${chatFlavour.emoji} ${chatFlavour.name}` : 'VibeClaw Chat';
       $('peer-name').textContent = label;
-      $('peer-model').textContent = '';
-      $('chat-input').disabled = false;
-      $('chat-send').disabled = false;
-      $('chat-input').focus();
 
       // Start a new session if none
       if (!state.currentSessionId) newSession();

@@ -1153,6 +1153,55 @@ entirely in a browser sandbox.
         try { localStorage.setItem('vc-flavour', flavourSelect.value); } catch {}
       });
 
+      // ── ClawForge preview mode ──
+      let forgeSpec = null;
+      (function checkForgePreview() {
+        const params = new URLSearchParams(location.search);
+        if (params.get('preview') === 'forge') {
+          try {
+            const raw = sessionStorage.getItem('forge-preview-spec');
+            if (raw) {
+              forgeSpec = JSON.parse(raw);
+              // Convert forge spec into a flavour-compatible object
+              activeFlavour = {
+                id: 'forge-preview',
+                name: forgeSpec.name || 'Custom Server',
+                emoji: forgeSpec.emoji || '🔧',
+                description: 'ClawForge custom server',
+                agents: (forgeSpec.agents || []).map(a => ({
+                  id: a.id,
+                  name: a.name,
+                  emoji: a.emoji,
+                  description: a.description || a.role || ''
+                })),
+                teams: [],
+                skills: (forgeSpec.skills || []).map(s => ({
+                  name: s.source ? s.source.replace('builtin:', '') : s.name || 'unknown',
+                  emoji: '⚡',
+                  description: ''
+                })),
+                systemPrompt: (forgeSpec.agents && forgeSpec.agents[0] && forgeSpec.agents[0].systemPrompt) || '',
+                workspace: forgeSpec.workspace || {}
+              };
+              // Set model if specified
+              if (forgeSpec.runtime && forgeSpec.runtime.model && forgeSpec.runtime.model.model) {
+                modelSelect.value = forgeSpec.runtime.model.model;
+              }
+              // Update flavour select to show custom
+              const opt = document.createElement('option');
+              opt.value = 'forge-preview';
+              opt.textContent = `${forgeSpec.emoji || '🔧'} ${forgeSpec.name || 'Custom'} (preview)`;
+              opt.selected = true;
+              flavourSelect.appendChild(opt);
+              // Auto-boot
+              setTimeout(() => {
+                document.querySelector('.pg-launch[data-action="sandbox"]')?.click();
+              }, 500);
+            }
+          } catch (e) { console.warn('Forge preview error:', e); }
+        }
+      })();
+
       function ts() { return new Date().toLocaleTimeString('en-US', { hour12: false }); }
       function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
       function md(s) {
@@ -1362,11 +1411,13 @@ entirely in a browser sandbox.
           if (a.id !== 'main') wsFiles.push({ name: `agents/${a.id}.md`, size: 250 });
         }
 
+        // Use forge workspace files if available, otherwise generate from flavour
+        const forgeWs = fl.workspace || {};
         const wsContents = {
-          'SOUL.md': fl.systemPrompt || `# ${fl.emoji} ${fl.name}\n\nSandbox agent.`,
-          'AGENTS.md': `# Agents\n\n${agentList.map(a => `- **${a.emoji} ${a.name}** (${a.id}) — ${a.description}`).join('\n')}`,
-          'TOOLS.md': `# Tools\n\n${skillList.map(s => `- **${s.emoji} ${s.name}** — ${s.description}`).join('\n')}`,
-          'USER.md': '# User\n\nA developer exploring the sandbox.',
+          'SOUL.md': forgeWs['SOUL.md'] || fl.systemPrompt || `# ${fl.emoji} ${fl.name}\n\nSandbox agent.`,
+          'AGENTS.md': forgeWs['AGENTS.md'] || `# Agents\n\n${agentList.map(a => `- **${a.emoji} ${a.name}** (${a.id}) — ${a.description}`).join('\n')}`,
+          'TOOLS.md': forgeWs['TOOLS.md'] || `# Tools\n\n${skillList.map(s => `- **${s.emoji} ${s.name}** — ${s.description}`).join('\n')}`,
+          'USER.md': forgeWs['USER.md'] || '# User\n\nA developer exploring the sandbox.',
           '.bashrc': `# ~/.bashrc\nexport PS1="${fl.emoji} sandbox $ "\nalias ll="ls -la"`,
           'hostname': `vibeclaw-${fl.id}`,
           'sandbox.log': 'Sandbox started at ' + new Date().toISOString()

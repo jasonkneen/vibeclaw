@@ -419,6 +419,50 @@
             agents() { return this.request('agents.list'); },
           };
 
+          // Handle chat events from sandbox
+          sock.ch.addEventListener('message', (e) => {
+            const msg = e.data;
+            if (msg.type === 'event' && msg.event === 'chat') {
+              const payload = msg.payload;
+              if (payload?.state === 'delta' && payload?.message) {
+                const content = payload.message.content;
+                let text = typeof content === 'string' ? content : Array.isArray(content) ? content.map(c => c.text || '').join('') : '';
+                if (text && text.length > streamingText.length) {
+                  streamingText = text;
+                  if (streamingEl?.classList.contains('thinking')) {
+                    streamingEl.classList.remove('thinking');
+                    streamingEl.classList.add('assistant');
+                    const hdr = streamingEl.querySelector('.msg-header');
+                    if (hdr) hdr.textContent = agentLabel();
+                  }
+                  if (streamingEl) {
+                    const body = streamingEl.querySelector('.msg-body');
+                    if (body) body.textContent = streamingText;
+                    el.chatMessages.scrollTop = el.chatMessages.scrollHeight;
+                  }
+                }
+              }
+              if (payload?.state === 'final' || payload?.state === 'aborted') {
+                if (streamingText && streamingEl) {
+                  streamingEl.classList.remove('thinking');
+                  streamingEl.classList.add('assistant');
+                  const hdr = streamingEl.querySelector('.msg-header');
+                  if (hdr) hdr.textContent = agentLabel();
+                  const body = streamingEl.querySelector('.msg-body');
+                  if (body) body.textContent = streamingText;
+                } else if (streamingEl) { streamingEl.remove(); }
+                streamingEl = null; streamingText = '';
+                el.chatInput.disabled = false; el.chatSend.disabled = false; el.chatInput.focus();
+              }
+              if (payload?.state === 'error') {
+                if (streamingEl) streamingEl.remove();
+                appendMsg(el.chatMessages, 'system', '', `Error: ${payload.errorMessage || 'unknown'}`);
+                streamingEl = null; streamingText = '';
+                el.chatInput.disabled = false; el.chatSend.disabled = false;
+              }
+            }
+          });
+
           // Wait for challenge then auto-connect
           sock.ch.addEventListener('message', async function once(e) {
             if (e.data?.type === 'event' && e.data?.event === 'connect.challenge') {

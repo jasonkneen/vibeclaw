@@ -509,6 +509,7 @@
           <div class="chat-peer-name" id="peer-name">VibeClaw Chat</div>
           <div class="chat-peer-model" id="peer-model"></div>
         </div>
+        <span id="auth-container" style="margin-left:auto;margin-right:16px;"></span>
         <div class="chat-status connecting" id="chat-status">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px;"><circle cx="12" cy="12" r="10"/></svg>
           <span>Not connected</span>
@@ -864,6 +865,13 @@
       }
       connect();
     }
+  </script>
+
+  <script src="/auth.js"></script>
+  <script>
+    VibeclawAuth.init().then(() => {
+      VibeclawAuth.renderButton('auth-container');
+    });
   </script>
 
 </body>

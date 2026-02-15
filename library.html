@@ -203,9 +203,45 @@
     }
     .empty-state a:hover { background: #ff7070; text-decoration: none; }
 
+    /* ── Toast notifications ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 24px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text-bright);
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+    .toast.success {
+      border-color: var(--green);
+      background: rgba(74,222,128,0.05);
+      color: var(--green);
+    }
+    .toast.error {
+      border-color: #f44;
+      background: rgba(255,68,68,0.05);
+      color: #f44;
+    }
+
     @media (max-width: 600px) {
       .page { padding: 32px 16px; }
       .server-grid { grid-template-columns: 1fr; }
+      .toast { bottom: 16px; }
     }
   </style>
 </head>
@@ -234,19 +270,71 @@
     </div>
   </div>
 
+  <!-- Toast notification -->
+  <div id="toast" class="toast"></div>
+
   <script>
-    function loadLibrary() {
-      try {
-        return JSON.parse(localStorage.getItem('clawforge-library') || '[]');
-      } catch { return []; }
+    // ── Toast notification system ──
+    function showToast(message, type = 'success', duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast show ' + type;
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    // ── Library management ──
+    let currentLibrary = [];
+    let isCloudMode = false;
+
+    async function loadLibrary() {
+      const user = VibeclawAuth.getUser();
+      
+      if (user) {
+        // Logged in - fetch from cloud
+        try {
+          const cloudServers = await VibeclawAPI.getServers();
+          // Normalize cloud data: cloud servers have {id, name, spec, template, createdAt, updatedAt}
+          // We need to extract and flatten the spec
+          currentLibrary = cloudServers.map(cs => ({
+            ...cs.spec,
+            id: cs.id,
+            name: cs.name,
+            _cloudId: cs.id,
+            _isCloud: true
+          }));
+          // Also save to localStorage as cache
+          localStorage.setItem('clawforge-library', JSON.stringify(currentLibrary));
+          isCloudMode = true;
+          return currentLibrary;
+        } catch (err) {
+          console.error('Cloud load error:', err);
+          showToast(`⚠️ Cloud sync failed, using local cache: ${err.message}`, 'error', 4000);
+          // Fall back to localStorage
+          isCloudMode = false;
+          try {
+            currentLibrary = JSON.parse(localStorage.getItem('clawforge-library') || '[]');
+            return currentLibrary;
+          } catch { return []; }
+        }
+      } else {
+        // Not logged in - use localStorage
+        isCloudMode = false;
+        try {
+          currentLibrary = JSON.parse(localStorage.getItem('clawforge-library') || '[]');
+          return currentLibrary;
+        } catch { return []; }
+      }
     }
 
     function saveLibrary(lib) {
       localStorage.setItem('clawforge-library', JSON.stringify(lib));
+      currentLibrary = lib;
     }
 
-    function renderLibrary() {
-      const library = loadLibrary();
+    async function renderLibrary() {
+      const library = await loadLibrary();
       const grid = document.getElementById('server-grid');
       const empty = document.getElementById('empty-state');
 
@@ -258,6 +346,15 @@
 
       grid.style.display = '';
       empty.style.display = 'none';
+
+      // Add sync indicator to page title
+      const subtitle = document.querySelector('.page-subtitle');
+      if (subtitle) {
+        const indicator = isCloudMode 
+          ? '<span style="color:var(--green);font-family:var(--mono);font-size:0.75rem;margin-left:8px;">☁️ Synced</span>' 
+          : '<span style="color:var(--text-dim);font-family:var(--mono);font-size:0.75rem;margin-left:8px;">💾 Local only</span>';
+        subtitle.innerHTML = 'Your saved OpenClaw server configurations. Boot, edit, or deploy any of them. ' + indicator;
+      }
 
       grid.innerHTML = library.map((srv, idx) => {
         const agentCount = (srv.agents || []).length;
@@ -297,11 +394,10 @@
 
       // Bind actions
       grid.querySelectorAll('[data-action]').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
           const idx = parseInt(btn.dataset.idx);
           const action = btn.dataset.action;
-          const library = loadLibrary();
-          const srv = library[idx];
+          const srv = currentLibrary[idx];
 
           if (action === 'boot') {
             sessionStorage.setItem('forge-preview-spec', JSON.stringify(srv));
@@ -318,14 +414,29 @@
             const copy = JSON.parse(JSON.stringify(srv));
             copy.id = 'srv_' + Math.random().toString(36).slice(2, 10);
             copy.name = (copy.name || 'Server') + ' (copy)';
-            library.push(copy);
-            saveLibrary(library);
-            renderLibrary();
+            delete copy._cloudId;
+            delete copy._isCloud;
+            currentLibrary.push(copy);
+            saveLibrary(currentLibrary);
+            await renderLibrary();
           } else if (action === 'delete') {
-            if (confirm(`Delete "${srv.emoji} ${srv.name}"?`)) {
-              library.splice(idx, 1);
-              saveLibrary(library);
-              renderLibrary();
+            if (confirm(`Delete "${srv.emoji || ''} ${srv.name}"?`)) {
+              // If cloud mode and server has cloud ID, delete from cloud
+              if (isCloudMode && srv._cloudId) {
+                try {
+                  await VibeclawAPI.deleteServer(srv._cloudId);
+                  showToast(`☁️ Deleted "${srv.name}" from cloud`, 'success');
+                } catch (err) {
+                  console.error('Cloud delete error:', err);
+                  showToast(`⚠️ Cloud delete failed: ${err.message}`, 'error', 4000);
+                }
+              } else {
+                showToast(`💾 Deleted "${srv.name}" locally`, 'success');
+              }
+              // Remove from local library
+              currentLibrary.splice(idx, 1);
+              saveLibrary(currentLibrary);
+              await renderLibrary();
             }
           }
         });
@@ -335,14 +446,14 @@
     function escHtml(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
-
-    renderLibrary();
   </script>
 
   <script src="/auth.js"></script>
   <script>
     VibeclawAuth.init().then(() => {
       VibeclawAuth.renderButton('auth-container');
+      // Render library after auth is initialized
+      renderLibrary();
     });
   </script>
 

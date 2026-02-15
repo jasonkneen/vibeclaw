@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClawForge — Build Your OpenClaw Server</title>
+  <meta name="description" content="Configure an OpenClaw server like you'd spec a Mac. Pick agents, skills, personality — preview it live in your browser." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --surface: #141414;
+      --surface-2: #1a1a1a;
+      --border: #2a2a2a;
+      --border-active: #3a3a3a;
+      --text: #999;
+      --text-dim: #666;
+      --text-bright: #e0e0e0;
+      --accent: #ff5c5c;
+      --accent-bg: rgba(255,92,92,0.06);
+      --accent-glow: rgba(255,92,92,0.15);
+      --green: #4ade80;
+      --blue: #60a5fa;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--sans);
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Nav ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+    .nav-links { display: flex; gap: 20px; align-items: center; }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .nav-links a:hover { color: var(--text-bright); }
+
+    /* ── Layout ── */
+    .forge-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 0;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── Main configurator ── */
+    .forge-main {
+      padding: 48px 48px 120px;
+      overflow-y: auto;
+    }
+    .forge-title {
+      font-family: var(--sans);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 8px;
+    }
+    .forge-subtitle {
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 48px;
+    }
+
+    /* ── Steps ── */
+    .step {
+      margin-bottom: 56px;
+    }
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .step-num {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+    .step-title {
+      font-family: var(--sans);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    /* ── Option cards (radio-style) ── */
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .option-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .option-card:hover {
+      border-color: var(--border-active);
+      background: var(--surface-2);
+    }
+    .option-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .option-card .option-emoji {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+    .option-card .option-name {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 4px;
+    }
+    .option-card .option-desc {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* ── Agent builder ── */
+    .agent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .agent-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+    .agent-row.active {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .agent-emoji-input {
+      width: 36px;
+      height: 36px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--text-bright);
+      outline: none;
+    }
+    .agent-emoji-input:focus { border-color: var(--accent); }
+    .agent-text-input {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text-bright);
+      outline: none;
+    }
+    .agent-text-input:focus { border-color: var(--accent); }
+    .agent-text-input::placeholder { color: var(--text-dim); }
+
+    .btn-small {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-small:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-small.danger:hover { border-color: #f44; color: #f44; }
+
+    .btn-add {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 2px dashed var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      transition: all 0.15s;
+      margin-top: 8px;
+    }
+    .btn-add:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Skill toggles ── */
+    .skill-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .skill-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      user-select: none;
+    }
+    .skill-card:hover { border-color: var(--border-active); }
+    .skill-card.enabled { border-color: var(--accent); background: var(--accent-bg); }
+    .skill-card .skill-emoji { font-size: 1.2rem; }
+    .skill-card .skill-name {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+    .skill-card .skill-desc {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+    .skill-toggle {
+      margin-left: auto;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid var(--border);
+      background: transparent;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .skill-card.enabled .skill-toggle {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* ── Textarea ── */
+    .forge-textarea {
+      width: 100%;
+      min-height: 120px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text-bright);
+      outline: none;
+      resize: vertical;
+      line-height: 1.6;
+    }
+    .forge-textarea:focus { border-color: var(--accent); }
+    .forge-textarea::placeholder { color: var(--text-dim); }
+
+    /* ── Model select ── */
+    .model-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px;
+    }
+    .model-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .model-card:hover { border-color: var(--border-active); }
+    .model-card.selected { border-color: var(--accent); background: var(--accent-bg); }
+    .model-name {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 4px;
+    }
+    .model-provider {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+    .model-badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--green);
+      color: #000;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    /* ── Sidebar ── */
+    .forge-sidebar {
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      border-left: 1px solid var(--border);
+      background: var(--surface);
+      padding: 32px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-title {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+    .sidebar-server-name {
+      font-family: var(--sans);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar-section {
+      margin-bottom: 20px;
+    }
+    .sidebar-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+    .sidebar-value {
+      font-size: 0.85rem;
+      color: var(--text-bright);
+    }
+    .sidebar-list {
+      list-style: none;
+    }
+    .sidebar-list li {
+      font-size: 0.8rem;
+      color: var(--text);
+      padding: 3px 0;
+    }
+    .sidebar-actions {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .btn-forge {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 14px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .btn-preview {
+      background: var(--accent);
+      color: #000;
+    }
+    .btn-preview:hover { background: #ff7070; }
+    .btn-deploy {
+      background: var(--surface-2);
+      color: var(--text-bright);
+      border: 1px solid var(--border);
+    }
+    .btn-deploy:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-save {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-save:hover { border-color: var(--text-dim); color: var(--text-bright); }
+
+    /* ── Workspace files ── */
+    .file-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+      overflow-x: auto;
+    }
+    .file-tab {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 10px 16px;
+      color: var(--text-dim);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+      white-space: nowrap;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+    .file-tab:hover { color: var(--text-bright); }
+    .file-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── Template picker ── */
+    .template-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .template-bar label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+    .template-select {
+      flex: 1;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text-bright);
+      outline: none;
+    }
+    .template-select:focus { border-color: var(--accent); }
+
+    /* ── Server name input ── */
+    .server-name-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .server-name-row input {
+      flex: 1;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .forge-layout {
+        grid-template-columns: 1fr;
+      }
+      .forge-sidebar {
+        position: relative;
+        top: 0;
+        height: auto;
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+      .forge-main {
+        padding: 32px 20px 60px;
+      }
+    }
+    @media (max-width: 600px) {
+      .option-grid { grid-template-columns: 1fr; }
+      .skill-grid { grid-template-columns: 1fr; }
+      .model-grid { grid-template-columns: 1fr; }
+      .agent-row { grid-template-columns: 36px 1fr auto; }
+      .agent-row > :nth-child(2) { grid-column: 2 / 4; }
+      .agent-row > :nth-child(3) { grid-column: 2 / 4; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <a href="/" class="nav-brand">🔧 ClawForge</a>
+    <div class="nav-links">
+      <a href="/">← Back to VibeClaw</a>
+    </div>
+  </nav>
+
+  <!-- Layout -->
+  <div class="forge-layout">
+    <!-- Main configurator -->
+    <div class="forge-main">
+      <h1 class="forge-title">Build your server</h1>
+      <p class="forge-subtitle">Configure your OpenClaw server. Preview it live. Deploy it anywhere.</p>
+
+      <!-- Template picker -->
+      <div class="template-bar">
+        <label>Start from</label>
+        <select id="template-select" class="template-select">
+          <option value="">Blank server</option>
+        </select>
+        <button class="btn-small" id="template-load-btn">Load</button>
+      </div>
+
+      <!-- Server name -->
+      <div class="server-name-row">
+        <input id="server-emoji" class="agent-emoji-input" type="text" value="🦀" maxlength="4" />
+        <input id="server-name" class="agent-text-input" type="text" placeholder="My Server" value="My Server" style="flex:1;font-size:1.1rem;padding:12px 16px;" />
+      </div>
+
+      <!-- Step 1: Runtime -->
+      <div class="step">
+        <div class="step-header">
+          <span class="step-num">01</span>
+          <span class="step-title">Runtime</span>
+        </div>
+        <p class="step-desc">Choose your server's core mode.</p>
+        <div class="option-grid" id="runtime-options">
+          <div class="option-card selected" data-value="single">
+            <div class="option-emoji">🖥️</div>
+            <div class="option-name">Standard</div>
+            <div class="option-desc">Single agent, clean and fast</div>
+          </div>
+          <div class="option-card" data-value="multi">
+            <div class="option-emoji">👥</div>
+            <div class="option-name">Multi-Agent</div>
+            <div class="option-desc">Agent squads with team routing</div>
+          </div>
+          <div class="option-card" data-value="minimal">
+            <div class="option-emoji">⚡</div>
+            <div class="option-name">Minimal</div>
+            <div class="option-desc">Lightweight, low-resource mode</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Agents -->
+      <div class="step">
+        <div class="step-header">
+          <span class="step-num">02</span>
+          <span class="step-title">Agents</span>
+        </div>
+        <p class="step-desc">Add agents to your server. The first agent is the lead.</p>
+        <div class="agent-list" id="agent-list">
+          <div class="agent-row active" data-idx="0">
+            <input type="text" class="agent-emoji-input" value="🦀" maxlength="4" data-field="emoji" />
+            <input type="text" class="agent-text-input" placeholder="Agent name" value="Claw" data-field="name" />
+            <input type="text" class="agent-text-input" placeholder="Role / description" value="General-purpose coding assistant" data-field="desc" />
+            <span style="font-size:0.65rem;color:var(--text-dim);font-family:var(--mono);">LEAD</span>
+          </div>
+        </div>
+        <button class="btn-add" id="add-agent-btn">+ Add Agent</button>
+      </div>
+
+      <!-- Step 3: Skills -->
+      <div class="step">
+        <div class="step-header">
+          <span class="step-num">03</span>
+          <span class="step-title">Skills</span>
+        </div>
+        <p class="step-desc">Toggle the skills your server should have.</p>
+        <div class="skill-grid" id="skill-grid">
+          <div class="skill-card enabled" data-skill="chat">
+            <span class="skill-emoji">💬</span>
+            <div>
+              <div class="skill-name">Chat</div>
+              <div class="skill-desc">Conversational AI via LLM</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+          <div class="skill-card enabled" data-skill="filesystem">
+            <span class="skill-emoji">📁</span>
+            <div>
+              <div class="skill-name">Filesystem</div>
+              <div class="skill-desc">Read, write, and manage files</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+          <div class="skill-card enabled" data-skill="execute">
+            <span class="skill-emoji">⚡</span>
+            <div>
+              <div class="skill-name">Execute</div>
+              <div class="skill-desc">Run shell commands</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+          <div class="skill-card" data-skill="web-browse">
+            <span class="skill-emoji">🌐</span>
+            <div>
+              <div class="skill-name">Web Browse</div>
+              <div class="skill-desc">Search and fetch web pages</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+          <div class="skill-card" data-skill="github">
+            <span class="skill-emoji">🐙</span>
+            <div>
+              <div class="skill-name">GitHub</div>
+              <div class="skill-desc">PRs, issues, repos, CI</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+          <div class="skill-card" data-skill="docker">
+            <span class="skill-emoji">🐳</span>
+            <div>
+              <div class="skill-name">Docker</div>
+              <div class="skill-desc">Container build & deploy</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+          <div class="skill-card" data-skill="image-gen">
+            <span class="skill-emoji">🎨</span>
+            <div>
+              <div class="skill-name">Image Gen</div>
+              <div class="skill-desc">Generate and edit images</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+          <div class="skill-card" data-skill="scheduling">
+            <span class="skill-emoji">⏰</span>
+            <div>
+              <div class="skill-name">Scheduling</div>
+              <div class="skill-desc">Cron jobs and reminders</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+          <div class="skill-card" data-skill="browser-auto">
+            <span class="skill-emoji">🤖</span>
+            <div>
+              <div class="skill-name">Browser Auto</div>
+              <div class="skill-desc">Navigate, click, fill, screenshot</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+          <div class="skill-card" data-skill="security">
+            <span class="skill-emoji">🔒</span>
+            <div>
+              <div class="skill-name">Security</div>
+              <div class="skill-desc">Vuln scan, threat modeling</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+          <div class="skill-card" data-skill="email">
+            <span class="skill-emoji">📧</span>
+            <div>
+              <div class="skill-name">Email</div>
+              <div class="skill-desc">Read and send emails</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+          <div class="skill-card" data-skill="calendar">
+            <span class="skill-emoji">📅</span>
+            <div>
+              <div class="skill-name">Calendar</div>
+              <div class="skill-desc">Events and scheduling</div>
+            </div>
+            <div class="skill-toggle"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Personality -->
+      <div class="step">
+        <div class="step-header">
+          <span class="step-num">04</span>
+          <span class="step-title">Personality</span>
+        </div>
+        <p class="step-desc">Define how your agent behaves. This becomes the system prompt.</p>
+        <textarea id="system-prompt" class="forge-textarea" placeholder="You are a helpful coding assistant. Be concise, direct, and pragmatic...">You are 🦀 Claw, a helpful coding assistant. Be concise, direct, and pragmatic. Show code, not just descriptions. Always explain the 'why' behind your suggestions.</textarea>
+      </div>
+
+      <!-- Step 5: Workspace Files -->
+      <div class="step">
+        <div class="step-header">
+          <span class="step-num">05</span>
+          <span class="step-title">Workspace Files</span>
+        </div>
+        <p class="step-desc">Set up the markdown files that define your agent's memory, identity, and tools.</p>
+        <div class="file-tabs" id="file-tabs">
+          <button class="file-tab active" data-file="AGENTS.md">AGENTS.md</button>
+          <button class="file-tab" data-file="SOUL.md">SOUL.md</button>
+          <button class="file-tab" data-file="USER.md">USER.md</button>
+          <button class="file-tab" data-file="TOOLS.md">TOOLS.md</button>
+        </div>
+        <textarea id="file-editor" class="forge-textarea" style="border-top-left-radius:0;border-top-right-radius:0;min-height:160px;">## My Agent
+
+This is your agent's workspace configuration. Define how it operates, what it remembers, and how it interacts.
+
+## Memory
+
+Update this file as you learn about the workspace and user preferences.</textarea>
+      </div>
+
+      <!-- Step 6: Model -->
+      <div class="step">
+        <div class="step-header">
+          <span class="step-num">06</span>
+          <span class="step-title">Model</span>
+        </div>
+        <p class="step-desc">Choose the LLM that powers your server.</p>
+        <div class="model-grid" id="model-grid">
+          <div class="model-card selected" data-model="deepseek/deepseek-chat-v3-0324:free">
+            <div class="model-name">DeepSeek V3</div>
+            <div class="model-provider">DeepSeek</div>
+            <span class="model-badge">FREE</span>
+          </div>
+          <div class="model-card" data-model="qwen/qwen3-8b:free">
+            <div class="model-name">Qwen3 8B</div>
+            <div class="model-provider">Alibaba</div>
+            <span class="model-badge">FREE</span>
+          </div>
+          <div class="model-card" data-model="microsoft/phi-4-reasoning:free">
+            <div class="model-name">Phi-4 Reasoning</div>
+            <div class="model-provider">Microsoft</div>
+            <span class="model-badge">FREE</span>
+          </div>
+          <div class="model-card" data-model="google/gemma-3-4b-it:free">
+            <div class="model-name">Gemma 3 4B</div>
+            <div class="model-provider">Google</div>
+            <span class="model-badge">FREE</span>
+          </div>
+          <div class="model-card" data-model="mistralai/mistral-small-3.1-24b-instruct:free">
+            <div class="model-name">Mistral Small 3.1</div>
+            <div class="model-provider">Mistral AI</div>
+            <span class="model-badge">FREE</span>
+          </div>
+          <div class="model-card" data-model="anthropic/claude-sonnet-4">
+            <div class="model-name">Claude Sonnet 4</div>
+            <div class="model-provider">Anthropic</div>
+          </div>
+          <div class="model-card" data-model="google/gemini-2.5-pro-preview">
+            <div class="model-name">Gemini 2.5 Pro</div>
+            <div class="model-provider">Google</div>
+          </div>
+          <div class="model-card" data-model="openai/gpt-4o">
+            <div class="model-name">GPT-4o</div>
+            <div class="model-provider">OpenAI</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <div class="forge-sidebar">
+      <div class="sidebar-title">Your Server</div>
+      <div class="sidebar-server-name" id="sidebar-name">
+        <span id="sidebar-emoji">🦀</span>
+        <span id="sidebar-name-text">My Server</span>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Runtime</div>
+        <div class="sidebar-value" id="sidebar-runtime">Standard</div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Agents</div>
+        <ul class="sidebar-list" id="sidebar-agents">
+          <li>🦀 Claw</li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Skills</div>
+        <ul class="sidebar-list" id="sidebar-skills">
+          <li>💬 Chat</li>
+          <li>📁 Filesystem</li>
+          <li>⚡ Execute</li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Model</div>
+        <div class="sidebar-value" id="sidebar-model">DeepSeek V3</div>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="btn-forge btn-preview" id="preview-btn">▶ Preview</button>
+        <button class="btn-forge btn-deploy" id="deploy-btn">📦 Deploy</button>
+        <button class="btn-forge btn-save" id="save-btn">💾 Save to Library</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── State ──
+    const state = {
+      emoji: '🦀',
+      name: 'My Server',
+      runtime: 'single',
+      agents: [
+        { emoji: '🦀', name: 'Claw', desc: 'General-purpose coding assistant' }
+      ],
+      skills: new Set(['chat', 'filesystem', 'execute']),
+      systemPrompt: '',
+      files: {
+        'AGENTS.md': '## My Agent\n\nThis is your agent\'s workspace configuration. Define how it operates, what it remembers, and how it interacts.\n\n## Memory\n\nUpdate this file as you learn about the workspace and user preferences.',
+        'SOUL.md': '# Soul\n\nBe helpful, concise, and direct. Have opinions. Show code, not just words.',
+        'USER.md': '# About the User\n\nAdd notes about the user\'s preferences, timezone, and workflow here.',
+        'TOOLS.md': '# Tools\n\nNote down tool-specific config: camera names, SSH hosts, API endpoints, etc.'
+      },
+      activeFile: 'AGENTS.md',
+      model: 'deepseek/deepseek-chat-v3-0324:free',
+    };
+
+    let allFlavours = [];
+
+    // ── Helpers ──
+    const $ = id => document.getElementById(id);
+    const $$ = sel => document.querySelectorAll(sel);
+
+    function updateSidebar() {
+      $('sidebar-emoji').textContent = state.emoji;
+      $('sidebar-name-text').textContent = state.name;
+
+      const runtimeNames = { single: 'Standard', multi: 'Multi-Agent', minimal: 'Minimal' };
+      $('sidebar-runtime').textContent = runtimeNames[state.runtime] || state.runtime;
+
+      $('sidebar-agents').innerHTML = state.agents
+        .map(a => `<li>${a.emoji} ${a.name}</li>`).join('');
+
+      const skillNames = {
+        'chat': '💬 Chat', 'filesystem': '📁 Filesystem', 'execute': '⚡ Execute',
+        'web-browse': '🌐 Web Browse', 'github': '🐙 GitHub', 'docker': '🐳 Docker',
+        'image-gen': '🎨 Image Gen', 'scheduling': '⏰ Scheduling', 'browser-auto': '🤖 Browser Auto',
+        'security': '🔒 Security', 'email': '📧 Email', 'calendar': '📅 Calendar',
+      };
+      $('sidebar-skills').innerHTML = [...state.skills]
+        .map(s => `<li>${skillNames[s] || s}</li>`).join('');
+
+      const modelEl = document.querySelector(`.model-card.selected`);
+      $('sidebar-model').textContent = modelEl
+        ? modelEl.querySelector('.model-name').textContent
+        : state.model;
+    }
+
+    // ── Server name ──
+    $('server-emoji').addEventListener('input', e => {
+      state.emoji = e.target.value || '🦀';
+      updateSidebar();
+    });
+    $('server-name').addEventListener('input', e => {
+      state.name = e.target.value || 'My Server';
+      updateSidebar();
+    });
+
+    // ── Runtime ──
+    $$('#runtime-options .option-card').forEach(card => {
+      card.addEventListener('click', () => {
+        $$('#runtime-options .option-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        state.runtime = card.dataset.value;
+        updateSidebar();
+      });
+    });
+
+    // ── Agents ──
+    function renderAgents() {
+      const list = $('agent-list');
+      list.innerHTML = state.agents.map((a, i) => `
+        <div class="agent-row ${i === 0 ? 'active' : ''}" data-idx="${i}">
+          <input type="text" class="agent-emoji-input" value="${a.emoji}" maxlength="4" data-field="emoji" />
+          <input type="text" class="agent-text-input" placeholder="Agent name" value="${escHtml(a.name)}" data-field="name" />
+          <input type="text" class="agent-text-input" placeholder="Role / description" value="${escHtml(a.desc)}" data-field="desc" />
+          ${i === 0
+            ? '<span style="font-size:0.65rem;color:var(--text-dim);font-family:var(--mono);">LEAD</span>'
+            : '<button class="btn-small danger" data-remove="' + i + '">✕</button>'
+          }
+        </div>
+      `).join('');
+
+      // Bind inputs
+      list.querySelectorAll('.agent-row').forEach(row => {
+        const idx = parseInt(row.dataset.idx);
+        row.querySelectorAll('input').forEach(inp => {
+          inp.addEventListener('input', () => {
+            state.agents[idx][inp.dataset.field] = inp.value;
+            updateSidebar();
+          });
+        });
+        const rmBtn = row.querySelector('[data-remove]');
+        if (rmBtn) rmBtn.addEventListener('click', () => {
+          state.agents.splice(idx, 1);
+          renderAgents();
+          updateSidebar();
+        });
+      });
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    $('add-agent-btn').addEventListener('click', () => {
+      const emojis = ['🤖','🔍','✍️','🎨','🛡️','📡','⚙️','🧪','📊','🎯'];
+      state.agents.push({
+        emoji: emojis[state.agents.length % emojis.length],
+        name: '',
+        desc: ''
+      });
+      renderAgents();
+      updateSidebar();
+    });
+
+    // ── Skills ──
+    $$('.skill-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const skill = card.dataset.skill;
+        if (state.skills.has(skill)) {
+          state.skills.delete(skill);
+          card.classList.remove('enabled');
+        } else {
+          state.skills.add(skill);
+          card.classList.add('enabled');
+        }
+        updateSidebar();
+      });
+    });
+
+    // ── System prompt ──
+    $('system-prompt').addEventListener('input', e => {
+      state.systemPrompt = e.target.value;
+    });
+
+    // ── File editor ──
+    const fileTabs = $$('#file-tabs .file-tab');
+    fileTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Save current
+        state.files[state.activeFile] = $('file-editor').value;
+        // Switch
+        fileTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        state.activeFile = tab.dataset.file;
+        $('file-editor').value = state.files[state.activeFile] || '';
+      });
+    });
+
+    // ── Model ──
+    $$('.model-card').forEach(card => {
+      card.addEventListener('click', () => {
+        $$('.model-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        state.model = card.dataset.model;
+        updateSidebar();
+      });
+    });
+
+    // ── Load flavours as templates ──
+    async function loadFlavours() {
+      try {
+        const resp = await fetch('/flavours.json');
+        allFlavours = await resp.json();
+        const sel = $('template-select');
+        allFlavours.forEach(f => {
+          const opt = document.createElement('option');
+          opt.value = f.id;
+          opt.textContent = `${f.emoji} ${f.name} — ${f.description}`;
+          sel.appendChild(opt);
+        });
+      } catch {}
+    }
+
+    $('template-load-btn').addEventListener('click', () => {
+      const id = $('template-select').value;
+      if (!id) {
+        // Reset to blank
+        state.emoji = '🦀';
+        state.name = 'My Server';
+        state.runtime = 'single';
+        state.agents = [{ emoji: '🦀', name: 'Claw', desc: 'General-purpose coding assistant' }];
+        state.skills = new Set(['chat', 'filesystem', 'execute']);
+        state.model = 'deepseek/deepseek-chat-v3-0324:free';
+        $('system-prompt').value = 'You are 🦀 Claw, a helpful coding assistant. Be concise, direct, and pragmatic.';
+        state.systemPrompt = $('system-prompt').value;
+      } else {
+        const fl = allFlavours.find(f => f.id === id);
+        if (!fl) return;
+        state.emoji = fl.emoji;
+        state.name = fl.name;
+        state.runtime = (fl.teams && fl.teams.length > 0) ? 'multi' : 'single';
+        state.agents = fl.agents.map(a => ({ emoji: a.emoji, name: a.name, desc: a.description }));
+        state.skills = new Set((fl.skills || []).map(s => s.name));
+        // Also enable the built-in skills
+        ['chat', 'filesystem', 'execute'].forEach(s => state.skills.add(s));
+        state.systemPrompt = fl.systemPrompt || '';
+        $('system-prompt').value = state.systemPrompt;
+      }
+
+      // Update UI
+      $('server-emoji').value = state.emoji;
+      $('server-name').value = state.name;
+      $$('#runtime-options .option-card').forEach(c => {
+        c.classList.toggle('selected', c.dataset.value === state.runtime);
+      });
+      renderAgents();
+      $$('.skill-card').forEach(card => {
+        card.classList.toggle('enabled', state.skills.has(card.dataset.skill));
+      });
+      updateSidebar();
+    });
+
+    // ── Build spec ──
+    function buildSpec() {
+      state.files[state.activeFile] = $('file-editor').value;
+      state.systemPrompt = $('system-prompt').value;
+      return {
+        specVersion: '1.0',
+        id: 'srv_' + Math.random().toString(36).slice(2, 10),
+        name: state.name,
+        emoji: state.emoji,
+        runtime: { type: state.runtime, model: { provider: 'openrouter', model: state.model } },
+        agents: state.agents.map((a, i) => ({
+          id: i === 0 ? 'main' : a.name.toLowerCase().replace(/[^a-z0-9]/g, '') || 'agent' + i,
+          name: a.name,
+          emoji: a.emoji,
+          role: i === 0 ? 'lead' : 'specialist',
+          description: a.desc,
+          ...(i === 0 ? { systemPrompt: state.systemPrompt } : {})
+        })),
+        skills: [...state.skills].map(s => ({ source: 'builtin:' + s })),
+        workspace: { ...state.files },
+      };
+    }
+
+    // ── Preview ──
+    $('preview-btn').addEventListener('click', () => {
+      const spec = buildSpec();
+      // Save spec to sessionStorage and redirect to main page with preview mode
+      sessionStorage.setItem('forge-preview-spec', JSON.stringify(spec));
+      window.location.href = '/?preview=forge';
+    });
+
+    // ── Save to library ──
+    $('save-btn').addEventListener('click', () => {
+      const spec = buildSpec();
+      // Save to localStorage
+      let library = [];
+      try { library = JSON.parse(localStorage.getItem('clawforge-library') || '[]'); } catch {}
+      // Check if already saved (update)
+      const existing = library.findIndex(s => s.name === spec.name);
+      if (existing >= 0) {
+        spec.id = library[existing].id;
+        library[existing] = spec;
+      } else {
+        library.push(spec);
+      }
+      localStorage.setItem('clawforge-library', JSON.stringify(library));
+      alert(`Saved "${spec.emoji} ${spec.name}" to your library!`);
+    });
+
+    // ── Deploy (coming soon) ──
+    $('deploy-btn').addEventListener('click', () => {
+      const spec = buildSpec();
+      // For now, download as JSON
+      const blob = new Blob([JSON.stringify(spec, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${spec.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-server.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // ── Init ──
+    loadFlavours();
+    state.systemPrompt = $('system-prompt').value;
+
+    // Check if loaded with a template ID from URL
+    const params = new URLSearchParams(location.search);
+    if (params.has('template')) {
+      loadFlavours().then(() => {
+        $('template-select').value = params.get('template');
+        $('template-load-btn').click();
+      });
+    }
+  </script>
+
+</body>
+</html>

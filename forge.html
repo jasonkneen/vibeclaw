@@ -515,6 +515,8 @@
     }
     .template-select {
       flex: 1;
+      min-width: 0;
+      max-width: 100%;
       background: var(--surface-2);
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -523,6 +525,9 @@
       font-size: 0.8rem;
       color: var(--text-bright);
       outline: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .template-select:focus { border-color: var(--accent); }
 
@@ -1392,7 +1397,7 @@ Update this file as you learn about the workspace and user preferences.</textare
         allFlavours.forEach(f => {
           const opt = document.createElement('option');
           opt.value = f.id;
-          opt.textContent = `${f.emoji} ${f.name} — ${f.description}`;
+          opt.textContent = `${f.emoji} ${f.name}`;
           sel.appendChild(opt);
         });
       } catch {}

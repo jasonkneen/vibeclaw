@@ -99,6 +99,7 @@
     "css-tree": "^3.1.0",
     "just-bash": "^2.7.0",
     "pako": "^2.1.0",
+    "pg": "^8.18.0",
     "resolve.exports": "^2.0.3",
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.5.0"

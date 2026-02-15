@@ -1104,7 +1104,7 @@ entirely in a browser sandbox.
             </div>
             <div id="pg-forge-cta" style="display:none;border-top:1px solid var(--border);background:var(--accent-bg);padding:12px 18px;text-align:center;">
               <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text);">Like this? </span>
-              <a href="/forge.html" style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);text-decoration:none;font-weight:700;">🔧 Build your own server →</a>
+              <a id="forge-cta-link" href="/forge.html" style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);text-decoration:none;font-weight:700;">🔧 Build your own server →</a>
             </div>
           </div>
         </div>
@@ -1341,10 +1341,16 @@ entirely in a browser sandbox.
           chatSend.disabled = false;
           flavourSelect.disabled = true;
 
-          // Show forge CTA after a short delay
+          // Show forge CTA after a short delay, linking to current flavour
           setTimeout(() => {
             const forgeCta = $('pg-forge-cta');
-            if (forgeCta) forgeCta.style.display = '';
+            if (forgeCta) {
+              forgeCta.style.display = '';
+              const ctaLink = $('forge-cta-link');
+              if (ctaLink && activeFlavour && activeFlavour.id !== 'forge-preview') {
+                ctaLink.href = `/forge.html?template=${activeFlavour.id}`;
+              }
+            }
           }, 5000);
 
           // Auto-send first message

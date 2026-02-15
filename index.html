@@ -1285,13 +1285,25 @@ entirely in a browser sandbox.
                 heartbeat: { defaultAgentId: 'main' }
               }});
             } else if (m === 'agents.list') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: { agents: [{ id: 'main' }] }});
+              ch.postMessage({ type: 'res', id, ok: true, payload: { agents: [
+                { id: 'main' }, { id: 'inky' }, { id: 'pixel' }, { id: 'scout' }
+              ]}});
             } else if (m === 'agent.identity.get') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: { name: 'Sandbox Agent', emoji: '🦀', description: 'In-browser OpenClaw sandbox' }});
+              const agents = {
+                main:  { name: 'Claw', emoji: '🦀', description: 'Squad lead — orchestrator and coding assistant' },
+                inky:  { name: 'Inky', emoji: '✍️', description: 'Content writer — blog posts, copy, documentation' },
+                pixel: { name: 'Pixel', emoji: '🎨', description: 'Graphic designer — images, diagrams, visual assets' },
+                scout: { name: 'Scout', emoji: '🔍', description: 'SEO specialist — search optimization, keywords, rankings' }
+              };
+              ch.postMessage({ type: 'res', id, ok: true, payload: agents[msg.params?.agentId] || agents.main });
             } else if (m === 'sessions.list') {
               const h = window.__sandboxHistory || [];
+              const now = Date.now();
               ch.postMessage({ type: 'res', id, ok: true, payload: { sessions: [
-                { key: 'agent:main:main', displayName: '🦀 Sandbox', label: 'Sandbox', model: 'solar-pro-3', updatedAt: Date.now(), totalTokens: h.length * 100, contextTokens: 4096 }
+                { key: 'agent:main:main', displayName: '🦀 Claw', label: 'Claw', model: 'solar-pro-3', updatedAt: now, totalTokens: h.length * 100, contextTokens: 4096 },
+                { key: 'agent:inky:main', displayName: '✍️ Inky', label: 'Inky', model: 'solar-pro-3', updatedAt: now - 60000, totalTokens: 0, contextTokens: 4096 },
+                { key: 'agent:pixel:main', displayName: '🎨 Pixel', label: 'Pixel', model: 'solar-pro-3', updatedAt: now - 120000, totalTokens: 0, contextTokens: 4096 },
+                { key: 'agent:scout:main', displayName: '🔍 Scout', label: 'Scout', model: 'solar-pro-3', updatedAt: now - 180000, totalTokens: 0, contextTokens: 4096 }
               ]}});
             } else if (m === 'skills.status' || m === 'skills.list') {
               ch.postMessage({ type: 'res', id, ok: true, payload: { skills: [

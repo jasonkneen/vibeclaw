@@ -1346,7 +1346,6 @@ entirely in a browser sandbox.
 
       // ── Boot sandbox ──
       async function launchSandbox() {
-        document.querySelector('.pg').scrollIntoView({ behavior: 'smooth', block: 'start' });
         terminal.innerHTML = '';
         terminal.style.display = '';
         terminal.style.alignItems = '';
@@ -1417,6 +1416,10 @@ entirely in a browser sandbox.
               if (el) { el.style.opacity = '1'; el.style.transform = 'scale(1)'; }
             }));
 
+            // Let the user see the boot time, then scroll to playground
+            setTimeout(() => {
+              document.querySelector('.pg').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 1200);
           }
 
           statusEl.textContent = 'Running';

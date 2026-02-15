@@ -119,6 +119,17 @@
 </head>
 <body>
 
+  <!-- Preview gate — redirect away if not in preview mode -->
+  <script>
+    (function() {
+      var p = new URLSearchParams(window.location.search);
+      if (p.get('preview') === 'true') sessionStorage.setItem('vibeclaw-preview', '1');
+      if (sessionStorage.getItem('vibeclaw-preview') !== '1') {
+        window.location.href = '/';
+      }
+    })();
+  </script>
+
   <nav class="nav">
     <a href="/" class="nav-logo">🦀 vibeclaw</a>
     <div class="nav-links">

@@ -1099,7 +1099,7 @@ Update this file as you learn about the workspace and user preferences.</textare
       <div class="sidebar-actions">
         <button class="btn-forge btn-preview" id="preview-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;display:inline;vertical-align:-1px;margin-right:6px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>Preview</button>
         <button class="btn-forge btn-deploy" id="deploy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/></svg>Deploy</button>
-        <button class="btn-forge btn-save" id="save-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save to Library</button>
+        <button class="btn-forge btn-save" id="save-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save</button>
       </div>
     </div>
   </div>
@@ -1505,47 +1505,25 @@ Update this file as you learn about the workspace and user preferences.</textare
     });
 
     // ── Save to library ──
-    $('save-btn').addEventListener('click', async () => {
-      const spec = buildSpec();
-      const user = VibeclawAuth.getUser();
-      
-      // Save to localStorage as cache (always)
-      let library = [];
-      try { library = JSON.parse(localStorage.getItem('clawforge-library') || '[]'); } catch {}
-      const existingIdx = library.findIndex(s => s.name === spec.name);
-      if (existingIdx >= 0) {
-        spec.id = library[existingIdx].id;
-        library[existingIdx] = spec;
-      } else {
-        library.push(spec);
-      }
-      localStorage.setItem('clawforge-library', JSON.stringify(library));
-      localStorage.removeItem(DRAFT_KEY); // Clear draft on save
-      
-      // If logged in, also save to cloud
-      if (user) {
-        try {
-          const result = await VibeclawAPI.saveServer({
-            id: spec.id,
-            name: spec.name,
-            spec: spec,
-            template: null
-          });
-          showToast(`Saved "${spec.name}" to cloud`, 'success');
-          setTimeout(() => {
-            window.location.href = '/library.html';
-          }, 1200);
-        } catch (err) {
-          console.error('Cloud save error:', err);
-          showToast(`Saved locally — cloud sync failed: ${err.message}`, 'error', 4000);
-        }
-      } else {
-        // Not logged in - saved locally only
-        showToast(`Saved "${spec.name}" locally`, 'success');
-        setTimeout(() => {
-          window.location.href = '/library.html';
-        }, 1200);
-      }
+    $('save-btn').addEventListener('click', () => {
+      // Force an immediate draft save
+      clearTimeout(_draftTimer);
+      state.files[state.activeFile] = $('file-editor').value;
+      state.systemPrompt = $('system-prompt').value;
+      const draft = {
+        emoji: state.emoji,
+        name: state.name,
+        runtime: state.runtime,
+        agents: state.agents,
+        skills: [...state.skills],
+        systemPrompt: state.systemPrompt,
+        files: state.files,
+        activeFile: state.activeFile,
+        model: state.model,
+        savedAt: Date.now()
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      showToast(`Draft saved — "${state.name}"`, 'success');
     });
 
     // ── Deploy modal ──

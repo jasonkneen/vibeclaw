@@ -149,9 +149,48 @@ function esc(s) {
   return d.innerHTML;
 }
 
+// ── API Client (authenticated) ──
+const VibeclawAPI = {
+  async _fetch(path, opts = {}) {
+    const token = await VibeclawAuth.getToken();
+    if (!token) throw new Error('Not authenticated');
+    const resp = await fetch('/api/' + path, {
+      ...opts,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+        ...(opts.headers || {}),
+      },
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || `API error ${resp.status}`);
+    }
+    return resp.json();
+  },
+
+  // User profile
+  getProfile() { return this._fetch('profile'); },
+
+  // Servers (forge configs)
+  getServers() { return this._fetch('servers').then(r => r.servers); },
+
+  saveServer(data) {
+    return this._fetch('servers', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  deleteServer(id) {
+    return this._fetch('servers/' + id, { method: 'DELETE' });
+  },
+};
+
 // Export for module use or attach to window
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = VibeclawAuth;
+  module.exports = { VibeclawAuth, VibeclawAPI };
 } else {
   window.VibeclawAuth = VibeclawAuth;
+  window.VibeclawAPI = VibeclawAPI;
 }

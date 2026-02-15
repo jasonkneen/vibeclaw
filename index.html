@@ -990,7 +990,7 @@
     <section class="hero">
       <div class="hero-content">
       <div class="hero-label">Open Source · Powered by almostnode</div>
-      <h1>Try <span style="color:var(--accent);">OpenClaw</span><br>in your browser in less than <span id="hero-time" style="display:inline-block;transition:opacity 0.4s ease, transform 0.4s ease;">30s</span></h1>
+      <h1>Try <span style="color:var(--accent);">OpenClaw</span><br>in your browser in less than <span id="hero-time" style="display:inline-block;transition:opacity 0.4s ease, transform 0.4s ease;">3s</span></h1>
       <p class="subtitle">No server required. Runs locally in your browser.</p>
 
       <div class="cta-row">
@@ -1406,7 +1406,7 @@ entirely in a browser sandbox.
           const heroTime = document.getElementById('hero-time');
           if (heroTime) {
             const t = bootMs < 1000 ? `${bootMs}ms` : `${(bootMs / 1000).toFixed(1)}s`;
-            heroTime.innerHTML = `<span style="text-decoration:line-through;opacity:0.4;transition:opacity 0.3s;">30s</span> <span id="hero-actual-time" style="color:var(--accent);font-weight:700;opacity:0;transform:scale(0.5);display:inline-block;transition:opacity 0.5s ease,transform 0.5s cubic-bezier(0.34,1.56,0.64,1);text-shadow:0 0 20px rgba(255,92,92,0.6);">${t} 🦞</span>`;
+            heroTime.innerHTML = `<span style="text-decoration:line-through;opacity:0.4;transition:opacity 0.3s;">3s</span> <span id="hero-actual-time" style="color:var(--accent);font-weight:700;opacity:0;transform:scale(0.5);display:inline-block;transition:opacity 0.5s ease,transform 0.5s cubic-bezier(0.34,1.56,0.64,1);text-shadow:0 0 20px rgba(255,92,92,0.6);">${t}</span>`;
             requestAnimationFrame(() => requestAnimationFrame(() => {
               const el = document.getElementById('hero-actual-time');
               if (el) { el.style.opacity = '1'; el.style.transform = 'scale(1)'; }

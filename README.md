@@ -1,6 +1,6 @@
 # 🦀 vibeclaw.dev
 
-**Try OpenClaw in your browser in less than 30 seconds.**
+**Try OpenClaw in your browser in less than 3 seconds.**
 
 Boot a full OpenClaw agent sandbox, chat with it, then click through to a real-time gateway dashboard — all from the browser. No install, no Docker, no CLI.
 

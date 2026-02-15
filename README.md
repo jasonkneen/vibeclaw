@@ -1,4 +1,4 @@
-# almostnode
+# vibeclaw
 
 **Node.js in your browser. Just like that.**
 

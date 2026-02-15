@@ -1301,7 +1301,7 @@ Update this file as you learn about the workspace and user preferences.</textare
           <input type="text" class="agent-text-input" placeholder="Role / description" value="${escHtml(a.desc)}" data-field="desc" />
           ${i === 0
             ? '<span style="font-size:0.65rem;color:var(--text-dim);font-family:var(--mono);">LEAD</span>'
-            : '<button class="btn-small danger" data-remove="' + i + '">✕</button>'
+            : '<button class="btn-small danger" data-remove="' + i + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>'
           }
         </div>
       `).join('');
@@ -1494,17 +1494,17 @@ Update this file as you learn about the workspace and user preferences.</textare
             spec: spec,
             template: null
           });
-          showToast(`☁️ Saved "${spec.emoji} ${spec.name}" to cloud!`, 'success');
+          showToast(`Saved "${spec.name}" to cloud`, 'success');
           setTimeout(() => {
             window.location.href = '/library.html';
           }, 1200);
         } catch (err) {
           console.error('Cloud save error:', err);
-          showToast(`⚠️ Saved locally, but cloud sync failed: ${err.message}`, 'error', 4000);
+          showToast(`Saved locally — cloud sync failed: ${err.message}`, 'error', 4000);
         }
       } else {
         // Not logged in - saved locally only
-        showToast(`💾 Saved "${spec.emoji} ${spec.name}" locally`, 'success');
+        showToast(`Saved "${spec.name}" locally`, 'success');
         setTimeout(() => {
           window.location.href = '/library.html';
         }, 1200);
@@ -1687,7 +1687,7 @@ openclaw gateway start
     $('deploy-copy-btn').addEventListener('click', () => {
       const text = deployCommandText.textContent;
       navigator.clipboard.writeText(text).then(() => {
-        $('deploy-copy-btn').innerHTML = '✓';
+        $('deploy-copy-btn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" style="width:14px;height:14px;"><polyline points="20 6 9 17 4 12"/></svg>';
         setTimeout(() => {
           $('deploy-copy-btn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
         }, 1500);

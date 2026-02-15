@@ -16,6 +16,11 @@
   to = "/.netlify/functions/relay"
   status = 200
 
+[[redirects]]
+  from = "/forge"
+  to = "/forge.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]

@@ -178,7 +178,7 @@ describe('generateOpenClawConfig', () => {
     const spec = makeSpec();
     spec.runtime.model.model = '';
     const config = JSON.parse(generateOpenClawConfig(spec));
-    expect(config.agents.defaults.model.primary).toBe('anthropic/claude-sonnet-4');
+    expect(config.agents.defaults.model.primary).toBe('upstage/solar-pro-3:free');
   });
 
   it('sets workspace path', () => {

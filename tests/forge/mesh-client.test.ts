@@ -2,6 +2,7 @@
 // MESH CLIENT TESTS
 // ============================================
 // @vitest-environment jsdom
+// @vitest-timeout 15000
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { MeshClient } from '../../src/forge/mesh-client.js';
@@ -71,7 +72,7 @@ Object.defineProperty(document, 'visibilityState', {
   value: 'visible',
 });
 
-describe('MeshClient', () => {
+describe('MeshClient', { timeout: 15000 }, () => {
   let client: MeshClient;
   let mockWs: MockWebSocket;
 

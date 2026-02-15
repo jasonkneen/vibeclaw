@@ -18,7 +18,7 @@
     <meta property="og:url" content="https://vibeclaw.dev/">
     <meta property="og:title" content="vibeclaw — AI coding agents in your browser">
     <meta property="og:description" content="Run a FULL OpenClaw instance entirely in your browser. Boot a complete AI agent runtime in seconds — no install, no Docker, no CLI required.">
-    <meta property="og:image" content="https://vibeclaw.dev/og-image.png?v=2">
+    <meta property="og:image" content="https://vibeclaw.dev/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="vibeclaw.dev">
@@ -29,7 +29,7 @@
     <meta name="twitter:creator" content="@jasonkneen">
     <meta name="twitter:title" content="vibeclaw — AI coding agents in your browser">
     <meta name="twitter:description" content="Run a FULL OpenClaw instance in your browser — no install, no server. Boot a complete AI agent runtime in seconds.">
-    <meta name="twitter:image" content="https://vibeclaw.dev/og-image.png?v=2">
+    <meta name="twitter:image" content="https://vibeclaw.dev/og-image.png">
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -588,6 +588,7 @@
       /* ── Responsive ── */
       @media (max-width: 900px) {
         .hero-visual { display: none; }
+        .hero-crab { display: none !important; }
       }
       @media (max-width: 600px) {
         .nav-links { gap: 14px; }
@@ -960,6 +961,10 @@
       }
 
       /* ── Entrance animations ── */
+      @keyframes hero-crab-float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(3deg); }
+      }
       @keyframes fadeUp {
         from { opacity: 0; transform: translateY(16px); }
         to { opacity: 1; transform: translateY(0); }
@@ -1032,7 +1037,8 @@
     <main>
     <!-- Hero -->
     <section class="hero" aria-label="Hero section">
-      <div class="hero-content">
+      <div class="hero-content" style="position:relative;">
+      <img src="/crab.png" alt="" aria-hidden="true" class="hero-crab" style="position:absolute;right:-60px;top:-30px;width:160px;opacity:0.9;pointer-events:none;filter:drop-shadow(0 0 30px rgba(255,92,92,0.3));animation:hero-crab-float 3s ease-in-out infinite;">
       <div class="hero-label">Open Source · Powered by almostnode</div>
       <h1>Run a <span style="color:var(--accent);">full OpenClaw instance</span><br>in your browser in <span id="hero-time" style="display:inline-block;transition:opacity 0.4s ease, transform 0.4s ease;">seconds</span></h1>
       <p class="subtitle">Complete AI agent runtime with virtual filesystem, free models, and live chat. No installation. No Docker. Just open and go.</p>
@@ -2091,7 +2097,7 @@ entirely in a browser sandbox.
         <a href="https://x.com/i/communities/2022846557700145266" style="display:inline-flex;align-items:center;gap:4px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Community</a>
         <a href="./docs/">Docs</a>
       </div>
-      <span class="footer-byline">🦀 <a href="https://vibeclaw.dev">vibeclaw.dev</a></span>
+      <span class="footer-byline"><img src="/crab.png" alt="VibeClaw mascot" style="height:28px;vertical-align:middle;margin-right:4px;"> <a href="https://vibeclaw.dev">vibeclaw.dev</a></span>
       <span class="license">MIT License</span>
     </footer>
 

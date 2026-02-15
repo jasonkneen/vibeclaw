@@ -1599,7 +1599,6 @@ One-click deploy options coming soon at [vibeclaw.dev](https://vibeclaw.dev).
     });
 
     // ── Init ──
-    loadFlavours();
     state.systemPrompt = $('system-prompt').value;
 
     // Check if loaded with a template ID or library index
@@ -1651,6 +1650,8 @@ One-click deploy options coming soon at [vibeclaw.dev](https://vibeclaw.dev).
           updateSidebar();
         }
       } catch (e) { console.warn('Load from library error:', e); }
+    } else {
+      loadFlavours();
     }
   </script>
 

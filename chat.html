@@ -491,16 +491,15 @@
     <div class="chat-main">
       <!-- Endpoint config -->
       <div class="endpoint-bar">
-        <label>Endpoint</label>
-        <input type="text" id="endpoint-url" placeholder="http://localhost:18789 or mesh URL" value="" />
-        <label>Model</label>
-        <select id="endpoint-model">
-          <option value="default">Default</option>
-          <option value="deepseek/deepseek-chat-v3-0324:free">DeepSeek V3 (free)</option>
-          <option value="qwen/qwen3-8b:free">Qwen3 8B (free)</option>
-          <option value="google/gemma-3-4b-it:free">Gemma 3 4B (free)</option>
+        <label>Server</label>
+        <select id="chat-flavour-select" style="flex:1;max-width:240px;">
+          <option value="default">Loading...</option>
         </select>
-        <button class="endpoint-connect" id="connect-btn">Connect</button>
+        <input type="text" id="endpoint-url" placeholder="or paste gateway URL" value="" style="flex:1;" />
+        <select id="endpoint-model" style="display:none;">
+          <option value="upstage/solar-pro-3:free" selected>Solar Pro 3</option>
+        </select>
+        <button class="endpoint-connect" id="connect-btn">Start Chat</button>
       </div>
 
       <!-- Header -->
@@ -551,6 +550,41 @@
 
     const $ = id => document.getElementById(id);
     const STORAGE_KEY = 'vibeclaw_chat_sessions';
+
+    // ── Load flavours + user servers into dropdown ──
+    (async () => {
+      const sel = $('chat-flavour-select');
+      try {
+        const resp = await fetch('/flavours.json');
+        if (resp.ok) {
+          const flavours = await resp.json();
+          sel.innerHTML = '';
+          for (const f of flavours) {
+            const opt = document.createElement('option');
+            opt.value = f.id;
+            opt.textContent = `${f.emoji} ${f.name}`;
+            sel.appendChild(opt);
+          }
+        }
+      } catch {}
+      // Add user's saved servers
+      try {
+        const lib = JSON.parse(localStorage.getItem('clawforge-library') || '[]');
+        if (lib.length > 0) {
+          const sep = document.createElement('option');
+          sep.disabled = true;
+          sep.textContent = '── My Servers ──';
+          sel.appendChild(sep);
+          for (const srv of lib) {
+            const spec = srv.spec || srv;
+            const opt = document.createElement('option');
+            opt.value = 'lib:' + (srv.id || spec.id || spec.name);
+            opt.textContent = `${spec.emoji || '🔧'} ${spec.name || 'Custom'}`;
+            sel.appendChild(opt);
+          }
+        }
+      } catch {}
+    })();
 
     // ── Persistence ──
     function loadSessions() {

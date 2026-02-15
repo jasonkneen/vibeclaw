@@ -78,10 +78,11 @@ const VibeclawFeatures = (() => {
       ];
 
       const proModels = [
-        { id: 'anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'Anthropic', free: false, badge: 'PRO' },
-        { id: 'anthropic/claude-opus-4', name: 'Claude Opus 4', provider: 'Anthropic', free: false, badge: 'PRO' },
-        { id: 'openai/gpt-4o', name: 'GPT-4o', provider: 'OpenAI', free: false, badge: 'PRO' },
-        { id: 'google/gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'Google', free: false, badge: 'PRO' },
+        { id: 'anthropic/claude-opus-4.6', name: 'Claude Opus 4.6', provider: 'Anthropic', free: false, badge: 'PRO' },
+        { id: 'anthropic/claude-sonnet-4.5', name: 'Claude Sonnet 4.5', provider: 'Anthropic', free: false, badge: 'PRO' },
+        { id: 'openai/gpt-5.2', name: 'GPT-5.2', provider: 'OpenAI', free: false, badge: 'PRO' },
+        { id: 'openai/o3', name: 'o3', provider: 'OpenAI', free: false, badge: 'PRO' },
+        { id: 'google/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'Google', free: false, badge: 'PRO' },
       ];
 
       if (_isPro || previewMode) {

@@ -12,9 +12,15 @@ const FREE_MODELS = new Set([
 ]);
 
 const PRO_MODELS = new Set([
+  'anthropic/claude-opus-4.6',
+  'anthropic/claude-opus-4.5',
+  'anthropic/claude-sonnet-4.5',
   'anthropic/claude-sonnet-4',
-  'anthropic/claude-opus-4',
-  'openai/gpt-4o',
+  'openai/gpt-5.2',
+  'openai/gpt-5',
+  'openai/o3',
+  'openai/o4-mini',
+  'google/gemini-3-pro-preview',
   'google/gemini-2.5-pro',
 ]);
 

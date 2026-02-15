@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Servers — ClawForge</title>
+  <meta name="description" content="Your saved OpenClaw server configurations." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>" />
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --surface: #141414;
+      --surface-2: #1a1a1a;
+      --border: #2a2a2a;
+      --border-active: #3a3a3a;
+      --text: #999;
+      --text-dim: #666;
+      --text-bright: #e0e0e0;
+      --accent: #ff5c5c;
+      --accent-bg: rgba(255,92,92,0.06);
+      --green: #4ade80;
+      --blue: #60a5fa;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--sans);
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 20px; align-items: center; }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .nav-links a:hover { color: var(--text-bright); }
+
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 32px;
+    }
+    .page-title {
+      font-family: var(--sans);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 8px;
+    }
+    .page-subtitle {
+      color: var(--text);
+      margin-bottom: 40px;
+    }
+
+    .server-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .server-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .server-card:hover {
+      border-color: var(--border-active);
+      transform: translateY(-2px);
+    }
+    .server-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .server-card-emoji {
+      font-size: 2rem;
+    }
+    .server-card-name {
+      font-family: var(--sans);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+    .server-card-meta {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+    .server-card-stats {
+      display: flex;
+      gap: 16px;
+      margin: 16px 0;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+    .server-card-stats span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .server-card-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .skill-tag {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .server-card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-card {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-bright);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-card:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+    .btn-card.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+    }
+    .btn-card.primary:hover { background: #ff7070; color: #000; }
+    .btn-card.danger:hover { border-color: #f44; color: #f44; }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+    }
+    .empty-state .empty-emoji {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+    .empty-state h2 {
+      font-family: var(--sans);
+      font-size: 1.3rem;
+      color: var(--text-bright);
+      margin-bottom: 8px;
+    }
+    .empty-state p {
+      color: var(--text-dim);
+      margin-bottom: 24px;
+    }
+    .empty-state a {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      padding: 12px 28px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #000;
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-block;
+    }
+    .empty-state a:hover { background: #ff7070; text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .page { padding: 32px 16px; }
+      .server-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav-brand">📦 My Servers</a>
+    <div class="nav-links">
+      <a href="/forge.html">🔧 Build New</a>
+      <a href="/">← VibeClaw</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <h1 class="page-title">My Servers</h1>
+    <p class="page-subtitle">Your saved OpenClaw server configurations. Boot, edit, or deploy any of them.</p>
+
+    <div id="server-grid" class="server-grid"></div>
+    <div id="empty-state" class="empty-state" style="display:none;">
+      <div class="empty-emoji">🔧</div>
+      <h2>No servers yet</h2>
+      <p>Build your first custom OpenClaw server in ClawForge.</p>
+      <a href="/forge.html">Start Building</a>
+    </div>
+  </div>
+
+  <script>
+    function loadLibrary() {
+      try {
+        return JSON.parse(localStorage.getItem('clawforge-library') || '[]');
+      } catch { return []; }
+    }
+
+    function saveLibrary(lib) {
+      localStorage.setItem('clawforge-library', JSON.stringify(lib));
+    }
+
+    function renderLibrary() {
+      const library = loadLibrary();
+      const grid = document.getElementById('server-grid');
+      const empty = document.getElementById('empty-state');
+
+      if (library.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = '';
+        return;
+      }
+
+      grid.style.display = '';
+      empty.style.display = 'none';
+
+      grid.innerHTML = library.map((srv, idx) => {
+        const agentCount = (srv.agents || []).length;
+        const skillCount = (srv.skills || []).length;
+        const runtime = srv.runtime?.type || 'standard';
+        const model = srv.runtime?.model?.model || 'unknown';
+        const modelShort = model.split('/').pop().replace(':free', '');
+        const skills = (srv.skills || []).map(s => {
+          const name = s.source ? s.source.replace('builtin:', '') : s.name || '?';
+          return `<span class="skill-tag">${escHtml(name)}</span>`;
+        }).join('');
+
+        return `
+          <div class="server-card" data-idx="${idx}">
+            <div class="server-card-header">
+              <span class="server-card-emoji">${srv.emoji || '🦀'}</span>
+              <div>
+                <div class="server-card-name">${escHtml(srv.name || 'Untitled')}</div>
+                <div class="server-card-meta">${runtime} · ${modelShort}</div>
+              </div>
+            </div>
+            <div class="server-card-stats">
+              <span>👤 ${agentCount} agent${agentCount !== 1 ? 's' : ''}</span>
+              <span>⚡ ${skillCount} skill${skillCount !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="server-card-skills">${skills}</div>
+            <div class="server-card-actions">
+              <button class="btn-card primary" data-action="boot" data-idx="${idx}">▶ Boot</button>
+              <a class="btn-card" href="/forge.html?load=${idx}">✏️ Edit</a>
+              <button class="btn-card" data-action="export" data-idx="${idx}">📦 Export</button>
+              <button class="btn-card" data-action="duplicate" data-idx="${idx}">📋 Duplicate</button>
+              <button class="btn-card danger" data-action="delete" data-idx="${idx}">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Bind actions
+      grid.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.idx);
+          const action = btn.dataset.action;
+          const library = loadLibrary();
+          const srv = library[idx];
+
+          if (action === 'boot') {
+            sessionStorage.setItem('forge-preview-spec', JSON.stringify(srv));
+            window.location.href = '/?preview=forge';
+          } else if (action === 'export') {
+            const blob = new Blob([JSON.stringify(srv, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${(srv.name || 'server').toLowerCase().replace(/[^a-z0-9]/g, '-')}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+          } else if (action === 'duplicate') {
+            const copy = JSON.parse(JSON.stringify(srv));
+            copy.id = 'srv_' + Math.random().toString(36).slice(2, 10);
+            copy.name = (copy.name || 'Server') + ' (copy)';
+            library.push(copy);
+            saveLibrary(library);
+            renderLibrary();
+          } else if (action === 'delete') {
+            if (confirm(`Delete "${srv.emoji} ${srv.name}"?`)) {
+              library.splice(idx, 1);
+              saveLibrary(library);
+              renderLibrary();
+            }
+          }
+        });
+      });
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    renderLibrary();
+  </script>
+
+</body>
+</html>

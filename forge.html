@@ -750,19 +750,15 @@
       position: sticky;
       top: 60px;
       height: calc(100vh - 60px);
-      display: flex;
+      display: none;
       flex-direction: column;
       border-right: 1px solid var(--border);
       background: var(--surface);
       overflow: hidden;
-      width: 0;
-      opacity: 0;
-      transition: width 0.3s ease, opacity 0.3s ease;
       align-self: start;
     }
     .forge-preview-chat.active {
-      width: 320px;
-      opacity: 1;
+      display: flex;
     }
     .preview-header {
       display: flex;

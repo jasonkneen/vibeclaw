@@ -1234,7 +1234,35 @@ Update this file as you learn about the workspace and user preferences.</textare
     const $ = id => document.getElementById(id);
     const $$ = sel => document.querySelectorAll(sel);
 
+    // ── Auto-save draft ──
+    let _draftTimer = null;
+    const DRAFT_KEY = 'clawforge-draft';
+    function saveDraft() {
+      clearTimeout(_draftTimer);
+      _draftTimer = setTimeout(() => {
+        try {
+          // Save current file editor content
+          state.files[state.activeFile] = $('file-editor').value;
+          state.systemPrompt = $('system-prompt').value;
+          const draft = {
+            emoji: state.emoji,
+            name: state.name,
+            runtime: state.runtime,
+            agents: state.agents,
+            skills: [...state.skills],
+            systemPrompt: state.systemPrompt,
+            files: state.files,
+            activeFile: state.activeFile,
+            model: state.model,
+            savedAt: Date.now()
+          };
+          localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        } catch (e) { console.warn('Draft save error:', e); }
+      }, 500);
+    }
+
     function updateSidebar() {
+      saveDraft();
       // Show user emoji if set, otherwise show server icon
       const emojiEl = $('sidebar-emoji');
       if (state.emoji && state.emoji.trim()) {
@@ -1492,6 +1520,7 @@ Update this file as you learn about the workspace and user preferences.</textare
         library.push(spec);
       }
       localStorage.setItem('clawforge-library', JSON.stringify(library));
+      localStorage.removeItem(DRAFT_KEY); // Clear draft on save
       
       // If logged in, also save to cloud
       if (user) {
@@ -1755,6 +1784,41 @@ openclaw gateway start
         }
       } catch (e) { console.warn('Load from library error:', e); }
     } else {
+      // Check for a saved draft
+      try {
+        const draftRaw = localStorage.getItem(DRAFT_KEY);
+        if (draftRaw) {
+          const draft = JSON.parse(draftRaw);
+          // Only restore if draft is less than 7 days old
+          if (draft.savedAt && (Date.now() - draft.savedAt) < 7 * 24 * 60 * 60 * 1000) {
+            state.emoji = draft.emoji || state.emoji;
+            state.name = draft.name || state.name;
+            state.runtime = draft.runtime || state.runtime;
+            state.agents = draft.agents || state.agents;
+            state.skills = new Set(draft.skills || [...state.skills]);
+            state.systemPrompt = draft.systemPrompt || state.systemPrompt;
+            if (draft.files) Object.assign(state.files, draft.files);
+            state.model = draft.model || state.model;
+
+            // Update UI
+            $('server-emoji').value = state.emoji;
+            $('server-name').value = state.name;
+            $('system-prompt').value = state.systemPrompt;
+            $('file-editor').value = state.files[state.activeFile] || '';
+            $$('#runtime-options .option-card').forEach(c => {
+              c.classList.toggle('selected', c.dataset.value === state.runtime);
+            });
+            $$('.skill-card').forEach(card => {
+              card.classList.toggle('enabled', state.skills.has(card.dataset.skill));
+            });
+            $$('.model-card').forEach(c => {
+              c.classList.toggle('selected', c.dataset.model === state.model);
+            });
+            renderAgents();
+            updateSidebar();
+          }
+        }
+      } catch (e) { console.warn('Draft restore error:', e); }
       loadFlavours();
     }
   </script>

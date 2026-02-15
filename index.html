@@ -960,7 +960,6 @@
               <a href="https://x.com/i/communities/2022846557700145266" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;display:flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Community</a>
             </div>
           </li>
-          <li id="upgrade-container" style="margin-left:4px;"></li>
           <li id="auth-container" style="margin-left:4px;"></li>
         </ul>
       </div>
@@ -1847,42 +1846,6 @@ entirely in a browser sandbox.
       </div>
     </div>
 
-    <!-- P2P / Community (preview only) -->
-    <div class="section" id="p2p-section" style="display:none;">
-      <div class="section-header">
-        <div class="section-label">03 / Peer to Peer</div>
-        <h2>Share, connect, collaborate</h2>
-        <p style="color:var(--text-dim);font-size:0.85rem;margin-top:8px;">Your servers, your network. Share configs, connect to friends' gateways, or browse community creations.</p>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;max-width:1100px;margin:0 auto;">
-        <div style="border:1px solid var(--border);border-radius:10px;padding:24px;background:var(--surface);">
-          <div style="font-size:1.4rem;margin-bottom:10px;">🔗</div>
-          <h3 style="font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text-bright);margin:0 0 8px;">Share Server Configs</h3>
-          <p style="font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:1.6;">Publish your server configs to the community. One-click import — anyone can boot your agent setup in seconds.</p>
-        </div>
-        <div style="border:1px solid var(--border);border-radius:10px;padding:24px;background:var(--surface);">
-          <div style="font-size:1.4rem;margin-bottom:10px;">🌐</div>
-          <h3 style="font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text-bright);margin:0 0 8px;">Connect to Live Gateways</h3>
-          <p style="font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:1.6;">Connect directly to a friend's running OpenClaw gateway. Chat with their agents, browse their workspace — peer to peer.</p>
-        </div>
-        <div style="border:1px solid var(--border);border-radius:10px;padding:24px;background:var(--surface);">
-          <div style="font-size:1.4rem;margin-bottom:10px;">🏪</div>
-          <h3 style="font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text-bright);margin:0 0 8px;">Community Library</h3>
-          <p style="font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:1.6;">Browse servers built by the community. Security auditors, creative studios, DevOps squads — find and fork what works.</p>
-        </div>
-        <div style="border:1px solid var(--border);border-radius:10px;padding:24px;background:var(--surface);">
-          <div style="font-size:1.4rem;margin-bottom:10px;">🔒</div>
-          <h3 style="font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text-bright);margin:0 0 8px;">Private P2P Mesh</h3>
-          <p style="font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:1.6;">Teams can link their gateways into a private mesh. Shared agent routing, distributed skills, unified session history.</p>
-        </div>
-      </div>
-    </div>
-    <script>
-      if (VibeclawFeatures && VibeclawFeatures.isPreview()) {
-        document.getElementById('p2p-section').style.display = '';
-      }
-    </script>
-
     <!-- Demos -->
     <div class="section" id="demos">
       <div class="section-header">
@@ -1920,75 +1883,10 @@ entirely in a browser sandbox.
       </div>
     </div>
 
-    <!-- Pricing (preview only) -->
-    <div class="section" id="pricing-section" style="display:none;">
-      <div class="section-header">
-        <div class="section-label">05 / Pricing</div>
-        <h2>Simple, transparent pricing</h2>
-        <p style="color:var(--text-dim);font-size:0.85rem;margin-top:8px;">Free forever for open models. Upgrade for premium AI and cloud features.</p>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:900px;margin:0 auto;">
-        <!-- Free -->
-        <div style="border:1px solid var(--border);border-radius:12px;padding:28px 24px;background:var(--surface);">
-          <div style="font-family:var(--mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:4px;">Free</div>
-          <div style="font-family:var(--sans);font-size:2rem;font-weight:800;color:var(--text-bright);margin-bottom:4px;">$0<span style="font-size:0.8rem;font-weight:400;color:var(--text-dim);">/mo</span></div>
-          <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:20px;">Perfect for trying things out</div>
-          <ul style="list-style:none;padding:0;margin:0 0 24px;font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:2.2;">
-            <li>✅ Build unlimited server configs</li>
-            <li>✅ 7 free AI models (Solar, Llama, Gemma…)</li>
-            <li>✅ Sandbox preview & chat</li>
-            <li>✅ Export & import configs</li>
-            <li>✅ Browse community servers</li>
-            <li style="color:var(--text-dim);">— 50 messages/day</li>
-          </ul>
-          <div style="padding:10px;border:1px solid var(--border);border-radius:8px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);">Current plan</div>
-        </div>
-        <!-- Pro -->
-        <div style="border:2px solid var(--accent);border-radius:12px;padding:28px 24px;background:var(--surface);position:relative;box-shadow:0 0 30px rgba(255,92,92,0.08);">
-          <div style="position:absolute;top:-12px;right:20px;background:var(--accent);color:#000;font-family:var(--mono);font-size:0.6rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.04em;">Popular</div>
-          <div style="font-family:var(--mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);margin-bottom:4px;">Pro</div>
-          <div style="font-family:var(--sans);font-size:2rem;font-weight:800;color:var(--text-bright);margin-bottom:4px;">$20<span style="font-size:0.8rem;font-weight:400;color:var(--text-dim);">/mo</span></div>
-          <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:20px;">For developers who ship</div>
-          <ul style="list-style:none;padding:0;margin:0 0 24px;font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:2.2;">
-            <li>✅ Everything in Free, plus:</li>
-            <li>⚡ Claude Opus 4.6, GPT-5.2, Gemini 3 Pro, o3</li>
-            <li>⚡ Cloud sync — access anywhere</li>
-            <li>⚡ Unlimited messages</li>
-            <li>⚡ Publish & share servers P2P</li>
-            <li>⚡ Connect to friends' gateways</li>
-            <li>⚡ Priority support</li>
-          </ul>
-          <button onclick="VibeclawFeatures.openCheckout()" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent);color:#000;font-family:var(--mono);font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.15s;text-transform:uppercase;letter-spacing:0.04em;" onmouseover="this.style.background='#ff7070';this.style.boxShadow='0 0 20px rgba(255,92,92,0.3)'" onmouseout="this.style.background='var(--accent)';this.style.boxShadow=''">Upgrade to Pro</button>
-          <div style="text-align:center;margin-top:8px;font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);">or $200/year (save $40)</div>
-        </div>
-        <!-- Team -->
-        <div style="border:1px solid var(--border);border-radius:12px;padding:28px 24px;background:var(--surface);">
-          <div style="font-family:var(--mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:4px;">Team</div>
-          <div style="font-family:var(--sans);font-size:2rem;font-weight:800;color:var(--text-bright);margin-bottom:4px;">$40<span style="font-size:0.8rem;font-weight:400;color:var(--text-dim);">/user/mo</span></div>
-          <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:20px;">For teams building together</div>
-          <ul style="list-style:none;padding:0;margin:0 0 24px;font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:2.2;">
-            <li>✅ Everything in Pro, plus:</li>
-            <li>🏢 Shared team server library</li>
-            <li>🏢 P2P mesh — connect team gateways</li>
-            <li>🏢 Team usage analytics & billing</li>
-            <li>🏢 Bring your own API keys</li>
-            <li>🏢 Managed hosting (add-on)</li>
-            <li>🏢 SLA & priority support</li>
-          </ul>
-          <button style="width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text-bright);font-family:var(--mono);font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.15s;text-transform:uppercase;letter-spacing:0.04em;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-bright)'">Coming Soon</button>
-        </div>
-      </div>
-    </div>
-    <script>
-      if (VibeclawFeatures && VibeclawFeatures.isPreview()) {
-        document.getElementById('pricing-section').style.display = '';
-      }
-    </script>
-
     <!-- FAQ -->
     <div class="section">
       <div class="section-header">
-        <div class="section-label">06 / FAQ</div>
+        <div class="section-label">04 / FAQ</div>
         <h2>Common questions</h2>
       </div>
       <div class="faq-list">
@@ -2240,7 +2138,6 @@ entirely in a browser sandbox.
     <script>
       VibeclawAuth.init().then(() => {
         VibeclawAuth.renderButton('auth-container');
-        VibeclawFeatures.renderUpgradeButton('upgrade-container');
         VibeclawFeatures.checkPro();
       });
     </script>

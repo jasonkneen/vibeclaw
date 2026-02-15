@@ -26,7 +26,8 @@ export default async (req) => {
     return new Response('Invalid JSON', { status: 400 });
   }
 
-  const model = parsed.model || '';
+  const model = parsed.model || 'upstage/solar-pro-3:free';
+  parsed.model = model;
   if (!model.endsWith(':free') && !FREE_MODELS.has(model)) {
     return Response.json({ error: `Model "${model}" is not free. Only :free models allowed.` }, { status: 403 });
   }

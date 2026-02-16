@@ -21,12 +21,12 @@ The 4B model runs on basically anything — phones, Raspberry Pis, old laptops. 
 
 ## Why Gemma Wins on Efficiency
 
-Google's distillation process is genuinely best-in-class. Gemma 3 4B outperforms models 2-3x its size on practical tasks:
+Google's distillation process is strong. Gemma 3 4B punches above its weight class on practical tasks:
 
-- **Instruction following**: Better than Llama 3.1 8B at following complex multi-step instructions
-- **Code generation**: Competitive with Phi-4 at nearly 1/3 the parameters
+- **Instruction following**: Handles complex multi-step instructions well for its size
+- **Code generation**: Solid on Python and JavaScript
 - **Multilingual**: Strong across European and Asian languages
-- **Structured output**: Excellent at generating valid JSON and XML
+- **Structured output**: Good at generating valid JSON and XML
 
 ## The "Google License" Question
 

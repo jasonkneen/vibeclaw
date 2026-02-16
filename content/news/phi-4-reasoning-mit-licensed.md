@@ -16,17 +16,11 @@ The AI industry has a size problem. Everyone's racing to build bigger models, bu
 - **14B parameters** — runs on a MacBook Pro with 16GB RAM
 - **MIT license** — do literally anything with it, commercially, no restrictions
 - **Reasoning-first** — trained specifically for chain-of-thought, not just next-token prediction
-- **Beats Llama 3.1 70B** on several reasoning benchmarks at 1/5th the size
+- **Competes with models 3-5x its size** on reasoning benchmarks
 
-## Benchmarks That Matter
+## Punching Above Its Weight
 
-| Task | Phi-4 14B | Llama 3.1 70B | Gemma 3 27B |
-|------|-----------|---------------|-------------|
-| GSM8K | 92.1% | 90.5% | 88.7% |
-| HumanEval | 81.3% | 80.1% | 76.4% |
-| MMLU | 78.9% | 82.0% | 79.5% |
-
-It doesn't win everything. But for a model you can run on a laptop? These numbers are absurd.
+On math reasoning, code generation, and general knowledge benchmarks, Phi-4 competes with models 3-5x its size. It doesn't win everything — larger models still have an edge on broad knowledge tasks. But for a model you can run on a laptop? The performance is remarkable.
 
 ## The MIT License Difference
 

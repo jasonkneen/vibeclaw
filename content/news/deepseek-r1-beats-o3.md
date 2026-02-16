@@ -1,5 +1,5 @@
 ---
-title: "DeepSeek R1: The Open-Source Model That Beats o3"
+title: "DeepSeek R1: The Open-Source Reasoning Model That Rivals o3"
 date: 2026-02-13
 tags: [models, deepseek, reasoning, open-source]
 author: VibeClaw
@@ -11,12 +11,7 @@ DeepSeek just dropped the **R1 0528 update**, and it's embarrassing some very ex
 
 ## What Changed
 
-The R1 0528 revision brings significant improvements to the chain-of-thought reasoning:
-
-- **AIME 2025**: 87.5% (vs o3's 83.3%)
-- **Codeforces**: 2029 Elo (competitive programmer level)
-- **GPQA Diamond**: 81.0% (PhD-level science questions)
-- **LiveCodeBench**: Top 3 across all models tested
+The R1 revision brings significant improvements to chain-of-thought reasoning. It competes with — and in some benchmarks beats — OpenAI's o3 on math and coding tasks. On competitive programming problems, it reaches expert-level performance. On PhD-level science questions, it's in the same tier as frontier proprietary models.
 
 All of this from a model you can download and run yourself.
 

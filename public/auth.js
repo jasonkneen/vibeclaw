@@ -11,7 +11,7 @@ authStyles.textContent = `
   .netlifyIdentityButton,
   .netlify-identity-signup,
   .netlify-identity-login,
-  .netlify-identity-widget, 
+  .netlify-identity-widget,
   .netlify-identity-menu,
   [class*="netlify-identity"],
   [data-netlify-identity-menu],
@@ -26,6 +26,99 @@ authStyles.textContent = `
   /* Also target the modal backdrop the widget injects */
   body > div:last-of-type[style*="position"] {
     z-index: 99999 !important;
+  }
+  /* Ensure close button is visible */
+  .netlify-identity-modal {
+    z-index: 99999 !important;
+  }
+  .netlify-identity-modal *[class*="close"],
+  .netlify-identity-modal *[class*="Close"],
+  .netlify-identity-modal button[aria-label="close"],
+  .netlify-identity-modal button[aria-label="Close"],
+  .netlify-identity-modal button[type="button"],
+  .netlify-identity-modal svg {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    cursor: pointer !important;
+    z-index: 100000 !important;
+  }
+  .netlify-identity-modal button,
+  .netlify-identity-modal *[role="button"] {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  /* Target absolute positioned buttons (likely close buttons) */
+  .netlify-identity-modal button[style*="position"],
+  .netlify-identity-modal > div > button,
+  .netlify-identity-modal > button {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    cursor: pointer !important;
+    z-index: 100000 !important;
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 6px !important;
+    color: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .netlify-identity-modal button svg {
+    width: 20px !important;
+    height: 20px !important;
+    stroke-width: 2 !important;
+  }
+  .netlify-identity-modal *[class*="close"]:hover,
+  .netlify-identity-modal *[class*="Close"]:hover,
+  .netlify-identity-modal button[aria-label="close"]:hover,
+  .netlify-identity-modal button[aria-label="Close"]:hover,
+  .netlify-identity-modal button[style*="position"]:hover {
+    background: rgba(255, 92, 92, 0.4) !important;
+    border-color: rgba(255, 92, 92, 0.6) !important;
+  }
+  /* Mobile-specific styles */
+  @media (max-width: 600px) {
+    .netlify-identity-modal button[style*="position"],
+    .netlify-identity-modal > div > button,
+    .netlify-identity-modal > button {
+      top: 8px !important;
+      right: 8px !important;
+      width: 40px !important;
+      height: 40px !important;
+      min-width: 40px !important;
+      min-height: 40px !important;
+      background: rgba(255, 255, 255, 0.2) !important;
+      border: 2px solid rgba(255, 255, 255, 0.4) !important;
+    }
+    .netlify-identity-modal button svg {
+      width: 22px !important;
+      height: 22px !important;
+    }
+  }
+  @media (max-width: 380px) {
+    .netlify-identity-modal button[style*="position"],
+    .netlify-identity-modal > div > button,
+    .netlify-identity-modal > button {
+      width: 44px !important;
+      height: 44px !important;
+      min-width: 44px !important;
+      min-height: 44px !important;
+    }
+    .netlify-identity-modal button svg {
+      width: 24px !important;
+      height: 24px !important;
+    }
   }
 `;
 document.head.appendChild(authStyles);
@@ -69,6 +162,28 @@ const VibeclawAuth = {
       notify();
     });
     identity.init();
+
+    // Add escape key to close modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && window.netlifyIdentity) {
+        window.netlifyIdentity.close();
+      }
+    });
+
+    // Add click outside to close modal
+    document.addEventListener('click', (e) => {
+      const modal = document.querySelector('.netlify-identity-modal');
+      if (modal && !modal.contains(e.target)) {
+        // Check if click is outside modal content
+        const modalContent = modal.querySelector('[role="dialog"], .netlify-identity-modal-content');
+        if (modalContent && !modalContent.contains(e.target)) {
+          if (window.netlifyIdentity) {
+            window.netlifyIdentity.close();
+          }
+        }
+      }
+    });
+
     return identity;
   },
 
@@ -127,9 +242,12 @@ const VibeclawAuth = {
     if (typeof container === 'string') container = document.getElementById(container);
     if (!container) return;
 
-    function update(user) {
+    let isModalOpen = false;
+
+    function updateButtonState() {
       const info = VibeclawAuth.getUserInfo();
       if (info) {
+        // Logged in state
         const avatarHtml = info.avatar
           ? `<img src="${info.avatar}" alt="" style="width:20px;height:20px;border-radius:50%;object-fit:cover;">`
           : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px;"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0113 0"/></svg>`;
@@ -144,23 +262,65 @@ const VibeclawAuth = {
           e.stopPropagation();
           VibeclawAuth.logout();
         });
-      } else {
+      } else if (isModalOpen) {
+        // Modal is open - show close button
         container.innerHTML = `
-          <button class="auth-login-btn" style="background:none;border:1px solid var(--border,#2a2a2a);border-radius:6px;padding:4px 12px;font-family:var(--mono,'Fragment Mono',monospace);font-size:0.7rem;color:var(--text-dim,#999);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0113 0"/></svg>
-            Sign in
+          <button class="auth-close-btn" style="background:none;border:1px solid var(--accent,#ff5c5c);border-radius:6px;padding:3px 8px;font-family:var(--mono,'Fragment Mono',monospace);font-size:0.62rem;color:var(--accent,#ff5c5c);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.15s;white-space:nowrap;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;flex-shrink:0;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span class="auth-text">Close</span>
           </button>`;
-        const btn = container.querySelector('.auth-login-btn');
-        btn.addEventListener('click', () => VibeclawAuth.login());
-        btn.addEventListener('mouseenter', () => {
-          btn.style.borderColor = 'var(--accent,#ff5c5c)';
-          btn.style.color = 'var(--accent,#ff5c5c)';
+        const closeBtn = container.querySelector('.auth-close-btn');
+        closeBtn.addEventListener('click', () => {
+          if (window.netlifyIdentity) {
+            window.netlifyIdentity.close();
+          }
         });
-        btn.addEventListener('mouseleave', () => {
-          btn.style.borderColor = 'var(--border,#2a2a2a)';
-          btn.style.color = 'var(--text-dim,#999)';
+        closeBtn.addEventListener('mouseenter', () => {
+          closeBtn.style.background = 'rgba(255, 92, 92, 0.1)';
+        });
+        closeBtn.addEventListener('mouseleave', () => {
+          closeBtn.style.background = 'none';
+        });
+      } else {
+        // Modal is closed - show sign in button
+        container.innerHTML = `
+          <button class="auth-login-btn" style="background:none;border:1px solid var(--border,#2a2a2a);border-radius:6px;padding:3px 8px;font-family:var(--mono,'Fragment Mono',monospace);font-size:0.62rem;color:var(--text-dim,#999);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.15s;white-space:nowrap;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:10px;height:10px;flex-shrink:0;"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0113 0"/></svg>
+            <span class="auth-text">Sign in</span>
+          </button>`;
+        const loginBtn = container.querySelector('.auth-login-btn');
+        loginBtn.addEventListener('click', () => {
+          if (window.netlifyIdentity) {
+            window.netlifyIdentity.open('login');
+            isModalOpen = true;
+            updateButtonState();
+          }
+        });
+        loginBtn.addEventListener('mouseenter', () => {
+          loginBtn.style.borderColor = 'var(--accent,#ff5c5c)';
+          loginBtn.style.color = 'var(--accent,#ff5c5c)';
+        });
+        loginBtn.addEventListener('mouseleave', () => {
+          loginBtn.style.borderColor = 'var(--border,#2a2a2a)';
+          loginBtn.style.color = 'var(--text-dim,#999)';
         });
       }
+    }
+
+    function update(user) {
+      updateButtonState();
+    }
+
+    // Listen for modal open/close events from Netlify Identity
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('open', () => {
+        isModalOpen = true;
+        updateButtonState();
+      });
+      window.netlifyIdentity.on('close', () => {
+        isModalOpen = false;
+        updateButtonState();
+      });
     }
 
     VibeclawAuth.onChange(update);

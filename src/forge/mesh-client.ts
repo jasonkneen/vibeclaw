@@ -122,7 +122,7 @@ export class MeshClient {
     }
 
     return new Promise((resolve, reject) => {
-      const wsUrl = this.config.burrowUrl.replace(/^http/, 'ws').replace(/^ws/, 'wss') + '/ws';
+      const wsUrl = this.config.burrowUrl.replace(/^https?:\/\//, 'wss://').replace(/^ws:\/\//, 'wss://') + '/ws';
       this.log(`Connecting to ${wsUrl}`);
 
       this.ws = new WebSocket(wsUrl);

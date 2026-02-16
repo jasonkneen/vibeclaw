@@ -16,6 +16,8 @@ class MockWebSocket {
   static CLOSING = 2;
   static CLOSED = 3;
 
+  static lastInstance: MockWebSocket | null = null;
+
   readyState = MockWebSocket.CONNECTING;
   url: string;
   onopen: ((event: Event) => void) | null = null;
@@ -26,11 +28,14 @@ class MockWebSocket {
 
   constructor(url: string) {
     this.url = url;
-    // Auto-open after a tick
-    setTimeout(() => {
-      this.readyState = MockWebSocket.OPEN;
-      this.onopen?.(new Event('open'));
-    }, 0);
+    // Track last instance for tests
+    MockWebSocket.lastInstance = this;
+  }
+
+  // Test helper to manually open the connection
+  open(): void {
+    this.readyState = MockWebSocket.OPEN;
+    this.onopen?.(new Event('open'));
   }
 
   send(data: string): void {
@@ -78,7 +83,6 @@ describe('MeshClient', { timeout: 15000 }, () => {
 
   beforeEach(() => {
     // Mock global WebSocket
-    mockWs = new MockWebSocket('wss://test.burrow.com/ws');
     global.WebSocket = MockWebSocket as any;
 
     client = new MeshClient({
@@ -107,10 +111,11 @@ describe('MeshClient', { timeout: 15000 }, () => {
   describe('connect', () => {
     it('should connect to burrow WebSocket', async () => {
       const connectPromise = client.connect();
-      
-      // Wait for WebSocket to open
-      await vi.runAllTimersAsync();
-      
+
+      // Get the WebSocket instance and manually open it
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
+
       // Simulate successful connection response
       mockWs.receiveMessage({
         type: 'connect',
@@ -124,7 +129,7 @@ describe('MeshClient', { timeout: 15000 }, () => {
       expect(state.connected).toBe(true);
       expect(state.ratId).toBe('rat_123');
       expect(state.ratName).toBe('TestRat');
-      
+
       // Verify connect message was sent
       const messages = mockWs.getAllMessages();
       const connectMsg = messages.find(m => m.type === 'connect');
@@ -139,7 +144,7 @@ describe('MeshClient', { timeout: 15000 }, () => {
       });
 
       client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
 
       // Even http gets upgraded to wss for security
       expect(mockWs.url).toContain('wss://');
@@ -152,38 +157,40 @@ describe('MeshClient', { timeout: 15000 }, () => {
       });
 
       client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
 
       expect(mockWs.url).toContain('wss://');
     });
 
     it('should handle connection failure', async () => {
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       // Send failure response
-      setTimeout(() => {
-        mockWs.receiveMessage({
-          type: 'connect',
-          payload: { success: false },
-          timestamp: Date.now(),
-        });
-      }, 0);
+      mockWs.receiveMessage({
+        type: 'connect',
+        payload: { success: false },
+        timestamp: Date.now(),
+      });
 
       await expect(connectPromise).rejects.toThrow();
     });
 
     it('should handle WebSocket error', async () => {
-      // Create a client that will fail to connect
-      const failingWs = new MockWebSocket('wss://test.burrow.com/ws');
-      global.WebSocket = class extends MockWebSocket {
+      // Create a custom WebSocket class that triggers error immediately
+      class FailingWebSocket extends MockWebSocket {
         constructor(url: string) {
           super(url);
-          setTimeout(() => {
+          // Trigger error immediately in constructor (no setTimeout)
+          this.readyState = MockWebSocket.CONNECTING;
+          queueMicrotask(() => {
             this.onerror?.(new Event('error'));
-          }, 0);
+          });
         }
-      } as any;
+      }
+
+      global.WebSocket = FailingWebSocket as any;
 
       const failClient = new MeshClient({
         burrowUrl: 'https://test.burrow.com',
@@ -191,14 +198,15 @@ describe('MeshClient', { timeout: 15000 }, () => {
       });
 
       await expect(failClient.connect()).rejects.toThrow();
-      
+
       // Restore mock
       global.WebSocket = MockWebSocket as any;
     });
 
     it('should not connect if already connected', async () => {
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -211,7 +219,7 @@ describe('MeshClient', { timeout: 15000 }, () => {
 
       // Try to connect again
       await client.connect();
-      
+
       // Should not send new connect message
       expect(mockWs.sentMessages.length).toBe(0);
     });
@@ -220,7 +228,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
   describe('disconnect', () => {
     it('should disconnect from burrow', async () => {
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -246,7 +255,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
       });
 
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -255,6 +265,7 @@ describe('MeshClient', { timeout: 15000 }, () => {
       });
 
       await connectPromise;
+      mockWs.clearMessages(); // Clear connect message and initial heartbeat
 
       client.disconnect();
 
@@ -271,7 +282,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
   describe('heartbeat', () => {
     it('should send heartbeat after connecting', async () => {
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -291,7 +303,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
 
     it('should send heartbeat on visibility change', async () => {
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -312,7 +325,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
 
     it('should stop heartbeat on disconnect', async () => {
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -339,7 +353,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
   describe('message handling', () => {
     beforeEach(async () => {
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -484,8 +499,9 @@ describe('MeshClient', { timeout: 15000 }, () => {
         timestamp: Date.now(),
       });
 
-      expect(events.length).toBe(1);
+      expect(events.length).toBe(2); // kicked + disconnected
       expect(events[0].type).toBe('kicked');
+      expect(events[1].type).toBe('disconnected');
       expect(client.getState().connected).toBe(false);
     });
   });
@@ -496,8 +512,12 @@ describe('MeshClient', { timeout: 15000 }, () => {
 
   describe('inference requests', () => {
     beforeEach(async () => {
+      // Use real timers for inference tests (async handlers need real timers)
+      vi.useRealTimers();
+
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -535,8 +555,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
         timestamp: Date.now(),
       });
 
-      // Wait for handler to execute
-      await vi.runAllTimersAsync();
+      // Wait for async handler to execute
+      await new Promise(resolve => setTimeout(resolve, 0));
 
       expect(capturedRequest).not.toBeNull();
       expect(capturedRequest?.requestId).toBe('req_123');
@@ -565,7 +585,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
         timestamp: Date.now(),
       });
 
-      await vi.runAllTimersAsync();
+      // Wait for async handler to execute
+      await new Promise(resolve => setImmediate(resolve));
 
       const response = mockWs.getLastMessage();
       expect(response?.type).toBe('fulfill_response');
@@ -592,7 +613,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
         timestamp: Date.now(),
       });
 
-      await vi.runAllTimersAsync();
+      // Wait for async handler to execute
+      await new Promise(resolve => setImmediate(resolve));
 
       const response = mockWs.getLastMessage();
       expect(response?.type).toBe('fulfill_response');
@@ -624,7 +646,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
         timestamp: Date.now(),
       });
 
-      await vi.runAllTimersAsync();
+      // Wait for async handler to execute
+      await new Promise(resolve => setImmediate(resolve));
 
       expect(busyDuringInference).toBe(true);
       expect(client.getState().busy).toBe(false);
@@ -638,7 +661,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
   describe('status updates', () => {
     beforeEach(async () => {
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -731,7 +755,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
       });
 
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -747,8 +772,9 @@ describe('MeshClient', { timeout: 15000 }, () => {
       // Should schedule reconnect
       await vi.advanceTimersByTimeAsync(1000);
 
-      // Should have attempted to create new WebSocket
-      expect(MockWebSocket).toHaveBeenCalled();
+      // Verify a new WebSocket was created for reconnect
+      // (The reconnect attempt creates a new instance)
+      expect(MockWebSocket.lastInstance).not.toBe(mockWs);
     });
 
     it('should respect max reconnect attempts', async () => {
@@ -761,7 +787,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
       });
 
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -792,7 +819,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
       client.on((event) => events.push(event));
 
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -807,7 +835,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
 
     it('should emit disconnected event', async () => {
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',
@@ -832,7 +861,8 @@ describe('MeshClient', { timeout: 15000 }, () => {
       unsubscribe();
 
       const connectPromise = client.connect();
-      await vi.runAllTimersAsync();
+      mockWs = MockWebSocket.lastInstance!;
+      mockWs.open();
 
       mockWs.receiveMessage({
         type: 'connect',

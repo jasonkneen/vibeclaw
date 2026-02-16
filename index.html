@@ -142,6 +142,7 @@
         display: flex;
         gap: 24px;
         list-style: none;
+        align-items: center;
       }
       .nav-links a {
         font-family: var(--mono);
@@ -620,6 +621,13 @@
         .nav-links { gap: 8px; }
         .nav-links a { font-size: 0.6rem; }
         .nav-links .nav-hide-mobile { display: none; }
+        #auth-container, #upgrade-container { margin-left: 2px !important; }
+        .auth-login-btn { padding: 3px 6px !important; font-size: 0.55rem !important; }
+        .auth-login-btn svg { width: 9px !important; height: 9px !important; }
+        .auth-user { gap: 4px !important; }
+        .auth-avatar { width: 18px !important; height: 18px !important; }
+        .auth-name { max-width: 50px !important; font-size: 0.55rem !important; }
+        .auth-logout-btn { padding: 2px 4px !important; font-size: 0.5rem !important; }
         .hero { padding: 48px 16px 40px; }
         .hero h1 { font-size: 1.8rem; }
         .hero .subtitle { font-size: 0.8rem; }
@@ -630,6 +638,19 @@
         .forge-steps { grid-template-columns: 1fr !important; }
         .ft-grid { grid-template-columns: 1fr !important; }
         footer { flex-direction: column; gap: 12px; text-align: center; }
+        footer .footer-links { gap: 12px; flex-wrap: wrap; justify-content: center; }
+        footer .footer-links a { font-size: 0.65rem; }
+        footer .footer-byline { font-size: 0.65rem; }
+        footer .license { font-size: 0.65rem; }
+      }
+
+      @media (max-width: 380px) {
+        .auth-text { display: none; }
+        .auth-login-btn { padding: 3px 5px !important; }
+        .auth-name { display: none; }
+        .auth-logout-btn { font-size: 0.45rem !important; padding: 2px 3px !important; }
+        footer .footer-links { gap: 8px; }
+        footer .footer-links a { font-size: 0.6rem; }
       }
 
       /* ── Playground ── */
@@ -1096,8 +1117,8 @@
           <li class="nav-hide-mobile"><a href="/news.html">Articles</a></li>
           <!-- <li><a href="/chat.html">Chat</a></li> -->
           <li class="nav-more-wrap" style="position:relative;">
-            <button id="nav-more-btn" style="background:none;border:1px solid var(--border);border-radius:4px;padding:3px 10px;font-family:var(--mono);font-size:0.72rem;color:var(--text-dim);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s;">
-              More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;"><polyline points="6 9 12 15 18 9"/></svg>
+            <button id="nav-more-btn" style="background:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-family:var(--mono);font-size:0.62rem;color:var(--text-dim);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s;white-space:nowrap;">
+              More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div id="nav-more-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:6px 0;min-width:180px;z-index:1000;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
               <a href="/forge.html" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">Server Forge</a>

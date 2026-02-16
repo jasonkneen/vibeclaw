@@ -1,6 +1,6 @@
 ---
 title: "OpenRouter's Free Tier: What You Actually Get"
-date: 2026-02-09
+date: 2026-02-12
 tags: [guide, openrouter, free-models, tutorial]
 author: VibeClaw
 image: /news/openrouter-free.png

@@ -1,6 +1,6 @@
 ---
 title: "Build a DevOps Agent in 3 Minutes with VibeClaw"
-date: 2026-02-06
+date: 2026-02-11
 tags: [tutorial, agents, devops, vibeclaw]
 author: VibeClaw
 image: /news/devops-agent.png

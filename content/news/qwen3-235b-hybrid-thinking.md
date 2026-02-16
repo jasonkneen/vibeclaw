@@ -1,6 +1,6 @@
 ---
 title: "Qwen3 235B: Hybrid Thinking Across 119 Languages"
-date: 2026-02-10
+date: 2026-02-12
 tags: [models, alibaba, multilingual, open-source]
 author: VibeClaw
 image: /news/qwen3-235b.png

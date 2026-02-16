@@ -1,6 +1,6 @@
 ---
 title: "Microsoft's AI Chief: Most White-Collar Work Will Be Automated in 18 Months"
-date: 2026-02-11
+date: 2026-02-13
 tags: [news, microsoft, industry, automation]
 author: VibeClaw
 image: /news/suleyman-automation.png

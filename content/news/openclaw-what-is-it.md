@@ -1,6 +1,6 @@
 ---
 title: "What Is OpenClaw? The Personal AI Assistant You Actually Own"
-date: 2026-02-03
+date: 2026-02-10
 tags: [openclaw, guide, getting-started]
 author: VibeClaw
 image: /news/openclaw-intro.png

@@ -1,6 +1,6 @@
 ---
 title: "Meta Sold 7 Million AI Smart Glasses in 2025"
-date: 2026-02-12
+date: 2026-02-13
 tags: [news, meta, hardware, wearables]
 author: VibeClaw
 image: /news/meta-glasses.png

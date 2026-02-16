@@ -1,6 +1,6 @@
 ---
 title: "Spotify's Best Developers Haven't Written Code Since December"
-date: 2026-02-14
+date: 2026-02-15
 tags: [news, vibe-coding, industry]
 author: VibeClaw
 image: /news/spotify-vibe-coding.png

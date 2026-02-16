@@ -1,6 +1,6 @@
 ---
 title: "Why In-Browser AI Agents Matter"
-date: 2026-02-11
+date: 2026-02-12
 tags: [think-piece, agents, browser, vibeclaw]
 author: VibeClaw
 image: /news/browser-agents.png

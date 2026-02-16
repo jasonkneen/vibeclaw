@@ -1,6 +1,6 @@
 ---
 title: "OpenAI Is Putting Ads in ChatGPT. A Former Researcher Has 'Deep Reservations'"
-date: 2026-02-11
+date: 2026-02-14
 tags: [news, openai, chatgpt, ethics]
 author: VibeClaw
 image: /news/openai-ads.png

@@ -1,6 +1,6 @@
 ---
 title: "The OpenClaw Skills Ecosystem: From Smart Homes to Stock Trading"
-date: 2026-02-01
+date: 2026-02-10
 tags: [openclaw, skills, ecosystem]
 author: VibeClaw
 image: /news/openclaw-skills.png

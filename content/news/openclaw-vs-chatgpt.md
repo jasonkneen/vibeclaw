@@ -1,6 +1,6 @@
 ---
 title: "OpenClaw vs ChatGPT: When to Use Which"
-date: 2026-02-02
+date: 2026-02-10
 tags: [openclaw, comparison, chatgpt]
 author: VibeClaw
 image: /news/openclaw-vs-chatgpt.png

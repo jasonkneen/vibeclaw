@@ -3,7 +3,7 @@ title: "Qwen3 235B: Hybrid Thinking Across 119 Languages"
 date: 2026-02-10
 tags: [models, alibaba, multilingual, open-source]
 author: VibeClaw
-image: 🌐
+image: /news/qwen3-235b.png
 summary: "Alibaba's Qwen3 brings a novel hybrid thinking mode — toggle between fast responses and deep reasoning on the fly."
 ---
 

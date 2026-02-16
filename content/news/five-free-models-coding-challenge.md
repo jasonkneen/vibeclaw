@@ -3,7 +3,7 @@ title: "We Tested 5 Free Models on the Same Coding Challenge"
 date: 2026-02-13
 tags: [review, comparison, coding, free-models]
 author: VibeClaw
-image: ⚔️
+image: /news/five-free-models.png
 summary: "Solar Pro 3, DeepSeek R1, Llama 3.1, Qwen3 8B, and Gemma 3 walk into a coding challenge. Here's what happened."
 ---
 

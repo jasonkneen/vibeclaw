@@ -1,5 +1,34 @@
 [
   {
+    "slug": "npr-sues-google-ai-voice",
+    "title": "NPR's David Greene Is Suing Google Over Its AI Podcast Voice",
+    "date": "2026-02-15",
+    "tags": [
+      "news",
+      "legal",
+      "google",
+      "voice-ai"
+    ],
+    "author": "VibeClaw",
+    "image": "/news/npr-google-voice.png",
+    "summary": "The former Morning Edition host says Google's NotebookLM podcast voice is an 'uncanny' copy of his. The AI voice cloning debate arrives in court.",
+    "html": "<p>David Greene, former host of NPR's Morning Edition and current host of Left, Right & Center, is suing Google. The claim: Google's male podcast host voice in NotebookLM is an unauthorised copy of his voice.</p>\n<p>Greene says the resemblance is \"uncanny,\" and friends and colleagues agree. Google denies it, but the case raises questions that the entire AI industry needs to answer.</p>\n<h2>The Voice Problem</h2>\n<p>AI voice cloning has gotten scarily good. Modern TTS systems can replicate a voice from just a few seconds of audio. The question of consent — did the original speaker agree to their voice being used in training data? — is largely unanswered.</p>\n<p>Greene's case is particularly interesting because:\n<ul><li>He's a <strong>professional</strong> whose voice is his primary asset</li>\n<li>The AI voice is used in a <strong>commercial product</strong> (NotebookLM)</li>\n<li>The resemblance is specific enough that colleagues recognised it</li>\n<li>Google hasn't disclosed their voice training data sources</li>\n</ul>\n<h2>The Legal Landscape</h2></p>\n<p>Voice rights are murky. Some jurisdictions have \"right of publicity\" laws that protect distinctive voices (the Bette Midler case set precedent in 1988). But applying 20th-century publicity law to AI training data is untested territory.</p>\n<p>If Greene wins, it could:\n<ul><li>Force AI companies to disclose voice training data</li>\n<li>Require consent from people whose voices are used</li>\n<li>Create a licensing market for professional voices</li>\n<li>Make AI voice companies much more careful about their datasets</li>\n</ul>\n<h2>What It Means for AI Voice Tools</h2></p>\n<p>Tools like ElevenLabs, OpenAI's TTS, and Google's own voice synthesis are all potentially affected. If courts rule that AI voices trained on copyrighted speech require consent, the entire industry's training pipeline changes.</p>\n<p>For builders using TTS in their agents: choose providers that use licensed, consented voices. It's both ethical and legally safer.</p>\n<h2>Links</h2>\n<ul><li><a href=\"https://www.washingtonpost.com/technology/2026/02/15/david-greene-google-ai-podcast/\" target=\"_blank\" rel=\"noopener\">Washington Post Coverage</a></li></ul>"
+  },
+  {
+    "slug": "openclaw-open-source",
+    "title": "OpenClaw Goes Fully Open Source",
+    "date": "2026-02-15",
+    "tags": [
+      "news",
+      "openclaw",
+      "open-source"
+    ],
+    "author": "VibeClaw",
+    "image": "/news/openclaw-opensource.png",
+    "summary": "Anthropic confirms OpenClaw will continue as a fully open-source project. Here's what that means for the ecosystem.",
+    "html": "<p>Big news from Anthropic: <strong>OpenClaw will live on as an open-source project.</strong> The announcement, confirmed on February 15th, puts to rest months of speculation about the agent framework's future.</p>\n<h2>Why This Matters</h2>\n<p>OpenClaw has become the de facto standard for building AI agents. With its MCP integration, multi-provider support, and extensible skill system, it's the backbone of thousands of production deployments.</p>\n<p>The commitment to open source means:</p>\n<ul><li><strong>No vendor lock-in</strong> — you own your agent configs, your data, your stack</li>\n<li><strong>Community-driven development</strong> — PRs, skills, and integrations from the community</li>\n<li><strong>Fork-friendly</strong> — build your own flavour without legal worry</li>\n<li><strong>Transparent roadmap</strong> — development happens in the open on GitHub</li>\n</ul>\n<h2>What It Means for VibeClaw</h2>\n<p>VibeClaw is built on top of OpenClaw. This announcement gives us confidence to keep building. When the foundation is open source, everything built on top has a stable base.</p>\n<p>We'll continue shipping tools that make OpenClaw accessible to everyone — starting with the browser-based sandbox, the Forge builder, and the news section you're reading right now.</p>\n<h2>The Bigger Picture</h2>\n<p>The AI agent space is consolidating fast. Proprietary platforms are locking users in with custom formats and closed ecosystems. OpenClaw staying open source is a statement: <strong>the best AI tools should be accessible to everyone.</strong></p>\n<h2>Links</h2>\n<ul><li><a href=\"https://github.com/openclaw/openclaw\" target=\"_blank\" rel=\"noopener\">OpenClaw GitHub</a></li>\n<li><a href=\"https://docs.openclaw.ai\" target=\"_blank\" rel=\"noopener\">OpenClaw Docs</a></li>\n<li><a href=\"https://vibeclaw.dev\" target=\"_blank\" rel=\"noopener\">Build on OpenClaw with VibeClaw</a></li></ul>"
+  },
+  {
     "slug": "phi-4-reasoning-mit-licensed",
     "title": "Phi-4 Reasoning: Microsoft's MIT-Licensed Powerhouse",
     "date": "2026-02-15",
@@ -27,6 +56,35 @@
     "image": "/news/llama-4-scout.png",
     "summary": "Meta drops Llama 4 Scout with 10 million token context and 16 mixture-of-experts — and it runs on a single H100.",
     "html": "<p>Meta just released <strong>Llama 4 Scout</strong>, and it's a big deal for open-source AI.</p>\n<h2>The Numbers</h2>\n<ul><li><strong>109B parameters</strong> with 16 mixture-of-experts (MoE) — only 17B active at any time</li>\n<li><strong>10 million token context window</strong> — that's roughly 30 full novels</li>\n<li>Runs on a <strong>single H100 GPU</strong> thanks to the MoE architecture</li>\n<li>Beats Gemma 3, Qwen 2.5, and GPT-4o on most benchmarks</li>\n<li>Licensed under Meta's community license (free for most use)</li>\n</ul>\n<h2>Why It Matters</h2>\n<p>The 10M context window is the headline, but the real story is efficiency. By using mixture-of-experts, Meta gets GPT-4 class performance while only activating 17B parameters per token. That means you can run this on hardware that would choke on a dense 109B model.</p>\n<p>For OpenClaw users, this means you can run a genuinely powerful model locally without renting a GPU cluster.</p>\n<h2>Try It in VibeClaw</h2>\n<p>Boot a sandbox at <a href=\"https://vibeclaw.dev\" target=\"_blank\" rel=\"noopener\">vibeclaw.dev</a> and test Llama models with free API access through OpenRouter. No API key needed.</p>\n<h2>Links</h2>\n<ul><li><a href=\"https://huggingface.co/meta-llama\" target=\"_blank\" rel=\"noopener\">HuggingFace: meta-llama</a></li>\n<li><a href=\"https://ai.meta.com/blog/\" target=\"_blank\" rel=\"noopener\">Meta AI Blog</a></li></ul>"
+  },
+  {
+    "slug": "spotify-devs-stopped-coding",
+    "title": "Spotify's Best Developers Haven't Written Code Since December",
+    "date": "2026-02-14",
+    "tags": [
+      "news",
+      "vibe-coding",
+      "industry"
+    ],
+    "author": "VibeClaw",
+    "image": "/news/spotify-vibe-coding.png",
+    "summary": "Spotify's CEO revealed that the company's top engineers now only generate and supervise AI-written code. Welcome to the vibe coding era.",
+    "html": "<p>During Spotify's Q4 earnings call, CEO Gustav Söderström dropped a bombshell:</p>\n<blockquote>\"When I speak to my most senior engineers — the best developers we have — they actually say that they haven't written a single line of code since December… They actually only generate code and supervise it.\"</blockquote>\n<p>Let that sink in. <strong>Spotify's top developers are now full-time AI supervisors.</strong></p>\n<h2>What Is Vibe Coding?</h2>\n<p>Vibe coding — Collins Dictionary's 2025 Word of the Year — is the practice of describing what you want in natural language and letting AI write the code. The developer's job shifts from writing to reviewing, testing, and directing.</p>\n<p>It's not lazy. It's leverage. A senior developer who understands architecture, patterns, and edge cases can now ship 5x more code by directing an AI than by typing it themselves.</p>\n<h2>The Numbers</h2>\n<p>The impact at scale is staggering:</p>\n<ul><li><strong>Spotify</strong>: Senior devs writing zero code since December 2025</li>\n<li><strong>Google</strong>: Reports that 40% of new code is AI-generated</li>\n<li><strong>Microsoft</strong>: Claims 50% productivity gains for Copilot users</li>\n<li><strong>Meta</strong>: Internal tools team reduced from 80 to 30 engineers</li>\n</ul>\n<h2>What This Means for AI Agents</h2>\n<p>If the best developers at a $100B company are using AI to write code, the tools matter enormously. The quality of the AI agent — its system prompt, its tool access, its model — determines the quality of the output.</p>\n<p>That's exactly what VibeClaw helps with: building well-configured agents that can code, review, and ship effectively.</p>\n<h2>The Uncomfortable Question</h2>\n<p>If senior developers aren't writing code, what happens to junior developers? The traditional path — write bad code, get reviewed, improve — is under threat.</p>\n<p>The new path might be: learn to supervise AI, learn to specify precisely, learn to spot bugs in generated code. Different skills, same goal.</p>\n<h2>Links</h2>\n<ul><li><a href=\"https://www.businessinsider.com/spotify-developers-not-writing-code-ai-2026-2\" target=\"_blank\" rel=\"noopener\">Business Insider Coverage</a></li>\n<li><a href=\"https://vibeclaw.dev\" target=\"_blank\" rel=\"noopener\">Build coding agents at VibeClaw</a></li></ul>"
+  },
+  {
+    "slug": "disney-vs-bytedance-seedance",
+    "title": "Disney Goes After ByteDance's Seedance AI Video Model",
+    "date": "2026-02-13",
+    "tags": [
+      "news",
+      "legal",
+      "video-ai",
+      "copyright"
+    ],
+    "author": "VibeClaw",
+    "image": "/news/disney-seedance.png",
+    "summary": "Disney's sent a cease and desist over ByteDance's new Seedance 2.0 model generating Spider-Man and Darth Vader videos. The AI copyright wars heat up.",
+    "html": "<p>The AI copyright battle just got a new front. <strong>Disney has hit ByteDance with a cease and desist</strong> over their new Seedance 2.0 AI video generation model, which can apparently generate videos featuring Spider-Man, Darth Vader, and other Disney-owned characters.</p>\n<h2>What Happened</h2>\n<p>ByteDance launched Seedance 2.0, their latest AI video generation model, and users quickly discovered it could create videos featuring copyrighted characters with alarming accuracy.</p>\n<p>Disney's attorney was blunt: \"ByteDance is hijacking Disney's characters by reproducing, distributing, and creating derivative works featuring those characters.\"</p>\n<h2>The Bigger Problem</h2>\n<p>This isn't just a Disney problem. Every AI video and image model trained on internet data has absorbed copyrighted characters, styles, and likenesses. The question isn't whether models <em>can</em> generate Mickey Mouse — it's whether they <em>should</em>.</p>\n<p>Current legal approaches:</p>\n<ul><li><strong>Disney/Hollywood</strong>: Aggressive cease and desist, litigate early</li>\n<li><strong>Getty Images</strong>: Already sued Stability AI, awaiting ruling</li>\n<li><strong>Music industry</strong>: Suing over AI-generated songs mimicking artists</li>\n<li><strong>NYT vs OpenAI</strong>: The landmark text case, still ongoing</li>\n</ul>\n<h2>What It Means for Open Source</h2>\n<p>Open-source models face the same risk. If ByteDance gets hit for Seedance, what about open models on HuggingFace that can generate copyrighted characters?</p>\n<p>The likely outcome: models will need built-in content filters, similar to how Dall-E refuses certain prompts. Open-source models without these filters may face distribution challenges.</p>\n<h2>The Agent Angle</h2>\n<p>For AI agent builders, this is a reminder: <strong>the model you choose matters legally, not just technically.</strong> Using a model that generates copyrighted content in a commercial product puts you at risk, even if the model itself is \"free.\"</p>\n<p>Stick to text models for now. The copyright landscape for image and video AI is still a minefield.</p>\n<h2>Links</h2>\n<ul><li><a href=\"https://www.axios.com/2026/02/13/disney-bytedance-seedance\" target=\"_blank\" rel=\"noopener\">Axios: Disney vs ByteDance</a></li>\n<li><a href=\"https://www.theverge.com/ai-artificial-intelligence/877931/bytedance-seedance-2-video-generator-ai-launch\" target=\"_blank\" rel=\"noopener\">ByteDance Seedance 2.0 Launch</a></li></ul>"
   },
   {
     "slug": "five-free-models-coding-challenge",
@@ -57,6 +115,51 @@
     "image": "/news/deepseek-r1.png",
     "summary": "DeepSeek's R1 model matches or beats OpenAI's o3 on math and coding — and it's completely free.",
     "html": "<p>DeepSeek just dropped the <strong>R1 0528 update</strong>, and it's embarrassing some very expensive proprietary models.</p>\n<h2>What Changed</h2>\n<p>The R1 0528 revision brings significant improvements to the chain-of-thought reasoning:</p>\n<ul><li><strong>AIME 2025</strong>: 87.5% (vs o3's 83.3%)</li>\n<li><strong>Codeforces</strong>: 2029 Elo (competitive programmer level)</li>\n<li><strong>GPQA Diamond</strong>: 81.0% (PhD-level science questions)</li>\n<li><strong>LiveCodeBench</strong>: Top 3 across all models tested</li>\n</ul>\nAll of this from a model you can download and run yourself.\n<h2>The Free Model Revolution</h2>\n<p>DeepSeek R1 is available for free on OpenRouter, which means VibeClaw users get access to o3-level reasoning at zero cost. No API key, no subscription, no limits.</p>\n<p>This is what makes open-source AI exciting — the gap between \"free\" and \"the best money can buy\" is closing fast.</p>\n<h2>The Catch</h2>\n<p>R1's reasoning chains can be verbose. It thinks out loud — sometimes for thousands of tokens before giving you an answer. Great for complex problems, overkill for \"what's the weather.\"</p>\n<h2>Try It</h2>\n<p>R1 is one of the free models available in the <a href=\"https://vibeclaw.dev\" target=\"_blank\" rel=\"noopener\">VibeClaw sandbox</a>. Boot a server and switch to DeepSeek R1 in the flavour dropdown.</p>\n<h2>Links</h2>\n<ul><li><a href=\"https://huggingface.co/deepseek-ai\" target=\"_blank\" rel=\"noopener\">HuggingFace: deepseek-ai</a></li>\n<li><a href=\"https://arxiv.org/abs/2501.12948\" target=\"_blank\" rel=\"noopener\">DeepSeek R1 Paper</a></li></ul>"
+  },
+  {
+    "slug": "meta-smart-glasses-7m-sold",
+    "title": "Meta Sold 7 Million AI Smart Glasses in 2025",
+    "date": "2026-02-12",
+    "tags": [
+      "news",
+      "meta",
+      "hardware",
+      "wearables"
+    ],
+    "author": "VibeClaw",
+    "image": "/news/meta-glasses.png",
+    "summary": "Meta's Ray-Ban smart glasses hit 7 million units sold, tripling combined 2023-2024 sales. AI wearables are no longer a niche.",
+    "html": "<p>Remember when smart glasses were a joke? Google Glass was a punchline. Snap Spectacles were a novelty. Now <strong>Meta has sold 7 million AI-powered Ray-Bans in a single year</strong> — triple what they sold in 2023 and 2024 combined.</p>\n<p>EssilorLuxottica CEO Francesco Milleri confirmed the numbers: \"In 2025, we sold more than 7 million units of AI glasses, posting exponential growth.\"</p>\n<h2>Why Now?</h2>\n<p>Three things changed:</p>\n<p>1. <strong>They look normal</strong> — Ray-Ban frames, not face computers. Nobody knows you're wearing AI glasses unless you tell them.</p>\n<p>2. <strong>AI got useful</strong> — Meta's Llama-powered assistant can see what you see, answer questions, translate languages, and identify objects. It went from gimmick to genuinely helpful.</p>\n<p>3. <strong>Price point</strong> — Starting around $299, they're expensive sunglasses but cheap AI hardware. Accessible enough for mainstream adoption.</p>\n<h2>The Road to 10 Million</h2>\n<p>EssilorLuxottica previously said they'd hit 10 million units/year by 2027. At this growth rate, they might hit it in 2026. The company hinted that prices will stay high in the short term as they prioritise margins over volume.</p>\n<h2>What This Means for AI Agents</h2>\n<p>Smart glasses are the first truly wearable AI agent platform. The form factor — always on, camera-equipped, voice-activated — is ideal for an always-available assistant.</p>\n<p>Imagine an OpenClaw agent connected to your glasses: it sees what you see, hears what you hear, and can quietly surface information when relevant. That's not science fiction anymore — it's a product you can buy today.</p>\n<h2>The Privacy Elephant</h2>\n<p>7 million cameras walking around, connected to AI. The privacy implications are enormous and largely unresolved. Meta's approach so far: a small LED light that turns on during recording. Whether that's sufficient is debatable.</p>\n<h2>Links</h2>\n<ul><li><a href=\"https://finance.yahoo.com/quote/ESLOF/earnings/\" target=\"_blank\" rel=\"noopener\">EssilorLuxottica Earnings Call</a></li>\n<li><a href=\"https://www.meta.com/smart-glasses/\" target=\"_blank\" rel=\"noopener\">Meta Ray-Ban Smart Glasses</a></li></ul>"
+  },
+  {
+    "slug": "openai-ads-in-chatgpt",
+    "title": "OpenAI Is Putting Ads in ChatGPT. A Former Researcher Has 'Deep Reservations'",
+    "date": "2026-02-11",
+    "tags": [
+      "news",
+      "openai",
+      "chatgpt",
+      "ethics"
+    ],
+    "author": "VibeClaw",
+    "image": "/news/openai-ads.png",
+    "summary": "An ex-OpenAI researcher publicly criticises the company's move to monetise ChatGPT with advertising. The implications for AI trust are serious.",
+    "html": "<p>Zoë Hitzig, a researcher who left OpenAI this week, published an op-ed in the New York Times expressing \"deep reservations\" about OpenAI's decision to put ads in ChatGPT.</p>\n<p>Her concern isn't about ads existing — it's about what ads <em>do</em> to an AI assistant that millions of people trust for advice.</p>\n<h2>The Problem With AI Ads</h2>\n<p>When you ask ChatGPT for a product recommendation, medication advice, or financial guidance, you're trusting it to be neutral. Ads break that trust:</p>\n<blockquote>\"The real question is not ads or no ads. It is whether we can design structures that avoid both excluding people from using these tools, and potentially manipulating them as consumers.\"</blockquote>\n<p>Think about it:\n<ul><li>\"What laptop should I buy?\" → Sponsored answer from Dell</li>\n<li>\"What's good for headaches?\" → Promoted response from Advil</li>\n<li>\"How should I invest my savings?\" → Ad-supported financial product</li>\n</ul>\nThe line between helpful answer and advertisement becomes invisible.</p>\n<h2>Why OpenAI Is Doing It</h2>\n<p>Money. ChatGPT is expensive to run. GPT-5 reportedly cost over $1 billion to train. Subscriptions alone can't cover the burn rate. Ads are the proven model for monetising free-tier users.</p>\n<h2>The Open Source Alternative</h2>\n<p>This is exactly why open-source AI matters. When you run your own agent — through OpenClaw, through local models, through VibeClaw — there are no ads. No sponsored responses. No invisible manipulation.</p>\n<p>Your agent works for you, not for advertisers.</p>\n<h2>The Bigger Trend</h2>\n<p>Google's Gemini will likely follow. Microsoft's Copilot already has ad-adjacent features. The free tier of every major AI assistant is going to be ad-supported within a year.</p>\n<p>The question for users: <strong>do you want an AI assistant that serves you, or one that serves advertisers?</strong></p>\n<h2>Links</h2>\n<ul><li><a href=\"https://www.nytimes.com/2026/02/11/opinion/openai-ads-chatgpt.html\" target=\"_blank\" rel=\"noopener\">NYT Op-Ed: Zoë Hitzig</a></li>\n<li><a href=\"https://vibeclaw.dev\" target=\"_blank\" rel=\"noopener\">Run ad-free AI agents at VibeClaw</a></li></ul>"
+  },
+  {
+    "slug": "suleyman-white-collar-work-automated",
+    "title": "Microsoft's AI Chief: Most White-Collar Work Will Be Automated in 18 Months",
+    "date": "2026-02-11",
+    "tags": [
+      "news",
+      "microsoft",
+      "industry",
+      "automation"
+    ],
+    "author": "VibeClaw",
+    "image": "/news/suleyman-automation.png",
+    "summary": "Mustafa Suleyman claims AI will automate most desk jobs within 18 months. Bold prediction or hype? We break it down.",
+    "html": "<p>Microsoft AI CEO Mustafa Suleyman made a striking claim to the Financial Times:</p>\n<blockquote>\"White-collar work, where you're sitting down at a computer, either being a lawyer or an accountant or a project manager or a marketing person — most of those tasks will be fully automated by an AI within the next 12 to 18 months.\"</blockquote>\n<h2>Parsing the Claim</h2>\n<p>Let's be precise about what he said: <strong>most tasks</strong>, not most jobs. There's a crucial difference.</p>\n<p>An accountant's job includes data entry, categorisation, report generation, and compliance checks — many of which are already partially automated. But it also includes client relationships, judgement calls on ambiguous situations, and regulatory interpretation. AI handles the former well. The latter? Not yet.</p>\n<h2>What's Actually Happening</h2>\n<p>The reality is somewhere between \"nothing's changed\" and Suleyman's bold timeline:</p>\n<ul><li><strong>Legal</strong>: AI drafts contracts and reviews documents, but lawyers still argue cases and advise clients</li>\n<li><strong>Accounting</strong>: AI handles bookkeeping and basic tax prep, humans handle strategy and audit</li>\n<li><strong>Marketing</strong>: AI generates copy and analyses data, humans handle brand strategy and creative direction</li>\n<li><strong>Project management</strong>: AI tracks tasks and generates reports, humans handle people and politics</li>\n</ul>\n<h2>The Agent Connection</h2>\n<p>AI agents are the bridge between \"AI can do individual tasks\" and \"AI handles entire workflows.\" When you connect a language model to tools — email, calendar, databases, code execution — it stops being a chatbot and starts being a worker.</p>\n<p>That's what OpenClaw and VibeClaw are building toward. Not replacing people, but giving them AI workers that handle the repetitive 80% so they can focus on the 20% that requires human judgment.</p>\n<h2>The 18-Month Test</h2>\n<p>Set a reminder for August 2027. If most white-collar tasks are fully automated by then, Suleyman was right. Our prediction? He's directionally correct but 3-5 years early on \"most.\"</p>\n<h2>Links</h2>\n<ul><li><a href=\"https://www.ft.com/content/f1ec830c-2f08-4b1a-b70f-7330f260753c\" target=\"_blank\" rel=\"noopener\">Financial Times Interview</a></li>\n<li><a href=\"https://vibeclaw.dev\" target=\"_blank\" rel=\"noopener\">Build AI agents at VibeClaw</a></li></ul>"
   },
   {
     "slug": "why-browser-ai-agents-matter",

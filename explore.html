@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore the Community | VibeClaw</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fragment+Mono&display=swap');
+
+    :root {
+      --black: #0a0a0a;
+      --surface: #111;
+      --surface-hover: #141414;
+      --border: #222;
+      --border-hover: #2a2a2a;
+      --accent: #ff5c5c;
+      --text: #999;
+      --text-dim: #555;
+      --text-bright: #e0e0e0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Fragment Mono', monospace;
+      background: var(--black);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text-bright);
+    }
+
+    code, pre {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Navigation */
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .nav-logo img {
+      height: 32px;
+      width: auto;
+    }
+
+    .nav-logo .vibe {
+      color: var(--accent);
+    }
+
+    .nav-logo .claw {
+      color: var(--text-bright);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.2s;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-bright);
+    }
+
+    .nav-links a.active {
+      color: var(--accent);
+    }
+
+    /* Hero */
+    .hero {
+      max-width: 1400px;
+      margin: 4rem auto;
+      padding: 0 2rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 2rem;
+    }
+
+    .search-bar {
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-bright);
+      font-family: 'Fragment Mono', monospace;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .search-bar input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Type Cards */
+    .type-cards {
+      max-width: 1400px;
+      margin: 4rem auto;
+      padding: 0 2rem;
+    }
+
+    .type-cards h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .type-cards-scroll {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .type-cards-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .type-cards-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .type-cards-scroll::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .type-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      min-width: 200px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .type-card:hover {
+      border-color: var(--accent);
+      background: var(--surface-hover);
+    }
+
+    .type-card.active {
+      border-color: var(--accent);
+      background: var(--surface-hover);
+    }
+
+    .type-card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .type-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .type-card p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+    }
+
+    .type-card-count {
+      font-size: 0.9rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Section Container */
+    .section {
+      max-width: 1400px;
+      margin: 4rem auto;
+      padding: 0 2rem;
+    }
+
+    .section h2 {
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Item Grid */
+    .item-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Horizontal Scroll */
+    .horizontal-scroll {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .horizontal-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .horizontal-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .horizontal-scroll::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .horizontal-scroll .item-card {
+      min-width: 320px;
+    }
+
+    /* Item Card */
+    .item-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: all 0.2s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .item-card:hover {
+      border-color: var(--border-hover);
+      background: var(--surface-hover);
+    }
+
+    .item-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .type-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-servers { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .badge-skills { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+    .badge-plugins { background: rgba(249, 115, 22, 0.2); color: #fb923c; }
+    .badge-tools { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .badge-models { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+    .badge-recipes { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+    .badge-knowledge { background: rgba(6, 182, 212, 0.2); color: #22d3ee; }
+
+    .item-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .item-card-description {
+      color: var(--text);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      flex-grow: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .item-card-author {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+    }
+
+    .item-card-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      color: var(--text);
+    }
+
+    .item-card-stats {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stats-left {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .item-card-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-mini {
+      padding: 0.35rem 0.75rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-size: 0.8rem;
+      font-family: 'Fragment Mono', monospace;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-mini:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Filters and Tabs */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Fragment Mono', monospace;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      border-color: var(--border-hover);
+      background: var(--surface-hover);
+    }
+
+    .tab.active {
+      border-color: var(--accent);
+      background: var(--surface-hover);
+      color: var(--accent);
+    }
+
+    .sort-select {
+      padding: 0.5rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Fragment Mono', monospace;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    /* Load More */
+    .load-more {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .btn-load {
+      padding: 0.75rem 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-bright);
+      font-family: 'Fragment Mono', monospace;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-load:hover {
+      border-color: var(--accent);
+      background: var(--surface-hover);
+    }
+
+    /* FAQ */
+    .faq {
+      max-width: 900px;
+      margin: 4rem auto;
+      padding: 0 2rem;
+    }
+
+    .faq h2 {
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .faq-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+
+    .faq-question:hover {
+      background: var(--surface-hover);
+    }
+
+    .faq-question h3 {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .faq-icon {
+      font-size: 1.25rem;
+      transition: transform 0.3s;
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 500px;
+    }
+
+    .faq-answer-content {
+      padding: 0 1.5rem 1.25rem 1.5rem;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-dim);
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    /* Item Detail Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      overflow-y: auto;
+      padding: 2rem;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      max-width: 900px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: var(--accent);
+    }
+
+    .modal-header {
+      margin-bottom: 2rem;
+    }
+
+    .modal-header h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .modal-description {
+      margin-bottom: 2rem;
+      line-height: 1.8;
+    }
+
+    .modal-readme {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .modal-readme h1, .modal-readme h2, .modal-readme h3 {
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-readme h1:first-child,
+    .modal-readme h2:first-child,
+    .modal-readme h3:first-child {
+      margin-top: 0;
+    }
+
+    .modal-files {
+      margin-bottom: 2rem;
+    }
+
+    .modal-files h3 {
+      margin-bottom: 1rem;
+    }
+
+    .file-list {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .file-item {
+      padding: 0.5rem;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-family: 'Fragment Mono', monospace;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: #ff4040;
+    }
+
+    .btn-action.secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-bright);
+    }
+
+    .btn-action.secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 600px) {
+      .nav-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .item-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .tabs {
+        flex-direction: column;
+      }
+
+      .modal-content {
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+
+      .modal-header h2 {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* Loading Spinner */
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-dim);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="crab-nav.png" alt="VibeClaw">
+        <span class="vibe">VIBE</span><span class="claw">CLAW</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="forge.html">Forge</a></li>
+        <li><a href="explore.html" class="active">Explore</a></li>
+        <li><a href="news.html">Articles</a></li>
+        <li><a href="gallery.html">Wallpapers</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Explore the Community</h1>
+    <p>Discover servers, skills, plugins, tools, and more created by the VibeClaw community</p>
+    <div class="search-bar">
+      <input type="text" id="globalSearch" placeholder="Search everything...">
+    </div>
+  </section>
+
+  <!-- Type Cards -->
+  <section class="type-cards">
+    <h2>Browse by Type</h2>
+    <div class="type-cards-scroll" id="typeCards">
+      <!-- Dynamically populated -->
+    </div>
+  </section>
+
+  <!-- Trending -->
+  <section class="section">
+    <h2>🔥 Trending Now</h2>
+    <div class="horizontal-scroll" id="trendingContainer">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </section>
+
+  <!-- Recently Added -->
+  <section class="section">
+    <h2>✨ Recently Added</h2>
+    <div class="item-grid" id="recentContainer">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </section>
+
+  <!-- Main Grid -->
+  <section class="section">
+    <div class="controls">
+      <div class="tabs" id="typeTabs">
+        <button class="tab active" data-type="all">All</button>
+        <button class="tab" data-type="servers">Servers</button>
+        <button class="tab" data-type="skills">Skills</button>
+        <button class="tab" data-type="plugins">Plugins</button>
+        <button class="tab" data-type="tools">Tools</button>
+        <button class="tab" data-type="models">Models</button>
+        <button class="tab" data-type="recipes">Recipes</button>
+        <button class="tab" data-type="knowledge">Knowledge</button>
+      </div>
+      <select class="sort-select" id="sortSelect">
+        <option value="recent">Most Recent</option>
+        <option value="popular">Most Popular</option>
+        <option value="downloads">Most Downloads</option>
+      </select>
+    </div>
+    <div class="item-grid" id="mainGrid">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+    <div class="load-more" id="loadMoreContainer" style="display: none;">
+      <button class="btn-load" id="loadMoreBtn">Load More</button>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>What are Agent Skills?</h3>
+        <span class="faq-icon">▼</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          Agent Skills are reusable capabilities that can be added to any AI coding assistant. They define instructions, tools, and workflows that extend what your AI can do — like camera control, smart home integration, or specialized development workflows.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>How do I install a skill?</h3>
+        <span class="faq-icon">▼</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          Click "Fork" or "Download" on any item. For OpenClaw, skills go in your workspace's <code>skills/</code> folder. Most items include installation instructions in their README.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>What's the difference between Skills, Plugins, and Tools?</h3>
+        <span class="faq-icon">▼</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <strong>Skills</strong> are high-level capabilities with instructions and workflows. <strong>Plugins</strong> are code extensions for specific platforms (Claude Code, Cursor, etc.). <strong>Tools</strong> are lower-level building blocks (MCP servers, REST APIs, CLI utilities) that can be used by multiple systems.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>Can I share my creations?</h3>
+        <span class="faq-icon">▼</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          Absolutely! Head to the <a href="forge.html" style="color: var(--accent);">Forge</a> to upload your servers, skills, plugins, and other creations. The more the community shares, the more powerful everyone's agents become.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>What are Virtual Models?</h3>
+        <span class="faq-icon">▼</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          Virtual Models are custom AI model endpoints that you can add to your agent. They can be fine-tuned models, specialized agents, or even workflow wrappers that combine multiple models for specific tasks.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>How do Knowledge Bases work?</h3>
+        <span class="faq-icon">▼</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          Knowledge Bases are curated collections of documents, APIs, and context that give your agent deep expertise in specific domains. They can include documentation, code examples, best practices, and reference materials.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>Are these compatible with other AI tools?</h3>
+        <span class="faq-icon">▼</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          Many items are designed to work across multiple platforms. Skills often work with any AI assistant that supports custom instructions. MCP servers work with Claude Desktop, Cursor, and other MCP-compatible tools. Check each item's README for compatibility details.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Item Detail Modal -->
+  <div class="modal" id="itemModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">×</button>
+      <div class="modal-header">
+        <div id="modalBadge"></div>
+        <h2 id="modalTitle"></h2>
+        <div class="modal-meta" id="modalMeta"></div>
+      </div>
+      <div class="modal-description" id="modalDescription"></div>
+      <div class="modal-readme" id="modalReadme"></div>
+      <div class="modal-files" id="modalFilesSection" style="display: none;">
+        <h3>Files</h3>
+        <div class="file-list" id="modalFiles"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-action" id="modalDownload">Download</button>
+        <button class="btn-action secondary" id="modalFork">Fork</button>
+        <button class="btn-action secondary" id="modalFavourite">★ Favourite</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Type definitions
+    const TYPES = [
+      { id: 'servers', name: 'Servers', icon: '⌘', description: 'OpenClaw server configurations', color: 'servers' },
+      { id: 'skills', name: 'Skills', icon: '🪄', description: 'Agent skills for any AI coding tool', color: 'skills' },
+      { id: 'plugins', name: 'Plugins', icon: '🧩', description: 'Extensions for Claude Code, Cursor, etc.', color: 'plugins' },
+      { id: 'tools', name: 'Tools', icon: '🔧', description: 'Reusable tools for MCP, ACP, REST', color: 'tools' },
+      { id: 'models', name: 'Models', icon: '🧠', description: 'Custom AI model endpoints', color: 'models' },
+      { id: 'recipes', name: 'Recipes', icon: '📖', description: 'Shared server setups & configs', color: 'recipes' },
+      { id: 'knowledge', name: 'Knowledge', icon: '🗄️', description: 'Document collections & knowledge bases', color: 'knowledge' }
+    ];
+
+    // State
+    let allItems = [];
+    let filteredItems = [];
+    let currentFilter = 'all';
+    let currentSort = 'recent';
+    let currentPage = 0;
+    const ITEMS_PER_PAGE = 12;
+    let searchTimeout = null;
+
+    // API Functions
+    async function fetchItems(params = {}) {
+      try {
+        const queryString = new URLSearchParams(params).toString();
+        const response = await fetch(`/api/items?${queryString}`);
+        if (!response.ok) throw new Error('Failed to fetch items');
+        const data = await response.json();
+        return data.items || [];
+      } catch (error) {
+        console.error('Error fetching items:', error);
+        return [];
+      }
+    }
+
+    async function fetchTypeCounts() {
+      const counts = {};
+      for (const type of TYPES) {
+        try {
+          const items = await fetchItems({ type: type.id, limit: 0 });
+          counts[type.id] = items.length || Math.floor(Math.random() * 50) + 10; // Fallback to demo data
+        } catch {
+          counts[type.id] = Math.floor(Math.random() * 50) + 10;
+        }
+      }
+      return counts;
+    }
+
+    // Render Functions
+    function renderTypeCards(counts) {
+      const container = document.getElementById('typeCards');
+      container.innerHTML = TYPES.map(type => `
+        <div class="type-card" data-type="${type.id}">
+          <div class="type-card-icon">${type.icon}</div>
+          <h3>${type.name}</h3>
+          <p>${type.description}</p>
+          <div class="type-card-count">${counts[type.id] || 0} items</div>
+        </div>
+      `).join('');
+
+      // Add click handlers
+      container.querySelectorAll('.type-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const type = card.dataset.type;
+          setFilter(type);
+          document.getElementById('mainGrid').scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+    }
+
+    function createItemCard(item) {
+      const tags = (item.tags || []).slice(0, 3);
+      return `
+        <div class="item-card" data-id="${item.id}">
+          <div class="item-card-header">
+            <span class="type-badge badge-${item.type}">${item.type}</span>
+          </div>
+          <h3>${item.title || 'Untitled'}</h3>
+          <div class="item-card-description">${item.description || 'No description provided.'}</div>
+          <div class="item-card-author">by ${item.author || 'Anonymous'}</div>
+          ${tags.length > 0 ? `
+            <div class="item-card-tags">
+              ${tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+          ` : ''}
+          <div class="item-card-stats">
+            <div class="stats-left">
+              <div class="stat">👍 ${item.upvotes || 0}</div>
+              <div class="stat">⬇ ${item.downloads || 0}</div>
+            </div>
+            <div class="item-card-actions">
+              <button class="btn-mini fork-btn" data-id="${item.id}">Fork</button>
+              <button class="btn-mini download-btn" data-id="${item.id}">Download</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderItems(items, container) {
+      if (!items || items.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>No items found</h3>
+            <p>Be the first to create something amazing!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map(createItemCard).join('');
+
+      // Add click handlers for cards
+      container.querySelectorAll('.item-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (!e.target.closest('.btn-mini')) {
+            const id = card.dataset.id;
+            openItemModal(id);
+          }
+        });
+      });
+
+      // Add click handlers for action buttons
+      container.querySelectorAll('.fork-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.id;
+          forkItem(id);
+        });
+      });
+
+      container.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.id;
+          downloadItem(id);
+        });
+      });
+    }
+
+    // Filter and Sort
+    function setFilter(type) {
+      currentFilter = type;
+      currentPage = 0;
+
+      // Update tab active state
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.type === type);
+      });
+
+      // Update type card active state
+      document.querySelectorAll('.type-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.type === type);
+      });
+
+      applyFiltersAndSort();
+    }
+
+    function setSort(sort) {
+      currentSort = sort;
+      currentPage = 0;
+      applyFiltersAndSort();
+    }
+
+    function applyFiltersAndSort() {
+      // Filter
+      filteredItems = currentFilter === 'all' 
+        ? [...allItems]
+        : allItems.filter(item => item.type === currentFilter);
+
+      // Search
+      const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+      if (searchTerm) {
+        filteredItems = filteredItems.filter(item => 
+          (item.title || '').toLowerCase().includes(searchTerm) ||
+          (item.description || '').toLowerCase().includes(searchTerm) ||
+          (item.tags || []).some(tag => tag.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      // Sort
+      switch (currentSort) {
+        case 'popular':
+          filteredItems.sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
+          break;
+        case 'downloads':
+          filteredItems.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
+          break;
+        case 'recent':
+        default:
+          filteredItems.sort((a, b) => (b.created || 0) - (a.created || 0));
+          break;
+      }
+
+      renderMainGrid();
+    }
+
+    function renderMainGrid() {
+      const container = document.getElementById('mainGrid');
+      const start = currentPage * ITEMS_PER_PAGE;
+      const end = start + ITEMS_PER_PAGE;
+      const pageItems = filteredItems.slice(start, end);
+
+      if (currentPage === 0) {
+        renderItems(pageItems, container);
+      } else {
+        // Append more items
+        const fragment = document.createElement('div');
+        fragment.innerHTML = pageItems.map(createItemCard).join('');
+        container.appendChild(...fragment.children);
+      }
+
+      // Show/hide load more button
+      const loadMoreContainer = document.getElementById('loadMoreContainer');
+      if (end < filteredItems.length) {
+        loadMoreContainer.style.display = 'block';
+      } else {
+        loadMoreContainer.style.display = 'none';
+      }
+    }
+
+    // Item Actions
+    function openItemModal(id) {
+      const item = allItems.find(i => i.id === id);
+      if (!item) return;
+
+      const modal = document.getElementById('itemModal');
+      document.getElementById('modalBadge').innerHTML = `<span class="type-badge badge-${item.type}">${item.type}</span>`;
+      document.getElementById('modalTitle').textContent = item.title || 'Untitled';
+      
+      const metaHtml = `
+        <span style="color: var(--text-dim);">by ${item.author || 'Anonymous'}</span>
+        <div class="stat">👍 ${item.upvotes || 0}</div>
+        <div class="stat">⬇ ${item.downloads || 0}</div>
+        ${item.forkedFrom ? '<span class="type-badge badge-tools">Forked</span>' : ''}
+      `;
+      document.getElementById('modalMeta').innerHTML = metaHtml;
+      
+      document.getElementById('modalDescription').textContent = item.description || 'No description provided.';
+      
+      // README (basic markdown rendering)
+      const readme = item.readme || '# No README available';
+      document.getElementById('modalReadme').innerHTML = renderMarkdown(readme);
+      
+      // Files
+      if (item.files && item.files.length > 0) {
+        document.getElementById('modalFilesSection').style.display = 'block';
+        document.getElementById('modalFiles').innerHTML = item.files.map(f => 
+          `<div class="file-item">${f}</div>`
+        ).join('');
+      } else {
+        document.getElementById('modalFilesSection').style.display = 'none';
+      }
+
+      // Action handlers
+      document.getElementById('modalDownload').onclick = () => downloadItem(id);
+      document.getElementById('modalFork').onclick = () => forkItem(id);
+      document.getElementById('modalFavourite').onclick = () => favouriteItem(id);
+
+      modal.classList.add('active');
+      window.location.hash = `item-${id}`;
+    }
+
+    function closeItemModal() {
+      document.getElementById('itemModal').classList.remove('active');
+      if (window.location.hash.startsWith('#item-')) {
+        history.pushState('', document.title, window.location.pathname);
+      }
+    }
+
+    function renderMarkdown(md) {
+      // Very basic markdown rendering
+      return md
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+        .replace(/\*(.*)\*/gim, '<em>$1</em>')
+        .replace(/`([^`]+)`/gim, '<code>$1</code>')
+        .replace(/\n/gim, '<br>');
+    }
+
+    function downloadItem(id) {
+      console.log('Download item:', id);
+      alert(`Download functionality for item ${id} would be implemented here.`);
+    }
+
+    function forkItem(id) {
+      console.log('Fork item:', id);
+      alert(`Fork functionality for item ${id} would be implemented here.`);
+    }
+
+    function favouriteItem(id) {
+      console.log('Favourite item:', id);
+      alert(`Favourite functionality for item ${id} would be implemented here.`);
+    }
+
+    // Generate demo data
+    function generateDemoData() {
+      const demoItems = [];
+      const authors = ['alice', 'bob', 'charlie', 'dana', 'eve', 'frank'];
+      const titlePrefixes = ['Advanced', 'Simple', 'Pro', 'Quick', 'Smart', 'Auto'];
+      const titleSuffixes = ['Assistant', 'Helper', 'Manager', 'Controller', 'Handler', 'Engine'];
+      
+      for (let i = 0; i < 50; i++) {
+        const type = TYPES[i % TYPES.length];
+        const title = `${titlePrefixes[i % titlePrefixes.length]} ${type.name.slice(0, -1)} ${titleSuffixes[i % titleSuffixes.length]}`;
+        
+        demoItems.push({
+          id: `item-${i}`,
+          type: type.id,
+          title: title,
+          description: `A powerful ${type.name.toLowerCase().slice(0, -1)} that helps you ${type.description.toLowerCase()}. Perfect for developers and power users.`,
+          author: authors[i % authors.length],
+          tags: ['popular', 'featured', 'new'].slice(0, (i % 3) + 1),
+          upvotes: Math.floor(Math.random() * 500),
+          downloads: Math.floor(Math.random() * 2000),
+          created: Date.now() - (i * 86400000), // Spread over days
+          readme: `# ${title}\n\n## Overview\n\nThis is a demo item showcasing the ${type.name} type.\n\n## Installation\n\n\`\`\`bash\nnpm install ${title.toLowerCase().replace(/\s/g, '-')}\n\`\`\`\n\n## Usage\n\nDetailed usage instructions would go here.`,
+          files: ['index.js', 'README.md', 'package.json'],
+          forkedFrom: i > 25 ? `item-${i - 25}` : null
+        });
+      }
+      
+      return demoItems;
+    }
+
+    // Initialize
+    async function init() {
+      // Try to fetch real data, fall back to demo
+      const fetchedItems = await fetchItems();
+      
+      if (fetchedItems.length > 0) {
+        allItems = fetchedItems;
+      } else {
+        // Use demo data
+        allItems = generateDemoData();
+      }
+
+      filteredItems = [...allItems];
+
+      // Fetch and render type counts
+      const counts = {};
+      TYPES.forEach(type => {
+        counts[type.id] = allItems.filter(item => item.type === type.id).length;
+      });
+      renderTypeCards(counts);
+
+      // Render trending (top 8 by upvotes)
+      const trending = [...allItems].sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0)).slice(0, 8);
+      renderItems(trending, document.getElementById('trendingContainer'));
+
+      // Render recently added (latest 12)
+      const recent = [...allItems].sort((a, b) => (b.created || 0) - (a.created || 0)).slice(0, 12);
+      renderItems(recent, document.getElementById('recentContainer'));
+
+      // Render main grid
+      applyFiltersAndSort();
+
+      // Event listeners
+      document.getElementById('globalSearch').addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          currentPage = 0;
+          applyFiltersAndSort();
+        }, 300);
+      });
+
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          setFilter(tab.dataset.type);
+        });
+      });
+
+      document.getElementById('sortSelect').addEventListener('change', (e) => {
+        setSort(e.target.value);
+      });
+
+      document.getElementById('loadMoreBtn').addEventListener('click', () => {
+        currentPage++;
+        renderMainGrid();
+      });
+
+      document.getElementById('modalClose').addEventListener('click', closeItemModal);
+      document.getElementById('itemModal').addEventListener('click', (e) => {
+        if (e.target.id === 'itemModal') closeItemModal();
+      });
+
+      // FAQ accordion
+      document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', () => {
+          const item = question.parentElement;
+          item.classList.toggle('open');
+        });
+      });
+
+      // Handle hash navigation
+      if (window.location.hash.startsWith('#item-')) {
+        const id = window.location.hash.replace('#item-', '');
+        openItemModal(id);
+      }
+
+      window.addEventListener('hashchange', () => {
+        if (window.location.hash.startsWith('#item-')) {
+          const id = window.location.hash.replace('#item-', '');
+          openItemModal(id);
+        } else {
+          closeItemModal();
+        }
+      });
+    }
+
+    // Start
+    init();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create • VibeClaw</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/fragment-mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --surface: #111;
+      --surface-alt: #141414;
+      --border: #222;
+      --border-alt: #2a2a2a;
+      --accent: #ff5c5c;
+      --text: #999;
+      --text-dim: #555;
+      --text-bright: #e0e0e0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Fragment Mono', monospace;
+      background: var(--black);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text-bright);
+    }
+
+    code, pre {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Navigation */
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .logo img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .logo-text {
+      display: flex;
+    }
+
+    .logo-vibe {
+      color: var(--accent);
+    }
+
+    .logo-claw {
+      color: var(--text-bright);
+    }
+
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--text-bright);
+      background: var(--surface-alt);
+    }
+
+    nav a.active {
+      color: var(--accent);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Type Selector */
+    .type-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .type-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .type-card:hover {
+      border-color: var(--border-alt);
+      background: var(--surface-alt);
+    }
+
+    .type-card.active {
+      border-color: var(--accent);
+      background: var(--surface-alt);
+    }
+
+    .type-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .type-card p {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    /* Main Layout */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Builder Panel */
+    .builder-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+    }
+
+    .builder-content {
+      display: none;
+    }
+
+    .builder-content.active {
+      display: block;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-bright);
+      font-size: 0.9rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      background: var(--black);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.75rem;
+      color: var(--text-bright);
+      font-family: 'Fragment Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    textarea.code-editor {
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 300px;
+    }
+
+    /* Buttons */
+    button {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.75rem 1.5rem;
+      color: var(--text-bright);
+      font-family: 'Fragment Mono', monospace;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: var(--border);
+      border-color: var(--border-alt);
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    button.primary:hover {
+      background: #ff4444;
+      border-color: #ff4444;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    /* Tags Input */
+    .tags-input {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background: var(--black);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      min-height: 45px;
+    }
+
+    .tag-pill {
+      background: var(--surface-alt);
+      border: 1px solid var(--border-alt);
+      border-radius: 20px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tag-pill button {
+      background: none;
+      border: none;
+      color: var(--text);
+      padding: 0;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .tag-input {
+      flex: 1;
+      min-width: 100px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-bright);
+      font-family: 'Fragment Mono', monospace;
+    }
+
+    /* Slider */
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+    }
+
+    .slider-value {
+      display: inline-block;
+      margin-left: 1rem;
+      color: var(--text-bright);
+      font-weight: 500;
+    }
+
+    /* Checkbox */
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    /* List Items */
+    .list-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .list-item {
+      background: var(--black);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .list-item-content {
+      flex: 1;
+    }
+
+    .list-item-title {
+      color: var(--text-bright);
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .list-item-meta {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    /* Preview Panel */
+    .preview-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      height: fit-content;
+      max-height: calc(100vh - 200px);
+    }
+
+    .preview-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-tab {
+      background: none;
+      border: none;
+      padding: 0.5rem 1rem;
+      color: var(--text);
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+    }
+
+    .preview-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .preview-content {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .preview-section {
+      display: none;
+    }
+
+    .preview-section.active {
+      display: block;
+    }
+
+    /* Chat Interface */
+    .chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .chat-message {
+      padding: 1rem;
+      border-radius: 8px;
+      background: var(--black);
+      border: 1px solid var(--border);
+    }
+
+    .chat-message.user {
+      margin-left: 2rem;
+      border-color: var(--accent);
+    }
+
+    .chat-message.assistant {
+      margin-right: 2rem;
+    }
+
+    .chat-input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-input-group input {
+      flex: 1;
+    }
+
+    /* Code Examples */
+    .code-example {
+      background: var(--black);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .code-example-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .code-example pre {
+      overflow-x: auto;
+      font-size: 0.85rem;
+      color: var(--text-bright);
+    }
+
+    /* Key-Value Editor */
+    .kv-editor {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .kv-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    /* File Upload */
+    .file-upload {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .file-upload:hover {
+      border-color: var(--border-alt);
+      background: var(--surface-alt);
+    }
+
+    .file-upload.dragover {
+      border-color: var(--accent);
+      background: var(--surface-alt);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    /* Autosave Indicator */
+    .autosave-indicator {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .autosave-indicator.visible {
+      opacity: 1;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      nav {
+        padding: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .type-selector {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .builder-panel,
+      .preview-panel {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <a href="/" class="logo">
+      <img src="/crab-nav.png" alt="VibeClaw">
+      <span class="logo-text">
+        <span class="logo-vibe">VIBE</span><span class="logo-claw">CLAW</span>
+      </span>
+    </a>
+    <a href="/forge.html">Forge</a>
+    <a href="/library.html">Explore</a>
+    <a href="/create.html" class="active">Create</a>
+    <a href="/news.html">Articles</a>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <h1 style="margin-bottom: 2rem;">Create Something Amazing</h1>
+
+    <!-- Type Selector -->
+    <div class="type-selector">
+      <div class="type-card" data-type="skill">
+        <h3>Skill</h3>
+        <p>Agent capabilities</p>
+      </div>
+      <div class="type-card" data-type="plugin">
+        <h3>Plugin</h3>
+        <p>Editor extensions</p>
+      </div>
+      <div class="type-card" data-type="tool">
+        <h3>Tool</h3>
+        <p>Callable functions</p>
+      </div>
+      <div class="type-card" data-type="model">
+        <h3>Model</h3>
+        <p>Custom AI models</p>
+      </div>
+      <div class="type-card" data-type="recipe">
+        <h3>Recipe</h3>
+        <p>Server configs</p>
+      </div>
+      <div class="type-card" data-type="knowledge">
+        <h3>Knowledge Base</h3>
+        <p>Document collections</p>
+      </div>
+      <div class="type-card" data-type="server">
+        <h3>Server</h3>
+        <p>Full deployments</p>
+      </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+      <!-- Builder Panel -->
+      <div class="builder-panel">
+        <!-- Skill Builder -->
+        <div class="builder-content" data-builder="skill">
+          <h2>Skill Builder</h2>
+          <div class="form-group">
+            <label>Skill Name</label>
+            <input type="text" id="skill-name" placeholder="my-awesome-skill">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="skill-description" placeholder="What does this skill do?"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Tags (comma separated)</label>
+            <div class="tags-input" id="skill-tags"></div>
+          </div>
+          <div class="form-group">
+            <label>SKILL.md Content</label>
+            <textarea id="skill-content" class="code-editor" placeholder="# My Skill&#10;&#10;Description of the skill..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Scripts</label>
+            <div class="list-items" id="skill-scripts"></div>
+            <button id="add-skill-script">+ Add Script</button>
+          </div>
+          <div class="form-group">
+            <label>References</label>
+            <div class="list-items" id="skill-references"></div>
+            <button id="add-skill-reference">+ Add Reference</button>
+          </div>
+          <div class="form-group">
+            <label>Assets</label>
+            <div class="list-items" id="skill-assets"></div>
+            <button id="add-skill-asset">+ Add Asset</button>
+          </div>
+          <div class="button-group">
+            <button id="skill-test">Test</button>
+            <button id="skill-download">Download</button>
+            <button id="skill-publish" class="primary">Publish</button>
+          </div>
+        </div>
+
+        <!-- Plugin Builder -->
+        <div class="builder-content" data-builder="plugin">
+          <h2>Plugin Builder</h2>
+          <div class="form-group">
+            <label>Plugin Name</label>
+            <input type="text" id="plugin-name" placeholder="my-plugin">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="plugin-description" placeholder="What does this plugin do?"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Target Platform</label>
+            <select id="plugin-platform">
+              <option value="claude-code">Claude Code</option>
+              <option value="cursor">Cursor</option>
+              <option value="opencode">OpenCode</option>
+              <option value="windsurf">Windsurf</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tags (comma separated)</label>
+            <div class="tags-input" id="plugin-tags"></div>
+          </div>
+          <div class="form-group">
+            <label>Rules/Instructions</label>
+            <textarea id="plugin-rules" class="code-editor" placeholder="# Plugin Rules&#10;&#10;Instructions for the editor..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Files</label>
+            <div class="list-items" id="plugin-files"></div>
+            <button id="add-plugin-file">+ Add File</button>
+          </div>
+          <div class="button-group">
+            <button id="plugin-test">Test</button>
+            <button id="plugin-download">Download</button>
+            <button id="plugin-publish" class="primary">Publish</button>
+          </div>
+        </div>
+
+        <!-- Tool Builder -->
+        <div class="builder-content" data-builder="tool">
+          <h2>Tool Builder</h2>
+          <div class="form-group">
+            <label>Tool Name</label>
+            <input type="text" id="tool-name" placeholder="my_tool">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="tool-description" placeholder="What does this tool do?"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Tags (comma separated)</label>
+            <div class="tags-input" id="tool-tags"></div>
+          </div>
+          <div class="form-group">
+            <label>Input Schema (JSON)</label>
+            <textarea id="tool-input-schema" class="code-editor" placeholder='{"type": "object", "properties": {...}}'></textarea>
+          </div>
+          <div class="form-group">
+            <label>Output Schema (JSON)</label>
+            <textarea id="tool-output-schema" class="code-editor" placeholder='{"type": "object", "properties": {...}}'></textarea>
+          </div>
+          <div class="form-group">
+            <label>Implementation</label>
+            <select id="tool-language">
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+              <option value="bash">Bash</option>
+            </select>
+            <textarea id="tool-implementation" class="code-editor" placeholder="// Your tool implementation"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Package As</label>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="tool-package-mcp" value="mcp">
+                <label for="tool-package-mcp" style="margin: 0;">MCP Server</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="tool-package-rest" value="rest">
+                <label for="tool-package-rest" style="margin: 0;">REST API</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="tool-package-skill" value="skill">
+                <label for="tool-package-skill" style="margin: 0;">Skill Script</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="tool-package-acp" value="acp">
+                <label for="tool-package-acp" style="margin: 0;">ACP</label>
+              </div>
+            </div>
+          </div>
+          <div class="button-group">
+            <button id="tool-test">Test</button>
+            <button id="tool-download">Download</button>
+            <button id="tool-publish" class="primary">Publish</button>
+          </div>
+        </div>
+
+        <!-- Model Builder -->
+        <div class="builder-content" data-builder="model">
+          <h2>Model Builder</h2>
+          <div class="form-group">
+            <label>Model Name</label>
+            <input type="text" id="model-name" placeholder="my-custom-model">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="model-description" placeholder="What makes this model special?"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Base Model</label>
+            <select id="model-base">
+              <option value="upstage/solar-pro-3:free">Solar Pro 3</option>
+              <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B</option>
+              <option value="google/gemma-3-4b-it:free">Gemma 3 4B</option>
+              <option value="qwen/qwen3-8b:free">Qwen3 8B</option>
+              <option value="deepseek/deepseek-r1:free">DeepSeek R1</option>
+              <option value="microsoft/phi-4-reasoning:free">Phi-4 Reasoning</option>
+              <option value="mistralai/mistral-small-3.1-24b-instruct:free">Mistral Small 3.1</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tags (comma separated)</label>
+            <div class="tags-input" id="model-tags"></div>
+          </div>
+          <div class="form-group">
+            <label>System Prompt</label>
+            <textarea id="model-system-prompt" class="code-editor" placeholder="You are a helpful assistant that..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Temperature: <span class="slider-value" id="model-temp-value">0.7</span></label>
+            <input type="range" id="model-temperature" min="0" max="2" step="0.1" value="0.7">
+          </div>
+          <div class="form-group">
+            <label>Top P: <span class="slider-value" id="model-topp-value">0.9</span></label>
+            <input type="range" id="model-topp" min="0" max="1" step="0.05" value="0.9">
+          </div>
+          <div class="form-group">
+            <label>Max Tokens</label>
+            <input type="number" id="model-max-tokens" value="4096">
+          </div>
+          <div class="form-group">
+            <label>Tools</label>
+            <div class="list-items" id="model-tools"></div>
+            <button id="add-model-tool">+ Add Tool</button>
+          </div>
+          <div class="form-group">
+            <label>Knowledge Bases</label>
+            <div class="list-items" id="model-knowledge"></div>
+            <button id="add-model-knowledge">+ Add Knowledge</button>
+          </div>
+          <div class="button-group">
+            <button id="model-test">Test</button>
+            <button id="model-download">Download</button>
+            <button id="model-publish" class="primary">Publish</button>
+          </div>
+        </div>
+
+        <!-- Recipe Builder -->
+        <div class="builder-content" data-builder="recipe">
+          <h2>Recipe Builder</h2>
+          <div class="form-group">
+            <label>Recipe Name</label>
+            <input type="text" id="recipe-name" placeholder="my-server-recipe">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="recipe-description" placeholder="What does this recipe deploy?"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Tags (comma separated)</label>
+            <div class="tags-input" id="recipe-tags"></div>
+          </div>
+          <div class="form-group">
+            <label>Server Type</label>
+            <select id="recipe-server-type">
+              <option value="nodejs">Node.js</option>
+              <option value="python">Python</option>
+              <option value="go">Go</option>
+              <option value="docker">Docker</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Prerequisites</label>
+            <div class="list-items" id="recipe-prerequisites"></div>
+            <button id="add-recipe-prerequisite">+ Add Prerequisite</button>
+          </div>
+          <div class="form-group">
+            <label>Environment Variables</label>
+            <div class="kv-editor" id="recipe-env-vars">
+              <div class="kv-row">
+                <input type="text" placeholder="KEY" class="env-key">
+                <input type="text" placeholder="value" class="env-value">
+                <button onclick="this.parentElement.remove()">×</button>
+              </div>
+            </div>
+            <button id="add-recipe-env">+ Add Variable</button>
+          </div>
+          <div class="form-group">
+            <label>Setup Notes</label>
+            <textarea id="recipe-notes" class="code-editor" placeholder="# Setup Instructions&#10;&#10;1. Clone the repo&#10;2. Install dependencies..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Configuration</label>
+            <textarea id="recipe-config" class="code-editor" placeholder="Paste your server config here..."></textarea>
+          </div>
+          <div class="button-group">
+            <button id="recipe-download">Download</button>
+            <button id="recipe-publish" class="primary">Publish</button>
+          </div>
+        </div>
+
+        <!-- Knowledge Base Builder -->
+        <div class="builder-content" data-builder="knowledge">
+          <h2>Knowledge Base Builder</h2>
+          <div class="form-group">
+            <label>Collection Name</label>
+            <input type="text" id="kb-name" placeholder="my-knowledge-base">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="kb-description" placeholder="What's in this knowledge base?"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Tags (comma separated)</label>
+            <div class="tags-input" id="kb-tags"></div>
+          </div>
+          <div class="form-group">
+            <label>Documents</label>
+            <div class="list-items" id="kb-documents"></div>
+            <div class="file-upload" id="kb-upload">
+              <p>📄 Drop files here or click to upload</p>
+              <p style="font-size: 0.8rem; color: var(--text-dim);">Supports: MD, PDF, TXT, JSON</p>
+              <input type="file" id="kb-file-input" multiple accept=".md,.pdf,.txt,.json">
+            </div>
+            <button id="add-kb-document">+ Add from URL or Paste</button>
+          </div>
+          <div class="button-group">
+            <button id="kb-test">Test Search</button>
+            <button id="kb-download">Download</button>
+            <button id="kb-publish" class="primary">Publish</button>
+          </div>
+        </div>
+
+        <!-- Server Builder -->
+        <div class="builder-content" data-builder="server">
+          <h2>Server Builder</h2>
+          <div class="form-group">
+            <label>Server Name</label>
+            <input type="text" id="server-name" placeholder="my-server">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="server-description" placeholder="What does this server do?"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Tags (comma separated)</label>
+            <div class="tags-input" id="server-tags"></div>
+          </div>
+          <div class="form-group">
+            <label>Framework</label>
+            <select id="server-framework">
+              <option value="express">Express</option>
+              <option value="fastify">Fastify</option>
+              <option value="koa">Koa</option>
+              <option value="nextjs">Next.js</option>
+              <option value="flask">Flask</option>
+              <option value="fastapi">FastAPI</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Configuration</label>
+            <textarea id="server-config" class="code-editor" placeholder="Full server configuration..."></textarea>
+          </div>
+          <div class="button-group">
+            <button id="server-download">Download</button>
+            <button id="server-publish" class="primary">Publish</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview/Test Panel -->
+      <div class="preview-panel">
+        <div class="preview-tabs">
+          <button class="preview-tab active" data-tab="preview">Preview</button>
+          <button class="preview-tab" data-tab="test">Test</button>
+          <button class="preview-tab" data-tab="code">Code</button>
+        </div>
+
+        <div class="preview-content">
+          <!-- Preview Section -->
+          <div class="preview-section active" data-section="preview">
+            <h3>Preview</h3>
+            <div id="preview-output" style="margin-top: 1rem;">
+              <p style="color: var(--text-dim);">Build something to see a preview...</p>
+            </div>
+          </div>
+
+          <!-- Test Section -->
+          <div class="preview-section" data-section="test">
+            <h3>Test Chat</h3>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-group">
+              <input type="text" id="chat-input" placeholder="Test your creation...">
+              <button id="chat-send">Send</button>
+            </div>
+          </div>
+
+          <!-- Code Examples Section -->
+          <div class="preview-section" data-section="code">
+            <h3>Code Examples</h3>
+            <div id="code-examples">
+              <p style="color: var(--text-dim);">Examples will appear when you create a model...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Autosave Indicator -->
+  <div class="autosave-indicator" id="autosave-indicator">Saved</div>
+
+  <script type="module">
+    // State
+    let currentType = 'skill';
+    let autosaveTimeout = null;
+
+    // Initialize
+    function init() {
+      // Get type from hash
+      const hash = window.location.hash.slice(1);
+      if (hash && ['skill', 'plugin', 'tool', 'model', 'recipe', 'knowledge', 'server'].includes(hash)) {
+        currentType = hash;
+      }
+
+      // Set active type
+      setActiveType(currentType);
+
+      // Load from localStorage
+      loadDraft(currentType);
+
+      // Setup event listeners
+      setupTypeSelector();
+      setupPreviewTabs();
+      setupTagInputs();
+      setupSliders();
+      setupBuilderButtons();
+      setupChat();
+      setupAutoSave();
+
+      // Hash change
+      window.addEventListener('hashchange', () => {
+        const newHash = window.location.hash.slice(1);
+        if (newHash && ['skill', 'plugin', 'tool', 'model', 'recipe', 'knowledge', 'server'].includes(newHash)) {
+          setActiveType(newHash);
+          loadDraft(newHash);
+        }
+      });
+    }
+
+    function setActiveType(type) {
+      currentType = type;
+
+      // Update cards
+      document.querySelectorAll('.type-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.type === type);
+      });
+
+      // Update builders
+      document.querySelectorAll('.builder-content').forEach(builder => {
+        builder.classList.toggle('active', builder.dataset.builder === type);
+      });
+
+      // Update hash
+      window.location.hash = type;
+    }
+
+    function setupTypeSelector() {
+      document.querySelectorAll('.type-card').forEach(card => {
+        card.addEventListener('click', () => {
+          setActiveType(card.dataset.type);
+          loadDraft(card.dataset.type);
+        });
+      });
+    }
+
+    function setupPreviewTabs() {
+      document.querySelectorAll('.preview-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const targetTab = tab.dataset.tab;
+
+          document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          document.querySelectorAll('.preview-section').forEach(section => {
+            section.classList.toggle('active', section.dataset.section === targetTab);
+          });
+        });
+      });
+    }
+
+    function setupTagInputs() {
+      const tagContainers = document.querySelectorAll('.tags-input');
+      
+      tagContainers.forEach(container => {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'tag-input';
+        input.placeholder = 'Add tags...';
+        container.appendChild(input);
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            const value = input.value.trim();
+            if (value) {
+              addTag(container, value);
+              input.value = '';
+              triggerAutosave();
+            }
+          }
+        });
+
+        input.addEventListener('blur', () => {
+          const value = input.value.trim();
+          if (value) {
+            addTag(container, value);
+            input.value = '';
+            triggerAutosave();
+          }
+        });
+      });
+    }
+
+    function addTag(container, text) {
+      const pill = document.createElement('div');
+      pill.className = 'tag-pill';
+      pill.innerHTML = `
+        <span>${text}</span>
+        <button onclick="this.parentElement.remove(); triggerAutosave();">×</button>
+      `;
+      const input = container.querySelector('.tag-input');
+      container.insertBefore(pill, input);
+    }
+
+    function setupSliders() {
+      const tempSlider = document.getElementById('model-temperature');
+      const tempValue = document.getElementById('model-temp-value');
+      const toppSlider = document.getElementById('model-topp');
+      const toppValue = document.getElementById('model-topp-value');
+
+      if (tempSlider) {
+        tempSlider.addEventListener('input', (e) => {
+          tempValue.textContent = e.target.value;
+          triggerAutosave();
+        });
+      }
+
+      if (toppSlider) {
+        toppSlider.addEventListener('input', (e) => {
+          toppValue.textContent = e.target.value;
+          triggerAutosave();
+        });
+      }
+    }
+
+    function setupBuilderButtons() {
+      // Skill buttons
+      document.getElementById('add-skill-script')?.addEventListener('click', () => addListItem('skill-scripts', 'script'));
+      document.getElementById('add-skill-reference')?.addEventListener('click', () => addListItem('skill-references', 'reference'));
+      document.getElementById('add-skill-asset')?.addEventListener('click', () => addListItem('skill-assets', 'asset'));
+      document.getElementById('skill-download')?.addEventListener('click', () => downloadSkill());
+      document.getElementById('skill-test')?.addEventListener('click', () => switchToTest());
+      document.getElementById('skill-publish')?.addEventListener('click', () => publishItem('skill'));
+
+      // Plugin buttons
+      document.getElementById('add-plugin-file')?.addEventListener('click', () => addListItem('plugin-files', 'file'));
+      document.getElementById('plugin-download')?.addEventListener('click', () => downloadPlugin());
+      document.getElementById('plugin-test')?.addEventListener('click', () => switchToTest());
+      document.getElementById('plugin-publish')?.addEventListener('click', () => publishItem('plugin'));
+
+      // Tool buttons
+      document.getElementById('tool-download')?.addEventListener('click', () => downloadTool());
+      document.getElementById('tool-test')?.addEventListener('click', () => switchToTest());
+      document.getElementById('tool-publish')?.addEventListener('click', () => publishItem('tool'));
+
+      // Model buttons
+      document.getElementById('add-model-tool')?.addEventListener('click', () => addListItem('model-tools', 'tool'));
+      document.getElementById('add-model-knowledge')?.addEventListener('click', () => addListItem('model-knowledge', 'knowledge'));
+      document.getElementById('model-download')?.addEventListener('click', () => downloadModel());
+      document.getElementById('model-test')?.addEventListener('click', () => switchToTest());
+      document.getElementById('model-publish')?.addEventListener('click', () => publishItem('model'));
+
+      // Recipe buttons
+      document.getElementById('add-recipe-prerequisite')?.addEventListener('click', () => addListItem('recipe-prerequisites', 'prerequisite'));
+      document.getElementById('add-recipe-env')?.addEventListener('click', () => addEnvVar());
+      document.getElementById('recipe-download')?.addEventListener('click', () => downloadRecipe());
+      document.getElementById('recipe-publish')?.addEventListener('click', () => publishItem('recipe'));
+
+      // Knowledge Base buttons
+      document.getElementById('add-kb-document')?.addEventListener('click', () => addKBDocument());
+      document.getElementById('kb-download')?.addEventListener('click', () => downloadKnowledgeBase());
+      document.getElementById('kb-test')?.addEventListener('click', () => switchToTest());
+      document.getElementById('kb-publish')?.addEventListener('click', () => publishItem('knowledge'));
+
+      // Server buttons
+      document.getElementById('server-download')?.addEventListener('click', () => downloadServer());
+      document.getElementById('server-publish')?.addEventListener('click', () => publishItem('server'));
+
+      // File upload
+      const kbUpload = document.getElementById('kb-upload');
+      const kbFileInput = document.getElementById('kb-file-input');
+      
+      if (kbUpload && kbFileInput) {
+        kbUpload.addEventListener('click', () => kbFileInput.click());
+        
+        kbUpload.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          kbUpload.classList.add('dragover');
+        });
+        
+        kbUpload.addEventListener('dragleave', () => {
+          kbUpload.classList.remove('dragover');
+        });
+        
+        kbUpload.addEventListener('drop', (e) => {
+          e.preventDefault();
+          kbUpload.classList.remove('dragover');
+          handleFileUpload(e.dataTransfer.files);
+        });
+        
+        kbFileInput.addEventListener('change', (e) => {
+          handleFileUpload(e.target.files);
+        });
+      }
+    }
+
+    function addListItem(containerId, type) {
+      const container = document.getElementById(containerId);
+      const name = prompt(`Enter ${type} name:`);
+      if (!name) return;
+
+      const content = prompt(`Enter ${type} content or path:`);
+      if (content === null) return;
+
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      item.innerHTML = `
+        <div class="list-item-content">
+          <div class="list-item-title">${name}</div>
+          <div class="list-item-meta">${type}</div>
+        </div>
+        <button onclick="this.parentElement.remove(); triggerAutosave();">Remove</button>
+      `;
+      item.dataset.name = name;
+      item.dataset.content = content;
+      container.appendChild(item);
+      triggerAutosave();
+    }
+
+    function addEnvVar() {
+      const container = document.getElementById('recipe-env-vars');
+      const row = document.createElement('div');
+      row.className = 'kv-row';
+      row.innerHTML = `
+        <input type="text" placeholder="KEY" class="env-key">
+        <input type="text" placeholder="value" class="env-value">
+        <button onclick="this.parentElement.remove(); triggerAutosave();">×</button>
+      `;
+      container.appendChild(row);
+    }
+
+    function addKBDocument() {
+      const name = prompt('Enter document name:');
+      if (!name) return;
+
+      const source = prompt('Enter URL or paste content:');
+      if (!source) return;
+
+      const container = document.getElementById('kb-documents');
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      item.innerHTML = `
+        <div class="list-item-content">
+          <div class="list-item-title">${name}</div>
+          <div class="list-item-meta">${source.startsWith('http') ? 'URL' : 'Text'}</div>
+        </div>
+        <button onclick="this.parentElement.remove(); triggerAutosave();">Remove</button>
+      `;
+      item.dataset.name = name;
+      item.dataset.content = source;
+      container.appendChild(item);
+      triggerAutosave();
+    }
+
+    function handleFileUpload(files) {
+      const container = document.getElementById('kb-documents');
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const item = document.createElement('div');
+          item.className = 'list-item';
+          item.innerHTML = `
+            <div class="list-item-content">
+              <div class="list-item-title">${file.name}</div>
+              <div class="list-item-meta">${(file.size / 1024).toFixed(1)} KB</div>
+            </div>
+            <button onclick="this.parentElement.remove(); triggerAutosave();">Remove</button>
+          `;
+          item.dataset.name = file.name;
+          item.dataset.content = e.target.result;
+          container.appendChild(item);
+          triggerAutosave();
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    function switchToTest() {
+      document.querySelector('[data-tab="test"]').click();
+    }
+
+    function setupChat() {
+      const input = document.getElementById('chat-input');
+      const sendBtn = document.getElementById('chat-send');
+      const messages = document.getElementById('chat-messages');
+
+      const sendMessage = async () => {
+        const text = input.value.trim();
+        if (!text) return;
+
+        addChatMessage('user', text);
+        input.value = '';
+
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: 'upstage/solar-pro-3:free',
+              messages: [
+                { role: 'system', content: getSystemPrompt() },
+                { role: 'user', content: text }
+              ]
+            })
+          });
+
+          const data = await response.json();
+          const reply = data.choices?.[0]?.message?.content || 'No response';
+          addChatMessage('assistant', reply);
+        } catch (err) {
+          addChatMessage('assistant', 'Error: ' + err.message);
+        }
+      };
+
+      sendBtn.addEventListener('click', sendMessage);
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+      });
+    }
+
+    function addChatMessage(role, content) {
+      const messages = document.getElementById('chat-messages');
+      const msg = document.createElement('div');
+      msg.className = `chat-message ${role}`;
+      msg.textContent = content;
+      messages.appendChild(msg);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function getSystemPrompt() {
+      // Build system prompt based on current type
+      switch (currentType) {
+        case 'skill':
+          return document.getElementById('skill-content')?.value || 'You are testing a skill.';
+        case 'model':
+          return document.getElementById('model-system-prompt')?.value || 'You are a helpful assistant.';
+        default:
+          return `You are testing a ${currentType}.`;
+      }
+    }
+
+    function setupAutoSave() {
+      // Monitor all inputs
+      document.querySelectorAll('input, textarea, select').forEach(el => {
+        el.addEventListener('input', triggerAutosave);
+        el.addEventListener('change', triggerAutosave);
+      });
+    }
+
+    function triggerAutosave() {
+      clearTimeout(autosaveTimeout);
+      autosaveTimeout = setTimeout(() => {
+        saveDraft(currentType);
+        showAutosaveIndicator();
+      }, 500);
+    }
+
+    window.triggerAutosave = triggerAutosave;
+
+    function showAutosaveIndicator() {
+      const indicator = document.getElementById('autosave-indicator');
+      indicator.classList.add('visible');
+      setTimeout(() => indicator.classList.remove('visible'), 2000);
+    }
+
+    function saveDraft(type) {
+      const data = {};
+      
+      // Generic fields
+      const nameField = document.getElementById(`${type}-name`);
+      const descField = document.getElementById(`${type}-description`);
+      if (nameField) data.name = nameField.value;
+      if (descField) data.description = descField.value;
+
+      // Tags
+      const tagsContainer = document.getElementById(`${type}-tags`);
+      if (tagsContainer) {
+        data.tags = Array.from(tagsContainer.querySelectorAll('.tag-pill span'))
+          .map(span => span.textContent);
+      }
+
+      // Type-specific fields
+      switch (type) {
+        case 'skill':
+          data.content = document.getElementById('skill-content')?.value;
+          data.scripts = getListItems('skill-scripts');
+          data.references = getListItems('skill-references');
+          data.assets = getListItems('skill-assets');
+          break;
+        case 'plugin':
+          data.platform = document.getElementById('plugin-platform')?.value;
+          data.rules = document.getElementById('plugin-rules')?.value;
+          data.files = getListItems('plugin-files');
+          break;
+        case 'tool':
+          data.inputSchema = document.getElementById('tool-input-schema')?.value;
+          data.outputSchema = document.getElementById('tool-output-schema')?.value;
+          data.language = document.getElementById('tool-language')?.value;
+          data.implementation = document.getElementById('tool-implementation')?.value;
+          data.packages = {
+            mcp: document.getElementById('tool-package-mcp')?.checked,
+            rest: document.getElementById('tool-package-rest')?.checked,
+            skill: document.getElementById('tool-package-skill')?.checked,
+            acp: document.getElementById('tool-package-acp')?.checked
+          };
+          break;
+        case 'model':
+          data.base = document.getElementById('model-base')?.value;
+          data.systemPrompt = document.getElementById('model-system-prompt')?.value;
+          data.temperature = document.getElementById('model-temperature')?.value;
+          data.topP = document.getElementById('model-topp')?.value;
+          data.maxTokens = document.getElementById('model-max-tokens')?.value;
+          data.tools = getListItems('model-tools');
+          data.knowledge = getListItems('model-knowledge');
+          break;
+        case 'recipe':
+          data.serverType = document.getElementById('recipe-server-type')?.value;
+          data.prerequisites = getListItems('recipe-prerequisites');
+          data.envVars = getEnvVars();
+          data.notes = document.getElementById('recipe-notes')?.value;
+          data.config = document.getElementById('recipe-config')?.value;
+          break;
+        case 'knowledge':
+          data.documents = getListItems('kb-documents');
+          break;
+        case 'server':
+          data.framework = document.getElementById('server-framework')?.value;
+          data.config = document.getElementById('server-config')?.value;
+          break;
+      }
+
+      localStorage.setItem(`vibeclaw-${type}-draft`, JSON.stringify(data));
+    }
+
+    function loadDraft(type) {
+      const saved = localStorage.getItem(`vibeclaw-${type}-draft`);
+      if (!saved) return;
+
+      try {
+        const data = JSON.parse(saved);
+
+        // Generic fields
+        const nameField = document.getElementById(`${type}-name`);
+        const descField = document.getElementById(`${type}-description`);
+        if (nameField && data.name) nameField.value = data.name;
+        if (descField && data.description) descField.value = data.description;
+
+        // Tags
+        const tagsContainer = document.getElementById(`${type}-tags`);
+        if (tagsContainer && data.tags) {
+          // Clear existing tags
+          tagsContainer.querySelectorAll('.tag-pill').forEach(pill => pill.remove());
+          data.tags.forEach(tag => addTag(tagsContainer, tag));
+        }
+
+        // Type-specific fields
+        switch (type) {
+          case 'skill':
+            if (data.content) document.getElementById('skill-content').value = data.content;
+            // TODO: Restore list items
+            break;
+          case 'model':
+            if (data.base) document.getElementById('model-base').value = data.base;
+            if (data.systemPrompt) document.getElementById('model-system-prompt').value = data.systemPrompt;
+            if (data.temperature) {
+              document.getElementById('model-temperature').value = data.temperature;
+              document.getElementById('model-temp-value').textContent = data.temperature;
+            }
+            if (data.topP) {
+              document.getElementById('model-topp').value = data.topP;
+              document.getElementById('model-topp-value').textContent = data.topP;
+            }
+            if (data.maxTokens) document.getElementById('model-max-tokens').value = data.maxTokens;
+            break;
+          // Add other types...
+        }
+      } catch (err) {
+        console.error('Failed to load draft:', err);
+      }
+    }
+
+    function getListItems(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return [];
+      return Array.from(container.querySelectorAll('.list-item')).map(item => ({
+        name: item.dataset.name,
+        content: item.dataset.content
+      }));
+    }
+
+    function getEnvVars() {
+      const rows = document.querySelectorAll('#recipe-env-vars .kv-row');
+      const vars = {};
+      rows.forEach(row => {
+        const key = row.querySelector('.env-key')?.value;
+        const value = row.querySelector('.env-value')?.value;
+        if (key) vars[key] = value;
+      });
+      return vars;
+    }
+
+    // Download functions
+    function downloadSkill() {
+      const name = document.getElementById('skill-name').value || 'skill';
+      const content = document.getElementById('skill-content').value;
+      downloadFile(`${name}/SKILL.md`, content);
+    }
+
+    function downloadPlugin() {
+      const name = document.getElementById('plugin-name').value || 'plugin';
+      const rules = document.getElementById('plugin-rules').value;
+      downloadFile(`${name}/.clinerules`, rules);
+    }
+
+    function downloadTool() {
+      const name = document.getElementById('tool-name').value || 'tool';
+      const impl = document.getElementById('tool-implementation').value;
+      downloadFile(`${name}.js`, impl);
+    }
+
+    function downloadModel() {
+      const name = document.getElementById('model-name').value || 'model';
+      const config = {
+        name,
+        base: document.getElementById('model-base').value,
+        systemPrompt: document.getElementById('model-system-prompt').value,
+        temperature: parseFloat(document.getElementById('model-temperature').value),
+        topP: parseFloat(document.getElementById('model-topp').value),
+        maxTokens: parseInt(document.getElementById('model-max-tokens').value)
+      };
+      downloadFile(`${name}-config.json`, JSON.stringify(config, null, 2));
+    }
+
+    function downloadRecipe() {
+      const name = document.getElementById('recipe-name').value || 'recipe';
+      const config = document.getElementById('recipe-config').value;
+      downloadFile(`${name}-recipe.json`, config);
+    }
+
+    function downloadKnowledgeBase() {
+      const name = document.getElementById('kb-name').value || 'knowledge';
+      const docs = getListItems('kb-documents');
+      downloadFile(`${name}-kb.json`, JSON.stringify(docs, null, 2));
+    }
+
+    function downloadServer() {
+      const name = document.getElementById('server-name').value || 'server';
+      const config = document.getElementById('server-config').value;
+      downloadFile(`${name}-config.json`, config);
+    }
+
+    function downloadFile(filename, content) {
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function publishItem(type) {
+      alert(`Publishing ${type} to VibeClaw (requires login - coming soon!)`);
+    }
+
+    // Initialize on load
+    init();
+  </script>
+</body>
+</html>

@@ -23,6 +23,26 @@
   status = 200
 
 [[redirects]]
+  from = "/api/items/*"
+  to = "/.netlify/functions/items/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/explore"
+  to = "/explore.html"
+  status = 200
+
+[[redirects]]
+  from = "/create"
+  to = "/create.html"
+  status = 200
+
+[[redirects]]
+  from = "/create/*"
+  to = "/create.html"
+  status = 200
+
+[[redirects]]
   from = "/api/wallpapers"
   to = "/.netlify/functions/wallpapers"
   status = 200

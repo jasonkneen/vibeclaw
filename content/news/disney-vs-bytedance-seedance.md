@@ -7,6 +7,13 @@ image: /news/disney-seedance.png
 summary: "Disney's sent a cease and desist over ByteDance's new Seedance 2.0 model generating Spider-Man and Darth Vader videos. The AI copyright wars heat up."
 source: "https://www.axios.com/2026/02/13/disney-bytedance-seedance"
 sourceLabel: "Axios"
+sources:
+  - url: "https://www.axios.com/2026/02/13/disney-bytedance-seedance"
+    label: "Disney accuses Bytedance of character infringement - Axios"
+  - url: "https://www.theverge.com"
+    label: "The Verge - Technology News"
+  - url: "https://www.theverge.com/ai-artificial-intelligence/877931/bytedance-seedance-2-video-generator-ai-launch"
+    label: "ByteDance Seedance 2 video generator AI launch - The Verge"
 ---
 
 The AI copyright battle just got a new front. **Disney has hit ByteDance with a cease and desist** over their new Seedance 2.0 AI video generation model, which can apparently generate videos featuring Spider-Man, Darth Vader, and other Disney-owned characters.
@@ -44,3 +51,9 @@ Stick to text models for now. The copyright landscape for image and video AI is 
 
 - [Axios: Disney vs ByteDance](https://www.axios.com/2026/02/13/disney-bytedance-seedance)
 - [ByteDance Seedance 2.0 Launch](https://www.theverge.com/ai-artificial-intelligence/877931/bytedance-seedance-2-video-generator-ai-launch)
+
+## Sources
+
+1. [Disney accuses Bytedance of character infringement - Axios](https://www.axios.com/2026/02/13/disney-bytedance-seedance)
+2. [The Verge - Technology News](https://www.theverge.com)
+3. [ByteDance Seedance 2 video generator AI launch - The Verge](https://www.theverge.com/ai-artificial-intelligence/877931/bytedance-seedance-2-video-generator-ai-launch)

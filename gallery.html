@@ -79,6 +79,15 @@
     .footer { border-top: 1px solid var(--border); padding: 24px; text-align: center; font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); }
     .footer a { color: var(--text-dim); }
     .footer a:hover { color: var(--accent); }
+    @media (max-width: 600px) {
+      .nav { padding: 10px 12px; }
+      .nav-logo img { height: 28px !important; }
+      .nav-links { gap: 10px; }
+      .nav-links a { font-size: 0.6rem; }
+      .page { padding: 20px 12px 40px; }
+      .page-header h1 { font-size: 1.4rem; }
+      .gallery { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>

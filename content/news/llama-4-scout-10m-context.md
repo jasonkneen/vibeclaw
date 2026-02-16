@@ -7,6 +7,13 @@ image: /news/llama-4-scout.png
 summary: "Meta drops Llama 4 Scout with 10 million token context and 16 mixture-of-experts — and it runs on a single H100."
 source: "https://huggingface.co/meta-llama"
 sourceLabel: "HuggingFace"
+sources:
+  - url: "https://huggingface.co/meta-llama"
+    label: "Meta Llama Models on Hugging Face"
+  - url: "https://github.com/meta-llama/llama"
+    label: "Meta Llama GitHub Repository"
+  - url: "https://github.com/meta-llama/llama-models"
+    label: "Llama Models - Central Repository for Foundation Models"
 ---
 
 Meta just released **Llama 4 Scout**, and it's a big deal for open-source AI.
@@ -33,3 +40,9 @@ Boot a sandbox at [vibeclaw.dev](https://vibeclaw.dev) and test Llama models wit
 
 - [HuggingFace: meta-llama](https://huggingface.co/meta-llama)
 - [Meta AI Blog](https://ai.meta.com/blog/)
+
+## Sources
+
+1. [Meta Llama Models on Hugging Face](https://huggingface.co/meta-llama)
+2. [Meta Llama GitHub Repository](https://github.com/meta-llama/llama)
+3. [Llama Models - Central Repository for Foundation Models](https://github.com/meta-llama/llama-models)

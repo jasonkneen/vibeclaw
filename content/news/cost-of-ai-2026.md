@@ -7,6 +7,13 @@ image: /news/cost-of-ai.png
 summary: "We crunched the numbers on running AI agents with free vs paid models. The gap is smaller than you think."
 source: "https://openrouter.ai/models"
 sourceLabel: "OpenRouter"
+sources:
+  - url: "https://openrouter.ai/models"
+    label: "OpenRouter Model Pricing"
+  - url: "https://claude.com/pricing"
+    label: "Anthropic Claude Pricing"
+  - url: "https://openai.com/api/pricing/"
+    label: "OpenAI API Pricing"
 ---
 
 Everyone assumes you need expensive models to build useful AI agents. **We disagree.**
@@ -75,3 +82,9 @@ You don't need a $500/month AI budget to build useful agents. Start free. Upgrad
 
 - [OpenRouter Pricing](https://openrouter.ai/models)
 - [Start free at VibeClaw](https://vibeclaw.dev)
+
+## Sources
+
+1. [OpenRouter Model Pricing](https://openrouter.ai/models)
+2. [Anthropic Claude Pricing](https://claude.com/pricing)
+3. [OpenAI API Pricing](https://openai.com/api/pricing/)

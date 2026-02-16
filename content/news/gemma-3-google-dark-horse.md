@@ -7,6 +7,13 @@ image: /news/gemma-3.png
 summary: "Everyone's watching Llama and Qwen. Meanwhile, Google's Gemma 3 quietly became the best small model you can run on consumer hardware."
 source: "https://huggingface.co/google/gemma-3-27b-it"
 sourceLabel: "HuggingFace"
+sources:
+  - url: "https://huggingface.co/google/gemma-3-27b-it"
+    label: "Gemma 3 27B Model Card on Hugging Face"
+  - url: "https://blog.google/innovation-and-ai/technology/ai/"
+    label: "Google AI Blog"
+  - url: "https://ai.google.dev/gemma/docs/core"
+    label: "Gemma Documentation - Google AI for Developers"
 ---
 
 Google doesn't get enough credit for Gemma. While Meta and Alibaba dominate the open-source AI headlines, **Gemma 3** has been quietly winning on the metrics that matter for real-world use.
@@ -52,3 +59,9 @@ Gemma 3 4B is free on OpenRouter and available in [VibeClaw](https://vibeclaw.de
 
 - [HuggingFace: google/gemma-3](https://huggingface.co/google/gemma-3-27b-it)
 - [Google AI Blog](https://blog.google/technology/ai/)
+
+## Sources
+
+1. [Gemma 3 27B Model Card on Hugging Face](https://huggingface.co/google/gemma-3-27b-it)
+2. [Google AI Blog](https://blog.google/innovation-and-ai/technology/ai/)
+3. [Gemma Documentation - Google AI for Developers](https://ai.google.dev/gemma/docs/core)

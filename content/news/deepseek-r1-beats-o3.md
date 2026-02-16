@@ -7,6 +7,13 @@ image: /news/deepseek-r1.png
 summary: "DeepSeek's R1 model matches or beats OpenAI's o3 on math and coding — and it's completely free."
 source: "https://huggingface.co/deepseek-ai"
 sourceLabel: "HuggingFace"
+sources:
+  - url: "https://huggingface.co/deepseek-ai/DeepSeek-R1"
+    label: "DeepSeek-R1 Model Card on Hugging Face"
+  - url: "https://arxiv.org/abs/2501.12948"
+    label: "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning (arXiv)"
+  - url: "https://www.deepseek.com"
+    label: "DeepSeek Official Website"
 ---
 
 DeepSeek just dropped the **R1 0528 update**, and it's embarrassing some very expensive proprietary models.
@@ -35,3 +42,9 @@ R1 is one of the free models available in the [VibeClaw sandbox](https://vibecla
 
 - [HuggingFace: deepseek-ai](https://huggingface.co/deepseek-ai)
 - [DeepSeek R1 Paper](https://arxiv.org/abs/2501.12948)
+
+## Sources
+
+1. [DeepSeek-R1 Model Card on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1)
+2. [DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning (arXiv)](https://arxiv.org/abs/2501.12948)
+3. [DeepSeek Official Website](https://www.deepseek.com)

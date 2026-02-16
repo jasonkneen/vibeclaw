@@ -15,15 +15,15 @@ Meta just released **Llama 4 Scout**, and it's a big deal for open-source AI.
 
 - **109B parameters** with 16 mixture-of-experts (MoE) — only 17B active at any time
 - **10 million token context window** — that's roughly 30 full novels
-- Runs on a **single H100 GPU** thanks to the MoE architecture
-- Beats Gemma 3, Qwen 2.5, and GPT-4o on most benchmarks
-- Licensed under Meta's community license (free for most use)
+- **MoE architecture** means lower compute per token than a dense 109B model
+- **Natively multimodal** — handles text and images
+- Licensed under the **Llama 4 Community License** (commercial use allowed)
 
 ## Why It Matters
 
-The 10M context window is the headline, but the real story is efficiency. By using mixture-of-experts, Meta gets GPT-4 class performance while only activating 17B parameters per token. That means you can run this on hardware that would choke on a dense 109B model.
+The 10M context window is the headline, but the real story is efficiency. By using mixture-of-experts, Meta gets strong performance while only activating 17B parameters per token — far less compute than a dense 109B model would require.
 
-For OpenClaw users, this means you can run a genuinely powerful model locally without renting a GPU cluster.
+There's also Llama 4 Maverick (17B x 128 experts, 400B total) with a 1M context window for even more capable workloads.
 
 ## Try It in VibeClaw
 

@@ -1,10 +1,10 @@
 ---
-title: "Qwen3 235B: Hybrid Thinking Across 119 Languages"
+title: "Qwen3 235B: Hybrid Thinking in Eight Open-Source Models"
 date: 2026-02-12
 tags: [models, alibaba, multilingual, open-source]
 author: VibeClaw
 image: /news/qwen3-235b.png
-summary: "Alibaba's Qwen3 brings a novel hybrid thinking mode — toggle between fast responses and deep reasoning on the fly."
+summary: "Alibaba's Qwen3 family brings hybrid thinking — toggle between fast responses and deep reasoning. Eight models, all Apache 2.0."
 source: "https://qwenlm.github.io/blog/qwen3/"
 sourceLabel: "Qwen Blog"
 ---
@@ -20,20 +20,21 @@ Most reasoning models are always-on thinkers. They burn through tokens deliberat
 
 You can switch mid-conversation, or let the model decide based on query complexity.
 
-## 119 Languages
+## Broad Multilingual Support
 
-Qwen3 isn't just big — it's the most multilingual open model available. 119 languages with genuine competence, not just "technically supports" quality.
-
-For teams building agents that serve global users, this matters.
+Qwen3 is one of the most multilingual open model families available, with support for a wide range of languages. For teams building agents that serve global users, this matters.
 
 ## The Model Family
 
-| Model | Parameters | Active | License |
-|-------|-----------|--------|---------|
-| Qwen3 235B | 235B | 22B (MoE) | Apache 2.0 |
-| Qwen3 32B | 32B | 32B (dense) | Apache 2.0 |
-| Qwen3 8B | 8B | 8B (dense) | Apache 2.0 |
-| Qwen3 4B | 4B | 4B (dense) | Apache 2.0 |
+Qwen3 comes in eight variants — two MoE and six dense, all Apache 2.0:
+
+- **Qwen3-235B-A22B** — 235B total, 22B active (MoE, 128 experts)
+- **Qwen3-30B-A3B** — 30B total, 3B active (MoE, 128 experts)
+- **Qwen3-32B** — 32B dense, 128K context
+- **Qwen3-14B** — 14B dense, 128K context
+- **Qwen3-8B** — 8B dense, 128K context
+- **Qwen3-4B** — 4B dense, 32K context
+- Plus 1.7B and 0.6B for edge/mobile
 
 The 8B version is free on OpenRouter and available in VibeClaw.
 

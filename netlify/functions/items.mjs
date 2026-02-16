@@ -259,4 +259,4 @@ export default async (req) => {
   return cors({ error: 'Not found' }, 404);
 };
 
-export const config = { path: '/api/items/*' };
+// Config removed — routing handled by netlify.toml redirects

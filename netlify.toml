@@ -23,9 +23,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/items"
+  to = "/.netlify/functions/items"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/items/*"
   to = "/.netlify/functions/items/:splat"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/explore"

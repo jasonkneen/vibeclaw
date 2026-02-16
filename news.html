@@ -8,12 +8,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Articles — VibeClaw</title>
   <meta name="description" content="AI news, model reviews, and think pieces from VibeClaw. Stay current on open-source AI models, agent frameworks, and the tools shaping the future." />
-  <meta property="og:title" content="VibeClaw News — AI Models, Reviews & Think Pieces">
+  <meta property="og:title" content="VibeClaw Articles — AI Models, Reviews & Think Pieces">
   <meta property="og:description" content="Stay current on open-source AI models, agent frameworks, and the tools shaping the future.">
   <meta property="og:image" content="https://vibeclaw.dev/og-image.png">
   <meta property="og:url" content="https://vibeclaw.dev/news">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="VibeClaw News — AI Models, Reviews & Think Pieces">
+  <meta name="twitter:title" content="VibeClaw Articles — AI Models, Reviews & Think Pieces">
   <meta name="twitter:image" content="https://vibeclaw.dev/og-image.png">
   <link rel="canonical" href="https://vibeclaw.dev/news">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +26,7 @@
       --surface: #111;
       --surface-2: #1a1a1a;
       --border: #222;
+      --border-hover: #444;
       --black: #0a0a0a;
       --text: #999;
       --text-dim: #555;
@@ -49,39 +50,71 @@
     .nav-links a:hover { color: var(--text-bright); text-decoration: none; }
     .nav-links a.active { color: var(--accent); }
 
+    /* Page container */
+    .page { max-width: 1100px; margin: 0 auto; padding: 32px 24px 60px; }
+
     /* Page header */
-    .page-header { padding: 48px 24px 32px; max-width: 900px; margin: 0 auto; }
-    .page-header h1 { font-family: var(--sans); font-size: 2.2rem; font-weight: 800; color: var(--text-bright); margin-bottom: 8px; }
-    .page-header p { font-size: 0.95rem; color: var(--text); line-height: 1.6; }
+    .page-header { margin-bottom: 24px; display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+    .page-header h1 { font-family: var(--sans); font-size: 1.8rem; font-weight: 800; color: var(--text-bright); }
+    .article-count { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); }
 
     /* Tags filter */
-    .tags-bar { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 24px 24px; max-width: 900px; margin: 0 auto; }
-    .tag-btn { font-family: var(--mono); font-size: 0.65rem; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.04em; }
+    .tags-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; }
+    .tag-btn { font-family: var(--mono); font-size: 0.6rem; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.04em; }
     .tag-btn:hover { border-color: var(--accent); color: var(--accent); }
     .tag-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
-    /* Articles grid */
-    .articles { max-width: 900px; margin: 0 auto; padding: 0 24px 60px; display: flex; flex-direction: column; gap: 16px; }
+    /* ── HERO + SIDEBAR ── */
+    .hero-section { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 32px; }
+    @media (min-width: 768px) { .hero-section { grid-template-columns: 3fr 2fr; } }
 
-    /* Article card */
-    .article-card { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; transition: border-color 0.15s; cursor: pointer; }
-    .article-card:hover { border-color: var(--accent); }
-    .article-card.expanded { cursor: default; grid-column: 1 / -1; }
-    .article-header { display: flex; gap: 16px; padding: 20px 24px; align-items: flex-start; }
-    .article-emoji { font-size: 2rem; flex-shrink: 0; line-height: 1; }
-    .article-img { width: 100%; max-height: 280px; object-fit: cover; border-bottom: 1px solid var(--border); }
-    .article-meta { flex: 1; }
-    .article-title { font-family: var(--sans); font-size: 1.15rem; font-weight: 700; color: var(--text-bright); line-height: 1.3; margin-bottom: 6px; }
-    .article-info { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    .article-date { font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); }
-    .article-tag { font-family: var(--mono); font-size: 0.55rem; padding: 2px 8px; border-radius: 10px; background: var(--accent-dim); color: var(--accent); text-transform: uppercase; letter-spacing: 0.03em; }
-    .article-summary { font-family: var(--mono); font-size: 0.78rem; color: var(--text); line-height: 1.6; padding: 0 24px 16px; }
+    /* Hero card */
+    .hero-card { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); overflow: hidden; cursor: pointer; transition: border-color 0.2s; position: relative; }
+    .hero-card:hover { border-color: var(--accent); }
+    .hero-card.expanded { cursor: default; }
+    .hero-img { width: 100%; height: 320px; object-fit: cover; }
+    .hero-content { padding: 24px; }
+    .hero-label { font-family: var(--mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; }
+    .hero-title { font-family: var(--sans); font-size: 1.6rem; font-weight: 800; color: var(--text-bright); line-height: 1.25; margin-bottom: 10px; }
+    .hero-summary { font-family: var(--mono); font-size: 0.82rem; color: var(--text); line-height: 1.6; margin-bottom: 12px; }
+    .hero-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* Sidebar list */
+    .sidebar { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); overflow: hidden; }
+    .sidebar-header { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); padding: 14px 16px 10px; border-bottom: 1px solid var(--border); }
+    .sidebar-item { display: flex; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; align-items: flex-start; }
+    .sidebar-item:last-child { border-bottom: none; }
+    .sidebar-item:hover { background: var(--surface-2); }
+    .sidebar-thumb { width: 72px; height: 50px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+    .sidebar-text { flex: 1; min-width: 0; }
+    .sidebar-title { font-family: var(--sans); font-size: 0.82rem; font-weight: 700; color: var(--text-bright); line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .sidebar-date { font-family: var(--mono); font-size: 0.55rem; color: var(--text-dim); }
+
+    /* ── MORE STORIES GRID ── */
+    .more-section { margin-top: 8px; }
+    .section-header { font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .section-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+    .more-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    @media (min-width: 600px) { .more-grid { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 900px) { .more-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+    /* Standard card */
+    .card { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; cursor: pointer; transition: border-color 0.15s; display: flex; flex-direction: column; }
+    .card:hover { border-color: var(--accent); }
+    .card.expanded { cursor: default; grid-column: 1 / -1; }
+    .card-img { width: 100%; height: 160px; object-fit: cover; }
+    .card-content { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+    .card-title { font-family: var(--sans); font-size: 0.95rem; font-weight: 700; color: var(--text-bright); line-height: 1.3; margin-bottom: 6px; }
+    .card-summary { font-family: var(--mono); font-size: 0.72rem; color: var(--text); line-height: 1.5; flex: 1; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; }
+    .card-date { font-family: var(--mono); font-size: 0.55rem; color: var(--text-dim); }
+    .card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+    .tag { font-family: var(--mono); font-size: 0.5rem; padding: 2px 6px; border-radius: 8px; background: var(--accent-dim); color: var(--accent); text-transform: uppercase; letter-spacing: 0.03em; }
 
     /* Article body (expanded) */
-    .article-body { display: none; padding: 0 24px 24px; border-top: 1px solid var(--border); margin-top: 0; }
-    .article-card.expanded .article-body { display: block; padding-top: 20px; }
-    .article-body h1, .article-body h2, .article-body h3, .article-body h4 {
-      font-family: var(--sans); color: var(--text-bright); margin: 20px 0 8px; }
+    .article-body { display: none; padding: 20px 24px 24px; border-top: 1px solid var(--border); }
+    .expanded .article-body { display: block; }
+    .article-body h1, .article-body h2, .article-body h3, .article-body h4 { font-family: var(--sans); color: var(--text-bright); margin: 20px 0 8px; }
     .article-body h2 { font-size: 1.2rem; }
     .article-body h3 { font-size: 1rem; }
     .article-body p { font-size: 0.85rem; line-height: 1.7; margin-bottom: 12px; color: var(--text); }
@@ -96,8 +129,6 @@
     .article-body table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-family: var(--mono); font-size: 0.75rem; }
     .article-body td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
     .article-body hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
-
-    /* Collapse button */
     .collapse-btn { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; cursor: pointer; margin-top: 16px; transition: all 0.15s; }
     .collapse-btn:hover { border-color: var(--accent); color: var(--accent); }
 
@@ -106,29 +137,16 @@
     .footer a { color: var(--text-dim); }
     .footer a:hover { color: var(--accent); }
 
-    /* Article count */
-    .article-count { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); margin-top: 8px; }
-
-    /* Date group header */
-    .date-header { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; padding: 20px 0 8px; border-bottom: 1px solid var(--border); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .date-header:first-child { padding-top: 0; }
-    .date-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-
-    /* Article grid for 2-col on wider screens */
-    .article-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 8px; }
-    @media (min-width: 700px) { .article-grid { grid-template-columns: 1fr 1fr; } }
-
-    /* Empty state */
-    .empty { text-align: center; padding: 60px 24px; }
+    /* Empty */
+    .empty { text-align: center; padding: 60px 24px; grid-column: 1 / -1; }
     .empty-emoji { font-size: 3rem; margin-bottom: 12px; }
     .empty h2 { font-family: var(--sans); font-size: 1.2rem; color: var(--text-bright); margin-bottom: 8px; }
     .empty p { font-size: 0.85rem; color: var(--text-dim); }
 
     @media (max-width: 600px) {
-      .page-header h1 { font-size: 1.6rem; }
-      .article-header { padding: 16px; }
-      .article-summary { padding: 0 16px 12px; }
-      .article-body { padding: 0 16px 16px; }
+      .hero-img { height: 200px; }
+      .hero-title { font-size: 1.3rem; }
+      .hero-content { padding: 16px; }
     }
   </style>
 </head>
@@ -143,19 +161,19 @@
     </div>
   </nav>
 
-  <div class="page-header">
-    <h1>📡 Articles</h1>
-    <p>Model drops, reviews, think pieces, and everything happening in open-source AI and the OpenClaw ecosystem.</p>
-    <div class="article-count" id="article-count"></div>
-  </div>
-
-  <div class="tags-bar" id="tags-bar"></div>
-
-  <div class="articles" id="articles">
-    <div class="empty">
-      <div class="empty-emoji">📰</div>
-      <h2>Loading articles…</h2>
+  <div class="page">
+    <div class="page-header">
+      <h1>📡 Articles</h1>
+      <span class="article-count" id="article-count"></span>
     </div>
+
+    <div class="tags-bar" id="tags-bar"></div>
+
+    <!-- Hero + Sidebar -->
+    <div id="hero-section"></div>
+
+    <!-- More Stories -->
+    <div id="more-section"></div>
   </div>
 
   <div class="footer">
@@ -170,11 +188,9 @@
       try {
         const resp = await fetch('/news-data.json');
         articles = await resp.json();
-      } catch {
-        articles = [];
-      }
+      } catch { articles = []; }
       renderTags();
-      renderArticles();
+      render();
     }
 
     function renderTags() {
@@ -187,24 +203,82 @@
     function filterTag(tag) {
       activeTag = tag;
       renderTags();
-      renderArticles();
+      render();
     }
 
-    function renderArticles() {
-      const container = document.getElementById('articles');
-      const countEl = document.getElementById('article-count');
-      const filtered = activeTag ? articles.filter(a => a.tags.includes(activeTag)) : articles;
+    function fmtDate(d) {
+      return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    }
 
+    function tagHtml(tags) {
+      return tags.slice(0, 2).map(t => `<span class="tag">${t}</span>`).join('');
+    }
+
+    function bodyHtml(a) {
+      return `<div class="article-body">${a.html}<button class="collapse-btn" onclick="collapseArticle('${a.slug}', event)">↑ Collapse</button></div>`;
+    }
+
+    function render() {
+      const filtered = activeTag ? articles.filter(a => a.tags.includes(activeTag)) : articles;
+      const countEl = document.getElementById('article-count');
       if (countEl) countEl.textContent = `${filtered.length} article${filtered.length !== 1 ? 's' : ''}`;
 
+      const heroEl = document.getElementById('hero-section');
+      const moreEl = document.getElementById('more-section');
+
       if (!filtered.length) {
-        container.innerHTML = `<div class="empty"><div class="empty-emoji">🔍</div><h2>No articles found</h2><p>Try a different tag or check back later.</p></div>`;
+        heroEl.innerHTML = '';
+        moreEl.innerHTML = `<div class="empty"><div class="empty-emoji">🔍</div><h2>No articles found</h2><p>Try a different tag.</p></div>`;
         return;
       }
 
+      // Hero = first article, sidebar = next 4, rest = grid
+      const hero = filtered[0];
+      const sidebar = filtered.slice(1, 5);
+      const rest = filtered.slice(5);
+
+      const heroImg = hero.image && hero.image.startsWith('/');
+
+      heroEl.innerHTML = `
+        <div class="hero-section">
+          <div class="hero-card" id="article-${hero.slug}" onclick="toggleArticle('${hero.slug}')">
+            ${heroImg ? `<img class="hero-img" src="${hero.image}" alt="${hero.title}" loading="lazy">` : ''}
+            <div class="hero-content">
+              <div class="hero-label">Featured · ${fmtDate(hero.date)}</div>
+              <div class="hero-title">${hero.title}</div>
+              <div class="hero-summary">${hero.summary}</div>
+              <div class="hero-tags">${tagHtml(hero.tags)}</div>
+            </div>
+            ${bodyHtml(hero)}
+          </div>
+          ${sidebar.length ? `
+          <div class="sidebar">
+            <div class="sidebar-header">Latest</div>
+            ${sidebar.map(a => {
+              const img = a.image && a.image.startsWith('/');
+              return `
+              <div class="sidebar-item" onclick="scrollToArticle('${a.slug}')">
+                ${img ? `<img class="sidebar-thumb" src="${a.image}" alt="" loading="lazy">` : ''}
+                <div class="sidebar-text">
+                  <div class="sidebar-title">${a.title}</div>
+                  <div class="sidebar-date">${fmtDate(a.date)}</div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>` : ''}
+        </div>`;
+
+      if (!rest.length && !sidebar.length) {
+        moreEl.innerHTML = '';
+        return;
+      }
+
+      // Combine sidebar + rest for the grid below
+      const gridItems = [...sidebar, ...rest];
+
       // Group by date
       const groups = {};
-      for (const a of filtered) {
+      for (const a of gridItems) {
         if (!groups[a.date]) groups[a.date] = [];
         groups[a.date].push(a);
       }
@@ -212,39 +286,36 @@
       let html = '';
       for (const [date, items] of Object.entries(groups)) {
         const d = new Date(date);
-        const label = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        html += `<div class="date-header"><span class="date-dot"></span>${label}</div>`;
-        html += `<div class="article-grid">`;
+        const label = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+        html += `<div class="section-header"><span class="section-dot"></span>${label}</div>`;
+        html += `<div class="more-grid">`;
         html += items.map(a => {
-          const isImg = a.image && a.image.startsWith('/');
+          const img = a.image && a.image.startsWith('/');
           return `
-          <div class="article-card" id="article-${a.slug}" onclick="toggleArticle('${a.slug}', event)">
-            ${isImg ? `<img class="article-img" src="${a.image}" alt="${a.title}" loading="lazy">` : ''}
-            <div class="article-header">
-              ${!isImg ? `<div class="article-emoji">${a.image}</div>` : ''}
-              <div class="article-meta">
-                <div class="article-title">${a.title}</div>
-                <div class="article-info">
-                  ${a.tags.map(t => `<span class="article-tag">${t}</span>`).join('')}
-                </div>
+          <div class="card" id="article-${a.slug}" onclick="toggleArticle('${a.slug}')">
+            ${img ? `<img class="card-img" src="${a.image}" alt="${a.title}" loading="lazy">` : ''}
+            <div class="card-content">
+              <div class="card-title">${a.title}</div>
+              <div class="card-summary">${a.summary}</div>
+              <div class="card-footer">
+                <span class="card-date">${fmtDate(a.date)}</span>
+                <div class="card-tags">${tagHtml(a.tags)}</div>
               </div>
             </div>
-            <div class="article-summary">${a.summary}</div>
-            <div class="article-body">
-              ${a.html}
-              <button class="collapse-btn" onclick="collapseArticle('${a.slug}', event)">↑ Collapse</button>
-            </div>
-          </div>
-        `}).join('');
+            ${bodyHtml(a)}
+          </div>`;
+        }).join('');
         html += `</div>`;
       }
-      container.innerHTML = html;
+
+      moreEl.innerHTML = `<div class="more-section">${html}</div>`;
     }
 
-    function toggleArticle(slug, e) {
+    function toggleArticle(slug) {
       const card = document.getElementById('article-' + slug);
-      if (card.classList.contains('expanded')) return;
+      if (!card || card.classList.contains('expanded')) return;
       card.classList.add('expanded');
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function collapseArticle(slug, e) {
@@ -252,6 +323,14 @@
       const card = document.getElementById('article-' + slug);
       card.classList.remove('expanded');
       card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function scrollToArticle(slug) {
+      const card = document.getElementById('article-' + slug);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => toggleArticle(slug), 400);
+      }
     }
 
     loadArticles();

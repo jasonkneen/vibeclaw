@@ -5,6 +5,8 @@ tags: [think-piece, pricing, comparison]
 author: VibeClaw
 image: /news/cost-of-ai.png
 summary: "We crunched the numbers on running AI agents with free vs paid models. The gap is smaller than you think."
+source: "https://openrouter.ai/models"
+sourceLabel: "OpenRouter"
 ---
 
 Everyone assumes you need expensive models to build useful AI agents. **We disagree.**

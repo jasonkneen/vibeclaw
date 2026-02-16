@@ -5,6 +5,8 @@ tags: [news, microsoft, industry, automation]
 author: VibeClaw
 image: /news/suleyman-automation.png
 summary: "Mustafa Suleyman claims AI will automate most desk jobs within 18 months. Bold prediction or hype? We break it down."
+source: "https://www.ft.com/content/f1ec830c-2f08-4b1a-b70f-7330f260753c"
+sourceLabel: "Financial Times"
 ---
 
 Microsoft AI CEO Mustafa Suleyman made a striking claim to the Financial Times:

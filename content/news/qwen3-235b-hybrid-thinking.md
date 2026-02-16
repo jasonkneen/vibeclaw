@@ -5,6 +5,8 @@ tags: [models, alibaba, multilingual, open-source]
 author: VibeClaw
 image: /news/qwen3-235b.png
 summary: "Alibaba's Qwen3 brings a novel hybrid thinking mode — toggle between fast responses and deep reasoning on the fly."
+source: "https://qwenlm.github.io/blog/qwen3/"
+sourceLabel: "Qwen Blog"
 ---
 
 Alibaba's **Qwen3 235B** introduces something genuinely new: **hybrid thinking mode**.

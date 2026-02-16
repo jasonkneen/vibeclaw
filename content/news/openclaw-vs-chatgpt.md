@@ -5,6 +5,8 @@ tags: [openclaw, comparison, chatgpt]
 author: VibeClaw
 image: /news/openclaw-vs-chatgpt.png
 summary: "ChatGPT is great. OpenClaw is different. Here's an honest comparison of when each one makes sense."
+source: "https://docs.openclaw.ai"
+sourceLabel: "OpenClaw Docs"
 ---
 
 This isn't a hit piece on ChatGPT. It's genuinely excellent. But OpenClaw solves a different problem. Here's when to use which.

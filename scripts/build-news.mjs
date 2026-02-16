@@ -93,6 +93,8 @@ try {
       author: meta.author || 'VibeClaw',
       image: meta.image || '📰',
       summary: meta.summary || '',
+      source: meta.source || '',
+      sourceLabel: meta.sourceLabel || '',
       html: md2html(body),
     };
   });

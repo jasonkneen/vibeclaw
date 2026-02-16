@@ -5,6 +5,8 @@ tags: [openclaw, skills, ecosystem]
 author: VibeClaw
 image: /news/openclaw-skills.png
 summary: "OpenClaw's skill system is where it gets interesting. Here's a tour of what's available and how to find what you need."
+source: "https://clawhub.com"
+sourceLabel: "ClawHub"
 ---
 
 OpenClaw's core is the agent loop. Skills are what make it *useful*. Think of them as plugins — each one teaches your agent a new capability.

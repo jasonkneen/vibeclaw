@@ -5,6 +5,8 @@ tags: [news, legal, google, voice-ai]
 author: VibeClaw
 image: /news/npr-google-voice.png
 summary: "The former Morning Edition host says Google's NotebookLM podcast voice is an 'uncanny' copy of his. The AI voice cloning debate arrives in court."
+source: "https://www.washingtonpost.com/technology/2026/02/15/david-greene-google-ai-podcast/"
+sourceLabel: "Washington Post"
 ---
 
 David Greene, former host of NPR's Morning Edition and current host of Left, Right & Center, is suing Google. The claim: Google's male podcast host voice in NotebookLM is an unauthorised copy of his voice.

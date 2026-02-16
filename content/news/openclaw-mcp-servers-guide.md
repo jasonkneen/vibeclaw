@@ -5,6 +5,8 @@ tags: [openclaw, mcp, guide, tools]
 author: VibeClaw
 image: /news/openclaw-mcp-servers.png
 summary: "OpenClaw supports MCP out of the box. Here are the 10 servers that make your agent genuinely useful."
+source: "https://github.com/modelcontextprotocol/servers"
+sourceLabel: "MCP Server Registry"
 ---
 
 OpenClaw speaks MCP natively. That means any MCP server — official or community — plugs in and works. But with hundreds available, which ones are actually worth installing?

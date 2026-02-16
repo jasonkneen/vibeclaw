@@ -5,6 +5,8 @@ tags: [tutorial, agents, devops, vibeclaw]
 author: VibeClaw
 image: /news/devops-agent.png
 summary: "Step-by-step: use VibeClaw's Forge to build an agent that monitors servers, checks logs, and alerts on failures. No coding required."
+source: "https://docs.openclaw.ai"
+sourceLabel: "OpenClaw Docs"
 ---
 
 You don't need to be a developer to build an AI agent. Here's how to create a useful DevOps monitoring agent in under 3 minutes using VibeClaw's Forge.

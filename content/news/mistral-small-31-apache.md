@@ -5,6 +5,8 @@ tags: [models, mistral, open-source]
 author: VibeClaw
 image: /news/mistral-small.png
 summary: "While everyone argues about Llama vs Qwen, Mistral quietly shipped a 24B model that's faster than both and Apache 2.0 licensed."
+source: "https://huggingface.co/mistralai"
+sourceLabel: "HuggingFace"
 ---
 
 Mistral has a branding problem. Their models are excellent but nobody talks about them. **Mistral Small 3.1** deserves more attention.

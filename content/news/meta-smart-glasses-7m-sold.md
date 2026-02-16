@@ -5,6 +5,8 @@ tags: [news, meta, hardware, wearables]
 author: VibeClaw
 image: /news/meta-glasses.png
 summary: "Meta's Ray-Ban smart glasses hit 7 million units sold, tripling combined 2023-2024 sales. AI wearables are no longer a niche."
+source: "https://finance.yahoo.com/quote/ESLOF/earnings/"
+sourceLabel: "EssilorLuxottica Earnings"
 ---
 
 Remember when smart glasses were a joke? Google Glass was a punchline. Snap Spectacles were a novelty. Now **Meta has sold 7 million AI-powered Ray-Bans in a single year** — triple what they sold in 2023 and 2024 combined.

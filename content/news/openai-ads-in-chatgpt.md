@@ -5,6 +5,8 @@ tags: [news, openai, chatgpt, ethics]
 author: VibeClaw
 image: /news/openai-ads.png
 summary: "An ex-OpenAI researcher publicly criticises the company's move to monetise ChatGPT with advertising. The implications for AI trust are serious."
+source: "https://www.nytimes.com/2026/02/11/opinion/openai-ads-chatgpt.html"
+sourceLabel: "New York Times"
 ---
 
 Zoë Hitzig, a researcher who left OpenAI this week, published an op-ed in the New York Times expressing "deep reservations" about OpenAI's decision to put ads in ChatGPT.

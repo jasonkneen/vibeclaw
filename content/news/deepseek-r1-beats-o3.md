@@ -5,6 +5,8 @@ tags: [models, deepseek, reasoning, open-source]
 author: VibeClaw
 image: /news/deepseek-r1.png
 summary: "DeepSeek's R1 model matches or beats OpenAI's o3 on math and coding — and it's completely free."
+source: "https://huggingface.co/deepseek-ai"
+sourceLabel: "HuggingFace"
 ---
 
 DeepSeek just dropped the **R1 0528 update**, and it's embarrassing some very expensive proprietary models.

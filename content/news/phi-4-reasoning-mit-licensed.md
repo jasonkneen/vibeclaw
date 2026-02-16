@@ -5,6 +5,8 @@ tags: [models, microsoft, reasoning, open-source]
 author: VibeClaw
 image: /news/phi-4-reasoning.png
 summary: "At just 14B parameters, Phi-4 Reasoning punches way above its weight — and it's MIT licensed. No strings attached."
+source: "https://huggingface.co/microsoft"
+sourceLabel: "HuggingFace"
 ---
 
 Microsoft's **Phi-4 Reasoning** might be the most important small model of 2026.

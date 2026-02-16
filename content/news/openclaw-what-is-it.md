@@ -5,6 +5,8 @@ tags: [openclaw, guide, getting-started]
 author: VibeClaw
 image: /news/openclaw-intro.png
 summary: "A no-nonsense guide to OpenClaw — what it is, what it does, how it works, and why it's different from ChatGPT or Copilot."
+source: "https://docs.openclaw.ai"
+sourceLabel: "OpenClaw Docs"
 ---
 
 You've probably heard of ChatGPT and Copilot. OpenClaw is different. Here's the short version:

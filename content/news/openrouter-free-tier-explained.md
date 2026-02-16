@@ -5,6 +5,8 @@ tags: [guide, openrouter, free-models, tutorial]
 author: VibeClaw
 image: /news/openrouter-free.png
 summary: "OpenRouter gives you access to 20+ models for free. Here's what's actually usable, what the limits are, and where the catches hide."
+source: "https://openrouter.ai/models"
+sourceLabel: "OpenRouter"
 ---
 
 OpenRouter is the backbone of VibeClaw's free tier. But "free" always has fine print. Let's break it down.

@@ -5,6 +5,8 @@ tags: [models, google, open-source]
 author: VibeClaw
 image: /news/gemma-3.png
 summary: "Everyone's watching Llama and Qwen. Meanwhile, Google's Gemma 3 quietly became the best small model you can run on consumer hardware."
+source: "https://huggingface.co/google/gemma-3-27b-it"
+sourceLabel: "HuggingFace"
 ---
 
 Google doesn't get enough credit for Gemma. While Meta and Alibaba dominate the open-source AI headlines, **Gemma 3** has been quietly winning on the metrics that matter for real-world use.

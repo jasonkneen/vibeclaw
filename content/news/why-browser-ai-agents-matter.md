@@ -5,6 +5,8 @@ tags: [think-piece, agents, browser, vibeclaw]
 author: VibeClaw
 image: /news/browser-agents.png
 summary: "The next wave of AI isn't in the cloud — it's in your browser tab. Here's why that changes everything."
+source: "https://vibeclaw.dev"
+sourceLabel: "VibeClaw Editorial"
 ---
 
 Everyone's building AI agents that run on servers. We think the interesting stuff happens when they run **in your browser**.

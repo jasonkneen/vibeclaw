@@ -5,6 +5,8 @@ tags: [openclaw, release, changelog]
 author: VibeClaw
 image: /news/openclaw-release.png
 summary: "The latest OpenClaw release brings Telegram polls, browser sandbox bind mounts, DM access controls, and a mountain of TUI fixes."
+source: "https://github.com/openclaw/openclaw/releases"
+sourceLabel: "GitHub Releases"
 ---
 
 OpenClaw **2026.2.14** just dropped, and it's a hefty one. Here's what matters.

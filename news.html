@@ -458,6 +458,11 @@
       flex: 1;
     }
     .card-date { font-family: var(--mono); font-size: 0.55rem; color: var(--text-dim); }
+    .card-source { font-family: var(--mono); font-size: 0.55rem; color: var(--text-dim); }
+    .card-source a { color: var(--text-dim); text-decoration: none; }
+    .card-source a:hover { color: var(--accent); text-decoration: underline; }
+    .source-badge { display: inline-flex; align-items: center; gap: 3px; font-family: var(--mono); font-size: 0.55rem; color: var(--text-dim); background: var(--surface-2); padding: 2px 8px; border-radius: 4px; }
+    .source-badge::before { content: '↗'; font-size: 0.5rem; }
     .card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
     .tag { 
       font-family: var(--mono); 
@@ -974,7 +979,7 @@
             <div class="hero-img-container">
               ${heroImg ? `<img class="hero-img" src="${hero.image}" alt="${hero.title}" loading="lazy">` : ''}
               <div class="hero-overlay">
-                <div class="hero-label">Featured · ${fmtDate(hero.date)}</div>
+                <div class="hero-label">Featured · ${fmtDate(hero.date)}${hero.source ? ` · <a href="${hero.source}" target="_blank" rel="noopener" style="color:var(--text-dim)">${hero.sourceLabel || 'Source'}</a>` : ''}</div>
                 <div class="hero-title">${hero.title}</div>
                 <div class="hero-summary">${hero.summary}</div>
                 <div class="hero-meta">
@@ -995,7 +1000,7 @@
                 ${img ? `<img class="sidebar-thumb" src="${a.image}" alt="" loading="lazy">` : ''}
                 <div class="sidebar-text">
                   <div class="sidebar-title">${a.title}</div>
-                  <div class="sidebar-date">${fmtDate(a.date)} · ${calculateReadingTime(a.html)}</div>
+                  <div class="sidebar-date">${fmtDate(a.date)}${a.sourceLabel ? ` · ${a.sourceLabel}` : ''} · ${calculateReadingTime(a.html)}</div>
                 </div>
               </div>`;
             }).join('')}
@@ -1018,6 +1023,7 @@
                     <div class="trending-card-title">${a.title}</div>
                     <div class="trending-card-meta">
                       <span class="card-date">${fmtDate(a.date)}</span>
+                      ${a.source ? `<a href="${a.source}" target="_blank" rel="noopener" class="source-badge" onclick="event.stopPropagation()">${a.sourceLabel || 'Source'}</a>` : ''}
                       <span class="reading-time">⏱ ${calculateReadingTime(a.html)}</span>
                     </div>
                   </div>
@@ -1067,6 +1073,7 @@
               <div class="card-footer">
                 <div class="card-meta">
                   <span class="card-date">${fmtDate(a.date)}</span>
+                  ${a.source ? `<a href="${a.source}" target="_blank" rel="noopener" class="source-badge" onclick="event.stopPropagation()">${a.sourceLabel || 'Source'}</a>` : ''}
                   <span class="reading-time">⏱ ${calculateReadingTime(a.html)}</span>
                   <div class="card-tags">${tagHtml(a.tags)}</div>
                 </div>

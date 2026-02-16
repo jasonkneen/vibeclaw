@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>News — VibeClaw</title>
+  <meta name="description" content="AI news, model reviews, and think pieces from VibeClaw. Stay current on open-source AI models, agent frameworks, and the tools shaping the future." />
+  <meta property="og:title" content="VibeClaw News — AI Models, Reviews & Think Pieces">
+  <meta property="og:description" content="Stay current on open-source AI models, agent frameworks, and the tools shaping the future.">
+  <meta property="og:image" content="https://vibeclaw.dev/og-image.png">
+  <meta property="og:url" content="https://vibeclaw.dev/news">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VibeClaw News — AI Models, Reviews & Think Pieces">
+  <meta name="twitter:image" content="https://vibeclaw.dev/og-image.png">
+  <link rel="canonical" href="https://vibeclaw.dev/news">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #ff5c5c;
+      --accent-dim: rgba(255,92,92,0.15);
+      --surface: #111;
+      --surface-2: #1a1a1a;
+      --border: #222;
+      --black: #0a0a0a;
+      --text: #999;
+      --text-dim: #555;
+      --text-bright: #e0e0e0;
+      --mono: 'Fragment Mono', 'JetBrains Mono', monospace;
+      --sans: 'DM Sans', system-ui, sans-serif;
+      --code: 'JetBrains Mono', 'SF Mono', monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--black); color: var(--text); min-height: 100vh; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Nav */
+    .nav { display: flex; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--black); position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-family: var(--mono); font-weight: 700; color: var(--text-bright); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+    .nav-logo:hover { text-decoration: none; color: var(--accent); }
+    .nav-links { display: flex; gap: 20px; margin-left: auto; align-items: center; }
+    .nav-links a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); text-decoration: none; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text-bright); text-decoration: none; }
+    .nav-links a.active { color: var(--accent); }
+
+    /* Page header */
+    .page-header { padding: 48px 24px 32px; max-width: 900px; margin: 0 auto; }
+    .page-header h1 { font-family: var(--sans); font-size: 2.2rem; font-weight: 800; color: var(--text-bright); margin-bottom: 8px; }
+    .page-header p { font-size: 0.95rem; color: var(--text); line-height: 1.6; }
+
+    /* Tags filter */
+    .tags-bar { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 24px 24px; max-width: 900px; margin: 0 auto; }
+    .tag-btn { font-family: var(--mono); font-size: 0.65rem; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.04em; }
+    .tag-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .tag-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+    /* Articles grid */
+    .articles { max-width: 900px; margin: 0 auto; padding: 0 24px 60px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* Article card */
+    .article-card { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; transition: border-color 0.15s; cursor: pointer; }
+    .article-card:hover { border-color: var(--accent); }
+    .article-card.expanded { cursor: default; }
+    .article-header { display: flex; gap: 16px; padding: 20px 24px; align-items: flex-start; }
+    .article-emoji { font-size: 2rem; flex-shrink: 0; line-height: 1; }
+    .article-meta { flex: 1; }
+    .article-title { font-family: var(--sans); font-size: 1.15rem; font-weight: 700; color: var(--text-bright); line-height: 1.3; margin-bottom: 6px; }
+    .article-info { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .article-date { font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); }
+    .article-tag { font-family: var(--mono); font-size: 0.55rem; padding: 2px 8px; border-radius: 10px; background: var(--accent-dim); color: var(--accent); text-transform: uppercase; letter-spacing: 0.03em; }
+    .article-summary { font-family: var(--mono); font-size: 0.78rem; color: var(--text); line-height: 1.6; padding: 0 24px 16px; }
+
+    /* Article body (expanded) */
+    .article-body { display: none; padding: 0 24px 24px; border-top: 1px solid var(--border); margin-top: 0; }
+    .article-card.expanded .article-body { display: block; padding-top: 20px; }
+    .article-body h1, .article-body h2, .article-body h3, .article-body h4 {
+      font-family: var(--sans); color: var(--text-bright); margin: 20px 0 8px; }
+    .article-body h2 { font-size: 1.2rem; }
+    .article-body h3 { font-size: 1rem; }
+    .article-body p { font-size: 0.85rem; line-height: 1.7; margin-bottom: 12px; color: var(--text); }
+    .article-body strong { color: var(--text-bright); }
+    .article-body a { color: var(--accent); }
+    .article-body ul { padding-left: 20px; margin-bottom: 12px; }
+    .article-body li { font-size: 0.85rem; line-height: 1.7; color: var(--text); margin-bottom: 4px; }
+    .article-body code { font-family: var(--code); font-size: 0.8rem; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    .article-body pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; overflow-x: auto; }
+    .article-body pre code { background: none; padding: 0; font-size: 0.78rem; color: var(--text); }
+    .article-body blockquote { border-left: 3px solid var(--accent); padding-left: 16px; margin: 12px 0; color: var(--text-dim); font-style: italic; }
+    .article-body table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-family: var(--mono); font-size: 0.75rem; }
+    .article-body td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+    .article-body hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+    /* Collapse button */
+    .collapse-btn { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; cursor: pointer; margin-top: 16px; transition: all 0.15s; }
+    .collapse-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Footer */
+    .footer { border-top: 1px solid var(--border); padding: 24px; text-align: center; font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); }
+    .footer a { color: var(--text-dim); }
+    .footer a:hover { color: var(--accent); }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 60px 24px; }
+    .empty-emoji { font-size: 3rem; margin-bottom: 12px; }
+    .empty h2 { font-family: var(--sans); font-size: 1.2rem; color: var(--text-bright); margin-bottom: 8px; }
+    .empty p { font-size: 0.85rem; color: var(--text-dim); }
+
+    @media (max-width: 600px) {
+      .page-header h1 { font-size: 1.6rem; }
+      .article-header { padding: 16px; }
+      .article-summary { padding: 0 16px 12px; }
+      .article-body { padding: 0 16px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav-logo"><img src="/crab-nav.png" alt="" style="height:36px;vertical-align:middle;margin-right:6px;"><span style="font-size:1rem;font-weight:700;"><span style="color:var(--accent);">VIBE</span><span style="color:var(--text-bright);">CLAW</span></span></a>
+    <div class="nav-links">
+      <a href="/forge">Forge</a>
+      <a href="/library">Library</a>
+      <a href="/news" class="active">News</a>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <h1>📡 News</h1>
+    <p>Model drops, reviews, think pieces, and everything happening in open-source AI.</p>
+  </div>
+
+  <div class="tags-bar" id="tags-bar"></div>
+
+  <div class="articles" id="articles">
+    <div class="empty">
+      <div class="empty-emoji">📰</div>
+      <h2>Loading articles…</h2>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="/">vibeclaw.dev</a> · <a href="/forge">Forge</a> · <a href="/library">Library</a> · <a href="https://github.com/jasonkneen/vibeclaw">GitHub</a>
+  </div>
+
+  <script>
+    let articles = [];
+    let activeTag = null;
+
+    async function loadArticles() {
+      try {
+        const resp = await fetch('/news-data.json');
+        articles = await resp.json();
+      } catch {
+        articles = [];
+      }
+      renderTags();
+      renderArticles();
+    }
+
+    function renderTags() {
+      const allTags = [...new Set(articles.flatMap(a => a.tags))].sort();
+      const bar = document.getElementById('tags-bar');
+      bar.innerHTML = `<button class="tag-btn ${!activeTag ? 'active' : ''}" onclick="filterTag(null)">All</button>` +
+        allTags.map(t => `<button class="tag-btn ${activeTag === t ? 'active' : ''}" onclick="filterTag('${t}')">${t}</button>`).join('');
+    }
+
+    function filterTag(tag) {
+      activeTag = tag;
+      renderTags();
+      renderArticles();
+    }
+
+    function renderArticles() {
+      const container = document.getElementById('articles');
+      const filtered = activeTag ? articles.filter(a => a.tags.includes(activeTag)) : articles;
+
+      if (!filtered.length) {
+        container.innerHTML = `<div class="empty"><div class="empty-emoji">🔍</div><h2>No articles found</h2><p>Try a different tag or check back later.</p></div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(a => `
+        <div class="article-card" id="article-${a.slug}" onclick="toggleArticle('${a.slug}', event)">
+          <div class="article-header">
+            <div class="article-emoji">${a.image}</div>
+            <div class="article-meta">
+              <div class="article-title">${a.title}</div>
+              <div class="article-info">
+                <span class="article-date">${new Date(a.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                ${a.tags.map(t => `<span class="article-tag">${t}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+          <div class="article-summary">${a.summary}</div>
+          <div class="article-body">
+            ${a.html}
+            <button class="collapse-btn" onclick="collapseArticle('${a.slug}', event)">↑ Collapse</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleArticle(slug, e) {
+      const card = document.getElementById('article-' + slug);
+      if (card.classList.contains('expanded')) return;
+      card.classList.add('expanded');
+    }
+
+    function collapseArticle(slug, e) {
+      e.stopPropagation();
+      const card = document.getElementById('article-' + slug);
+      card.classList.remove('expanded');
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    loadArticles();
+  </script>
+</body>
+</html>

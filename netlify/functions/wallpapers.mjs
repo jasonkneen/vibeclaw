@@ -7,7 +7,7 @@ function getPool() {
   return pool;
 }
 
-const SECRET = process.env.ARTICLES_SECRET || 'vibeclaw-articles-2026';
+const SECRET = process.env.ARTICLES_SECRET;
 
 async function ensureTable(db) {
   await db.query(`

@@ -9,7 +9,7 @@ function getPool() {
   return pool;
 }
 
-const ARTICLES_SECRET = process.env.ARTICLES_SECRET || 'vibeclaw-articles-2026';
+const ARTICLES_SECRET = process.env.ARTICLES_SECRET;
 
 // Auto-create table on first request
 async function ensureTable(db) {

@@ -517,8 +517,13 @@ export class ChatWidget {
                 this.renderMessage(message, streamId);
                 isFirstChunk = false;
               } else {
-                // Update existing message
+                // Update existing message in both DOM and array
                 this.updateMessageContent(streamId, fullContent);
+                // Also update the message in the array
+                const lastMessage = this.messages[this.messages.length - 1];
+                if (lastMessage && lastMessage.role === 'assistant') {
+                  lastMessage.content = fullContent;
+                }
               }
 
               this.scrollToBottom();

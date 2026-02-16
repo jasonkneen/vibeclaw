@@ -68,9 +68,9 @@ describe('ChatWidget', () => {
         height: '800px',
       });
 
-      const widgetEl = container.querySelector('.mesh-chat-widget') as HTMLElement;
-      expect(widgetEl.style.width).toBe('500px');
-      expect(widgetEl.style.height).toBe('800px');
+      const styles = container.querySelector('style');
+      expect(styles?.textContent).toContain('width: 500px');
+      expect(styles?.textContent).toContain('height: 800px');
     });
 
     it('should show welcome message if provided', () => {

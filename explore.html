@@ -506,8 +506,8 @@
     }
 
     .faq-icon {
-      font-size: 1.25rem;
       transition: transform 0.3s;
+      display: inline-block;
     }
 
     .faq-item.open .faq-icon {
@@ -981,9 +981,9 @@
       for (const type of TYPES) {
         try {
           const items = await fetchItems({ type: type.id, limit: 0 });
-          counts[type.id] = items.length || Math.floor(Math.random() * 50) + 10; // Fallback to demo data
+          counts[type.id] = items.length || 0;
         } catch {
-          counts[type.id] = Math.floor(Math.random() * 50) + 10;
+          counts[type.id] = 0;
         }
       }
       return counts;
@@ -1043,9 +1043,9 @@
     function renderItems(items, container) {
       if (!items || items.length === 0) {
         container.innerHTML = `
-          <div class="empty-state">
-            <h3>No items found</h3>
-            <p>Be the first to create something amazing!</p>
+          <div class="empty-state" style="text-align:center;padding:48px 24px;color:var(--text-dim);">
+            <div style="font-size:1.5rem;font-weight:600;color:var(--text);margin-bottom:8px;">Coming Soon</div>
+            <p style="font-size:0.85rem;">More community creations on the way.</p>
           </div>
         `;
         return;
@@ -1238,47 +1238,12 @@
       alert(`Favourite functionality for item ${id} would be implemented here.`);
     }
 
-    // Generate demo data
-    function generateDemoData() {
-      const demoItems = [];
-      const authors = ['alice', 'bob', 'charlie', 'dana', 'eve', 'frank'];
-      const titlePrefixes = ['Advanced', 'Simple', 'Pro', 'Quick', 'Smart', 'Auto'];
-      const titleSuffixes = ['Assistant', 'Helper', 'Manager', 'Controller', 'Handler', 'Engine'];
-      
-      for (let i = 0; i < 50; i++) {
-        const type = TYPES[i % TYPES.length];
-        const title = `${titlePrefixes[i % titlePrefixes.length]} ${type.name.slice(0, -1)} ${titleSuffixes[i % titleSuffixes.length]}`;
-        
-        demoItems.push({
-          id: `item-${i}`,
-          type: type.id,
-          title: title,
-          description: `A powerful ${type.name.toLowerCase().slice(0, -1)} that helps you ${type.description.toLowerCase()}. Perfect for developers and power users.`,
-          author: authors[i % authors.length],
-          tags: ['popular', 'featured', 'new'].slice(0, (i % 3) + 1),
-          upvotes: Math.floor(Math.random() * 500),
-          downloads: Math.floor(Math.random() * 2000),
-          created: Date.now() - (i * 86400000), // Spread over days
-          readme: `# ${title}\n\n## Overview\n\nThis is a demo item showcasing the ${type.name} type.\n\n## Installation\n\n\`\`\`bash\nnpm install ${title.toLowerCase().replace(/\s/g, '-')}\n\`\`\`\n\n## Usage\n\nDetailed usage instructions would go here.`,
-          files: ['index.js', 'README.md', 'package.json'],
-          forkedFrom: i > 25 ? `item-${i - 25}` : null
-        });
-      }
-      
-      return demoItems;
-    }
-
     // Initialize
     async function init() {
-      // Try to fetch real data, fall back to demo
+      // Fetch real data from API
       const fetchedItems = await fetchItems();
       
-      if (fetchedItems.length > 0) {
-        allItems = fetchedItems;
-      } else {
-        // Use demo data
-        allItems = generateDemoData();
-      }
+      allItems = fetchedItems;
 
       filteredItems = [...allItems];
 

@@ -614,13 +614,21 @@
         .hero-crab { display: none !important; }
       }
       @media (max-width: 600px) {
-        .nav-links { gap: 14px; }
-        .nav-links a { font-size: 0.7rem; }
-        .hero { padding: 64px 20px 56px; }
-        .hero h1 { font-size: 2.2rem; }
+        .nav-inner { padding: 0 12px; height: 48px; }
+        .nav-logo img { height: 28px !important; }
+        .nav-logo span { font-size: 1rem !important; }
+        .nav-links { gap: 8px; }
+        .nav-links a { font-size: 0.6rem; }
+        .nav-links .nav-hide-mobile { display: none; }
+        .hero { padding: 48px 16px 40px; }
+        .hero h1 { font-size: 1.8rem; }
+        .hero .subtitle { font-size: 0.8rem; }
         .cta-row { flex-direction: column; }
         .btn { justify-content: center; }
+        .section { padding: 32px 16px; }
+        .features-grid { grid-template-columns: 1fr !important; }
         .forge-steps { grid-template-columns: 1fr !important; }
+        .ft-grid { grid-template-columns: 1fr !important; }
         footer { flex-direction: column; gap: 12px; text-align: center; }
       }
 
@@ -1084,15 +1092,18 @@
         <a href="./" class="nav-logo" aria-label="vibeclaw.dev home"><img src="/crab-nav.png" alt="" style="height:40px;vertical-align:middle;margin-right:6px;"><span style="color:var(--accent);font-weight:700;font-size:1.4rem;">VIBE</span><span style="color:var(--text-bright);font-weight:700;font-size:1.4rem;">CLAW</span></a>
         <ul class="nav-links" role="list">
           <li><a href="/forge.html">Forge</a></li>
-          <li><a href="/library.html">My Servers</a></li>
+          <li class="nav-hide-mobile"><a href="/library.html">My Servers</a></li>
           <li><a href="/news.html">Articles</a></li>
-          <li><a href="/gallery.html">Wallpapers</a></li>
+          <li class="nav-hide-mobile"><a href="/gallery.html">Wallpapers</a></li>
           <!-- <li><a href="/chat.html">Chat</a></li> -->
           <li class="nav-more-wrap" style="position:relative;">
             <button id="nav-more-btn" style="background:none;border:1px solid var(--border);border-radius:4px;padding:3px 10px;font-family:var(--mono);font-size:0.72rem;color:var(--text-dim);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s;">
               More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div id="nav-more-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:6px 0;min-width:180px;z-index:1000;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+              <a href="/library.html" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">My Servers</a>
+              <a href="/gallery.html" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">Wallpapers</a>
+              <div style="height:1px;background:var(--border);margin:4px 0;"></div>
               <a href="./docs/" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">Docs</a>
               <a href="#demos" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">Demos</a>
               <div style="height:1px;background:var(--border);margin:4px 0;"></div>
@@ -1127,7 +1138,7 @@
     </div>
 
     <!-- Quick headlines strip under tickers -->
-    <div id="headlines-strip" style="display:none;max-width:1440px;margin:0 auto;padding:10px 24px;border-bottom:1px solid var(--border);"></div>
+    <div id="headlines-strip" style="display:none;max-width:1440px;margin:0 auto;padding:8px 12px;border-bottom:1px solid var(--border);"></div>
 
     <script>
       (function() {

@@ -49,6 +49,14 @@
     .nav-links a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); text-decoration: none; transition: color 0.15s; }
     .nav-links a:hover { color: var(--text-bright); text-decoration: none; }
     .nav-links a.active { color: var(--accent); }
+    @media (max-width: 600px) {
+      .nav { padding: 10px 12px; }
+      .nav-logo img { height: 28px !important; }
+      .nav-links { gap: 10px; }
+      .nav-links a { font-size: 0.6rem; }
+      .page { padding: 20px 12px 40px; }
+      .page-header h1 { font-size: 1.4rem; }
+    }
 
     /* Page container */
     .page { max-width: 1440px; margin: 0 auto; padding: 32px 40px 60px; }
@@ -739,6 +747,7 @@
       <a href="/forge">Forge</a>
       <a href="/library">Library</a>
       <a href="/news" class="active">Articles</a>
+      <a href="/gallery">Wallpapers</a>
     </div>
   </nav>
 

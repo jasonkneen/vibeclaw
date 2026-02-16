@@ -82,7 +82,10 @@
     .tags-bar { 
       display: flex; 
       gap: 6px; 
-      flex-wrap: wrap; 
+      flex-wrap: nowrap; 
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
       margin-bottom: 28px; 
       position: sticky; 
       top: 65px; 
@@ -92,7 +95,9 @@
       border-bottom: 1px solid transparent;
       transition: border-color 0.2s;
     }
+    .tags-bar::-webkit-scrollbar { display: none; }
     .tags-bar.stuck { border-bottom-color: var(--border); }
+    .tag-btn { flex-shrink: 0; }
     .tag-btn { 
       font-family: var(--mono); 
       font-size: 0.6rem; 

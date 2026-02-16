@@ -625,6 +625,20 @@
     <div class="main-layout">
       <!-- Builder Panel -->
       <div class="builder-panel">
+        <!-- AI Build Assistant -->
+        <div id="ai-assist-bar" style="margin-bottom:20px;background:rgba(255,92,92,0.05);border:1px solid rgba(255,92,92,0.2);border-radius:8px;padding:14px 16px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ff5c5c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span style="font-family:monospace;font-size:0.75rem;font-weight:700;color:#ff5c5c;">AI ASSIST</span>
+            <span style="font-family:monospace;font-size:0.65rem;color:#888;">Describe what you want to build — AI fills in the form</span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="ai-assist-input" placeholder="e.g. A skill that monitors a GitHub repo and sends Slack notifications on new PRs..." style="flex:1;padding:10px 14px;background:#1a1a1a;border:1px solid #333;border-radius:6px;font-family:monospace;font-size:0.8rem;color:#eee;">
+            <button id="ai-assist-go" style="padding:10px 20px;font-family:monospace;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;background:#ff5c5c;color:#000;border:none;border-radius:6px;cursor:pointer;white-space:nowrap;">Build it</button>
+          </div>
+          <div id="ai-assist-status" style="font-family:monospace;font-size:0.65rem;color:#888;margin-top:6px;min-height:1em;"></div>
+        </div>
+
         <!-- Skill Builder -->
         <div class="builder-content" data-builder="skill">
           <h2>Skill Builder</h2>
@@ -900,7 +914,7 @@
             <label>Documents</label>
             <div class="list-items" id="kb-documents"></div>
             <div class="file-upload" id="kb-upload">
-              <p>📄 Drop files here or click to upload</p>
+              <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;display:inline-block;vertical-align:-5px;margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Drop files here or click to upload</p>
               <p style="font-size: 0.8rem; color: var(--text-dim);">Supports: MD, PDF, TXT, JSON</p>
               <input type="file" id="kb-file-input" multiple accept=".md,.pdf,.txt,.json">
             </div>
@@ -1578,6 +1592,75 @@
 
     // Initialize on load
     init();
+
+    // ── AI Assist ──
+    document.getElementById('ai-assist-go')?.addEventListener('click', async () => {
+      const input = document.getElementById('ai-assist-input').value.trim();
+      if (!input) return;
+      const statusEl = document.getElementById('ai-assist-status');
+      const btn = document.getElementById('ai-assist-go');
+      btn.disabled = true;
+      statusEl.textContent = 'Thinking...';
+
+      // Detect active builder type
+      const activeBuilder = document.querySelector('.builder-content.active');
+      const type = activeBuilder?.dataset?.builder || 'skill';
+
+      const prompts = {
+        skill: `Generate an OpenClaw skill config. Return JSON: {name, description, tags: [], content: "# SKILL.md markdown content with full instructions"}`,
+        plugin: `Generate an OpenClaw plugin config. Return JSON: {name, description, entry: "index.js", hooks: ["hook1"], content: "// plugin entry code"}`,
+        tool: `Generate an OpenClaw tool config. Return JSON: {name, description, parameters: [{name, type, description, required}], returnType: "string", implementation: "// tool code"}`,
+        model: `Generate an OpenClaw model config. Return JSON: {name, description, provider: "openrouter", modelId: "model/id", parameters: {temperature, maxTokens}}`,
+        recipe: `Generate an OpenClaw recipe/server config. Return JSON: {name, description, agents: [{emoji, name, desc}], skills: [], systemPrompt: "...", model: "upstage/solar-pro-3:free"}`,
+        knowledge: `Generate an OpenClaw knowledge base config. Return JSON: {name, description, sources: ["url or file"], format: "markdown", tags: []}`,
+        server: `Generate an OpenClaw server config. Return JSON: {name, description, agents: [{emoji, name, desc}], skills: [], systemPrompt: "...", model: "upstage/solar-pro-3:free"}`
+      };
+
+      try {
+        const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'upstage/solar-pro-3:free',
+            messages: [
+              { role: 'system', content: prompts[type] + '\n\nRespond ONLY with valid JSON, no markdown, no explanation.' },
+              { role: 'user', content: input }
+            ],
+            max_tokens: 800
+          })
+        });
+        const data = await resp.json();
+        const text = data.choices?.[0]?.message?.content || '';
+        const config = JSON.parse(text);
+
+        // Fill in the active builder form
+        const nameField = document.getElementById(`${type}-name`);
+        const descField = document.getElementById(`${type}-description`);
+        if (nameField && config.name) nameField.value = config.name;
+        if (descField && config.description) descField.value = config.description;
+
+        // Type-specific fields
+        if (type === 'skill' && config.content) {
+          const contentField = document.getElementById('skill-content');
+          if (contentField) contentField.value = config.content;
+        }
+        if (type === 'tool' && config.implementation) {
+          const implField = document.getElementById('tool-implementation');
+          if (implField) implField.value = config.implementation;
+        }
+        if (type === 'plugin' && config.content) {
+          const entryField = document.getElementById('plugin-entry');
+          if (entryField) entryField.value = config.content;
+        }
+
+        statusEl.textContent = '✓ Form filled! Review and tweak as needed.';
+        setTimeout(() => { statusEl.textContent = ''; }, 3000);
+      } catch (err) {
+        statusEl.textContent = 'Error — try again or fill in manually';
+        console.error('AI assist error:', err);
+      }
+      btn.disabled = false;
+    });
   </script>
 </body>
 </html>

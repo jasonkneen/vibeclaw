@@ -125,13 +125,13 @@
     }
     .forge-title {
       font-family: var(--sans);
-      font-size: 2rem;
+      font-size: 2.6rem;
       font-weight: 700;
       color: var(--text-bright);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .forge-subtitle {
-      font-size: 1rem;
+      font-size: 1.15rem;
       color: var(--text);
       margin-bottom: 48px;
     }
@@ -148,7 +148,7 @@
     }
     .step-num {
       font-family: var(--mono);
-      font-size: 0.65rem;
+      font-size: 0.75rem;
       color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -156,12 +156,12 @@
     }
     .step-title {
       font-family: var(--sans);
-      font-size: 1.15rem;
+      font-size: 1.4rem;
       font-weight: 600;
       color: var(--text-bright);
     }
     .step-desc {
-      font-size: 0.85rem;
+      font-size: 0.95rem;
       color: var(--text-dim);
       margin-bottom: 16px;
       line-height: 1.6;
@@ -203,13 +203,13 @@
     }
     .option-card .option-name {
       font-family: var(--sans);
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: 600;
       color: var(--text-bright);
       margin-bottom: 4px;
     }
     .option-card .option-desc {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: var(--text-dim);
       line-height: 1.5;
     }
@@ -328,12 +328,12 @@
     }
     .skill-card .skill-name {
       font-family: var(--mono);
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 600;
       color: var(--text-bright);
     }
     .skill-card .skill-desc {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: var(--text-dim);
     }
     .skill-toggle {
@@ -1139,7 +1139,6 @@
       <a href="/library.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;display:inline;vertical-align:-1px;margin-right:4px;"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/></svg>My Servers</a>
       <a href="/news.html">Articles</a>
       <!-- <a href="/chat.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;display:inline;vertical-align:-1px;margin-right:4px;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Chat</a> -->
-      <a href="/" style="display:inline-flex;align-items:center;gap:4px;text-decoration:none;"><img src="/crab-nav.png" alt="" style="height:36px;"><span style="font-family:var(--mono);font-size:1rem;font-weight:700;"><span style="color:var(--accent);">VIBE</span><span style="color:var(--text-bright);">CLAW</span></span></a>
       <span id="upgrade-container" style="margin-left:4px;"></span>
       <span id="auth-container" style="margin-left:4px;"></span>
     </div>
@@ -1192,16 +1191,84 @@
   <div class="forge-layout" id="forge-layout">
     <!-- Main configurator -->
     <article class="forge-main">
-      <h1 class="forge-title">Build your server</h1>
-      <p class="forge-subtitle">Configure your OpenClaw server. Preview it live. Deploy it anywhere.</p>
+      <h1 class="forge-title">Build your server in <span style="color:var(--accent);">5s</span></h1>
+      <p class="forge-subtitle">Pick a quick start, tweak the skills, preview it live. Deploy anywhere.</p>
 
-      <!-- Template picker -->
-      <div class="template-bar">
-        <label>Start from</label>
-        <select id="template-select" class="template-select">
-          <option value="">Blank server</option>
-        </select>
+      <!-- AI Build (primary) -->
+      <div style="margin-bottom:24px;background:var(--surface);border:1px solid var(--accent);border-radius:8px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span style="font-family:var(--mono);font-size:0.8rem;font-weight:700;color:var(--accent);">✨ AI Build</span>
+          <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);">— describe your server and we'll build it</span>
+        </div>
+        <textarea id="ai-build-input" placeholder="e.g. I need an agent that monitors my GitHub repos, reviews PRs automatically, and sends me Slack summaries every morning..." style="width:100%;min-height:70px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:var(--mono);font-size:0.8rem;color:var(--text-bright);resize:vertical;box-sizing:border-box;"></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button id="ai-build-go" style="padding:8px 20px;font-family:var(--mono);font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;background:var(--accent);color:#000;border:none;border-radius:4px;cursor:pointer;">Build it</button>
+            <span id="ai-build-status" style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);"></span>
+          </div>
+          <button id="toggle-manual" style="padding:8px 16px;font-family:var(--mono);font-size:0.7rem;font-weight:700;color:var(--text);background:transparent;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:border-color 0.15s,color 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">⚙ Manual Setup</button>
+        </div>
       </div>
+
+      <!-- Prompt Chips -->
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;justify-content:center;">
+        <button class="prompt-chip" data-prompt="A coding agent that writes, reviews, and refactors code" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"coding agent"</button>
+        <button class="prompt-chip" data-prompt="A research assistant that browses the web and summarises findings" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"web researcher"</button>
+        <button class="prompt-chip" data-prompt="An agent that monitors GitHub repos, reviews PRs, and manages CI/CD" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"GitHub bot"</button>
+        <button class="prompt-chip" data-prompt="A personal assistant that handles email, calendar, and daily scheduling" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"daily assistant"</button>
+        <button class="prompt-chip" data-prompt="A security auditor that scans code for vulnerabilities and suggests fixes" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"security scanner"</button>
+        <button class="prompt-chip" data-prompt="A multi-agent team with a lead, coder, writer, and reviewer" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"agent squad"</button>
+        <button class="prompt-chip" data-prompt="A content writer that creates blog posts, docs, and marketing copy" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"content writer"</button>
+        <button class="prompt-chip" data-prompt="A data pipeline agent that parses CSV/JSON, runs queries, and builds charts" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"data pipeline"</button>
+      </div>
+
+      <!-- Featured Community Servers -->
+      <div style="margin-bottom:32px;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;">
+          <span style="font-family:var(--mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);">Featured Community Servers</span>
+          <a href="/explore.html" style="font-family:var(--mono);font-size:0.6rem;color:var(--accent);text-decoration:none;">Browse all →</a>
+        </div>
+        <div id="featured-servers" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:10px;">
+          <div class="featured-server" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:1.2rem;margin-bottom:6px;">🤖</div>
+            <div style="font-family:var(--mono);font-size:0.75rem;font-weight:700;color:var(--text-bright);">PR Reviewer</div>
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);margin-top:2px;">Auto-reviews GitHub PRs with security checks</div>
+            <div style="font-family:var(--mono);font-size:0.55rem;color:var(--text-dim);margin-top:6px;">⬇ 1.2k · ⭐ 89</div>
+          </div>
+          <div class="featured-server" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:1.2rem;margin-bottom:6px;">📰</div>
+            <div style="font-family:var(--mono);font-size:0.75rem;font-weight:700;color:var(--text-bright);">Daily Digest</div>
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);margin-top:2px;">Morning news summary from RSS, HN & Reddit</div>
+            <div style="font-family:var(--mono);font-size:0.55rem;color:var(--text-dim);margin-top:6px;">⬇ 890 · ⭐ 67</div>
+          </div>
+          <div class="featured-server" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:1.2rem;margin-bottom:6px;">🧪</div>
+            <div style="font-family:var(--mono);font-size:0.75rem;font-weight:700;color:var(--text-bright);">Test Squad</div>
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);margin-top:2px;">Multi-agent team that writes & runs test suites</div>
+            <div style="font-family:var(--mono);font-size:0.55rem;color:var(--text-dim);margin-top:6px;">⬇ 650 · ⭐ 54</div>
+          </div>
+          <div class="featured-server" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:1.2rem;margin-bottom:6px;">📊</div>
+            <div style="font-family:var(--mono);font-size:0.75rem;font-weight:700;color:var(--text-bright);">CSV Wizard</div>
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);margin-top:2px;">Drop a CSV, get instant analysis & charts</div>
+            <div style="font-family:var(--mono);font-size:0.55rem;color:var(--text-dim);margin-top:6px;">⬇ 520 · ⭐ 41</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manual setup (hidden by default) -->
+      <div id="manual-setup" style="display:none;">
+        <div class="template-bar">
+          <label>Start from</label>
+          <select id="template-select" class="template-select">
+            <option value="">Blank server</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- All manual config steps (hidden until quick start / AI / manual toggle) -->
+      <div id="manual-steps" style="display:none;">
 
       <!-- Server name -->
       <div class="server-name-row">
@@ -1233,6 +1300,21 @@
             <div class="option-desc">Lightweight, low-resource mode</div>
           </div>
         </div>
+
+      </div>
+
+      <!-- Quick Start Chips -->
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 24px;">
+        <span style="font-family:var(--mono);font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);width:100%;margin-bottom:4px;">Quick Start</span>
+        <button class="qs-chip" data-prompt="A coding assistant that can read, write, and execute code with GitHub integration" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🦀 Coding Agent</button>
+        <button class="qs-chip" data-prompt="A research agent that searches the web, analyses sources, and summarises findings with citations" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🔍 Research</button>
+        <button class="qs-chip" data-prompt="A DevOps agent for Docker, CI/CD pipelines, deployment, and infrastructure management with GitHub and security skills" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🐳 DevOps</button>
+        <button class="qs-chip" data-prompt="A content writer that creates blog posts, documentation, and copy with web research for fact-checking" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">✍️ Writer</button>
+        <button class="qs-chip" data-prompt="A security specialist that audits code for vulnerabilities, reviews dependencies, and helps with threat modelling" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🛡️ Security</button>
+        <button class="qs-chip" data-prompt="A data analyst that parses CSVs, JSON, and APIs, writes transformation scripts, and generates visualisations" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">📊 Data</button>
+        <button class="qs-chip" data-prompt="A personal assistant that manages email, calendar, tasks, and reminders with scheduling and web browsing" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">📅 Assistant</button>
+        <button class="qs-chip" data-prompt="A creative studio agent that generates images, brainstorms ideas, and helps with visual design" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🎨 Creative</button>
+        <button class="qs-chip" data-prompt="A multi-agent squad with a lead orchestrator, coder, researcher, writer, and security reviewer working as a team" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🦞 Squad</button>
       </div>
 
       <!-- Step 2: Agents -->
@@ -1485,12 +1567,17 @@ Update this file as you learn about the workspace and user preferences.</textare
         </div>
       </div>
 
-    </div>
+      </div><!-- /manual-steps -->
 
     </article>
 
     <!-- Sidebar -->
     <div class="forge-sidebar">
+      <div class="sidebar-actions" style="margin-bottom:20px;">
+        <button class="btn-forge btn-preview" id="preview-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;display:inline;vertical-align:-1px;margin-right:6px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>Preview</button>
+        <button class="btn-forge btn-deploy" id="deploy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/></svg>Deploy</button>
+        <button class="btn-forge btn-save" id="save-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save</button>
+      </div>
       <div class="sidebar-title" style="display:flex;align-items:center;justify-content:space-between;">Your Server <span id="draft-status" style="font-size:0.6rem;font-weight:400;color:var(--text-dim);opacity:0;transition:opacity 0.3s;"></span></div>
       <div class="sidebar-server-name" id="sidebar-name">
         <span id="sidebar-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><rect x="3" y="3" width="18" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
@@ -1523,11 +1610,6 @@ Update this file as you learn about the workspace and user preferences.</textare
         <div class="sidebar-value" id="sidebar-model">Solar Pro 3</div>
       </div>
 
-      <div class="sidebar-actions">
-        <button class="btn-forge btn-preview" id="preview-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;display:inline;vertical-align:-1px;margin-right:6px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>Preview</button>
-        <button class="btn-forge btn-deploy" id="deploy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/></svg>Deploy</button>
-        <button class="btn-forge btn-save" id="save-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save</button>
-      </div>
     </div>
   </div>
   </main>
@@ -1860,6 +1942,210 @@ Update this file as you learn about the workspace and user preferences.</textare
         state.model = card.dataset.model;
         updateSidebar();
       });
+    });
+
+    // ── Quick Start presets ──
+    const quickStartPresets = {
+      coding: {
+        emoji: '🦀', name: 'Code Agent', runtime: 'single',
+        agents: [{ emoji: '🦀', name: 'Claw', desc: 'Full-stack coding assistant' }],
+        skills: ['chat', 'filesystem', 'execute', 'github'],
+        prompt: 'You are 🦀 Claw, an expert full-stack developer. Write clean, production-ready code. Be concise and pragmatic. Show code, not descriptions. Always explain the "why" behind your suggestions.'
+      },
+      research: {
+        emoji: '🔍', name: 'Research Agent', runtime: 'single',
+        agents: [{ emoji: '🔍', name: 'Scout', desc: 'Web research & analysis agent' }],
+        skills: ['chat', 'filesystem', 'web-browse'],
+        prompt: 'You are 🔍 Scout, a research agent. Search the web thoroughly, cross-reference sources, summarise findings clearly with citations. Be analytical and objective.'
+      },
+      devops: {
+        emoji: '🐳', name: 'DevOps Agent', runtime: 'single',
+        agents: [{ emoji: '🐳', name: 'Harbor', desc: 'Infrastructure & deployment agent' }],
+        skills: ['chat', 'filesystem', 'execute', 'docker', 'github'],
+        prompt: 'You are 🐳 Harbor, a DevOps engineer. Help with Docker, CI/CD pipelines, deployment, infrastructure-as-code, and monitoring. Prioritise reliability and security.'
+      },
+      writer: {
+        emoji: '✍️', name: 'Writer Agent', runtime: 'single',
+        agents: [{ emoji: '✍️', name: 'Inky', desc: 'Content writer & editor' }],
+        skills: ['chat', 'filesystem', 'web-browse'],
+        prompt: 'You are ✍️ Inky, a skilled content writer. Write engaging, clear prose. Adapt your tone to the audience. Offer editorial feedback when asked. Be creative but precise.'
+      },
+      security: {
+        emoji: '🛡️', name: 'Security Agent', runtime: 'single',
+        agents: [{ emoji: '🛡️', name: 'Sentinel', desc: 'Security audit & hardening agent' }],
+        skills: ['chat', 'filesystem', 'execute', 'security', 'github'],
+        prompt: 'You are 🛡️ Sentinel, a security specialist. Audit code for vulnerabilities, suggest hardening measures, review dependencies, and help with threat modelling. Always err on the side of caution.'
+      },
+      data: {
+        emoji: '📊', name: 'Data Analyst', runtime: 'single',
+        agents: [{ emoji: '📊', name: 'Datum', desc: 'Data analysis & visualisation agent' }],
+        skills: ['chat', 'filesystem', 'execute', 'web-browse'],
+        prompt: 'You are 📊 Datum, a data analyst. Parse CSVs, JSON, and APIs. Write scripts to transform, query, and visualise data. Explain insights clearly with numbers. Generate charts when useful.'
+      },
+      assistant: {
+        emoji: '📅', name: 'Personal Assistant', runtime: 'single',
+        agents: [{ emoji: '📅', name: 'Friday', desc: 'Personal assistant & organiser' }],
+        skills: ['chat', 'filesystem', 'email', 'calendar', 'scheduling', 'web-browse'],
+        prompt: 'You are 📅 Friday, a personal assistant. Help manage emails, calendar, tasks, and reminders. Be proactive — flag important things, suggest follow-ups, and keep everything organised.'
+      },
+      creative: {
+        emoji: '🎨', name: 'Creative Studio', runtime: 'single',
+        agents: [{ emoji: '🎨', name: 'Pixel', desc: 'Creative design & ideation agent' }],
+        skills: ['chat', 'filesystem', 'image-gen', 'web-browse'],
+        prompt: 'You are 🎨 Pixel, a creative director. Generate images, brainstorm ideas, create mood boards, and help with visual design. Think bold, original, and visually striking.'
+      },
+      squad: {
+        emoji: '🦞', name: 'Agent Squad', runtime: 'multi',
+        agents: [
+          { emoji: '🦞', name: 'Lead', desc: 'Squad orchestrator & router' },
+          { emoji: '🦀', name: 'Claw', desc: 'Coding & technical tasks' },
+          { emoji: '🔍', name: 'Scout', desc: 'Research & web browsing' },
+          { emoji: '✍️', name: 'Inky', desc: 'Writing & documentation' },
+          { emoji: '🛡️', name: 'Sentinel', desc: 'Security & code review' }
+        ],
+        skills: ['chat', 'filesystem', 'execute', 'web-browse', 'github', 'security'],
+        prompt: 'You are 🦞 Lead, an orchestrator managing a team of specialist agents. Route tasks to the right agent: Claw for code, Scout for research, Inky for writing, Sentinel for security. Coordinate complex tasks across the team.'
+      }
+    };
+
+    function showManualSteps() {
+      $('manual-steps').style.display = 'block';
+    }
+
+    function applyPreset(preset) {
+      showManualSteps();
+      state.emoji = preset.emoji;
+      state.name = preset.name;
+      state.runtime = preset.runtime;
+      state.agents = preset.agents.map(a => ({ emoji: a.emoji, name: a.name, desc: a.desc }));
+      state.skills = new Set(preset.skills);
+      state.systemPrompt = preset.prompt;
+      $('server-emoji').value = state.emoji;
+      $('server-name').value = state.name;
+      $('system-prompt').value = state.systemPrompt;
+      $$('#runtime-options .option-card').forEach(c => {
+        c.classList.toggle('selected', c.dataset.value === state.runtime);
+      });
+      renderAgents();
+      $$('.skill-card').forEach(card => {
+        card.classList.toggle('enabled', state.skills.has(card.dataset.skill));
+      });
+      updateSidebar();
+    }
+
+    // Prompt chip sidebar presets
+    const chipPresets = {
+      '"coding agent"':    { name: 'Coding Agent',     emoji: '🦀', agents: ['Coder'],               skills: ['Execute','Filesystem','GitHub'],   model: 'Solar Pro 3' },
+      '"web researcher"':  { name: 'Web Researcher',   emoji: '🔍', agents: ['Researcher'],           skills: ['Web Search','Browser','Filesystem'], model: 'Solar Pro 3' },
+      '"GitHub bot"':      { name: 'GitHub Bot',       emoji: '🐙', agents: ['DevOps'],               skills: ['GitHub','Execute','Filesystem'],    model: 'Solar Pro 3' },
+      '"daily assistant"': { name: 'Daily Assistant',   emoji: '📅', agents: ['Assistant'],            skills: ['Email','Calendar','Web Search'],    model: 'Solar Pro 3' },
+      '"security scanner"':{ name: 'Security Scanner', emoji: '🛡️', agents: ['Auditor'],              skills: ['Execute','Filesystem','GitHub'],    model: 'Solar Pro 3' },
+      '"agent squad"':     { name: 'Agent Squad',      emoji: '🦞', agents: ['Lead','Coder','Writer','Reviewer'], skills: ['Execute','Filesystem','GitHub','Web Search'], model: 'Solar Pro 3' },
+      '"content writer"':  { name: 'Content Writer',   emoji: '✍️', agents: ['Writer'],               skills: ['Filesystem','Web Search','Browser'],model: 'Solar Pro 3' },
+      '"data pipeline"':   { name: 'Data Pipeline',    emoji: '📊', agents: ['Analyst'],              skills: ['Execute','Filesystem','Web Search'],model: 'Solar Pro 3' },
+    };
+
+    // Prompt chips — populate AI textarea + update sidebar
+    document.querySelectorAll('.prompt-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        $('ai-build-input').value = chip.dataset.prompt;
+        $('ai-build-input').focus();
+        document.querySelectorAll('.prompt-chip').forEach(c => { c.style.borderColor = 'var(--border)'; c.style.color = 'var(--text-dim)'; });
+        chip.style.borderColor = 'var(--accent)';
+        chip.style.color = 'var(--text-bright)';
+
+        // Update sidebar preview
+        const preset = chipPresets[chip.textContent.trim()];
+        if (preset) {
+          $('sidebar-name-text').textContent = preset.name;
+          $('sidebar-emoji').innerHTML = preset.emoji;
+          $('sidebar-runtime').textContent = 'Standard';
+          $('sidebar-agents').innerHTML = preset.agents.map(a => '<li>' + a + '</li>').join('');
+          $('sidebar-skills').innerHTML = preset.skills.map(s => '<li>' + s + '</li>').join('');
+          $('sidebar-model').textContent = preset.model;
+        }
+      });
+    });
+
+    // Quick start chips — populate AI input and auto-submit
+    document.querySelectorAll('.qs-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const prompt = chip.dataset.prompt;
+        $('ai-build-input').value = prompt;
+        // Highlight active chip
+        document.querySelectorAll('.qs-chip').forEach(c => { c.style.borderColor = 'var(--border)'; c.style.background = 'var(--surface)'; });
+        chip.style.borderColor = 'var(--accent)';
+        chip.style.background = 'rgba(255,92,92,0.08)';
+        // Auto-trigger build
+        $('ai-build-go').click();
+      });
+    });
+
+    // Quick start card clicks (legacy/manual)
+    document.querySelectorAll('.quickstart-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const qs = card.dataset.qs;
+        if (qs === 'custom') return;
+        const preset = quickStartPresets[qs];
+        if (preset) applyPreset(preset);
+        document.querySelectorAll('.quickstart-card').forEach(c => c.style.borderColor = 'var(--border)');
+        card.style.borderColor = 'var(--accent)';
+      });
+    });
+
+    // Toggle manual setup
+    $('toggle-manual').addEventListener('click', (e) => {
+      e.preventDefault();
+      const manual = $('manual-setup');
+      const steps = $('manual-steps');
+      const link = $('toggle-manual');
+      const showing = steps.style.display !== 'none';
+      manual.style.display = showing ? 'none' : 'block';
+      steps.style.display = showing ? 'none' : 'block';
+      link.innerHTML = showing ? '⚙ Manual Setup' : '✕ Hide Manual';
+    });
+
+    // ── AI Build ──
+    $('ai-build-go').addEventListener('click', async () => {
+      const input = $('ai-build-input').value.trim();
+      if (!input) return;
+      const statusEl = $('ai-build-status');
+      const btn = $('ai-build-go');
+      btn.disabled = true;
+      statusEl.textContent = 'Thinking...';
+
+      try {
+        const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'upstage/solar-pro-3:free',
+            messages: [
+              { role: 'system', content: `You are an OpenClaw server configurator. Given a user's description, output a JSON object with these fields:
+- emoji: single emoji for the server
+- name: short server name (2-3 words)
+- runtime: "single" or "multi"
+- agents: array of {emoji, name, desc} objects
+- skills: array of skill IDs from: chat, filesystem, execute, web-browse, github, docker, image-gen, scheduling, browser-auto, security, email, calendar
+- prompt: a system prompt for the lead agent (2-4 sentences, specific and actionable)
+
+Respond ONLY with valid JSON, no markdown, no explanation.` },
+              { role: 'user', content: input }
+            ],
+            max_tokens: 500
+          })
+        });
+        const data = await resp.json();
+        const text = data.choices?.[0]?.message?.content || '';
+        const config = JSON.parse(text);
+        applyPreset(config);
+        statusEl.textContent = '✓ Applied!';
+        setTimeout(() => { statusEl.textContent = ''; }, 2000);
+      } catch (err) {
+        statusEl.textContent = 'Error — try again or set up manually';
+        console.error('AI build error:', err);
+      }
+      btn.disabled = false;
     });
 
     // ── Load flavours as templates ──

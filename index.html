@@ -1192,11 +1192,11 @@
     <section class="hero" aria-label="Hero section">
       <div class="hero-content" style="position:relative;">
       <div class="hero-label">Open Source · Powered by almostnode</div>
-      <h1>Run <span style="color:var(--accent);">Open</span><span style="color:var(--text-bright);">Claw</span> in your browser in <span id="hero-time" style="display:inline-block;transition:opacity 0.4s ease, transform 0.4s ease;">3s</span></h1>
+      <h1>Run <span style="color:var(--accent);">Open</span><span style="color:var(--text-bright);">Claw</span> Securely in your browser in <span id="hero-time" style="display:inline-block;transition:opacity 0.4s ease, transform 0.4s ease;">5s</span></h1>
       <p class="subtitle">Complete AI agent runtime with virtual filesystem, free models, and live chat. No installation. No Docker. Just open and go.</p>
 
       <div class="cta-row">
-        <button class="btn btn-primary pg-launch" data-action="sandbox" style="background:var(--accent);color:#000;border:1px solid var(--accent);display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;" aria-label="Boot your OpenClaw server now"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg> Boot Your Server Now</button>
+        <button class="btn btn-primary pg-launch" data-action="sandbox" style="background:var(--accent);color:#000;border:1px solid var(--accent);display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;" aria-label="Boot your OpenClaw server now"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg> Launch Your Sandbox Now</button>
         <!-- Build/Demos buttons moved below playground -->
       </div>
 
@@ -1223,7 +1223,7 @@
         <div id="pg-creds-sandbox" style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--border);background:var(--black);">
           <label style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">Flavour</label>
           <select id="pg-flavour-select" style="padding:6px 10px;background:var(--surface);border:1px solid var(--border);color:var(--text-bright);font-family:var(--mono);font-size:0.72rem;outline:none;opacity:0.9;max-width:180px;">
-            <option value="default">🦀 OpenClaw</option>
+            <option value="default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;display:inline-block;vertical-align:-1px;margin-right:2px;"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> OpenClaw</option>
           </select>
           <select id="pg-model-select" style="display:none;">
             <option value="upstage/solar-pro-3:free" selected>Solar Pro 3</option>
@@ -1323,11 +1323,15 @@ entirely in a browser sandbox.
           <div class="pg-output-panel">
             <div class="pg-terminal-header" style="display:flex;align-items:center;justify-content:space-between;">
               <span class="label">Terminal</span>
-              <a id="pg-connect-link" href="#" style="display:none;font-family:var(--mono);font-size:0.65rem;color:var(--accent);text-decoration:none;font-weight:700;">🔴 Connect →</a>
+              <a id="pg-connect-link" href="#" style="display:none;font-family:var(--mono);font-size:0.65rem;color:var(--accent);text-decoration:none;font-weight:700;"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;display:inline-block;vertical-align:0px;margin-right:2px;"><circle cx="12" cy="12" r="10"/></svg> Connect →</a>
             </div>
             <div class="pg-terminal" id="pg-terminal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+              <div id="terminal-carousel" style="text-align:center;max-width:400px;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text-bright);margin-bottom:6px;transition:opacity 0.5s ease;" id="carousel-title">Complete Runtime in Seconds</div>
+                <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);line-height:1.5;transition:opacity 0.5s ease;" id="carousel-desc">Boot a FULL OpenClaw instance in your browser — complete with virtual filesystem, 40+ Node.js modules, and npm support. Just paste your API key and start coding. Zero install.</div>
+              </div>
               <img src="/crab.png" alt="VibeClaw mascot" style="width:120px;filter:drop-shadow(0 0 20px rgba(255,92,92,0.2));animation:hero-crab-float 3s ease-in-out infinite;">
-              <button class="pg-launch" data-action="sandbox" style="padding:16px 40px;font-family:var(--mono);font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;background:var(--accent);color:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:background 0.15s,box-shadow 0.15s;" aria-label="Boot OpenClaw gateway" onmouseover="this.style.background='#ff7070';this.style.boxShadow='0 0 20px rgba(255,92,92,0.3)'" onmouseout="this.style.background='var(--accent)';this.style.boxShadow='none'"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg> Boot Your Gateway</button>
+              <button class="pg-launch" data-action="sandbox" style="padding:16px 40px;font-family:var(--mono);font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;background:var(--accent);color:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:background 0.15s,box-shadow 0.15s;" aria-label="Boot OpenClaw gateway" onmouseover="this.style.background='#ff7070';this.style.boxShadow='0 0 20px rgba(255,92,92,0.3)'" onmouseout="this.style.background='var(--accent)';this.style.boxShadow='none'"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg> Start OpenClaw Securely Now</button>
             </div>
 
             <div id="pg-chat-bar" style="display:none;border-top:1px solid var(--border);background:var(--surface);">
@@ -2037,7 +2041,7 @@ entirely in a browser sandbox.
     <div class="section">
       <div class="section-header">
         <div class="section-label">01 / Why vibeclaw</div>
-        <h2>The fastest way to try OpenClaw</h2>
+        <h2>The fastest and <span style="color:var(--accent);">safest</span> way to try OpenClaw</h2>
       </div>
       <div class="features-grid">
 
@@ -2147,22 +2151,22 @@ entirely in a browser sandbox.
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;max-width:1100px;margin:0 auto;">
         <div style="border:1px solid var(--border);border-radius:10px;padding:24px;background:var(--surface);">
-          <div style="font-size:1.4rem;margin-bottom:10px;">🔗</div>
+          <div style="margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
           <h3 style="font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text-bright);margin:0 0 8px;">Share Server Configs</h3>
           <p style="font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:1.6;">Publish your server configs to the community. One-click import — anyone can boot your agent setup in seconds.</p>
         </div>
         <div style="border:1px solid var(--border);border-radius:10px;padding:24px;background:var(--surface);">
-          <div style="font-size:1.4rem;margin-bottom:10px;">🌐</div>
+          <div style="margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
           <h3 style="font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text-bright);margin:0 0 8px;">Connect to Live Gateways</h3>
           <p style="font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:1.6;">Connect directly to a friend's running OpenClaw gateway. Chat with their agents, browse their workspace — peer to peer.</p>
         </div>
         <div style="border:1px solid var(--border);border-radius:10px;padding:24px;background:var(--surface);">
-          <div style="font-size:1.4rem;margin-bottom:10px;">🏪</div>
+          <div style="margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg></div>
           <h3 style="font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text-bright);margin:0 0 8px;">Community Library</h3>
           <p style="font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:1.6;">Browse servers built by the community. Security auditors, creative studios, DevOps squads — find and fork what works.</p>
         </div>
         <div style="border:1px solid var(--border);border-radius:10px;padding:24px;background:var(--surface);">
-          <div style="font-size:1.4rem;margin-bottom:10px;">🔒</div>
+          <div style="margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
           <h3 style="font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text-bright);margin:0 0 8px;">Private P2P Mesh</h3>
           <p style="font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:1.6;">Teams can link their gateways into a private mesh. Shared agent routing, distributed skills, unified session history.</p>
         </div>
@@ -2183,13 +2187,13 @@ entirely in a browser sandbox.
       <div class="demos-grid">
 
         <a class="demo-card" href="./examples/openclaw-gateway-demo.html">
-          <h3>🦀 Gateway Dashboard</h3>
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-1px;margin-right:3px;"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> Gateway Dashboard</h3>
           <p>Full 3-column dashboard — connect to your live OpenClaw gateway and see everything: sessions, chat, files, skills, cron, metrics, logs.</p>
           <span class="demo-tag">openclaw · gateway · live</span>
         </a>
 
         <a class="demo-card" href="./examples/openclaw-demo.html">
-          <h3>🦞 Clawe Squad Manager</h3>
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-1px;margin-right:3px;"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> Clawe Squad Manager</h3>
           <p>Spin up a multi-agent squad — 4 AI agents with workspaces, kanban task board, and coordinated task execution.</p>
           <span class="demo-tag">clawe · multi-agent · kanban</span>
         </a>
@@ -2225,12 +2229,12 @@ entirely in a browser sandbox.
           <div style="font-family:var(--sans);font-size:2rem;font-weight:800;color:var(--text-bright);margin-bottom:4px;">$0<span style="font-size:0.8rem;font-weight:400;color:var(--text-dim);">/mo</span></div>
           <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:20px;">Perfect for trying things out</div>
           <ul style="list-style:none;padding:0;margin:0 0 24px;font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:2.2;">
-            <li>✅ Build unlimited server configs</li>
-            <li>✅ 7 free AI models (Solar, Llama, Gemma…)</li>
-            <li>✅ Sandbox preview & chat</li>
-            <li>✅ Export & import configs</li>
-            <li>✅ Browse community servers</li>
-            <li style="color:var(--text-dim);">— 50 messages/day</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>Build unlimited server configs</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>7 free AI models (Solar, Llama, Gemma…)</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>Sandbox preview & chat</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>Export & import configs</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>Browse community servers</li>
+            <li style="color:var(--text-dim);opacity:0.6;padding-left:22px;">— 50 messages/day</li>
           </ul>
           <div style="padding:10px;border:1px solid var(--border);border-radius:8px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);">Current plan</div>
         </div>
@@ -2241,13 +2245,13 @@ entirely in a browser sandbox.
           <div style="font-family:var(--sans);font-size:2rem;font-weight:800;color:var(--text-bright);margin-bottom:4px;">$20<span style="font-size:0.8rem;font-weight:400;color:var(--text-dim);">/mo</span></div>
           <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:20px;">For developers who ship</div>
           <ul style="list-style:none;padding:0;margin:0 0 24px;font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:2.2;">
-            <li>✅ Everything in Free, plus:</li>
-            <li>⚡ Claude Opus 4.6, GPT-5.2, Gemini 3 Pro, o3</li>
-            <li>⚡ Cloud sync — access anywhere</li>
-            <li>⚡ Unlimited messages</li>
-            <li>⚡ Publish & share servers P2P</li>
-            <li>⚡ Connect to friends' gateways</li>
-            <li>⚡ Priority support</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>Everything in Free, plus:</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2z"/></svg>Claude Opus 4.6, GPT-5.2, Gemini 3 Pro, o3</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2z"/></svg>Cloud sync — access anywhere</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2z"/></svg>Unlimited messages</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2z"/></svg>Publish & share servers P2P</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2z"/></svg>Connect to friends' gateways</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2z"/></svg>Priority support</li>
           </ul>
           <button onclick="VibeclawFeatures.openCheckout()" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent);color:#000;font-family:var(--mono);font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.15s;text-transform:uppercase;letter-spacing:0.04em;" onmouseover="this.style.background='#ff7070';this.style.boxShadow='0 0 20px rgba(255,92,92,0.3)'" onmouseout="this.style.background='var(--accent)';this.style.boxShadow=''">Upgrade to Pro</button>
           <div style="text-align:center;margin-top:8px;font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);">or $200/year (save $40)</div>
@@ -2258,13 +2262,13 @@ entirely in a browser sandbox.
           <div style="font-family:var(--sans);font-size:2rem;font-weight:800;color:var(--text-bright);margin-bottom:4px;">$40<span style="font-size:0.8rem;font-weight:400;color:var(--text-dim);">/user/mo</span></div>
           <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:20px;">For teams building together</div>
           <ul style="list-style:none;padding:0;margin:0 0 24px;font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:2.2;">
-            <li>✅ Everything in Pro, plus:</li>
-            <li>🏢 Shared team server library</li>
-            <li>🏢 P2P mesh — connect team gateways</li>
-            <li>🏢 Team usage analytics & billing</li>
-            <li>🏢 Bring your own API keys</li>
-            <li>🏢 Managed hosting (add-on)</li>
-            <li>🏢 SLA & priority support</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>Everything in Pro, plus:</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>Shared team server library</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>P2P mesh — connect team gateways</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>Team usage analytics & billing</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>Bring your own API keys</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>Managed hosting (add-on)</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;color:var(--accent);"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>SLA & priority support</li>
           </ul>
           <button style="width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text-bright);font-family:var(--mono);font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.15s;text-transform:uppercase;letter-spacing:0.04em;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-bright)'">Coming Soon</button>
         </div>
@@ -2275,6 +2279,18 @@ entirely in a browser sandbox.
         document.getElementById('pricing-section').style.display = '';
       }
     </script>
+
+    <!-- Featured Articles -->
+    <div id="featured-articles" style="display:none;max-width:1440px;margin:0 auto;padding:48px 24px 32px;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;">
+        <div>
+          <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">From the newsroom</div>
+          <h2 style="font-family:var(--sans);font-size:1.4rem;font-weight:800;color:var(--text-bright);margin:0;">Latest Articles</h2>
+        </div>
+        <a href="/news" style="font-family:var(--mono);font-size:0.7rem;color:var(--accent);text-decoration:none;">View all &rarr;</a>
+      </div>
+      <div id="featured-grid"></div>
+    </div>
 
     <!-- FAQ -->
     <div class="section">
@@ -2325,18 +2341,6 @@ entirely in a browser sandbox.
         </details>
 
       </div>
-    </div>
-
-    <!-- Featured Articles -->
-    <div id="featured-articles" style="display:none;max-width:1440px;margin:0 auto;padding:48px 24px 32px;">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;">
-        <div>
-          <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">From the newsroom</div>
-          <h2 style="font-family:var(--sans);font-size:1.4rem;font-weight:800;color:var(--text-bright);margin:0;">Latest Articles</h2>
-        </div>
-        <a href="/news" style="font-family:var(--mono);font-size:0.7rem;color:var(--accent);text-decoration:none;">View all &rarr;</a>
-      </div>
-      <div id="featured-grid"></div>
     </div>
 
     </main>
@@ -2603,5 +2607,33 @@ entirely in a browser sandbox.
       })();
     </script>
 
+    <script>
+      (function() {
+        const slides = [
+          { title: 'Complete Runtime in Seconds', desc: 'Boot a FULL OpenClaw instance in your browser — complete with virtual filesystem, 40+ Node.js modules, and npm support. Just paste your API key and start coding. Zero install.' },
+          { title: 'Your Key, Your Browser', desc: 'API calls go direct from your browser to Anthropic. Your key never touches our servers. Close the tab and it\'s gone.' },
+          { title: 'Real Node.js Container', desc: 'This isn\'t a demo — it\'s a real Node.js runtime with a virtual filesystem, 40+ shimmed modules, require(), npm packages, and full OpenClaw agent workspace. Powered by almostnode.' },
+          { title: 'Live Gateway Mode', desc: 'Already running OpenClaw? Connect to your live gateway via WebSocket. See all sessions, agents, files, skills, cron jobs, metrics — everything.' },
+          { title: 'Full Dashboard', desc: '3-column gateway dashboard with streaming chat, session management, workspace file browser, skill status, cron jobs, cost tracking, and live logs.' },
+          { title: 'Flavours', desc: 'Swap sandbox personalities in one click. TinyClaw multi-agent orchestrator, default Claw assistant, or build your own — different agents, skills, and system prompts per flavour.' },
+          { title: 'WebGPU Local LLM', desc: 'Run Qwen2.5-Coder 1.5B locally via WebGPU — no API key, no network. A fully self-contained coding agent in ~900MB. Coming soon.' }
+        ];
+        let idx = 0;
+        const titleEl = document.getElementById('carousel-title');
+        const descEl = document.getElementById('carousel-desc');
+        if (!titleEl || !descEl) return;
+        setInterval(function() {
+          titleEl.style.opacity = '0';
+          descEl.style.opacity = '0';
+          setTimeout(function() {
+            idx = (idx + 1) % slides.length;
+            titleEl.textContent = slides[idx].title;
+            descEl.textContent = slides[idx].desc;
+            titleEl.style.opacity = '1';
+            descEl.style.opacity = '1';
+          }, 500);
+        }, 4000);
+      })();
+    </script>
   </body>
 </html>

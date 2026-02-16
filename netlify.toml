@@ -5,7 +5,7 @@
   command = "npx vite --port 5174"
 
 [build]
-  command = "npm run flavours:build && npm run build"
+  command = "npm run flavours:build && node scripts/build-news.mjs && npm run build"
   publish = "dist-site"
   functions = "netlify/functions"
 
@@ -20,6 +20,11 @@
 [[redirects]]
   from = "/api/relay"
   to = "/.netlify/functions/relay"
+  status = 200
+
+[[redirects]]
+  from = "/news"
+  to = "/news.html"
   status = 200
 
 [[redirects]]

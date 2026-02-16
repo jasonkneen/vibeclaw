@@ -23,6 +23,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/wallpapers"
+  to = "/.netlify/functions/wallpapers"
+  status = 200
+
+[[redirects]]
+  from = "/gallery"
+  to = "/gallery.html"
+  status = 200
+
+[[redirects]]
   from = "/api/articles"
   to = "/.netlify/functions/articles"
   status = 200

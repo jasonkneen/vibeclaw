@@ -7,6 +7,13 @@ image: /news/qwen3-235b.png
 summary: "Alibaba's Qwen3 family brings hybrid thinking — toggle between fast responses and deep reasoning. Eight models, all Apache 2.0."
 source: "https://qwenlm.github.io/blog/qwen3/"
 sourceLabel: "Qwen Blog"
+sources:
+  - url: "https://huggingface.co/Qwen/Qwen3-235B"
+    label: "Qwen3 235B Model Card on Hugging Face"
+  - url: "https://qwenlm.github.io/blog/qwen3/"
+    label: "Qwen3 Official Blog Announcement"
+  - url: "https://github.com/QwenLM/Qwen"
+    label: "Qwen GitHub Repository"
 ---
 
 Alibaba's **Qwen3 235B** introduces something genuinely new: **hybrid thinking mode**.
@@ -46,3 +53,9 @@ The Qwen3 8B model is one of the free options in [VibeClaw](https://vibeclaw.dev
 
 - [HuggingFace: Qwen](https://huggingface.co/Qwen)
 - [Qwen3 Technical Report](https://qwenlm.github.io/blog/qwen3/)
+
+## Sources
+
+1. [Qwen3 235B Model Card on Hugging Face](https://huggingface.co/Qwen/Qwen3-235B)
+2. [Qwen3 Official Blog Announcement](https://qwenlm.github.io/blog/qwen3/)
+3. [Qwen GitHub Repository](https://github.com/QwenLM/Qwen)

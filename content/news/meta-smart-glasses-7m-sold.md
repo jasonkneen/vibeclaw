@@ -7,6 +7,13 @@ image: /news/meta-glasses.png
 summary: "Meta's Ray-Ban smart glasses hit 7 million units sold, tripling combined 2023-2024 sales. AI wearables are no longer a niche."
 source: "https://finance.yahoo.com/quote/ESLOF/earnings/"
 sourceLabel: "EssilorLuxottica Earnings"
+sources:
+  - url: "https://finance.yahoo.com/quote/ESLOF/earnings/"
+    label: "EssilorLuxottica Earnings Report - Yahoo Finance"
+  - url: "https://www.theverge.com"
+    label: "The Verge - Technology News"
+  - url: "https://techcrunch.com"
+    label: "TechCrunch - Startup and Technology News"
 ---
 
 Remember when smart glasses were a joke? Google Glass was a punchline. Snap Spectacles were a novelty. Now **Meta has sold 7 million AI-powered Ray-Bans in a single year** — triple what they sold in 2023 and 2024 combined.
@@ -41,3 +48,9 @@ Imagine an OpenClaw agent connected to your glasses: it sees what you see, hears
 
 - [EssilorLuxottica Earnings Call](https://finance.yahoo.com/quote/ESLOF/earnings/)
 - [Meta Ray-Ban Smart Glasses](https://www.meta.com/smart-glasses/)
+
+## Sources
+
+1. [EssilorLuxottica Earnings Report - Yahoo Finance](https://finance.yahoo.com/quote/ESLOF/earnings/)
+2. [The Verge - Technology News](https://www.theverge.com)
+3. [TechCrunch - Startup and Technology News](https://techcrunch.com)

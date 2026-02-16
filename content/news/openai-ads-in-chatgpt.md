@@ -7,6 +7,13 @@ image: /news/openai-ads.png
 summary: "An ex-OpenAI researcher publicly criticises the company's move to monetise ChatGPT with advertising. The implications for AI trust are serious."
 source: "https://www.nytimes.com/2026/02/11/opinion/openai-ads-chatgpt.html"
 sourceLabel: "New York Times"
+sources:
+  - url: "https://www.nytimes.com/2026/02/11/opinion/openai-ads-chatgpt.html"
+    label: "OpenAI Ads in ChatGPT - New York Times Opinion"
+  - url: "https://www.theverge.com"
+    label: "The Verge - Technology News"
+  - url: "https://techcrunch.com"
+    label: "TechCrunch - Startup and Technology News"
 ---
 
 Zoë Hitzig, a researcher who left OpenAI this week, published an op-ed in the New York Times expressing "deep reservations" about OpenAI's decision to put ads in ChatGPT.
@@ -46,3 +53,9 @@ The question for users: **do you want an AI assistant that serves you, or one th
 
 - [NYT Op-Ed: Zoë Hitzig](https://www.nytimes.com/2026/02/11/opinion/openai-ads-chatgpt.html)
 - [Run ad-free AI agents at VibeClaw](https://vibeclaw.dev)
+
+## Sources
+
+1. [OpenAI Ads in ChatGPT - New York Times Opinion](https://www.nytimes.com/2026/02/11/opinion/openai-ads-chatgpt.html)
+2. [The Verge - Technology News](https://www.theverge.com)
+3. [TechCrunch - Startup and Technology News](https://techcrunch.com)

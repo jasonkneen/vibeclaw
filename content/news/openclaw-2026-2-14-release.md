@@ -7,6 +7,13 @@ image: /news/openclaw-release.png
 summary: "The latest OpenClaw release brings Telegram polls, browser sandbox bind mounts, DM access controls, and a mountain of TUI fixes."
 source: "https://github.com/openclaw/openclaw/releases"
 sourceLabel: "GitHub Releases"
+sources:
+  - url: "https://docs.openclaw.ai"
+    label: "OpenClaw Documentation"
+  - url: "https://github.com/openclaw/openclaw"
+    label: "OpenClaw GitHub Repository"
+  - url: "https://clawhub.com"
+    label: "ClawHub - OpenClaw Skills Registry"
 ---
 
 OpenClaw **2026.2.14** just dropped, and it's a hefty one. Here's what matters.
@@ -54,3 +61,9 @@ The `doctor` command will flag any deprecated config keys and offer to migrate t
 - [Full Changelog](https://github.com/openclaw/openclaw/releases)
 - [OpenClaw Docs](https://docs.openclaw.ai)
 - [Build configs with VibeClaw](https://vibeclaw.dev/forge)
+
+## Sources
+
+1. [OpenClaw Documentation](https://docs.openclaw.ai)
+2. [OpenClaw GitHub Repository](https://github.com/openclaw/openclaw)
+3. [ClawHub - OpenClaw Skills Registry](https://clawhub.com)

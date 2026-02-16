@@ -7,6 +7,13 @@ image: /news/openclaw-skills.png
 summary: "OpenClaw's skill system is where it gets interesting. Here's a tour of what's available and how to find what you need."
 source: "https://clawhub.com"
 sourceLabel: "ClawHub"
+sources:
+  - url: "https://docs.openclaw.ai"
+    label: "OpenClaw Documentation"
+  - url: "https://github.com/openclaw/openclaw"
+    label: "OpenClaw GitHub Repository"
+  - url: "https://clawhub.com"
+    label: "ClawHub - OpenClaw Skills Registry"
 ---
 
 OpenClaw's core is the agent loop. Skills are what make it *useful*. Think of them as plugins — each one teaches your agent a new capability.
@@ -85,3 +92,9 @@ When you build a server config in VibeClaw's Forge, you can add skills in the To
 - [ClawHub — Skill Registry](https://clawhub.com)
 - [OpenClaw Skills Docs](https://docs.openclaw.ai)
 - [Build configs at VibeClaw](https://vibeclaw.dev/forge)
+
+## Sources
+
+1. [OpenClaw Documentation](https://docs.openclaw.ai)
+2. [OpenClaw GitHub Repository](https://github.com/openclaw/openclaw)
+3. [ClawHub - OpenClaw Skills Registry](https://clawhub.com)

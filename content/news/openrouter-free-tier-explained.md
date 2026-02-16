@@ -7,6 +7,13 @@ image: /news/openrouter-free.png
 summary: "OpenRouter gives you access to 20+ models for free. Here's what's actually usable, what the limits are, and where the catches hide."
 source: "https://openrouter.ai/models"
 sourceLabel: "OpenRouter"
+sources:
+  - url: "https://openrouter.ai/models"
+    label: "OpenRouter Model Pricing and Availability"
+  - url: "https://openrouter.ai/docs"
+    label: "OpenRouter API Documentation"
+  - url: "https://github.com/OpenRouterTeam/openrouter-runner"
+    label: "OpenRouter Runner GitHub Repository"
 ---
 
 OpenRouter is the backbone of VibeClaw's free tier. But "free" always has fine print. Let's break it down.
@@ -54,3 +61,9 @@ When you're ready for Claude Opus or GPT-5, that's where VibeClaw Pro comes in. 
 
 - [OpenRouter Models](https://openrouter.ai/models)
 - [Try free models at VibeClaw](https://vibeclaw.dev)
+
+## Sources
+
+1. [OpenRouter Model Pricing and Availability](https://openrouter.ai/models)
+2. [OpenRouter API Documentation](https://openrouter.ai/docs)
+3. [OpenRouter Runner GitHub Repository](https://github.com/OpenRouterTeam/openrouter-runner)

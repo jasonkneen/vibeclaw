@@ -7,6 +7,13 @@ image: /news/browser-agents.png
 summary: "The next wave of AI isn't in the cloud — it's in your browser tab. Here's why that changes everything."
 source: "https://vibeclaw.dev"
 sourceLabel: "VibeClaw Editorial"
+sources:
+  - url: "https://vibeclaw.dev"
+    label: "VibeClaw - Browser-Based AI Agent Platform"
+  - url: "https://docs.openclaw.ai/tools/browser"
+    label: "OpenClaw Browser Control Documentation"
+  - url: "https://github.com/openclaw/openclaw"
+    label: "OpenClaw GitHub Repository"
 ---
 
 Everyone's building AI agents that run on servers. We think the interesting stuff happens when they run **in your browser**.
@@ -58,3 +65,9 @@ That's what we're building toward.
 ## Try It
 
 [vibeclaw.dev](https://vibeclaw.dev) — no sign up, no install, no credit card. Just open and go.
+
+## Sources
+
+1. [VibeClaw - Browser-Based AI Agent Platform](https://vibeclaw.dev)
+2. [OpenClaw Browser Control Documentation](https://docs.openclaw.ai/tools/browser)
+3. [OpenClaw GitHub Repository](https://github.com/openclaw/openclaw)

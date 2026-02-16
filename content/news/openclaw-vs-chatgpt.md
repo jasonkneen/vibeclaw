@@ -7,6 +7,13 @@ image: /news/openclaw-vs-chatgpt.png
 summary: "ChatGPT is great. OpenClaw is different. Here's an honest comparison of when each one makes sense."
 source: "https://docs.openclaw.ai"
 sourceLabel: "OpenClaw Docs"
+sources:
+  - url: "https://docs.openclaw.ai"
+    label: "OpenClaw Documentation"
+  - url: "https://github.com/openclaw/openclaw"
+    label: "OpenClaw GitHub Repository"
+  - url: "https://clawhub.com"
+    label: "ClawHub - OpenClaw Skills Registry"
 ---
 
 This isn't a hit piece on ChatGPT. It's genuinely excellent. But OpenClaw solves a different problem. Here's when to use which.
@@ -65,3 +72,9 @@ Same price, very different products.
 
 - [OpenClaw Getting Started](https://docs.openclaw.ai/start/getting-started)
 - [Try at VibeClaw](https://vibeclaw.dev)
+
+## Sources
+
+1. [OpenClaw Documentation](https://docs.openclaw.ai)
+2. [OpenClaw GitHub Repository](https://github.com/openclaw/openclaw)
+3. [ClawHub - OpenClaw Skills Registry](https://clawhub.com)

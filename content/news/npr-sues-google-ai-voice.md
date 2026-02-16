@@ -7,6 +7,13 @@ image: /news/npr-google-voice.png
 summary: "The former Morning Edition host says Google's NotebookLM podcast voice is an 'uncanny' copy of his. The AI voice cloning debate arrives in court."
 source: "https://www.washingtonpost.com/technology/2026/02/15/david-greene-google-ai-podcast/"
 sourceLabel: "Washington Post"
+sources:
+  - url: "https://www.washingtonpost.com/technology/2026/02/15/david-greene-google-ai-podcast/"
+    label: "David Greene sues Google over AI podcast voice - Washington Post"
+  - url: "https://www.theverge.com"
+    label: "The Verge - Technology News"
+  - url: "https://techcrunch.com"
+    label: "TechCrunch - Startup and Technology News"
 ---
 
 David Greene, former host of NPR's Morning Edition and current host of Left, Right & Center, is suing Google. The claim: Google's male podcast host voice in NotebookLM is an unauthorised copy of his voice.
@@ -42,3 +49,9 @@ For builders using TTS in their agents: choose providers that use licensed, cons
 ## Links
 
 - [Washington Post Coverage](https://www.washingtonpost.com/technology/2026/02/15/david-greene-google-ai-podcast/)
+
+## Sources
+
+1. [David Greene sues Google over AI podcast voice - Washington Post](https://www.washingtonpost.com/technology/2026/02/15/david-greene-google-ai-podcast/)
+2. [The Verge - Technology News](https://www.theverge.com)
+3. [TechCrunch - Startup and Technology News](https://techcrunch.com)

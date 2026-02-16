@@ -7,6 +7,13 @@ image: /news/mcp-protocol.png
 summary: "Anthropic's Model Context Protocol is becoming the USB-C of AI agents. Here's what it is and why it matters."
 source: "https://modelcontextprotocol.io/"
 sourceLabel: "MCP Specification"
+sources:
+  - url: "https://modelcontextprotocol.io/"
+    label: "Model Context Protocol Official Specification"
+  - url: "https://github.com/modelcontextprotocol/servers"
+    label: "MCP Server Registry on GitHub"
+  - url: "https://www.anthropic.com/news/model-context-protocol"
+    label: "Anthropic - Introducing Model Context Protocol"
 ---
 
 Remember when every phone had a different charger? That's AI tool integration right now. Every framework has its own way of connecting models to tools. **MCP is trying to fix that.**

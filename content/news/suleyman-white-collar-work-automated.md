@@ -7,6 +7,13 @@ image: /news/suleyman-automation.png
 summary: "Mustafa Suleyman claims AI will automate most desk jobs within 18 months. Bold prediction or hype? We break it down."
 source: "https://www.ft.com/content/f1ec830c-2f08-4b1a-b70f-7330f260753c"
 sourceLabel: "Financial Times"
+sources:
+  - url: "https://www.ft.com/content/f1ec830c-2f08-4b1a-b70f-7330f260753c"
+    label: "Mustafa Suleyman on AI automation - Financial Times"
+  - url: "https://www.theverge.com"
+    label: "The Verge - Technology News"
+  - url: "https://techcrunch.com"
+    label: "TechCrunch - Startup and Technology News"
 ---
 
 Microsoft AI CEO Mustafa Suleyman made a striking claim to the Financial Times:
@@ -42,3 +49,9 @@ Set a reminder for August 2027. If most white-collar tasks are fully automated b
 
 - [Financial Times Interview](https://www.ft.com/content/f1ec830c-2f08-4b1a-b70f-7330f260753c)
 - [Build AI agents at VibeClaw](https://vibeclaw.dev)
+
+## Sources
+
+1. [Mustafa Suleyman on AI automation - Financial Times](https://www.ft.com/content/f1ec830c-2f08-4b1a-b70f-7330f260753c)
+2. [The Verge - Technology News](https://www.theverge.com)
+3. [TechCrunch - Startup and Technology News](https://techcrunch.com)

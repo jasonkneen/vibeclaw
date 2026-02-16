@@ -1,0 +1,52 @@
+[
+  {
+    "id": "neon-crab",
+    "title": "Neon Crab",
+    "prompt": "Neon red crab with glowing circuit board patterns floating in deep dark space",
+    "date": "2026-02-16",
+    "tags": ["cyberpunk", "mascot", "space"],
+    "variants": [
+      {"label": "Desktop", "url": "/wallpapers/neon-crab-desktop.png", "width": 2048, "height": 2048}
+    ]
+  },
+  {
+    "id": "server-city",
+    "title": "Server City",
+    "prompt": "Dark futuristic cityscape with towering servers instead of skyscrapers, neon lights on wet streets",
+    "date": "2026-02-16",
+    "tags": ["cyberpunk", "cityscape", "servers"],
+    "variants": [
+      {"label": "Desktop", "url": "/wallpapers/server-city-desktop.png", "width": 2048, "height": 2048}
+    ]
+  },
+  {
+    "id": "neural-network",
+    "title": "Neural Network",
+    "prompt": "Abstract neural network visualization with thousands of glowing nodes in deep space",
+    "date": "2026-02-16",
+    "tags": ["abstract", "neural", "space"],
+    "variants": [
+      {"label": "Desktop", "url": "/wallpapers/neural-network-desktop.png", "width": 2048, "height": 2048}
+    ]
+  },
+  {
+    "id": "terminal-void",
+    "title": "Terminal Void",
+    "prompt": "Single glowing terminal cursor in a vast dark void with subtle matrix code rain",
+    "date": "2026-02-16",
+    "tags": ["minimal", "terminal", "dark"],
+    "variants": [
+      {"label": "Desktop", "url": "/wallpapers/terminal-void-desktop.png", "width": 2048, "height": 2048}
+    ]
+  },
+  {
+    "id": "ai-chip",
+    "title": "AI Chip",
+    "prompt": "Closeup futuristic AI chip with intricate circuit traces glowing red and blue",
+    "date": "2026-02-16",
+    "tags": ["macro", "hardware", "cyberpunk"],
+    "variants": [
+      {"label": "Desktop", "url": "/wallpapers/ai-chip-desktop.png", "width": 2048, "height": 2048}
+    ]
+  }
+]

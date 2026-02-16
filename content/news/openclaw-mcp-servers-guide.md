@@ -7,6 +7,13 @@ image: /news/openclaw-mcp-servers.png
 summary: "OpenClaw supports MCP out of the box. Here are the 10 servers that make your agent genuinely useful."
 source: "https://github.com/modelcontextprotocol/servers"
 sourceLabel: "MCP Server Registry"
+sources:
+  - url: "https://docs.openclaw.ai"
+    label: "OpenClaw Documentation"
+  - url: "https://github.com/openclaw/openclaw"
+    label: "OpenClaw GitHub Repository"
+  - url: "https://clawhub.com"
+    label: "ClawHub - OpenClaw Skills Registry"
 ---
 
 OpenClaw speaks MCP natively. That means any MCP server — official or community — plugs in and works. But with hundreds available, which ones are actually worth installing?
@@ -89,3 +96,9 @@ Or use **VibeClaw's Forge** to add them visually — no JSON editing required.
 - [MCP Server Registry](https://github.com/modelcontextprotocol/servers)
 - [OpenClaw MCP Docs](https://docs.openclaw.ai)
 - [Build configs at VibeClaw](https://vibeclaw.dev/forge)
+
+## Sources
+
+1. [OpenClaw Documentation](https://docs.openclaw.ai)
+2. [OpenClaw GitHub Repository](https://github.com/openclaw/openclaw)
+3. [ClawHub - OpenClaw Skills Registry](https://clawhub.com)

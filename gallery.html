@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wallpapers -- VibeClaw</title>
+  <meta name="description" content="Free AI-generated wallpapers in cyberpunk style. Download for iPhone, Android, desktop, and ultrawide. New wallpapers daily." />
+  <meta property="og:title" content="VibeClaw Wallpapers -- Free AI-Generated Cyberpunk Art">
+  <meta property="og:image" content="https://vibeclaw.dev/og-image.png">
+  <link rel="canonical" href="https://vibeclaw.dev/gallery">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #ff5c5c;
+      --accent-dim: rgba(255,92,92,0.15);
+      --surface: #111;
+      --surface-2: #1a1a1a;
+      --border: #222;
+      --black: #0a0a0a;
+      --text: #999;
+      --text-dim: #555;
+      --text-bright: #e0e0e0;
+      --mono: 'Fragment Mono', 'JetBrains Mono', monospace;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--sans); background: var(--black); color: var(--text); min-height: 100vh; }
+    a { color: var(--accent); text-decoration: none; }
+
+    .nav { display: flex; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--black); position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-family: var(--mono); font-weight: 700; color: var(--text-bright); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+    .nav-links { display: flex; gap: 20px; margin-left: auto; align-items: center; }
+    .nav-links a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); text-decoration: none; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text-bright); }
+    .nav-links a.active { color: var(--accent); }
+
+    .page { max-width: 1440px; margin: 0 auto; padding: 32px 24px 60px; }
+    .page-header { margin-bottom: 12px; }
+    .page-header h1 { font-family: var(--sans); font-size: 1.8rem; font-weight: 800; color: var(--text-bright); }
+    .page-sub { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); margin-bottom: 28px; }
+
+    /* Filter bar */
+    .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .filter-btn { font-family: var(--mono); font-size: 0.6rem; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.04em; }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+    /* Gallery grid */
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+
+    /* Wallpaper card */
+    .wp-card { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
+    .wp-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .wp-preview { width: 100%; aspect-ratio: 16/9; object-fit: cover; cursor: pointer; display: block; }
+    .wp-info { padding: 14px; }
+    .wp-title { font-family: var(--sans); font-size: 0.9rem; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; }
+    .wp-date { font-family: var(--mono); font-size: 0.55rem; color: var(--text-dim); margin-bottom: 10px; }
+    .wp-downloads { display: flex; gap: 6px; flex-wrap: wrap; }
+    .dl-btn { font-family: var(--mono); font-size: 0.55rem; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+    .dl-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); text-decoration: none; }
+    .dl-btn svg { width: 10px; height: 10px; }
+
+    /* Lightbox */
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 200; justify-content: center; align-items: center; cursor: pointer; }
+    .lightbox.active { display: flex; }
+    .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 8px; }
+    .lightbox-close { position: absolute; top: 20px; right: 24px; font-family: var(--mono); font-size: 1.5rem; color: var(--text-dim); cursor: pointer; }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 80px 24px; grid-column: 1 / -1; }
+    .empty h2 { font-family: var(--sans); font-size: 1.2rem; color: var(--text-bright); margin-bottom: 8px; }
+    .empty p { font-size: 0.85rem; color: var(--text-dim); }
+
+    .footer { border-top: 1px solid var(--border); padding: 24px; text-align: center; font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); }
+    .footer a { color: var(--text-dim); }
+    .footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav-logo"><img src="/crab-nav.png" alt="" style="height:36px;vertical-align:middle;margin-right:6px;"><span style="font-size:1rem;font-weight:700;"><span style="color:var(--accent);">VIBE</span><span style="color:var(--text-bright);">CLAW</span></span></a>
+    <div class="nav-links">
+      <a href="/forge">Forge</a>
+      <a href="/library">Library</a>
+      <a href="/news">Articles</a>
+      <a href="/gallery" class="active">Wallpapers</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <h1>Wallpapers</h1>
+    </div>
+    <p class="page-sub">Free AI-generated wallpapers. New designs daily. Download for any device.</p>
+
+    <div class="filter-bar" id="filter-bar"></div>
+    <div class="gallery" id="gallery">
+      <div class="empty"><h2>Loading...</h2></div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">x</span>
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <div class="footer">
+    <a href="/">vibeclaw.dev</a> -- <a href="/forge">Forge</a> -- <a href="/library">Library</a> -- <a href="/news">Articles</a> -- <a href="https://github.com/jasonkneen/vibeclaw">GitHub</a>
+  </div>
+
+  <script>
+    const DL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
+    let wallpapers = [];
+    let activeFilter = null;
+
+    async function load() {
+      // Try API first, fall back to static JSON
+      try {
+        const [apiRes, jsonRes] = await Promise.allSettled([
+          fetch('/api/wallpapers').then(r => r.ok ? r.json() : []),
+          fetch('/wallpapers-data.json').then(r => r.ok ? r.json() : [])
+        ]);
+        const dynamic = apiRes.status === 'fulfilled' ? apiRes.value || [] : [];
+        const static_ = jsonRes.status === 'fulfilled' ? jsonRes.value || [] : [];
+        const ids = new Set(dynamic.map(w => w.id));
+        wallpapers = [...dynamic, ...static_.filter(w => !ids.has(w.id))];
+        wallpapers.sort((a, b) => new Date(b.date) - new Date(a.date));
+      } catch {}
+      renderFilters();
+      render();
+    }
+
+    function renderFilters() {
+      const tags = [...new Set(wallpapers.flatMap(w => w.tags || []))].sort();
+      const bar = document.getElementById('filter-bar');
+      bar.innerHTML = `<button class="filter-btn ${!activeFilter ? 'active' : ''}" onclick="filter(null)">All</button>` +
+        tags.map(t => `<button class="filter-btn ${activeFilter === t ? 'active' : ''}" onclick="filter('${t}')">${t}</button>`).join('');
+    }
+
+    function filter(t) { activeFilter = t; renderFilters(); render(); }
+
+    function render() {
+      const filtered = activeFilter ? wallpapers.filter(w => (w.tags||[]).includes(activeFilter)) : wallpapers;
+      const el = document.getElementById('gallery');
+
+      if (!filtered.length) {
+        el.innerHTML = '<div class="empty"><h2>No wallpapers yet</h2><p>Check back soon -- new designs are generated daily.</p></div>';
+        return;
+      }
+
+      el.innerHTML = filtered.map(w => {
+        const variants = typeof w.variants === 'string' ? JSON.parse(w.variants) : (w.variants || []);
+        const preview = variants.find(v => v.label === 'Desktop') || variants.find(v => v.label === '4K') || variants[0];
+        const previewUrl = preview ? preview.url : '';
+
+        return `<div class="wp-card">
+          ${previewUrl ? `<img class="wp-preview" src="${previewUrl}" alt="${w.title}" loading="lazy" onclick="openLightbox('${previewUrl}')">` : ''}
+          <div class="wp-info">
+            <div class="wp-title">${w.title}</div>
+            <div class="wp-date">${new Date(w.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+            <div class="wp-downloads">
+              ${variants.map(v => `<a class="dl-btn" href="${v.url}" download="${w.id}-${v.label.toLowerCase().replace(/\s+/g,'-')}.png" target="_blank">${DL_ICON} ${v.label}</a>`).join('')}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+    load();
+  </script>
+</body>
+</html>

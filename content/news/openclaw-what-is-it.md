@@ -7,6 +7,13 @@ image: /news/openclaw-intro.png
 summary: "A no-nonsense guide to OpenClaw — what it is, what it does, how it works, and why it's different from ChatGPT or Copilot."
 source: "https://docs.openclaw.ai"
 sourceLabel: "OpenClaw Docs"
+sources:
+  - url: "https://docs.openclaw.ai"
+    label: "OpenClaw Documentation"
+  - url: "https://github.com/openclaw/openclaw"
+    label: "OpenClaw GitHub Repository"
+  - url: "https://clawhub.com"
+    label: "ClawHub - OpenClaw Skills Registry"
 ---
 
 You've probably heard of ChatGPT and Copilot. OpenClaw is different. Here's the short version:
@@ -94,3 +101,9 @@ The wizard walks you through everything.
 - [OpenClaw GitHub](https://github.com/openclaw/openclaw)
 - [Getting Started Guide](https://docs.openclaw.ai/start/getting-started)
 - [Try in browser at VibeClaw](https://vibeclaw.dev)
+
+## Sources
+
+1. [OpenClaw Documentation](https://docs.openclaw.ai)
+2. [OpenClaw GitHub Repository](https://github.com/openclaw/openclaw)
+3. [ClawHub - OpenClaw Skills Registry](https://clawhub.com)

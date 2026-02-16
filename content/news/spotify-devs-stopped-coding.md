@@ -7,6 +7,13 @@ image: /news/spotify-vibe-coding.png
 summary: "Spotify's CEO revealed that the company's top engineers now only generate and supervise AI-written code. Welcome to the vibe coding era."
 source: "https://www.businessinsider.com/spotify-developers-not-writing-code-ai-2026-2"
 sourceLabel: "Business Insider"
+sources:
+  - url: "https://www.businessinsider.com/spotify-developers-not-writing-code-ai-2026-2"
+    label: "Spotify developers not writing code, CEO says - Business Insider"
+  - url: "https://www.theverge.com"
+    label: "The Verge - Technology News"
+  - url: "https://techcrunch.com"
+    label: "TechCrunch - Startup and Technology News"
 ---
 
 During Spotify's Q4 earnings call, CEO Gustav Söderström dropped a bombshell:
@@ -46,3 +53,9 @@ The new path might be: learn to supervise AI, learn to specify precisely, learn 
 
 - [Business Insider Coverage](https://www.businessinsider.com/spotify-developers-not-writing-code-ai-2026-2)
 - [Build coding agents at VibeClaw](https://vibeclaw.dev)
+
+## Sources
+
+1. [Spotify developers not writing code, CEO says - Business Insider](https://www.businessinsider.com/spotify-developers-not-writing-code-ai-2026-2)
+2. [The Verge - Technology News](https://www.theverge.com)
+3. [TechCrunch - Startup and Technology News](https://techcrunch.com)

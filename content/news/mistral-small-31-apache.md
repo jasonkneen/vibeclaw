@@ -7,6 +7,13 @@ image: /news/mistral-small.png
 summary: "While everyone argues about Llama vs Qwen, Mistral quietly shipped a 24B model that's faster than both and Apache 2.0 licensed."
 source: "https://huggingface.co/mistralai"
 sourceLabel: "HuggingFace"
+sources:
+  - url: "https://huggingface.co/mistralai/Mistral-Small-3.1"
+    label: "Mistral Small 3.1 Model Card on Hugging Face"
+  - url: "https://mistral.ai/news/mistral-small-3-1/"
+    label: "Mistral AI Official Announcement"
+  - url: "https://github.com/mistralai/mistral-inference"
+    label: "Mistral AI Inference GitHub Repository"
 ---
 
 Mistral has a branding problem. Their models are excellent but nobody talks about them. **Mistral Small 3.1** deserves more attention.
@@ -54,3 +61,9 @@ Mistral Small 3.1 is free on OpenRouter and available as a default model in [Vib
 
 - [HuggingFace: mistralai](https://huggingface.co/mistralai)
 - [Mistral AI Blog](https://mistral.ai/news/)
+
+## Sources
+
+1. [Mistral Small 3.1 Model Card on Hugging Face](https://huggingface.co/mistralai/Mistral-Small-3.1)
+2. [Mistral AI Official Announcement](https://mistral.ai/news/mistral-small-3-1/)
+3. [Mistral AI Inference GitHub Repository](https://github.com/mistralai/mistral-inference)

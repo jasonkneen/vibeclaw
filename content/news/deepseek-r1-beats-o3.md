@@ -1,6 +1,6 @@
 ---
 title: "DeepSeek R1: The Open-Source Model That Beats o3"
-date: 2026-02-12
+date: 2026-02-13
 tags: [models, deepseek, reasoning, open-source]
 author: VibeClaw
 image: /news/deepseek-r1.png

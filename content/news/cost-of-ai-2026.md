@@ -1,6 +1,6 @@
 ---
 title: "The Real Cost of AI in 2026: Free vs Pro Models"
-date: 2026-02-05
+date: 2026-02-11
 tags: [think-piece, pricing, comparison]
 author: VibeClaw
 image: /news/cost-of-ai.png

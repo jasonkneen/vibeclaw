@@ -6,7 +6,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>News — VibeClaw</title>
+  <title>Articles — VibeClaw</title>
   <meta name="description" content="AI news, model reviews, and think pieces from VibeClaw. Stay current on open-source AI models, agent frameworks, and the tools shaping the future." />
   <meta property="og:title" content="VibeClaw News — AI Models, Reviews & Think Pieces">
   <meta property="og:description" content="Stay current on open-source AI models, agent frameworks, and the tools shaping the future.">
@@ -66,7 +66,7 @@
     /* Article card */
     .article-card { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; transition: border-color 0.15s; cursor: pointer; }
     .article-card:hover { border-color: var(--accent); }
-    .article-card.expanded { cursor: default; }
+    .article-card.expanded { cursor: default; grid-column: 1 / -1; }
     .article-header { display: flex; gap: 16px; padding: 20px 24px; align-items: flex-start; }
     .article-emoji { font-size: 2rem; flex-shrink: 0; line-height: 1; }
     .article-img { width: 100%; max-height: 280px; object-fit: cover; border-bottom: 1px solid var(--border); }
@@ -106,6 +106,18 @@
     .footer a { color: var(--text-dim); }
     .footer a:hover { color: var(--accent); }
 
+    /* Article count */
+    .article-count { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); margin-top: 8px; }
+
+    /* Date group header */
+    .date-header { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; padding: 20px 0 8px; border-bottom: 1px solid var(--border); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .date-header:first-child { padding-top: 0; }
+    .date-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+    /* Article grid for 2-col on wider screens */
+    .article-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 8px; }
+    @media (min-width: 700px) { .article-grid { grid-template-columns: 1fr 1fr; } }
+
     /* Empty state */
     .empty { text-align: center; padding: 60px 24px; }
     .empty-emoji { font-size: 3rem; margin-bottom: 12px; }
@@ -127,13 +139,14 @@
     <div class="nav-links">
       <a href="/forge">Forge</a>
       <a href="/library">Library</a>
-      <a href="/news" class="active">News</a>
+      <a href="/news" class="active">Articles</a>
     </div>
   </nav>
 
   <div class="page-header">
-    <h1>📡 News</h1>
-    <p>Model drops, reviews, think pieces, and everything happening in open-source AI.</p>
+    <h1>📡 Articles</h1>
+    <p>Model drops, reviews, think pieces, and everything happening in open-source AI and the OpenClaw ecosystem.</p>
+    <div class="article-count" id="article-count"></div>
   </div>
 
   <div class="tags-bar" id="tags-bar"></div>
@@ -179,35 +192,53 @@
 
     function renderArticles() {
       const container = document.getElementById('articles');
+      const countEl = document.getElementById('article-count');
       const filtered = activeTag ? articles.filter(a => a.tags.includes(activeTag)) : articles;
+
+      if (countEl) countEl.textContent = `${filtered.length} article${filtered.length !== 1 ? 's' : ''}`;
 
       if (!filtered.length) {
         container.innerHTML = `<div class="empty"><div class="empty-emoji">🔍</div><h2>No articles found</h2><p>Try a different tag or check back later.</p></div>`;
         return;
       }
 
-      container.innerHTML = filtered.map(a => {
-        const isImg = a.image && a.image.startsWith('/');
-        return `
-        <div class="article-card" id="article-${a.slug}" onclick="toggleArticle('${a.slug}', event)">
-          ${isImg ? `<img class="article-img" src="${a.image}" alt="${a.title}" loading="lazy">` : ''}
-          <div class="article-header">
-            ${!isImg ? `<div class="article-emoji">${a.image}</div>` : ''}
-            <div class="article-meta">
-              <div class="article-title">${a.title}</div>
-              <div class="article-info">
-                <span class="article-date">${new Date(a.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                ${a.tags.map(t => `<span class="article-tag">${t}</span>`).join('')}
+      // Group by date
+      const groups = {};
+      for (const a of filtered) {
+        if (!groups[a.date]) groups[a.date] = [];
+        groups[a.date].push(a);
+      }
+
+      let html = '';
+      for (const [date, items] of Object.entries(groups)) {
+        const d = new Date(date);
+        const label = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        html += `<div class="date-header"><span class="date-dot"></span>${label}</div>`;
+        html += `<div class="article-grid">`;
+        html += items.map(a => {
+          const isImg = a.image && a.image.startsWith('/');
+          return `
+          <div class="article-card" id="article-${a.slug}" onclick="toggleArticle('${a.slug}', event)">
+            ${isImg ? `<img class="article-img" src="${a.image}" alt="${a.title}" loading="lazy">` : ''}
+            <div class="article-header">
+              ${!isImg ? `<div class="article-emoji">${a.image}</div>` : ''}
+              <div class="article-meta">
+                <div class="article-title">${a.title}</div>
+                <div class="article-info">
+                  ${a.tags.map(t => `<span class="article-tag">${t}</span>`).join('')}
+                </div>
               </div>
             </div>
+            <div class="article-summary">${a.summary}</div>
+            <div class="article-body">
+              ${a.html}
+              <button class="collapse-btn" onclick="collapseArticle('${a.slug}', event)">↑ Collapse</button>
+            </div>
           </div>
-          <div class="article-summary">${a.summary}</div>
-          <div class="article-body">
-            ${a.html}
-            <button class="collapse-btn" onclick="collapseArticle('${a.slug}', event)">↑ Collapse</button>
-          </div>
-        </div>
-      `}).join('');
+        `}).join('');
+        html += `</div>`;
+      }
+      container.innerHTML = html;
     }
 
     function toggleArticle(slug, e) {

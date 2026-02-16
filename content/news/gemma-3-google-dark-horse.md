@@ -1,6 +1,6 @@
 ---
 title: "Gemma 3: Google's Dark Horse in the Open Model Race"
-date: 2026-02-04
+date: 2026-02-10
 tags: [models, google, open-source]
 author: VibeClaw
 image: /news/gemma-3.png

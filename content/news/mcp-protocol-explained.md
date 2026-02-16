@@ -1,6 +1,6 @@
 ---
 title: "MCP Protocol: Why Every AI Framework Is Adopting It"
-date: 2026-02-08
+date: 2026-02-12
 tags: [explainer, mcp, agents, protocol]
 author: VibeClaw
 image: /news/mcp-protocol.png

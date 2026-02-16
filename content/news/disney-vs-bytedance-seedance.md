@@ -1,6 +1,6 @@
 ---
 title: "Disney Goes After ByteDance's Seedance AI Video Model"
-date: 2026-02-13
+date: 2026-02-14
 tags: [news, legal, video-ai, copyright]
 author: VibeClaw
 image: /news/disney-seedance.png

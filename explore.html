@@ -997,9 +997,12 @@
         if (!response.ok) throw new Error('Failed to fetch items');
         const data = await response.json();
         const apiItems = Array.isArray(data) ? data : (data.items || []);
-        // Fall back to cache if API returns empty (DB not seeded yet)
-        if (apiItems.length === 0) throw new Error('empty');
-        return apiItems;
+        // Fall back to cache if API returns empty or fewer items than our curated cache
+        const cacheItems = await loadCacheItems();
+        if (apiItems.length === 0 || apiItems.length < cacheItems.length) throw new Error('use-cache');
+        // Normalise singular types from DB → plural
+        const toPlural = {server:'servers',skill:'skills',plugin:'plugins',tool:'tools',model:'models',recipe:'recipes',knowledge:'knowledge'};
+        return apiItems.map(i => ({ ...i, type: toPlural[i.type] || i.type }));
       } catch {
         // Fall back to local cache
         const all = await loadCacheItems();

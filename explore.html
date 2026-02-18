@@ -45,67 +45,15 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
-    /* Navigation */
-    nav {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    .nav-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
-    }
-
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      text-decoration: none;
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-
-    .nav-logo img {
-      height: 32px;
-      width: auto;
-    }
-
-    .nav-logo .vibe {
-      color: var(--accent);
-    }
-
-    .nav-logo .claw {
-      color: var(--text-bright);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--text);
-      text-decoration: none;
-      transition: color 0.2s;
-      font-size: 0.95rem;
-    }
-
-    .nav-links a:hover {
-      color: var(--text-bright);
-    }
-
-    .nav-links a.active {
-      color: var(--accent);
-    }
+    /* Navigation — canonical */
+    nav { background: rgba(0,0,0,0.85); border-bottom: 1px solid #1a1a1a; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 500; }
+    .nav-inner { width: 100%; padding: 0 32px; height: 52px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
+    .nav-logo { font-family: var(--mono,'Courier New',monospace); font-size: 0.9rem; font-weight: 600; color: var(--accent,#ff5c5c); text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; margin: 0; padding: 0; }
+    .nav-links a { font-family: var(--mono,'Courier New',monospace); font-size: 0.78rem; color: var(--text-dim,#666); text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.15s; }
+    .nav-links a:hover, .nav-links a.nav-active { color: var(--text-bright,#fff); }
+    .nav-hide-mobile {}
+    @media (max-width: 600px) { .nav-inner { padding: 0 12px; height: 48px; } .nav-links { gap: 8px; } .nav-links a { font-size: 0.6rem; } .nav-hide-mobile { display: none; } }
 
     /* Hero */
     .hero {
@@ -149,82 +97,98 @@
       border-color: var(--accent);
     }
 
-    /* Type Cards */
-    .type-cards {
+    /* Type Chips — sticky filter bar */
+    .type-chips-section {
+      position: sticky;
+      top: 52px; /* nav height */
+      z-index: 100;
+      background: rgba(5,5,5,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 12px 2rem 10px;
+    }
+    .type-chips-inner {
       max-width: 1400px;
-      margin: 4rem auto;
-      padding: 0 2rem;
+      margin: 0 auto;
     }
-
-    .type-cards h2 {
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .type-cards-scroll {
-      display: flex;
-      gap: 1rem;
-      overflow-x: auto;
-      padding-bottom: 1rem;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-    }
-
-    .type-cards-scroll::-webkit-scrollbar {
-      height: 8px;
-    }
-
-    .type-cards-scroll::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .type-cards-scroll::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 4px;
-    }
-
-    .type-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.5rem;
-      min-width: 200px;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
-    }
-
-    .type-card:hover {
-      border-color: var(--accent);
-      background: var(--surface-hover);
-    }
-
-    .type-card.active {
-      border-color: var(--accent);
-      background: var(--surface-hover);
-    }
-
-    .type-card-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .type-card h3 {
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .type-card p {
-      font-size: 0.85rem;
+    .type-chips-label {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
       color: var(--text-dim);
-      margin-bottom: 0.75rem;
+      margin-bottom: 8px;
+      opacity: 0.5;
+    }
+    .type-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .type-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-dim);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .type-chip:hover {
+      border-color: rgba(255,92,92,0.4);
+      color: var(--text-bright);
+      background: rgba(255,92,92,0.06);
+    }
+    .type-chip.active {
+      border-color: var(--accent);
+      background: rgba(255,92,92,0.12);
+      color: var(--accent);
+    }
+    .type-chip svg { opacity: 0.7; flex-shrink: 0; }
+    .type-chip.active svg { opacity: 1; }
+    .type-chip-count {
+      font-size: 0.65rem;
+      opacity: 0.6;
+      background: rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 1px 6px;
+      margin-left: 2px;
+    }
+    .type-chip.active .type-chip-count {
+      background: rgba(255,92,92,0.2);
+      opacity: 1;
+    }
+    .type-chip-all {
+      border-color: rgba(255,255,255,0.1);
+      color: var(--text-bright);
+    }
+    .type-chip-all.active {
+      border-color: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+    }
+    /* Sort chips */
+    .sort-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.04); }
+    .sort-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 13px; border-radius: 20px;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--text-dim); font-family: var(--mono); font-size: 0.72rem;
+      cursor: pointer; transition: all 0.15s; user-select: none; white-space: nowrap;
+    }
+    .sort-chip:hover { border-color: rgba(255,255,255,0.15); color: var(--text-bright); }
+    .sort-chip.active {
+      border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.07); color: #fff;
     }
 
-    .type-card-count {
-      font-size: 0.9rem;
-      color: var(--accent);
-      font-weight: 600;
-    }
 
     /* Section Container */
     .section {
@@ -688,17 +652,6 @@
 
     /* Mobile Responsive */
     @media (max-width: 600px) {
-      .nav-container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-      }
-
-      .nav-links {
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-
       .hero h1 {
         font-size: 2rem;
       }
@@ -750,25 +703,47 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-  </style>
+  
+    </style>
 </head>
 <body>
 
-  <!-- Navigation -->
-  <nav>
-    <div class="nav-container">
-      <a href="/" class="nav-logo">
-        <img src="crab-nav.png" alt="VibeClaw">
-        <span class="vibe">VIBE</span><span class="claw">CLAW</span>
-      </a>
-      <ul class="nav-links">
-        <li><a href="forge.html">Forge</a></li>
-        <li><a href="explore.html" class="active">Explore</a></li>
-        <li><a href="news.html">Articles</a></li>
-        <li><a href="gallery.html">Wallpapers</a></li>
+  <!-- Nav -->
+  <nav role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo" aria-label="vibeclaw.dev home"><img src="/logo.png" alt="VibeClaw" style="height:44px;vertical-align:middle;"></a>
+      <ul class="nav-links" role="list">
+        <li><a href="/explore.html" class="nav-active">Explore</a></li>
+        <li><a href="/create.html">Create</a></li>
+        <li class="nav-hide-mobile"><a href="/forge.html">Forge</a></li>
+        <li class="nav-hide-mobile"><a href="/news.html">News</a></li>
+        <li class="nav-hide-mobile"><a href="/docs/">Docs</a></li>
+        <li class="nav-more-wrap" style="position:relative;">
+          <button id="nav-more-btn" style="background:none;border:1px solid #1a1a1a;border-radius:6px;padding:3px 8px;font-family:var(--mono,'Courier New',monospace);font-size:0.62rem;color:#666;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s;white-space:nowrap;">More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <div id="nav-more-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#111;border:1px solid #222;border-radius:8px;padding:6px 0;min-width:180px;z-index:1000;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+            <a href="/library.html" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;">My Library</a>
+            <a href="/gallery.html" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;">Wallpapers</a>
+            <div style="height:1px;background:#222;margin:4px 0;"></div>
+            <a href="https://openclaw.ai" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;">OpenClaw</a>
+            <a href="https://github.com/jasonkneen/vibeclaw" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;">GitHub</a>
+            <a href="https://x.com/i/communities/2023680827435978937" style="display:flex;align-items:center;gap:6px;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Community</a>
+          </div>
+        </li>
+        <li id="auth-container" style="margin-left:4px;"></li>
       </ul>
     </div>
   </nav>
+  <script>
+  (function(){
+    var btn=document.getElementById('nav-more-btn'),menu=document.getElementById('nav-more-menu');
+    if(!btn||!menu)return;
+    btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.style.display!=='none';menu.style.display=o?'none':'block';btn.style.borderColor=o?'#1a1a1a':'#ff5c5c';btn.style.color=o?'#666':'#ff5c5c';});
+    document.addEventListener('click',function(){menu.style.display='none';btn.style.borderColor='#1a1a1a';btn.style.color='#666';});
+    menu.querySelectorAll('a').forEach(function(a){a.addEventListener('mouseenter',function(){a.style.background='#1a1a1a';});a.addEventListener('mouseleave',function(){a.style.background='transparent';});});
+    var path=location.pathname.replace(/\/$/,'')||'/';
+    document.querySelectorAll('.nav-links a').forEach(function(a){var h=(a.getAttribute('href')||'').replace(/\/$/,'');if(h&&path.endsWith(h))a.classList.add('nav-active');});
+  })();
+  </script>
 
   <!-- Hero -->
   <section class="hero">
@@ -779,49 +754,22 @@
     </div>
   </section>
 
-  <!-- Type Cards -->
-  <section class="type-cards">
-    <h2>Browse by Type</h2>
-    <div class="type-cards-scroll" id="typeCards">
-      <!-- Dynamically populated -->
+  <!-- Type Chips -->
+  <div class="type-chips-section">
+    <div class="type-chips-inner">
+      <div class="type-chips" id="typeCards">
+        <!-- Dynamically populated -->
+      </div>
+      <div class="sort-chips" id="sortChips">
+        <button class="sort-chip active" data-sort="recent">✨ New</button>
+        <button class="sort-chip" data-sort="popular">🔥 Trending</button>
+        <button class="sort-chip" data-sort="downloads">⬇ Downloads</button>
+      </div>
     </div>
-  </section>
-
-  <!-- Trending -->
-  <section class="section">
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:inline-block;vertical-align:-2px;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> Trending Now</h2>
-    <div class="horizontal-scroll" id="trendingContainer">
-      <div class="loading"><div class="spinner"></div></div>
-    </div>
-  </section>
-
-  <!-- Recently Added -->
-  <section class="section">
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:inline-block;vertical-align:-2px;"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg> Recently Added</h2>
-    <div class="item-grid" id="recentContainer">
-      <div class="loading"><div class="spinner"></div></div>
-    </div>
-  </section>
+  </div>
 
   <!-- Main Grid -->
   <section class="section">
-    <div class="controls">
-      <div class="tabs" id="typeTabs">
-        <button class="tab active" data-type="all">All</button>
-        <button class="tab" data-type="servers">Servers</button>
-        <button class="tab" data-type="skills">Skills</button>
-        <button class="tab" data-type="plugins">Plugins</button>
-        <button class="tab" data-type="tools">Tools</button>
-        <button class="tab" data-type="models">Models</button>
-        <button class="tab" data-type="recipes">Recipes</button>
-        <button class="tab" data-type="knowledge">Knowledge</button>
-      </div>
-      <select class="sort-select" id="sortSelect">
-        <option value="recent">Most Recent</option>
-        <option value="popular">Most Popular</option>
-        <option value="downloads">Most Downloads</option>
-      </select>
-    </div>
     <div class="item-grid" id="mainGrid">
       <div class="loading"><div class="spinner"></div></div>
     </div>
@@ -956,7 +904,7 @@
     // State
     let allItems = [];
     let filteredItems = [];
-    let currentFilter = 'all';
+    let activeTypes = new Set(); // empty = show all
     let currentSort = 'recent';
     let currentPage = 0;
     const ITEMS_PER_PAGE = 12;
@@ -992,21 +940,41 @@
     // Render Functions
     function renderTypeCards(counts) {
       const container = document.getElementById('typeCards');
-      container.innerHTML = TYPES.map(type => `
-        <div class="type-card" data-type="${type.id}">
-          <div class="type-card-icon">${type.icon}</div>
-          <h3>${type.name}</h3>
-          <p>${type.description}</p>
-          <div class="type-card-count">${counts[type.id] || 0} items</div>
-        </div>
+      const allChip = `<button class="type-chip type-chip-all active" data-type="all">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        All <span class="type-chip-count">${Object.values(counts).reduce((a,b)=>a+b,0)}</span>
+      </button>`;
+      container.innerHTML = allChip + TYPES.map(type => `
+        <button class="type-chip" data-type="${type.id}">
+          ${type.icon}
+          ${type.name}
+          <span class="type-chip-count">${counts[type.id] || 0}</span>
+        </button>
       `).join('');
 
-      // Add click handlers
-      container.querySelectorAll('.type-card').forEach(card => {
-        card.addEventListener('click', () => {
-          const type = card.dataset.type;
-          setFilter(type);
-          document.getElementById('mainGrid').scrollIntoView({ behavior: 'smooth' });
+      // Add click handlers — multi-toggle, no scroll
+      container.querySelectorAll('.type-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const type = chip.dataset.type;
+          if (type === 'all') {
+            activeTypes.clear();
+          } else {
+            if (activeTypes.has(type)) {
+              activeTypes.delete(type);
+            } else {
+              activeTypes.add(type);
+            }
+          }
+          // Update active classes
+          container.querySelectorAll('.type-chip').forEach(c => {
+            const t = c.dataset.type;
+            if (t === 'all') {
+              c.classList.toggle('active', activeTypes.size === 0);
+            } else {
+              c.classList.toggle('active', activeTypes.has(t));
+            }
+          });
+          applyFiltersAndSort();
         });
       });
     }
@@ -1043,9 +1011,11 @@
     function renderItems(items, container) {
       if (!items || items.length === 0) {
         container.innerHTML = `
-          <div class="empty-state" style="text-align:center;padding:48px 24px;color:var(--text-dim);">
-            <div style="font-size:1.5rem;font-weight:600;color:var(--text);margin-bottom:8px;">Coming Soon</div>
-            <p style="font-size:0.85rem;">More community creations on the way.</p>
+          <div class="empty-state" style="text-align:center;padding:80px 24px;color:var(--text-dim);">
+            <div style="font-size:2.5rem;margin-bottom:16px;opacity:0.3;">🦀</div>
+            <div style="font-family:var(--mono);font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:8px;letter-spacing:0.04em;">Nothing here yet</div>
+            <p style="font-size:0.82rem;font-family:var(--mono);opacity:0.5;margin-bottom:20px;">Be the first to publish something.</p>
+            <a href="/create.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:20px;border:1px solid rgba(255,92,92,0.3);background:rgba(255,92,92,0.06);color:var(--accent);font-family:var(--mono);font-size:0.75rem;text-decoration:none;transition:all 0.15s;" onmouseover="this.style.background='rgba(255,92,92,0.12)'" onmouseout="this.style.background='rgba(255,92,92,0.06)'">+ Create something →</a>
           </div>
         `;
         return;
@@ -1082,22 +1052,6 @@
     }
 
     // Filter and Sort
-    function setFilter(type) {
-      currentFilter = type;
-      currentPage = 0;
-
-      // Update tab active state
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.type === type);
-      });
-
-      // Update type card active state
-      document.querySelectorAll('.type-card').forEach(card => {
-        card.classList.toggle('active', card.dataset.type === type);
-      });
-
-      applyFiltersAndSort();
-    }
 
     function setSort(sort) {
       currentSort = sort;
@@ -1107,9 +1061,9 @@
 
     function applyFiltersAndSort() {
       // Filter
-      filteredItems = currentFilter === 'all' 
+      filteredItems = activeTypes.size === 0
         ? [...allItems]
-        : allItems.filter(item => item.type === currentFilter);
+        : allItems.filter(item => activeTypes.has(item.type));
 
       // Search
       const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
@@ -1254,14 +1208,6 @@
       });
       renderTypeCards(counts);
 
-      // Render trending (top 8 by upvotes)
-      const trending = [...allItems].sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0)).slice(0, 8);
-      renderItems(trending, document.getElementById('trendingContainer'));
-
-      // Render recently added (latest 12)
-      const recent = [...allItems].sort((a, b) => (b.created || 0) - (a.created || 0)).slice(0, 12);
-      renderItems(recent, document.getElementById('recentContainer'));
-
       // Render main grid
       applyFiltersAndSort();
 
@@ -1274,14 +1220,13 @@
         }, 300);
       });
 
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          setFilter(tab.dataset.type);
-        });
-      });
 
-      document.getElementById('sortSelect').addEventListener('change', (e) => {
-        setSort(e.target.value);
+      document.getElementById('sortChips').querySelectorAll('.sort-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.getElementById('sortChips').querySelectorAll('.sort-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          setSort(chip.dataset.sort);
+        });
       });
 
       document.getElementById('loadMoreBtn').addEventListener('click', () => {
@@ -1321,6 +1266,10 @@
     // Start
     init();
   </script>
+
+  <script src="/auth.js"></script>
+  <script>VibeclawAuth.init().then(function(){VibeclawAuth.renderButton('auth-container');});</script>
+  <script src="/clawdio.js"></script>
 
 </body>
 </html>

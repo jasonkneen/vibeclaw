@@ -61,47 +61,14 @@
       display: flex;
       flex-direction: column;
     }
-    /* ── Nav ── */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(12, 12, 12, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .nav-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .nav-logo {
-      font-family: var(--mono);
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: var(--accent);
-      text-decoration: none;
-    }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      list-style: none;
-    }
-    .nav-links a {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-    .nav-links a:hover { color: var(--text-bright); }
+    /* ── Nav — canonical ── */
+    nav { background: rgba(0,0,0,0.85); border-bottom: 1px solid #1a1a1a; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 500; flex-shrink: 0; }
+    .nav-inner { width: 100%; padding: 0 32px; height: 52px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
+    .nav-logo { font-family: var(--mono,'Courier New',monospace); font-size: 0.9rem; font-weight: 600; color: var(--accent,#ff5c5c); text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; margin: 0; padding: 0; }
+    .nav-links a { font-family: var(--mono,'Courier New',monospace); font-size: 0.78rem; color: var(--text-dim,#666); text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.15s; }
+    .nav-links a:hover, .nav-links a.nav-active { color: var(--text-bright,#fff); }
+    @media (max-width: 600px) { .nav-inner { padding: 0 12px; height: 48px; } .nav-links { gap: 8px; } .nav-links a { font-size: 0.6rem; } .nav-hide-mobile { display: none; } }
     /* ── Footer ── */
     .chat-footer {
       flex-shrink: 0;
@@ -571,12 +538,7 @@
     }
 
     @media (max-width: 600px) {
-      .nav-inner { padding: 0 12px; height: 48px; }
-      .nav-logo img { height: 28px !important; }
-      .nav-logo span { font-size: 1rem !important; }
-      .nav-links { gap: 8px; }
-      .nav-links a { font-size: 0.6rem; }
-      #auth-container, #upgrade-container { margin-left: 2px !important; }
+      #auth-container { margin-left: 2px !important; }
       .auth-login-btn { padding: 3px 6px !important; font-size: 0.55rem !important; }
       .auth-login-btn svg { width: 9px !important; height: 9px !important; }
       .auth-user { gap: 4px !important; }
@@ -597,51 +559,38 @@
 
   <nav role="navigation" aria-label="Main navigation">
     <div class="nav-inner">
-      <a href="/" class="nav-logo" aria-label="vibeclaw home"><img src="/crab-nav.png" alt="" style="height:36px;vertical-align:middle;margin-right:4px;"><span style="color:var(--accent);font-weight:700;font-size:1rem;">VIBE</span><span style="color:var(--text-bright);font-weight:700;font-size:1rem;">CLAW</span></a>
-      <ul class="nav-links">
-        <li><a href="/forge.html">Forge</a></li>
-        <li><a href="/library.html">My Servers</a></li>
-        <li><a href="/chat.html" style="color:var(--accent);">Chat</a></li>
+      <a href="/" class="nav-logo" aria-label="vibeclaw.dev home"><img src="/logo.png" alt="VibeClaw" style="height:44px;vertical-align:middle;"></a>
+      <ul class="nav-links" role="list">
+        <li><a href="/explore.html">Explore</a></li>
+        <li><a href="/create.html">Create</a></li>
+        <li class="nav-hide-mobile"><a href="/forge.html">Forge</a></li>
+        <li class="nav-hide-mobile"><a href="/news.html">News</a></li>
+        <li class="nav-hide-mobile"><a href="/docs/">Docs</a></li>
         <li class="nav-more-wrap" style="position:relative;">
-          <button id="nav-more-btn" style="background:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-family:var(--mono);font-size:0.62rem;color:var(--text-dim);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s;white-space:nowrap;">
-            More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div id="nav-more-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:6px 0;min-width:180px;z-index:1000;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
-            <a href="./docs/" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;">Docs</a>
-            <a href="/#demos" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;">Demos</a>
-            <div style="height:1px;background:var(--border);margin:4px 0;"></div>
-            <a href="https://openclaw.ai" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;">OpenClaw</a>
-            <a href="https://github.com/jasonkneen/vibeclaw" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;">GitHub</a>
-            <a href="https://x.com/i/communities/2022846557700145266" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;">Community</a>
+          <button id="nav-more-btn" style="background:none;border:1px solid #1a1a1a;border-radius:6px;padding:3px 8px;font-family:var(--mono,'Courier New',monospace);font-size:0.62rem;color:#666;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s;white-space:nowrap;">More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <div id="nav-more-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#111;border:1px solid #222;border-radius:8px;padding:6px 0;min-width:180px;z-index:1000;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+            <a href="/library.html" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;">My Library</a>
+            <a href="/gallery.html" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;">Wallpapers</a>
+            <div style="height:1px;background:#222;margin:4px 0;"></div>
+            <a href="https://openclaw.ai" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;">OpenClaw</a>
+            <a href="https://github.com/jasonkneen/vibeclaw" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;">GitHub</a>
+            <a href="https://x.com/i/communities/2023680827435978937" style="display:flex;align-items:center;gap:6px;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Community</a>
           </div>
         </li>
-        <li id="upgrade-container" style="margin-left:4px;"></li>
         <li id="auth-container" style="margin-left:4px;"></li>
       </ul>
     </div>
   </nav>
   <script>
-    (function() {
-      const btn = document.getElementById('nav-more-btn');
-      const menu = document.getElementById('nav-more-menu');
-      if (!btn || !menu) return;
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const open = menu.style.display !== 'none';
-        menu.style.display = open ? 'none' : 'block';
-        btn.style.borderColor = open ? 'var(--border)' : 'var(--accent)';
-        btn.style.color = open ? 'var(--text-dim)' : 'var(--accent)';
-      });
-      document.addEventListener('click', () => {
-        menu.style.display = 'none';
-        btn.style.borderColor = 'var(--border)';
-        btn.style.color = 'var(--text-dim)';
-      });
-      menu.querySelectorAll('a').forEach(a => {
-        a.addEventListener('mouseenter', () => a.style.background = 'var(--surface)');
-        a.addEventListener('mouseleave', () => a.style.background = 'transparent');
-      });
-    })();
+  (function(){
+    var btn=document.getElementById('nav-more-btn'),menu=document.getElementById('nav-more-menu');
+    if(!btn||!menu)return;
+    btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.style.display!=='none';menu.style.display=o?'none':'block';btn.style.borderColor=o?'#1a1a1a':'#ff5c5c';btn.style.color=o?'#666':'#ff5c5c';});
+    document.addEventListener('click',function(){menu.style.display='none';btn.style.borderColor='#1a1a1a';btn.style.color='#666';});
+    menu.querySelectorAll('a').forEach(function(a){a.addEventListener('mouseenter',function(){a.style.background='#1a1a1a';});a.addEventListener('mouseleave',function(){a.style.background='transparent';});});
+    var path=location.pathname.replace(/\/$/,'')||'/';
+    document.querySelectorAll('.nav-links a').forEach(function(a){var h=(a.getAttribute('href')||'').replace(/\/$/,'');if(h&&path.endsWith(h))a.classList.add('nav-active');});
+  })();
   </script>
 
   <div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;">
@@ -1092,14 +1041,14 @@
   </script>
 
   <script src="/auth.js"></script>
-    <script src="/features.js"></script>
+  <script src="/features.js"></script>
   <script>
     VibeclawAuth.init().then(() => {
       VibeclawAuth.renderButton('auth-container');
-      VibeclawFeatures.renderUpgradeButton('upgrade-container');
       VibeclawFeatures.checkPro();
     });
   </script>
+  <script src="/clawdio.js"></script>
 
 </body>
 </html>

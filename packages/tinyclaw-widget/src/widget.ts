@@ -2,8 +2,83 @@ import { marked } from 'marked';
 import { STYLES } from './styles';
 import { DEFAULT_KB, DEFAULT_SYSTEM } from './kb';
 
-// Configure marked — no async, sanitize links
+// Configure marked — no async, breaks on newlines
 marked.setOptions({ async: false, breaks: true, gfm: true });
+
+// ── Security constants ────────────────────────────────────────────────────
+const MAX_INPUT_CHARS   = 1000;   // max user message length
+const MAX_HISTORY_TURNS = 12;     // max turns sent to API (prevents context stuffing)
+const RATE_LIMIT_COUNT  = 6;      // max messages per window
+const RATE_LIMIT_WINDOW = 30_000; // 30 seconds
+const MAX_HISTORY_STORE = 40;     // max messages saved in sessionStorage
+
+// Allowlisted HTML tags/attributes for markdown output — no DOMPurify dep needed
+const ALLOWED_TAGS = new Set([
+  'p','br','strong','b','em','i','code','pre','ul','ol','li',
+  'blockquote','h1','h2','h3','h4','hr','a','span','table',
+  'thead','tbody','tr','th','td',
+]);
+const ALLOWED_ATTR: Record<string, Set<string>> = {
+  a:    new Set(['href','title','target','rel']),
+  code: new Set(['class']),
+  span: new Set(['class']),
+  td:   new Set(['align']),
+  th:   new Set(['align']),
+};
+const GLOBAL_ATTR = new Set(['class']);
+
+/** Strip unsafe HTML from marked output — allowlist walk via DOMParser. */
+function sanitizeHtml(raw: string): string {
+  const doc = new DOMParser().parseFromString(raw, 'text/html');
+  function walk(node: Node) {
+    for (const child of Array.from(node.childNodes)) {
+      if (child.nodeType !== Node.ELEMENT_NODE) continue;
+      const el = child as Element;
+      const tag = el.tagName.toLowerCase();
+      if (!ALLOWED_TAGS.has(tag)) {
+        // Unwrap — hoist children, remove element
+        while (el.firstChild) node.insertBefore(el.firstChild, el);
+        node.removeChild(el);
+        walk(node); // re-walk after mutation
+        return;
+      }
+      // Strip disallowed attributes
+      for (const attr of Array.from(el.attributes)) {
+        const allowed = ALLOWED_ATTR[tag];
+        if (!GLOBAL_ATTR.has(attr.name) && !(allowed?.has(attr.name))) {
+          el.removeAttribute(attr.name);
+        }
+      }
+      // Force-safe links
+      if (tag === 'a') {
+        const href = el.getAttribute('href') || '';
+        if (/^(javascript|data|vbscript):/i.test(href)) el.setAttribute('href', '#');
+        el.setAttribute('target', '_blank');
+        el.setAttribute('rel', 'noopener noreferrer');
+      }
+      walk(el);
+    }
+  }
+  walk(doc.body);
+  return doc.body.innerHTML;
+}
+
+/** Render markdown safely. */
+function safeMarkdown(text: string): string {
+  return sanitizeHtml(marked.parse(text) as string);
+}
+
+/** Detect obvious prompt-injection patterns in user input. */
+function looksLikeInjection(text: string): boolean {
+  const lower = text.toLowerCase();
+  return (
+    /ignore (all |previous |prior |above |your )?(instructions|rules|prompt|system)/i.test(text) ||
+    /you are now|act as if|pretend (you are|to be|you're)|roleplay as|jailbreak/i.test(text) ||
+    lower.includes('disregard') && lower.includes('instruction') ||
+    // excessively long lines typical of injection payloads
+    text.split('\n').some(l => l.length > 600)
+  );
+}
 
 export interface TinyClawConfig {
   apiKey?: string;
@@ -48,6 +123,7 @@ export class TinyClawWidget {
   private ready   = false;
   private engine: any = null;
   private useLocal = false;
+  private _sendTimes: number[] = []; // for rate limiting
 
   constructor(config: TinyClawConfig = {}) {
     this.cfg = {
@@ -286,15 +362,35 @@ export class TinyClawWidget {
 
   private _saveHistory() {
     try {
+      // Trim in-memory history too so it doesn't grow forever
+      if (this.history.length > MAX_HISTORY_STORE) {
+        this.history = this.history.slice(-MAX_HISTORY_STORE);
+      }
       sessionStorage.setItem('tc-history', JSON.stringify(this.history));
     } catch { /* quota exceeded — ignore */ }
+  }
+
+  /** Slice of history safe to send to API — prevents context-stuffing. */
+  private _apiHistory(): Message[] {
+    return this.history.slice(-(MAX_HISTORY_TURNS * 2)); // *2 because user+assistant pairs
   }
 
   private _restoreHistory(): boolean {
     try {
       const raw = sessionStorage.getItem('tc-history');
       if (!raw) return false;
-      const msgs: Message[] = JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed) || !parsed.length) return false;
+      // Validate and sanitize each entry — reject anything malformed
+      const msgs: Message[] = parsed
+        .filter((m: any) =>
+          m && typeof m === 'object' &&
+          (m.role === 'user' || m.role === 'assistant') &&
+          typeof m.content === 'string' &&
+          m.content.length > 0 &&
+          m.content.length < 20_000  // sanity cap
+        )
+        .slice(-MAX_HISTORY_STORE);
       if (!msgs.length) return false;
       this.history = msgs;
       msgs.forEach(m => this._addMsg(m.role, m.content));
@@ -358,9 +454,9 @@ export class TinyClawWidget {
     const bubble = document.createElement('div');
     bubble.className = 'tc-msg-bubble';
     if (role === 'assistant' && text) {
-      bubble.innerHTML = marked.parse(text) as string;
+      bubble.innerHTML = safeMarkdown(text);
     } else {
-      bubble.textContent = text;
+      bubble.textContent = text; // user text is always plain
     }
     wrap.appendChild(bubble);
     this.messagesEl?.appendChild(wrap);
@@ -369,7 +465,7 @@ export class TinyClawWidget {
   }
 
   private _renderMarkdown(bubble: HTMLElement, text: string) {
-    bubble.innerHTML = marked.parse(text) as string;
+    bubble.innerHTML = safeMarkdown(text);
   }
 
   private _showTyping(): HTMLElement {
@@ -385,9 +481,37 @@ export class TinyClawWidget {
     if (this.messagesEl) this.messagesEl.scrollTop = this.messagesEl.scrollHeight;
   }
 
+  private _checkRateLimit(): boolean {
+    const now = Date.now();
+    this._sendTimes = this._sendTimes.filter(t => now - t < RATE_LIMIT_WINDOW);
+    if (this._sendTimes.length >= RATE_LIMIT_COUNT) return false;
+    this._sendTimes.push(now);
+    return true;
+  }
+
   private async _send() {
-    const text = this.inputEl?.value?.trim();
-    if (!text || !this.ready) return;
+    const raw = this.inputEl?.value?.trim();
+    if (!raw || !this.ready) return;
+
+    // ── Input length guard ──
+    if (raw.length > MAX_INPUT_CHARS) {
+      this._addMsg('assistant', `⚠️ Message too long — please keep it under ${MAX_INPUT_CHARS} characters.`);
+      return;
+    }
+
+    // ── Rate limit ──
+    if (!this._checkRateLimit()) {
+      this._addMsg('assistant', '⏳ Slow down a bit — try again in a moment.');
+      return;
+    }
+
+    // ── Prompt injection detection ──
+    const text = raw;
+    if (looksLikeInjection(text)) {
+      this._addMsg('assistant', "🦞 Nice try — I only talk about VibeClaw though!");
+      return;
+    }
+
     this._removeSuggestions();
     if (this.inputEl) this.inputEl.value = '';
     if (this.inputEl) this.inputEl.disabled = true;
@@ -415,7 +539,7 @@ export class TinyClawWidget {
   private async _chatLocal(typing: HTMLElement) {
     const messages = [
       { role: 'system', content: DEFAULT_SYSTEM(this.cfg.kb) },
-      ...this.history,
+      ...this._apiHistory(),
     ];
     typing.remove();
     const bubble = this._addMsg('assistant', '');
@@ -444,7 +568,7 @@ export class TinyClawWidget {
       },
       body: JSON.stringify({
         model: this.cfg.model,
-        messages: [{ role: 'system', content: DEFAULT_SYSTEM(this.cfg.kb) }, ...this.history],
+        messages: [{ role: 'system', content: DEFAULT_SYSTEM(this.cfg.kb) }, ...this._apiHistory()],
         stream: true,
       }),
     });

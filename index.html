@@ -157,7 +157,7 @@
 
       /* ── Hero ── */
       .hero {
-        padding: 96px 24px 32px;
+        padding: 48px 24px 32px;
         max-width: 1100px;
         margin: 0 auto;
         display: flex;
@@ -728,14 +728,63 @@
         white-space: nowrap;
       }
       .pg-body {
-        display: grid;
-        grid-template-columns: 50fr 50fr;
         height: 580px;
       }
+      .pg-flavour-chip {
+        padding: 8px 18px;
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-dim);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: border-color 0.15s, color 0.15s, background 0.15s;
+        letter-spacing: 0.03em;
+      }
+      .pg-flavour-chip:hover { border-color: var(--accent); color: var(--text-bright); }
+      .pg-flavour-chip.active { border-color: var(--accent); background: rgba(255,92,92,0.08); color: var(--accent); }
+      .pg-code-section {
+        border-top: 1px solid var(--border);
+      }
+      .pg-code-section-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 16px;
+        cursor: pointer;
+        background: var(--black);
+        user-select: none;
+        border: none;
+        width: 100%;
+        text-align: left;
+      }
+      .pg-code-section-toggle:hover { background: rgba(255,255,255,0.025); }
+      .pg-code-section-toggle .label {
+        font-family: var(--mono);
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-dim);
+      }
+      .pg-code-section-toggle .chevron {
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        color: var(--text-dim);
+        transition: transform 0.2s;
+        display: inline-block;
+      }
+      .pg-code-section.open .chevron { transform: rotate(180deg); }
+      .pg-code-panels {
+        display: none;
+        max-height: 400px;
+        overflow: hidden;
+      }
+      .pg-code-section.open .pg-code-panels { display: block; }
       .pg-code-panel {
         display: flex;
         flex-direction: column;
-        border-right: 1px solid var(--border);
+        border-right: none;
         min-width: 0;
         overflow: hidden;
       }
@@ -841,6 +890,8 @@
       .pg-output-panel {
         display: flex;
         flex-direction: column;
+        width: 100%;
+        height: 100%;
         min-width: 0;
         overflow: hidden;
       }
@@ -1003,12 +1054,9 @@
       }
       .pg-preview-placeholder.hidden { display: none; }
       @media (max-width: 768px) {
-        .pg-body {
-          grid-template-columns: 1fr;
-          height: auto;
-        }
-        .pg-code-panel { border-right: none; border-bottom: 1px solid var(--border); max-height: 360px; }
-        .pg-output-panel { max-height: 360px; }
+        .pg-body { height: auto; }
+        .pg-output-panel { min-height: 360px; }
+        .pg-code-panels { max-height: 320px; }
         .pg-preview { flex: 0 0 180px; }
       }
 
@@ -1150,17 +1198,16 @@
         </div>
       </div>
     </div>
-    <div class="news-ticker" id="news-ticker-2" style="border-bottom:1px solid var(--border);">
-      <div class="ticker-label">MODELS</div>
-      <div class="ticker-track">
-        <div class="ticker-content ticker-reverse" id="ticker-content-2">
-          <span class="ticker-item">Loading...</span>
-        </div>
-      </div>
-    </div>
 
-    <!-- Quick headlines strip under tickers -->
-    <div id="headlines-strip" style="display:none;max-width:1440px;margin:0 auto;padding:8px 12px;border-bottom:1px solid var(--border);"></div>
+
+
+    <!-- Repo stats -->
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:6px 16px;background:var(--black);">
+      <a href="https://github.com/jasonkneen/vibeclaw"><img src="https://img.shields.io/badge/🦀_vibeclaw-ff5c5c?style=for-the-badge&logoColor=white" alt="vibeclaw" style="height:20px;"></a>
+      <a id="gh-stars" href="https://github.com/jasonkneen/vibeclaw/stargazers" style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='var(--text-dim)'"><svg viewBox="0 0 16 16" fill="currentColor" style="width:12px;height:12px;"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg> <span id="gh-stars-count">★</span> Stars</a>
+      <script>fetch('https://api.github.com/repos/jasonkneen/vibeclaw').then(r=>r.json()).then(d=>{if(d.stargazers_count!=null)document.getElementById('gh-stars-count').textContent=d.stargazers_count}).catch(()=>{})</script>
+      <a href="https://github.com/jasonkneen/vibeclaw/blob/main/LICENSE"><img src="https://img.shields.io/github/license/jasonkneen/vibeclaw?style=for-the-badge&color=2a2a2a&labelColor=1a1a1a" alt="License" style="height:20px;"></a>
+    </div>
 
     <script>
       (function() {
@@ -1196,18 +1243,10 @@
       <p class="subtitle">Complete AI agent runtime with virtual filesystem, free models, and live chat. No installation. No Docker. Just open and go.</p>
 
       <div class="cta-row">
-        <button class="btn btn-primary pg-launch" data-action="sandbox" style="background:var(--accent);color:#000;border:1px solid var(--accent);display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;" aria-label="Boot your OpenClaw server now"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg> Launch Your Sandbox Now</button>
+        <button class="btn btn-primary pg-launch" data-action="sandbox" style="background:var(--accent);color:#000;border:1px solid var(--accent);display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;" aria-label="Boot your OpenClaw server now"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg> Boot Server</button>
         <!-- Build/Demos buttons moved below playground -->
       </div>
 
-      <div class="badges" style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:700px;">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <a href="https://github.com/jasonkneen/vibeclaw"><img src="https://img.shields.io/badge/🦀_vibeclaw-ff5c5c?style=for-the-badge&logoColor=white" alt="vibeclaw"></a>
-          <a id="gh-stars" href="https://github.com/jasonkneen/vibeclaw/stargazers" style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='var(--text-dim)'"><svg viewBox="0 0 16 16" fill="currentColor" style="width:12px;height:12px;"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg> <span id="gh-stars-count">★</span> Stars</a>
-          <script>fetch('https://api.github.com/repos/jasonkneen/vibeclaw').then(r=>r.json()).then(d=>{if(d.stargazers_count!=null)document.getElementById('gh-stars-count').textContent=d.stargazers_count}).catch(()=>{})</script>
-          <a href="https://github.com/jasonkneen/vibeclaw/blob/main/LICENSE"><img src="https://img.shields.io/github/license/jasonkneen/vibeclaw?style=for-the-badge&color=2a2a2a&labelColor=1a1a1a" alt="License"></a>
-        </div>
-      </div>
       </div>
       <div class="hero-visual">
         <canvas id="hero-canvas"></canvas>
@@ -1222,21 +1261,82 @@
         <!-- Credential bars (swap based on mode) -->
         <div id="pg-creds-sandbox" style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--border);background:var(--black);">
           <label style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">Flavour</label>
-          <select id="pg-flavour-select" style="padding:6px 10px;background:var(--surface);border:1px solid var(--border);color:var(--text-bright);font-family:var(--mono);font-size:0.72rem;outline:none;opacity:0.9;max-width:180px;">
-            <option value="default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;display:inline-block;vertical-align:-1px;margin-right:2px;"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> OpenClaw</option>
+          <select id="pg-flavour-select" style="display:none;">
+            <option value="default">🦀 OpenClaw</option>
           </select>
+          <div id="pg-flavour-chips" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
           <select id="pg-model-select" style="display:none;">
             <option value="upstage/solar-pro-3:free" selected>Solar Pro 3</option>
           </select>
+          <script>
+            (function() {
+              const sel = document.getElementById('pg-flavour-select');
+              const chips = document.getElementById('pg-flavour-chips');
+              function buildChips() {
+                chips.innerHTML = '';
+                Array.from(sel.options).filter(o => !o.disabled).forEach(opt => {
+                  const btn = document.createElement('button');
+                  btn.dataset.value = opt.value;
+                  btn.textContent = opt.textContent.trim();
+                  btn.className = 'pg-flavour-chip' + (opt.value === sel.value ? ' active' : '');
+                  btn.onclick = () => {
+                    sel.value = opt.value;
+                    sel.dispatchEvent(new Event('change'));
+                    chips.querySelectorAll('.pg-flavour-chip').forEach(c => c.classList.toggle('active', c.dataset.value === opt.value));
+                  };
+                  chips.appendChild(btn);
+                });
+              }
+              buildChips();
+              new MutationObserver(buildChips).observe(sel, { childList: true });
+              sel.addEventListener('change', () => {
+                chips.querySelectorAll('.pg-flavour-chip').forEach(c => c.classList.toggle('active', c.dataset.value === sel.value));
+              });
+            })();
+          </script>
 
         </div>
 
 
         <div class="pg-body">
-          <!-- ═══ SANDBOX PANELS ═══ -->
-          <div class="pg-code-panel" data-panel="boot" id="pg-code-boot">
-            <div class="pg-code-header"><span class="filename">boot-sandbox.js</span></div>
-            <div class="pg-code-wrap"><pre><code><span class="kw">import</span> <span class="op">{</span> <span class="fn">AgentContainerManager</span> <span class="op">}</span> <span class="kw">from</span> <span class="str">'vibeclaw'</span><span class="op">;</span>
+          <!-- Output panel — full width -->
+          <div class="pg-output-panel">
+            <div class="pg-terminal-header" style="display:flex;align-items:center;justify-content:space-between;">
+              <span class="label">Terminal</span>
+              <a id="pg-connect-link" href="#" style="display:none;font-family:var(--mono);font-size:0.65rem;color:var(--accent);text-decoration:none;font-weight:700;"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;display:inline-block;vertical-align:0px;margin-right:2px;"><circle cx="12" cy="12" r="10"/></svg> Connect →</a>
+            </div>
+            <div class="pg-terminal" id="pg-terminal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+              <div id="terminal-carousel" style="text-align:center;max-width:400px;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text-bright);margin-bottom:6px;transition:opacity 0.5s ease;" id="carousel-title">Complete Runtime in Seconds</div>
+                <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);line-height:1.5;transition:opacity 0.5s ease;" id="carousel-desc">Boot a FULL OpenClaw instance in your browser — complete with virtual filesystem, 40+ Node.js modules, and npm support. Just paste your API key and start coding. Zero install.</div>
+              </div>
+              <img src="/crab.png" alt="VibeClaw mascot" style="width:120px;filter:drop-shadow(0 0 20px rgba(255,92,92,0.2));animation:hero-crab-float 3s ease-in-out infinite;">
+              <button class="pg-launch" data-action="sandbox" style="padding:16px 40px;font-family:var(--mono);font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;background:var(--accent);color:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:background 0.15s,box-shadow 0.15s;" aria-label="Boot OpenClaw gateway" onmouseover="this.style.background='#ff7070';this.style.boxShadow='0 0 20px rgba(255,92,92,0.3)'" onmouseout="this.style.background='var(--accent)';this.style.boxShadow='none'"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg> Start OpenClaw Securely Now</button>
+            </div>
+
+            <div id="pg-chat-bar" style="display:none;border-top:1px solid var(--border);background:var(--surface);">
+              <div style="display:flex;gap:0;">
+                <input id="pg-chat-input" type="text" placeholder="Message the agent…" disabled style="flex:1;padding:16px 18px;background:transparent;border:none;color:var(--text-bright);font-family:var(--mono);font-size:0.95rem;outline:none;" />
+                <button id="pg-chat-send" disabled style="padding:16px 24px;font-family:var(--mono);font-size:0.9rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;background:var(--accent);color:#000;border:none;cursor:pointer;" aria-label="Send message">Send</button>
+              </div>
+            </div>
+            <div id="pg-forge-cta" style="display:none;border-top:1px solid var(--border);background:var(--accent-bg);padding:12px 18px;text-align:center;">
+              <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text);">Like this? </span>
+              <a id="forge-cta-link" href="/forge.html" style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:4px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg> Build your own server →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ CODE PANELS — below terminal ═══ -->
+        <div class="pg-code-section" id="pg-code-section">
+          <button class="pg-code-section-toggle" onclick="(function(el){el.closest('.pg-code-section').classList.toggle('open')})(this)">
+            <span class="label">View Code</span>
+            <span class="chevron">▼</span>
+          </button>
+          <div class="pg-code-panels">
+            <div class="pg-code-panel" data-panel="boot" id="pg-code-boot">
+              <div class="pg-code-header"><span class="filename">boot-sandbox.js</span></div>
+              <div class="pg-code-wrap"><pre><code><span class="kw">import</span> <span class="op">{</span> <span class="fn">AgentContainerManager</span> <span class="op">}</span> <span class="kw">from</span> <span class="str">'vibeclaw'</span><span class="op">;</span>
 
 <span class="cm">// Load the OpenClaw runtime</span>
 <span class="kw">const</span> snapshot <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="op">(</span>OPENCLAW_VFS_URL<span class="op">).</span><span class="fn">then</span><span class="op">(</span>r <span class="op">=&gt;</span> r<span class="op">.</span><span class="fn">json</span><span class="op">());</span>
@@ -1265,11 +1365,11 @@
 `</span><span class="op">);</span>
 
 console<span class="op">.</span><span class="fn">log</span><span class="op">(</span><span class="str">'🦀 OpenClaw Sandbox Gateway online!'</span><span class="op">);</span></code></pre></div>
-          </div>
+            </div>
 
-          <div class="pg-code-panel" data-panel="config" id="pg-code-config" hidden>
-            <div class="pg-code-header"><span class="filename">config.js</span></div>
-            <div class="pg-code-wrap"><pre><code><span class="cm">// Configure the sandbox agent</span>
+            <div class="pg-code-panel" data-panel="config" id="pg-code-config" hidden>
+              <div class="pg-code-header"><span class="filename">config.js</span></div>
+              <div class="pg-code-wrap"><pre><code><span class="cm">// Configure the sandbox agent</span>
 <span class="kw">await</span> manager<span class="op">.</span><span class="fn">execute</span><span class="op">(</span>gw<span class="op">.</span>id<span class="op">,</span> <span class="str">`
   const config = require('/openclaw/config.cjs');
   config.set({</span>
@@ -1294,11 +1394,11 @@ console<span class="op">.</span><span class="fn">log</span><span class="op">(</s
 You are a helpful coding assistant running
 entirely in a browser sandbox.
 `</span><span class="op">);</span></code></pre></div>
-          </div>
+            </div>
 
-          <div class="pg-code-panel" data-panel="sandbox-chat" id="pg-code-sandbox-chat" hidden>
-            <div class="pg-code-header"><span class="filename">sandbox-chat.js</span></div>
-            <div class="pg-code-wrap"><pre><code><span class="cm">// Chat with your sandbox agent — 100% in-browser</span>
+            <div class="pg-code-panel" data-panel="sandbox-chat" id="pg-code-sandbox-chat" hidden>
+              <div class="pg-code-header"><span class="filename">sandbox-chat.js</span></div>
+              <div class="pg-code-wrap"><pre><code><span class="cm">// Chat with your sandbox agent — 100% in-browser</span>
 <span class="cm">// Your key goes direct to Anthropic, never our servers</span>
 
 <span class="kw">await</span> client<span class="op">.</span><span class="fn">chat</span><span class="op">(</span><span class="str">'Hello! What can you do?'</span><span class="op">, {</span>
@@ -1315,34 +1415,6 @@ entirely in a browser sandbox.
 <span class="cm">// Future: WebGPU local inference — no API key at all</span>
 <span class="cm">// import { CreateMLCEngine } from '@mlc-ai/web-llm';</span>
 <span class="cm">// const engine = await CreateMLCEngine('Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC');</span></code></pre></div>
-          </div>
-
-
-
-          <!-- Output panel -->
-          <div class="pg-output-panel">
-            <div class="pg-terminal-header" style="display:flex;align-items:center;justify-content:space-between;">
-              <span class="label">Terminal</span>
-              <a id="pg-connect-link" href="#" style="display:none;font-family:var(--mono);font-size:0.65rem;color:var(--accent);text-decoration:none;font-weight:700;"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;display:inline-block;vertical-align:0px;margin-right:2px;"><circle cx="12" cy="12" r="10"/></svg> Connect →</a>
-            </div>
-            <div class="pg-terminal" id="pg-terminal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
-              <div id="terminal-carousel" style="text-align:center;max-width:400px;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text-bright);margin-bottom:6px;transition:opacity 0.5s ease;" id="carousel-title">Complete Runtime in Seconds</div>
-                <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);line-height:1.5;transition:opacity 0.5s ease;" id="carousel-desc">Boot a FULL OpenClaw instance in your browser — complete with virtual filesystem, 40+ Node.js modules, and npm support. Just paste your API key and start coding. Zero install.</div>
-              </div>
-              <img src="/crab.png" alt="VibeClaw mascot" style="width:120px;filter:drop-shadow(0 0 20px rgba(255,92,92,0.2));animation:hero-crab-float 3s ease-in-out infinite;">
-              <button class="pg-launch" data-action="sandbox" style="padding:16px 40px;font-family:var(--mono);font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;background:var(--accent);color:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:background 0.15s,box-shadow 0.15s;" aria-label="Boot OpenClaw gateway" onmouseover="this.style.background='#ff7070';this.style.boxShadow='0 0 20px rgba(255,92,92,0.3)'" onmouseout="this.style.background='var(--accent)';this.style.boxShadow='none'"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg> Start OpenClaw Securely Now</button>
-            </div>
-
-            <div id="pg-chat-bar" style="display:none;border-top:1px solid var(--border);background:var(--surface);">
-              <div style="display:flex;gap:0;">
-                <input id="pg-chat-input" type="text" placeholder="Message the agent…" disabled style="flex:1;padding:16px 18px;background:transparent;border:none;color:var(--text-bright);font-family:var(--mono);font-size:0.95rem;outline:none;" />
-                <button id="pg-chat-send" disabled style="padding:16px 24px;font-family:var(--mono);font-size:0.9rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;background:var(--accent);color:#000;border:none;cursor:pointer;" aria-label="Send message">Send</button>
-              </div>
-            </div>
-            <div id="pg-forge-cta" style="display:none;border-top:1px solid var(--border);background:var(--accent-bg);padding:12px 18px;text-align:center;">
-              <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text);">Like this? </span>
-              <a id="forge-cta-link" href="/forge.html" style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:4px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg> Build your own server →</a>
             </div>
           </div>
         </div>
@@ -1599,21 +1671,7 @@ entirely in a browser sandbox.
         // Split items between two tickers
         const half = Math.ceil(items.length / 2);
         const items1 = items.slice(0, half);
-        const items2 = items.slice(half);
-
-        // Latest open-source model releases for second ticker
-        const trending = [
-          { title: 'Llama 4 Scout 109B — 10M context, 16 experts', source: 'Meta', link: 'https://huggingface.co/meta-llama' },
-          { title: 'Qwen3 235B — hybrid thinking, 119 languages', source: 'Alibaba', link: 'https://huggingface.co/Qwen' },
-          { title: 'DeepSeek R1 0528 — beats o3 on math/code', source: 'DeepSeek', link: 'https://huggingface.co/deepseek-ai' },
-          { title: 'Gemma 3 27B — fits on a single GPU', source: 'Google', link: 'https://huggingface.co/google/gemma-3-27b-it' },
-          { title: 'Phi-4 Reasoning 14B — MIT licensed', source: 'Microsoft', link: 'https://huggingface.co/microsoft' },
-          { title: 'Mistral Small 3.1 24B — Apache 2.0', source: 'Mistral', link: 'https://huggingface.co/mistralai' },
-          { title: 'Solar Pro 3 — free on OpenRouter', source: 'Upstage', link: 'https://huggingface.co/upstage' },
-          { title: 'Llama 3.3 70B — best open weights at size', source: 'Meta', link: 'https://huggingface.co/meta-llama' },
-          { title: 'Command R+ 104B — RAG optimised', source: 'Cohere', link: 'https://huggingface.co/CohereForAI' },
-          { title: 'Kimi VL A3B — open-source vision+thinking', source: 'Moonshot', link: 'https://huggingface.co/moonshotai' },
-        ];
+        
 
         function renderTicker(el, data) {
           const h = data.map((item, i) => {
@@ -1632,8 +1690,7 @@ entirely in a browser sandbox.
         const el1 = document.getElementById('ticker-content');
         if (el1) renderTicker(el1, items1.length ? items1 : items);
 
-        const el2 = document.getElementById('ticker-content-2');
-        if (el2) renderTicker(el2, trending);
+
       })();
 
       // ── Boot sandbox ──

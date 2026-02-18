@@ -912,6 +912,46 @@
     const ITEMS_PER_PAGE = 12;
     let searchTimeout = null;
 
+    // Transform explore-cache.json entries into card-compatible items
+    function cacheToItems(cache) {
+      const items = [];
+      const typeMap = {
+        servers: 'servers', skills: 'skills', plugins: 'plugins',
+        tools: 'tools', models: 'models', recipes: 'recipes', knowledge: 'knowledge'
+      };
+      for (const [type, entries] of Object.entries(cache)) {
+        if (type === 'meta' || !Array.isArray(entries)) continue;
+        entries.forEach((entry, i) => {
+          items.push({
+            id: `${type}-${i}`,
+            type: typeMap[type] || type,
+            title: entry.name,
+            description: [entry.category, entry.source, entry.context, entry.pricing].filter(Boolean).join(' · '),
+            author: entry.source || entry.category || '',
+            url: entry.url,
+            tags: [entry.source, entry.category].filter(Boolean).slice(0, 2),
+            upvotes: 0,
+            downloads: 0
+          });
+        });
+      }
+      return items;
+    }
+
+    let _cacheItems = null;
+    async function loadCacheItems() {
+      if (_cacheItems) return _cacheItems;
+      try {
+        const res = await fetch('/explore-cache.json');
+        if (!res.ok) throw new Error('no cache');
+        const cache = await res.json();
+        _cacheItems = cacheToItems(cache);
+      } catch {
+        _cacheItems = [];
+      }
+      return _cacheItems;
+    }
+
     // API Functions
     async function fetchItems(params = {}) {
       try {
@@ -920,9 +960,21 @@
         if (!response.ok) throw new Error('Failed to fetch items');
         const data = await response.json();
         return data.items || [];
-      } catch (error) {
-        console.error('Error fetching items:', error);
-        return [];
+      } catch {
+        // Fall back to local cache
+        const all = await loadCacheItems();
+        let items = all;
+        if (params.type && params.type !== 'all') {
+          items = all.filter(i => i.type === params.type);
+        }
+        if (params.q) {
+          const q = params.q.toLowerCase();
+          items = items.filter(i =>
+            (i.title || '').toLowerCase().includes(q) ||
+            (i.description || '').toLowerCase().includes(q)
+          );
+        }
+        return items;
       }
     }
 
@@ -1002,8 +1054,7 @@
               <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>${item.downloads || 0}</div>
             </div>
             <div class="item-card-actions">
-              <button class="btn-mini fork-btn" data-id="${item.id}">Fork</button>
-              <button class="btn-mini download-btn" data-id="${item.id}">Download</button>
+              ${item.url ? `<a class="btn-mini" href="${item.url}" target="_blank" rel="noopener">View →</a>` : `<button class="btn-mini fork-btn" data-id="${item.id}">Fork</button>`}
             </div>
           </div>
         </div>

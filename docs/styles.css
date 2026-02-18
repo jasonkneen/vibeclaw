@@ -46,60 +46,7 @@ body::after {
   z-index: 9999;
 }
 
-/* ── Topbar ── */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(12, 12, 12, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  height: 52px;
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-}
-.topbar-logo {
-  font-family: var(--mono);
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: none;
-  color: var(--accent);
-  letter-spacing: -0.01em;
-}
-.topbar-logo span {
-  color: var(--accent);
-}
-.topbar-sep {
-  color: var(--border-bright);
-  margin: 0 12px;
-  font-size: 1.1rem;
-  user-select: none;
-}
-.topbar-section {
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.topbar-links {
-  margin-left: auto;
-  display: flex;
-  gap: 20px;
-  list-style: none;
-}
-.topbar-links a {
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  color: var(--text-dim);
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  transition: color 0.15s;
-}
-.topbar-links a:hover { color: var(--text-bright); }
+/* ── Topbar (replaced by canonical nav) ── */
 
 /* ── Mobile menu toggle ── */
 .menu-toggle {
@@ -396,5 +343,5 @@ body::after {
     padding: 28px 20px 60px;
     max-width: 100%;
   }
-  .topbar-links { gap: 12px; }
+
 }

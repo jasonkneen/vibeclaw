@@ -181,6 +181,19 @@
         width: 100%;
         height: 100%;
       }
+      .hero-crac-img {
+        width: 380px;
+        height: 380px;
+        object-fit: contain;
+        filter: drop-shadow(0 20px 60px rgba(255,92,92,0.18)) drop-shadow(0 4px 24px rgba(0,0,0,0.6));
+        animation: hero-crac-float 5s ease-in-out infinite;
+        user-select: none;
+        pointer-events: none;
+      }
+      @keyframes hero-crac-float {
+        0%, 100% { transform: translateY(0px) rotate(-1deg); }
+        50%       { transform: translateY(-14px) rotate(1deg); }
+      }
       .hero-label {
         font-family: var(--mono);
         font-size: 0.72rem;
@@ -500,9 +513,8 @@
       .demos-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 1px;
-        background: var(--border);
-        border: 1px solid var(--border);
+        gap: 12px;
+        background: transparent;
         margin-bottom: 80px;
       }
       @media (max-width: 900px) {
@@ -513,14 +525,22 @@
       }
       .demo-card {
         display: block;
-        background: var(--surface);
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 16px;
         padding: 24px 20px;
         text-decoration: none;
         color: inherit;
-        transition: background 0.15s;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+        transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
       }
       .demo-card:hover {
-        background: var(--surface-2);
+        background: rgba(255,255,255,0.055);
+        border-color: rgba(255,255,255,0.12);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
       }
       .demo-card:hover h3 { color: var(--accent); }
       .demo-card h3 {
@@ -691,8 +711,30 @@
         gap: 8px;
         padding: 8px 20px;
         background: var(--black);
-        flex-wrap: wrap;
+        position: relative;
       }
+      .stats-bar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .stats-ca {
+        position: absolute; left: 50%; transform: translateX(-50%);
+        display: inline-flex; align-items: center; gap: 8px;
+        font-family: var(--mono); font-size: 0.68rem;
+        color: var(--accent); cursor: pointer;
+        border: 1px solid rgba(255,92,92,0.2);
+        border-radius: 20px; padding: 5px 14px;
+        background: rgba(255,92,92,0.05);
+        transition: background 0.15s, border-color 0.15s;
+        white-space: nowrap; user-select: none;
+      }
+      .stats-ca:hover { background: rgba(255,92,92,0.1); border-color: rgba(255,92,92,0.4); }
+      .stats-ca-label { font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+      .stats-ca-addr { opacity: 0.7; letter-spacing: 0.02em; }
+      .stats-ca-copied {
+        position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+        background: var(--accent); color: #000; font-size: 0.6rem; font-weight: 700;
+        padding: 3px 8px; border-radius: 6px; white-space: nowrap;
+        opacity: 0; transition: opacity 0.15s; pointer-events: none;
+      }
+      .stats-ca-copied.show { opacity: 1; }
 
       /* ── Responsive ── */
       @media (max-width: 900px) {
@@ -716,8 +758,8 @@
         .auth-name { max-width: 50px !important; font-size: 0.55rem !important; }
         .auth-logout-btn { padding: 2px 4px !important; font-size: 0.5rem !important; }
         .hero { padding: 48px 16px 40px; }
-        .hero h1 { font-size: 1.8rem; }
-        .hero .subtitle { font-size: 0.8rem; }
+        .hero h1 { font-size: 2.4rem; line-height: 1.1; }
+        .hero .subtitle { font-size: 1rem; line-height: 1.6; }
         .cta-row { flex-direction: column; }
         .btn { justify-content: center; }
         .section { padding: 32px 16px; }
@@ -730,16 +772,28 @@
         footer .footer-byline { font-size: 0.65rem; }
         footer .license { font-size: 0.65rem; }
         /* ── Stats bar ── */
-        .stats-bar { padding: 6px 12px; justify-content: center; gap: 6px; }
+        .stats-bar { padding: 6px 12px; flex-direction: column; align-items: center; gap: 8px; position: static; }
+        .stats-bar-right { justify-content: center; }
+        .stats-ca { position: static; transform: none; }
+        .stats-ca-addr { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
         .stats-bar a { padding: 4px 10px !important; font-size: 0.62rem !important; }
         /* ── CRT monitor / playground ── */
         .crt-monitor { padding: 0 8px; }
-        .crt-bezel { padding: 14px 12px 22px; border-radius: 14px; }
+        .crt-bezel {
+          padding: 10px 6px 14px;
+          border-radius: 28px;
+          box-shadow: 0 0 0 1px #1a1a1a, 0 0 0 3px #222, 0 20px 60px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.04) !important;
+        }
+        .crt-screw { display: none; }
+        #pg-creds-sandbox { flex-wrap: wrap !important; gap: 5px !important; }
+        .pg-flavour-chip { padding: 5px 10px !important; font-size: 0.7rem !important; }
         /* ── Section headers ── */
         .section-header { padding: 40px 0 28px; }
         /* ── Hero ── */
-        .hero h1 { font-size: 1.65rem; }
-        .hero .subtitle { font-size: 0.82rem; margin-bottom: 24px; }
+        .hero h1 { font-size: 2rem; line-height: 1.1; }
+        .hero .subtitle { font-size: 0.95rem; margin-bottom: 24px; }
+        .crt-bezel { padding: 18px 16px 26px; border-radius: 20px; }
+        .pg-flavour-chip { padding: 6px 12px !important; font-size: 0.78rem !important; }
         /* ── Flavour chips bar ── */
         #pg-creds-sandbox { flex-wrap: wrap !important; gap: 6px !important; padding: 8px 12px !important; }
         /* ── FAQ ── */
@@ -755,7 +809,7 @@
         footer .footer-links { gap: 8px; }
         footer .footer-links a { font-size: 0.6rem; }
         /* ── Ultra-narrow ── */
-        .hero h1 { font-size: 1.4rem; }
+        .hero h1 { font-size: 2rem; line-height: 1.1; }
         .stats-bar { padding: 4px 10px; gap: 4px; }
         .stats-bar a { padding: 3px 8px !important; font-size: 0.58rem !important; }
         .crt-monitor { padding: 0 4px; }
@@ -1551,10 +1605,20 @@
 
     <!-- Repo stats -->
     <div class="stats-bar">
-      <a href="https://github.com/jasonkneen/vibeclaw" style="display:inline-flex;align-items:center;gap:7px;padding:6px 14px;background:var(--accent);border-radius:20px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;font-weight:700;color:#000;letter-spacing:0.05em;text-transform:uppercase;transition:filter 0.15s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">🦀 VibeClaw</a>
-      <a id="gh-stars" href="https://github.com/jasonkneen/vibeclaw/stargazers" style="display:inline-flex;align-items:center;gap:7px;padding:6px 14px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='var(--text-dim)'"><svg viewBox="0 0 16 16" fill="currentColor" style="width:12px;height:12px;opacity:0.7"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span id="gh-stars-count">—</span> Stars</a>
-      <script>fetch('https://api.github.com/repos/jasonkneen/vibeclaw').then(r=>r.json()).then(d=>{if(d.stargazers_count!=null)document.getElementById('gh-stars-count').textContent=d.stargazers_count}).catch(()=>{})</script>
-      <a href="https://github.com/jasonkneen/vibeclaw/blob/main/LICENSE" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);transition:all 0.15s;letter-spacing:0.04em;text-transform:uppercase;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='var(--text-dim)'">MIT License</a>
+      <!-- CA — left -->
+      <div class="stats-ca" id="stats-ca" onclick="(function(el){const addr='9vVfg81Qg7zHe2y9AZn39EjQShKiDR7S4ojbCoUrpump';navigator.clipboard.writeText(addr).catch(()=>{});const tip=el.querySelector('.stats-ca-copied');tip.classList.add('show');setTimeout(()=>tip.classList.remove('show'),1800);})(this)">
+        <span class="stats-ca-label">$VIBECLAW CA</span>
+        <span class="stats-ca-addr">9vVfg81Qg7zHe2y9AZn39EjQShKiDR7S4ojbCoUrpump</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:11px;height:11px;opacity:0.5;flex-shrink:0;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span class="stats-ca-copied">Copied!</span>
+      </div>
+      <!-- Badges — right -->
+      <div class="stats-bar-right">
+        <a href="https://github.com/jasonkneen/vibeclaw" style="display:inline-flex;align-items:center;gap:7px;padding:6px 14px;background:var(--accent);border-radius:20px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;font-weight:700;color:#000;letter-spacing:0.05em;text-transform:uppercase;transition:filter 0.15s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">🦀 VibeClaw</a>
+        <a id="gh-stars" href="https://github.com/jasonkneen/vibeclaw/stargazers" style="display:inline-flex;align-items:center;gap:7px;padding:6px 14px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='var(--text-dim)'"><svg viewBox="0 0 16 16" fill="currentColor" style="width:12px;height:12px;opacity:0.7"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span id="gh-stars-count">—</span> Stars</a>
+        <script>fetch('https://api.github.com/repos/jasonkneen/vibeclaw').then(r=>r.json()).then(d=>{if(d.stargazers_count!=null)document.getElementById('gh-stars-count').textContent=d.stargazers_count}).catch(()=>{})</script>
+        <a href="https://github.com/jasonkneen/vibeclaw/blob/main/LICENSE" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);transition:all 0.15s;letter-spacing:0.04em;text-transform:uppercase;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='var(--text-dim)'">MIT License</a>
+      </div>
     </div>
 
     <script>
@@ -1603,10 +1667,7 @@
 
       </div>
       <div class="hero-visual">
-        <div id="terminal-carousel" style="border:1px solid var(--border);border-radius:14px;background:rgba(0,0,0,0.6);padding:40px 48px;max-width:480px;display:flex;flex-direction:column;gap:16px;backdrop-filter:blur(8px);">
-          <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--text-bright);line-height:1.3;transition:opacity 0.5s ease;" id="carousel-title">Complete Runtime in Seconds</div>
-          <div style="font-family:var(--mono);font-size:0.9rem;color:var(--text-dim);line-height:1.7;transition:opacity 0.5s ease;" id="carousel-desc">Boot a FULL OpenClaw instance in your browser — complete with virtual filesystem, 40+ Node.js modules, and npm support. Just paste your API key and start coding. Zero install.</div>
-        </div>
+        <img src="/crac-studio.png" alt="VibeClaw" class="hero-crac-img">
       </div>
     </section>
 
@@ -3143,6 +3204,7 @@ entirely in a browser sandbox.
     </script>
   <!-- TinyClaw Chat Widget -->
   <script type="module">
+    if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') throw new Error('Clawdio: non-local, skipping');
     window.__clawdioMounted = true;
     import { TinyClawWidget } from '/packages/tinyclaw-widget/src/index.ts';
     new TinyClawWidget({

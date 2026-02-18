@@ -210,6 +210,14 @@ export const STYLES = (accent: string) => `
     font-size: 0.68rem; color: #555; font-weight: 500;
     font-family: 'DM Sans', system-ui, sans-serif;
   }
+  .tc-new-btn {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: transparent; border: 1px solid #2a2a2a;
+    color: #555; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .tc-new-btn:hover { background: #1a1a1a; color: #aaa; border-color: #444; }
   .tc-close-btn {
     margin-left: auto; flex-shrink: 0;
     background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 50%;
@@ -284,21 +292,67 @@ export const STYLES = (accent: string) => `
   /* ── Typing indicator ── */
   .tc-typing-wrap {
     align-self: flex-start;
-    background: #161616; border: 1px solid #222;
+    background: #161616; border: 1px solid #2a2a2a;
     border-radius: 14px; border-bottom-left-radius: 4px;
-    padding: 13px 16px;
-    display: flex; gap: 5px; align-items: center;
+    padding: 10px 14px;
+    display: flex; gap: 6px; align-items: center;
+  }
+  .tc-thinking-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem; color: #777; font-style: italic;
+    margin-right: 2px;
   }
   .tc-typing-wrap span {
-    width: 5px; height: 5px; background: #444; border-radius: 50%;
+    width: 5px; height: 5px; background: ${accent}; border-radius: 50%;
     animation: tc-dot 1.3s ease infinite;
+    flex-shrink: 0;
   }
   .tc-typing-wrap span:nth-child(2) { animation-delay: 0.2s; }
   .tc-typing-wrap span:nth-child(3) { animation-delay: 0.4s; }
+  .tc-typing-wrap span:nth-child(4) { animation-delay: 0.6s; }
   @keyframes tc-dot {
-    0%, 100% { opacity: 0.3; transform: translateY(0); }
-    50%       { opacity: 1;   transform: translateY(-3px); }
+    0%, 100% { opacity: 0.25; transform: translateY(0); }
+    50%       { opacity: 1;   transform: translateY(-4px); }
   }
+
+  /* ── Markdown rendering in bot bubbles ── */
+  .tc-bot .tc-msg-bubble p { margin: 0 0 8px; line-height: 1.65; }
+  .tc-bot .tc-msg-bubble p:last-child { margin-bottom: 0; }
+  .tc-bot .tc-msg-bubble strong { color: #fff; font-weight: 700; }
+  .tc-bot .tc-msg-bubble em { opacity: 0.85; }
+  .tc-bot .tc-msg-bubble code {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px; padding: 1px 6px;
+    font-family: 'Fragment Mono', 'Courier New', monospace;
+    font-size: 0.82em; color: ${accent};
+  }
+  .tc-bot .tc-msg-bubble pre {
+    background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 12px 14px; overflow-x: auto;
+    margin: 8px 0;
+  }
+  .tc-bot .tc-msg-bubble pre code {
+    background: none; border: none; padding: 0;
+    font-size: 0.8rem; color: #ccc;
+  }
+  .tc-bot .tc-msg-bubble ul, .tc-bot .tc-msg-bubble ol {
+    padding-left: 18px; margin: 6px 0;
+  }
+  .tc-bot .tc-msg-bubble li { margin-bottom: 4px; line-height: 1.55; }
+  .tc-bot .tc-msg-bubble h1,.tc-bot .tc-msg-bubble h2,.tc-bot .tc-msg-bubble h3 {
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-weight: 700; margin: 12px 0 6px; line-height: 1.3;
+  }
+  .tc-bot .tc-msg-bubble h1 { font-size: 1rem; }
+  .tc-bot .tc-msg-bubble h2 { font-size: 0.92rem; }
+  .tc-bot .tc-msg-bubble h3 { font-size: 0.88rem; }
+  .tc-bot .tc-msg-bubble a { color: ${accent}; text-decoration: none; }
+  .tc-bot .tc-msg-bubble a:hover { text-decoration: underline; }
+  .tc-bot .tc-msg-bubble blockquote {
+    border-left: 3px solid ${accent}66; padding-left: 12px;
+    margin: 8px 0; color: #888; font-style: italic;
+  }
+  .tc-bot .tc-msg-bubble hr { border: none; border-top: 1px solid #2a2a2a; margin: 10px 0; }
 
   /* ── Input bar ── */
   .tc-input-bar {

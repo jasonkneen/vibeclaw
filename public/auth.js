@@ -16,20 +16,17 @@ authStyles.textContent = `
   [class*="netlify-identity"],
   [data-netlify-identity-menu],
   [data-netlify-identity-button] {
-    z-index: 99999 !important;
+    z-index: 2147483647 !important;
     position: relative !important;
   }
-  /* The widget creates a React root div — force it visible */
-  div[style*="position: fixed"][style*="background"] {
-    z-index: 99999 !important;
+  /* The widget creates a React root div with inline background-color — target specifically */
+  div[style*="position: fixed"][style*="background-color"],
+  div[style*="position:fixed"][style*="background-color"] {
+    z-index: 2147483647 !important;
   }
-  /* Also target the modal backdrop the widget injects */
-  body > div:last-of-type[style*="position"] {
-    z-index: 99999 !important;
-  }
-  /* Ensure close button is visible */
+  /* Ensure modal and close button are visible above everything */
   .netlify-identity-modal {
-    z-index: 99999 !important;
+    z-index: 2147483647 !important;
   }
   .netlify-identity-modal *[class*="close"],
   .netlify-identity-modal *[class*="Close"],

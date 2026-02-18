@@ -1,4 +1,6 @@
 (function () {
+  // TEMP: only show on localhost
+  if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
   // Avoid double-mounting (e.g. index.html already inits via module import)
   if (window.__clawdioMounted) return;
   window.__clawdioMounted = true;

@@ -15,18 +15,59 @@
   <meta name="twitter:description" content="vibeclaw documentation — run OpenClaw in your browser.">
   <meta name="twitter:image" content="https://vibeclaw.dev/og-image.png">
   <link rel="stylesheet" href="./styles.css">
+  <style>
+    /* ── Canonical Nav ── */
+    nav.main-nav { background: rgba(0,0,0,0.85); border-bottom: 1px solid #1a1a1a; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 500; }
+    .nav-inner { width: 100%; padding: 0 32px; height: 52px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
+    .nav-logo { font-family: var(--mono,'Courier New',monospace); font-size: 0.9rem; font-weight: 600; color: var(--accent,#ff5c5c); text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; margin: 0; padding: 0; }
+    .nav-links a { font-family: var(--mono,'Courier New',monospace); font-size: 0.78rem; color: var(--text-dim,#666); text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.15s; }
+    .nav-links a:hover, .nav-links a.nav-active { color: var(--text-bright,#fff); }
+    .nav-hide-mobile { }
+    @media (max-width: 600px) {
+      .nav-inner { padding: 0 12px; height: 48px; }
+      .nav-links { gap: 8px; }
+      .nav-links a { font-size: 0.6rem; }
+      .nav-hide-mobile { display: none; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="topbar">
-  <a href="../" class="topbar-logo">🦀 vibeclaw</a>
-  <span class="topbar-sep">/</span>
-  <span class="topbar-section">Docs</span>
-  <ul class="topbar-links">
-    <li><a href="https://github.com/jasonkneen/vibeclaw">GitHub</a></li>
-    <li><a href="https://openclaw.ai">OpenClaw</a></li>
-  </ul>
-</div>
+<nav class="main-nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" aria-label="vibeclaw.dev home"><img src="/logo.png" alt="VibeClaw" style="height:44px;vertical-align:middle;"></a>
+    <ul class="nav-links" role="list">
+      <li><a href="/explore.html">Explore</a></li>
+      <li><a href="/create.html">Create</a></li>
+      <li class="nav-hide-mobile"><a href="/forge.html">Forge</a></li>
+      <li class="nav-hide-mobile"><a href="/news.html">News</a></li>
+      <li class="nav-hide-mobile nav-active"><a href="/docs/" class="nav-active">Docs</a></li>
+      <li class="nav-more-wrap" style="position:relative;">
+        <button id="nav-more-btn" style="background:none;border:1px solid #1a1a1a;border-radius:6px;padding:3px 8px;font-family:var(--mono,'Courier New',monospace);font-size:0.62rem;color:#666;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s;white-space:nowrap;">
+          More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="nav-more-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#111;border:1px solid #222;border-radius:8px;padding:6px 0;min-width:180px;z-index:1000;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+          <a href="/library.html" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;transition:background 0.1s;">My Library</a>
+          <a href="/gallery.html" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;transition:background 0.1s;">Wallpapers</a>
+          <div style="height:1px;background:#222;margin:4px 0;"></div>
+          <a href="https://openclaw.ai" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;transition:background 0.1s;">OpenClaw</a>
+          <a href="https://github.com/jasonkneen/vibeclaw" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;transition:background 0.1s;">GitHub</a>
+          <a href="https://x.com/i/communities/2023680827435978937" style="display:flex;align-items:center;gap:6px;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;transition:background 0.1s;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Community</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+<script>
+  (function(){
+    var btn=document.getElementById('nav-more-btn'),menu=document.getElementById('nav-more-menu');
+    if(!btn||!menu)return;
+    btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.style.display!=='none';menu.style.display=o?'none':'block';btn.style.borderColor=o?'#1a1a1a':'#ff5c5c';btn.style.color=o?'#666':'#ff5c5c';});
+    document.addEventListener('click',function(){menu.style.display='none';btn.style.borderColor='#1a1a1a';btn.style.color='#666';});
+    menu.querySelectorAll('a').forEach(function(a){a.addEventListener('mouseenter',function(){a.style.background='#1a1a1a';});a.addEventListener('mouseleave',function(){a.style.background='transparent';});});
+  })();
+</script>
 
 <div class="layout">
   <nav class="sidebar">
@@ -100,14 +141,14 @@
     </ul>
 
     <h2>External Documentation</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;">
-      <a href="https://github.com/nicholasgriffintn/almostnode#readme" target="_blank" style="display:block;padding:20px;border:1px solid var(--border);background:var(--surface);text-decoration:none;transition:border-color 0.15s;">
-        <strong style="color:var(--text-bright);font-size:1.05rem;">📦 almostnode</strong>
-        <p style="color:var(--text-dim);margin:8px 0 0;font-size:0.85rem;">Browser-native Node.js runtime — VirtualFS, Runtime, PackageManager, API reference, security guides.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;">
+      <a href="https://github.com/nicholasgriffintn/almostnode#readme" target="_blank" style="display:block;padding:22px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03);border-radius:14px;text-decoration:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:border-color 0.2s,background 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.14)';this.style.background='rgba(255,255,255,0.055)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.background='rgba(255,255,255,0.03)';this.style.transform=''">
+        <strong style="color:var(--text-bright);font-size:1rem;">📦 almostnode</strong>
+        <p style="color:var(--text-dim);margin:8px 0 0;font-size:0.85rem;line-height:1.5;">Browser-native Node.js runtime — VirtualFS, Runtime, PackageManager, API reference, security guides.</p>
       </a>
-      <a href="https://openclaw.ai/docs" target="_blank" style="display:block;padding:20px;border:1px solid var(--border);background:var(--surface);text-decoration:none;transition:border-color 0.15s;">
-        <strong style="color:var(--text-bright);font-size:1.05rem;">🦀 OpenClaw</strong>
-        <p style="color:var(--text-dim);margin:8px 0 0;font-size:0.85rem;">AI coding agent framework — gateway setup, agent config, skills, sessions, cron, and API reference.</p>
+      <a href="https://openclaw.ai/docs" target="_blank" style="display:block;padding:22px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03);border-radius:14px;text-decoration:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:border-color 0.2s,background 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.14)';this.style.background='rgba(255,255,255,0.055)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.background='rgba(255,255,255,0.03)';this.style.transform=''">
+        <strong style="color:var(--text-bright);font-size:1rem;">🦀 OpenClaw</strong>
+        <p style="color:var(--text-dim);margin:8px 0 0;font-size:0.85rem;line-height:1.5;">AI coding agent framework — gateway setup, agent config, skills, sessions, cron, and API reference.</p>
       </a>
     </div>
 
@@ -117,5 +158,6 @@
   </main>
 </div>
 
+  <script src="/clawdio.js"></script>
 </body>
 </html>

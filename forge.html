@@ -1131,7 +1131,7 @@
   
     /* ── Canonical Nav ── */
     nav { background: rgba(0,0,0,0.85); border-bottom: 1px solid var(--border,#1a1a1a); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 500; }
-    .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; height: 52px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-inner { width: 100%; padding: 0 32px; box-sizing: border-box; height: 52px; display: flex; align-items: center; justify-content: space-between; }
     .nav-logo { font-family: var(--mono,'Courier New',monospace); font-size: 0.9rem; font-weight: 600; color: var(--accent,#ff5c5c); text-decoration: none; }
     .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; margin: 0; padding: 0; }
     .nav-links a { font-family: var(--mono,'Courier New',monospace); font-size: 0.78rem; color: var(--text-dim,#666); text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.15s; }

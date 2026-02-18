@@ -91,7 +91,7 @@
   
     /* ── Canonical Nav ── */
     nav { background: rgba(0,0,0,0.85); border-bottom: 1px solid var(--border,#1a1a1a); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 500; }
-    .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; height: 52px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-inner { width: 100%; padding: 0 32px; box-sizing: border-box; height: 52px; display: flex; align-items: center; justify-content: space-between; }
     .nav-logo { font-family: var(--mono,'Courier New',monospace); font-size: 0.9rem; font-weight: 600; color: var(--accent,#ff5c5c); text-decoration: none; }
     .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; margin: 0; padding: 0; }
     .nav-links a { font-family: var(--mono,'Courier New',monospace); font-size: 0.78rem; color: var(--text-dim,#666); text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.15s; }
@@ -131,6 +131,7 @@
             <a href="https://x.com/i/communities/2023680827435978937" style="display:flex;align-items:center;gap:6px;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;transition:background 0.1s;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Community</a>
           </div>
         </li>
+        <li id="auth-container" style="margin-left:4px;"></li>
       </ul>
     </div>
   </nav>
@@ -238,6 +239,13 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
     load();
+  </script>
+
+  <script src="/auth.js"></script>
+  <script>
+    VibeclawAuth.init().then(function() {
+      VibeclawAuth.renderButton('auth-container');
+    });
   </script>
   <script src="/clawdio.js"></script>
 </body>

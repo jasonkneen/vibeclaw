@@ -1,5 +1,9 @@
+import { marked } from 'marked';
 import { STYLES } from './styles';
 import { DEFAULT_KB, DEFAULT_SYSTEM } from './kb';
+
+// Configure marked — no async, sanitize links
+marked.setOptions({ async: false, breaks: true, gfm: true });
 
 export interface TinyClawConfig {
   apiKey?: string;
@@ -124,6 +128,7 @@ export class TinyClawWidget {
     // ── Events ──
     this.bubbleBtn?.addEventListener('click', () => this._toggle());
     $('.tc-close-btn')?.addEventListener('click', () => this._close());
+    $('.tc-new-btn')?.addEventListener('click', () => this._newChat());
     this.sendBtn?.addEventListener('click', () => this._send());
     this.inputEl?.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this._send(); }
@@ -164,6 +169,9 @@ export class TinyClawWidget {
               <span class="tc-header-label">Starting…</span>
             </div>
           </div>
+          <button class="tc-new-btn" aria-label="New chat" title="New chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
           <button class="tc-close-btn" aria-label="Close">✕</button>
         </div>
         <div class="tc-download-bar" style="display:none">
@@ -261,8 +269,38 @@ export class TinyClawWidget {
     this.bubbleBtn?.classList.add('tc-ready');
     if (this.inputEl) this.inputEl.disabled = false;
     if (this.sendBtn) this.sendBtn.disabled = false;
+    if (!this._restoreHistory()) {
+      this._addMsg('assistant', this.cfg.greeting);
+      this._addSuggestions();
+    }
+  }
+
+  private _newChat() {
+    this.history = [];
+    sessionStorage.removeItem('tc-history');
+    if (this.messagesEl) this.messagesEl.innerHTML = '';
+    this._suggestionsEl = null;
     this._addMsg('assistant', this.cfg.greeting);
     this._addSuggestions();
+  }
+
+  private _saveHistory() {
+    try {
+      sessionStorage.setItem('tc-history', JSON.stringify(this.history));
+    } catch { /* quota exceeded — ignore */ }
+  }
+
+  private _restoreHistory(): boolean {
+    try {
+      const raw = sessionStorage.getItem('tc-history');
+      if (!raw) return false;
+      const msgs: Message[] = JSON.parse(raw);
+      if (!msgs.length) return false;
+      this.history = msgs;
+      msgs.forEach(m => this._addMsg(m.role, m.content));
+      this._scroll();
+      return true;
+    } catch { return false; }
   }
 
   private _suggestionsEl: HTMLElement | null = null;
@@ -319,17 +357,25 @@ export class TinyClawWidget {
     wrap.className = `tc-msg ${role === 'user' ? 'tc-user' : 'tc-bot'}`;
     const bubble = document.createElement('div');
     bubble.className = 'tc-msg-bubble';
-    bubble.textContent = text;
+    if (role === 'assistant' && text) {
+      bubble.innerHTML = marked.parse(text) as string;
+    } else {
+      bubble.textContent = text;
+    }
     wrap.appendChild(bubble);
     this.messagesEl?.appendChild(wrap);
     this._scroll();
     return bubble;
   }
 
+  private _renderMarkdown(bubble: HTMLElement, text: string) {
+    bubble.innerHTML = marked.parse(text) as string;
+  }
+
   private _showTyping(): HTMLElement {
     const el = document.createElement('div');
     el.className = 'tc-typing-wrap';
-    el.innerHTML = '<span></span><span></span><span></span>';
+    el.innerHTML = '<span class="tc-thinking-label">Thinking</span><span></span><span></span><span></span>';
     this.messagesEl?.appendChild(el);
     this._scroll();
     return el;
@@ -361,6 +407,7 @@ export class TinyClawWidget {
       this.history.pop();
     }
 
+    this._saveHistory();
     if (this.inputEl) { this.inputEl.disabled = false; this.inputEl.focus(); }
     if (this.sendBtn) this.sendBtn.disabled = false;
   }
@@ -378,6 +425,8 @@ export class TinyClawWidget {
       const delta = chunk.choices[0]?.delta?.content || '';
       if (delta) { full += delta; bubble.textContent = full; this._scroll(); }
     }
+    this._renderMarkdown(bubble, full);
+    this._scroll();
     this.history.push({ role: 'assistant', content: full });
   }
 
@@ -419,6 +468,8 @@ export class TinyClawWidget {
         } catch {}
       }
     }
+    this._renderMarkdown(bubble, full);
+    this._scroll();
     this.history.push({ role: 'assistant', content: full });
   }
 

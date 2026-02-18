@@ -1,7 +1,7 @@
 {
   "meta": {
     "generated": "2026-02-18",
-    "description": "Curated explore page data — scraped from live directories"
+    "description": "Curated explore page data \u2014 scraped from live directories"
   },
   "servers": [
     {
@@ -62,7 +62,7 @@
       "name": "Fetch (web content)",
       "url": "https://dxt.so/mcp-server/search-and-data-extraction/fetch-mcp-server-mcp",
       "source": "dxt.so",
-      "description": "Fetch MCP Server: mcp-server-fetch is an MCP server that empowers AI agents to fetch and process web content using methods like browser automation, OCR, HTML scraping, and document parsing. It output…"
+      "description": "Fetch MCP Server: mcp-server-fetch is an MCP server that empowers AI agents to fetch and process web content using methods like browser automation, OCR, HTML scraping, and document parsing. It output\u2026"
     },
     {
       "name": "Daytona (code execution)",
@@ -80,7 +80,7 @@
       "name": "MCP Toolbox for Databases",
       "url": "https://dxt.so/mcp-server/developer-tools/mcp-toolbox-for-databases-mcp",
       "source": "dxt.so",
-      "description": "MCP Toolbox for Databases - Open source MCP server specializing in easy, fast, and secure tools for Databases. Supports AlloyDB, BigQuery, Bigtable, Cloud SQL, Dgraph, MySQ…"
+      "description": "MCP Toolbox for Databases - Open source MCP server specializing in easy, fast, and secure tools for Databases. Supports AlloyDB, BigQuery, Bigtable, Cloud SQL, Dgraph, MySQ\u2026"
     },
     {
       "name": "Klavis ReportGen",
@@ -104,7 +104,7 @@
       "name": "LangChain MCP Adapters",
       "url": "https://dxt.so/mcp-server/developer-tools/langchain-mcp-adapters-mcp",
       "source": "dxt.so",
-      "description": "langchain-mcp-adapters: The langchain‑mcp‑adapters library bridges Anthropic’s Model Context Protocol (MCP) and LangChain/LangGraph. It converts MCP tools into compatible agents, connects across mult…"
+      "description": "langchain-mcp-adapters: The langchain\u2011mcp\u2011adapters library bridges Anthropic\u2019s Model Context Protocol (MCP) and LangChain/LangGraph. It converts MCP tools into compatible agents, connects across mult\u2026"
     },
     {
       "name": "Tianji",
@@ -134,7 +134,7 @@
       "name": "Nx (monorepo)",
       "url": "https://dxt.so/mcp-server/developer-tools/nx-mcp",
       "source": "dxt.so",
-      "description": "Nx: Nx - Makes Nx's understanding of your codebase accessible to LLMs, providing insights into the codebase architecture, project relationships and runnable tasks thus allowing AI to make precis…"
+      "description": "Nx: Nx - Makes Nx's understanding of your codebase accessible to LLMs, providing insights into the codebase architecture, project relationships and runnable tasks thus allowing AI to make precis\u2026"
     },
     {
       "name": "Grafana",
@@ -200,7 +200,7 @@
       "name": "Browser MCP (UI-TARS)",
       "url": "https://dxt.so/mcp-server/browser-automation/browser-mcp-mcp",
       "source": "dxt.so",
-      "description": "Browser MCP: Browser MCP (by UI-TARS) - A fast, lightweight MCP server that empowers LLMs with browser automation via Puppeteer’s structured accessibility data, featuring optional vision mode for com…"
+      "description": "Browser MCP: Browser MCP (by UI-TARS) - A fast, lightweight MCP server that empowers LLMs with browser automation via Puppeteer\u2019s structured accessibility data, featuring optional vision mode for com\u2026"
     },
     {
       "name": "LLMware (RAG)",
@@ -238,121 +238,121 @@
       "name": "Dispatching Parallel Agents",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/dispatching-parallel-agents-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "Use when facing 3+ independent failures that can be investigated without shared state or dependencies - dispatches multiple Claude agents to investigate and fix independe…"
+      "description": "Use when facing 3+ independent failures that can be investigated without shared state or dependencies - dispatches multiple Claude agents to investigate and fix independe\u2026"
     },
     {
       "name": "Executing Plans",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/executing-plans-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "Use when partner provides a complete implementation plan to execute in controlled batches with review checkpoints - loads plan, reviews critically, executes tasks in batches, reports…"
+      "description": "Use when partner provides a complete implementation plan to execute in controlled batches with review checkpoints - loads plan, reviews critically, executes tasks in batches, reports\u2026"
     },
     {
       "name": "Finishing a Development Branch",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/finishing-a-development-branch-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured…"
+      "description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured\u2026"
     },
     {
       "name": "Sharing Skills",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/sharing-skills-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "Use when you've developed a broadly useful skill and want to contribute it upstream via pull request - guides process of branching, committing, pushing, and creating PR to contri…"
+      "description": "Use when you've developed a broadly useful skill and want to contribute it upstream via pull request - guides process of branching, committing, pushing, and creating PR to contri\u2026"
     },
     {
       "name": "Subagent Driven Development",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/subagent-driven-development-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "Subagent-Driven Development: Use when executing implementation plans with independent tasks in the current session - dispatches fresh subagent for each task with code review between tasks, enabling f…"
+      "description": "Subagent-Driven Development: Use when executing implementation plans with independent tasks in the current session - dispatches fresh subagent for each task with code review between tasks, enabling f\u2026"
     },
     {
       "name": "Using Git Worktrees",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/using-git-worktrees-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - creates isolated git worktrees with smart directory selectio…"
+      "description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - creates isolated git worktrees with smart directory selectio\u2026"
     },
     {
       "name": "Verification Before Completion",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/verification-before-completion-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before ma…"
+      "description": "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before ma\u2026"
     },
     {
       "name": "Writing Plans",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/writing-plans-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "Use when design is complete and you need detailed implementation tasks for engineers with zero codebase context - creates comprehensive implementation plans with exact file paths, comp…"
+      "description": "Use when design is complete and you need detailed implementation tasks for engineers with zero codebase context - creates comprehensive implementation plans with exact file paths, comp\u2026"
     },
     {
       "name": "Git Pushing",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/git-pushing-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "git-pushing: Stage, commit, and push git changes with conventional commit messages. Use when user wants to commit and push changes, mentions pushing to remote, or asks to save and push their work. Al…"
+      "description": "git-pushing: Stage, commit, and push git changes with conventional commit messages. Use when user wants to commit and push changes, mentions pushing to remote, or asks to save and push their work. Al\u2026"
     },
     {
       "name": "Review Implementing",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/review-implementing-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "review-implementing: Process and implement code review feedback systematically. Use when user provides reviewer comments, PR feedback, code review notes, or asks to implement suggestions from reviews…"
+      "description": "review-implementing: Process and implement code review feedback systematically. Use when user provides reviewer comments, PR feedback, code review notes, or asks to implement suggestions from reviews\u2026"
     },
     {
       "name": "Using Tmux for Interactive Commands",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/using-tmux-for-interactive-commands-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "using-tmux-for-interactive-commands: Use when you need to run interactive CLI tools (vim, git rebase -i, Python REPL, etc.) that require real-time input/output - provides tmux-based approach for cont…"
+      "description": "using-tmux-for-interactive-commands: Use when you need to run interactive CLI tools (vim, git rebase -i, Python REPL, etc.) that require real-time input/output - provides tmux-based approach for cont\u2026"
     },
     {
       "name": "AWS CDK Development",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/aws-cdk-development-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "aws-cdk-development: This skill provides AWS CDK best practices, workflows, and patterns for building cloud infrastructure. Use this skill when working with AWS CDK constructs, stacks, or infrastruct…"
+      "description": "aws-cdk-development: This skill provides AWS CDK best practices, workflows, and patterns for building cloud infrastructure. Use this skill when working with AWS CDK constructs, stacks, or infrastruct\u2026"
     },
     {
       "name": "Move Code Quality",
       "url": "https://agentskills.so/agent-skills/core-development-workflow/move-code-quality-agent-skill",
       "category": "Core Development & Workflow",
-      "description": "move-code-quality: Analyzes Move language packages against the official Move Book Code Quality Checklist. Use this skill when reviewing Move code, checking Move 2024 Edition compliance, or analyzing…"
+      "description": "move-code-quality: Analyzes Move language packages against the official Move Book Code Quality Checklist. Use this skill when reviewing Move code, checking Move 2024 Edition compliance, or analyzing\u2026"
     },
     {
       "name": "DOCX Document Handler",
       "url": "https://agentskills.so/agent-skills/document-file-processing/docx-document-handler-agent-skill",
       "category": "Document & File Processing",
-      "description": "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. When Claude needs to work with…"
+      "description": "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. When Claude needs to work with\u2026"
     },
     {
       "name": "PDF Handler",
       "url": "https://agentskills.so/agent-skills/document-file-processing/pdf-handler-agent-skill",
       "category": "Document & File Processing",
-      "description": "Comprehensive PDF manipulation toolkit for extracting text and tables, creating new PDFs, merging/splitting documents, and handling forms. When Claude needs to fill in a PDF form or prog…"
+      "description": "Comprehensive PDF manipulation toolkit for extracting text and tables, creating new PDFs, merging/splitting documents, and handling forms. When Claude needs to fill in a PDF form or prog\u2026"
     },
     {
       "name": "PPTX Presentation Handler",
       "url": "https://agentskills.so/agent-skills/document-file-processing/pptx-presentation-handler-agent-skill",
       "category": "Document & File Processing",
-      "description": "Presentation creation, editing, and analysis. When Claude needs to work with presentations (.pptx files) for: (1) Creating new presentations, (2) Modifying or editing conte…"
+      "description": "Presentation creation, editing, and analysis. When Claude needs to work with presentations (.pptx files) for: (1) Creating new presentations, (2) Modifying or editing conte\u2026"
     },
     {
       "name": "XLSX Spreadsheet Handler",
       "url": "https://agentskills.so/agent-skills/document-file-processing/xlsx-spreadsheet-handler-agent-skill",
       "category": "Document & File Processing",
-      "description": "Comprehensive spreadsheet creation, editing, and analysis with support for formulas, formatting, data analysis, and visualization. When Claude needs to work with spreadsheet…"
+      "description": "Comprehensive spreadsheet creation, editing, and analysis with support for formulas, formatting, data analysis, and visualization. When Claude needs to work with spreadsheet\u2026"
     },
     {
       "name": "Invoice Organizer",
       "url": "https://agentskills.so/agent-skills/document-file-processing/invoice-organizer-agent-skill",
       "category": "Document & File Processing",
-      "description": "invoice-organizer: Automatically organizes invoices and receipts for tax preparation by reading messy files, extracting key information, renaming them consistently, and sorting them into logical fold…"
+      "description": "invoice-organizer: Automatically organizes invoices and receipts for tax preparation by reading messy files, extracting key information, renaming them consistently, and sorting them into logical fold\u2026"
     },
     {
       "name": "File Organizer",
       "url": "https://agentskills.so/agent-skills/document-file-processing/file-organizer-agent-skill",
       "category": "Document & File Processing",
-      "description": "file-organizer: Intelligently organizes your files and folders across your computer by understanding context, finding duplicates, suggesting better structures, and automating cleanup tasks. Reduces c…"
+      "description": "file-organizer: Intelligently organizes your files and folders across your computer by understanding context, finding duplicates, suggesting better structures, and automating cleanup tasks. Reduces c\u2026"
     },
     {
       "name": "Article Extractor",
       "url": "https://agentskills.so/agent-skills/document-file-processing/article-extractor-agent-skill",
       "category": "Document & File Processing",
-      "description": "article-extractor: Extract clean article content from URLs (blog posts, articles, tutorials) and save as readable text. Use when user wants to download, extract, or save an article/blog post from a U…"
+      "description": "article-extractor: Extract clean article content from URLs (blog posts, articles, tutorials) and save as readable text. Use when user wants to download, extract, or save an article/blog post from a U\u2026"
     },
     {
       "name": "Markdown to EPUB Converter",
@@ -364,31 +364,31 @@
       "name": "Web App Testing",
       "url": "https://agentskills.so/agent-skills/testing-quality-assurance/web-app-testing-agent-skill",
       "category": "Testing & QA",
-      "description": "Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and…"
+      "description": "Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and\u2026"
     },
     {
       "name": "Test Driven Development",
       "url": "https://agentskills.so/agent-skills/testing-quality-assurance/test-driven-development-agent-skill",
       "category": "Testing & QA",
-      "description": "Test-Driven Development: Use when implementing any feature or bugfix, before writing implementation code - write the test first, watch it fail, write minimal code to pass; ensures tests actually veri…"
+      "description": "Test-Driven Development: Use when implementing any feature or bugfix, before writing implementation code - write the test first, watch it fail, write minimal code to pass; ensures tests actually veri\u2026"
     },
     {
       "name": "Condition Based Waiting",
       "url": "https://agentskills.so/agent-skills/testing-quality-assurance/condition-based-waiting-agent-skill",
       "category": "Testing & QA",
-      "description": "Condition-Based Waiting: Use when tests have race conditions, timing dependencies, or inconsistent pass/fail behavior - replaces arbitrary timeouts with condition polling to wait for actual state cha…"
+      "description": "Condition-Based Waiting: Use when tests have race conditions, timing dependencies, or inconsistent pass/fail behavior - replaces arbitrary timeouts with condition polling to wait for actual state cha\u2026"
     },
     {
       "name": "Requesting Code Review",
       "url": "https://agentskills.so/agent-skills/testing-quality-assurance/requesting-code-review-agent-skill",
       "category": "Testing & QA",
-      "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements - dispatches superpowers:code-reviewer subagent to review implement…"
+      "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements - dispatches superpowers:code-reviewer subagent to review implement\u2026"
     },
     {
       "name": "Testing Anti-Patterns",
       "url": "https://agentskills.so/agent-skills/testing-quality-assurance/testing-anti-patterns-agent-skill",
       "category": "Testing & QA",
-      "description": "Use when writing or changing tests, adding mocks, or tempted to add test-only methods to production code - prevents testing mock behavior, production pollution with test-only m…"
+      "description": "Use when writing or changing tests, adding mocks, or tempted to add test-only methods to production code - prevents testing mock behavior, production pollution with test-only m\u2026"
     },
     {
       "name": "FFUF Web Fuzzing",
@@ -400,13 +400,13 @@
       "name": "Test Fixing",
       "url": "https://agentskills.so/agent-skills/testing-quality-assurance/test-fixing-agent-skill",
       "category": "Testing & QA",
-      "description": "test-fixing: Run tests and systematically fix all failing tests using smart error grouping. Use when user asks to fix failing tests, mentions test failures, runs test suite and failures occur, or req…"
+      "description": "test-fixing: Run tests and systematically fix all failing tests using smart error grouping. Use when user asks to fix failing tests, mentions test failures, runs test suite and failures occur, or req\u2026"
     },
     {
       "name": "PICT Test Designer",
       "url": "https://agentskills.so/agent-skills/testing-quality-assurance/pict-test-designer-agent-skill",
       "category": "Testing & QA",
-      "description": "pict-test-designer: Design comprehensive test cases using PICT (Pairwise Independent Combinatorial Testing) for any piece of requirements or code. Analyzes inputs, generates PICT models with paramete…"
+      "description": "pict-test-designer: Design comprehensive test cases using PICT (Pairwise Independent Combinatorial Testing) for any piece of requirements or code. Analyzes inputs, generates PICT models with paramete\u2026"
     },
     {
       "name": "Dask",
@@ -424,7 +424,7 @@
       "name": "PyTorch Lightning",
       "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/pytorch-lightning-agent-skill",
       "category": "Core Libraries & Frameworks",
-      "description": "pytorch-lightning: Deep learning framework (PyTorch Lightning). Organize PyTorch code into LightningModules, configure Trainers for multi-GPU/TPU, implement data pipelines, callbacks, logging (W&B, T…"
+      "description": "pytorch-lightning: Deep learning framework (PyTorch Lightning). Organize PyTorch code into LightningModules, configure Trainers for multi-GPU/TPU, implement data pipelines, callbacks, logging (W&B, T\u2026"
     },
     {
       "name": "Torch Geometric",
@@ -436,7 +436,7 @@
       "name": "Transformers",
       "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/transformers-agent-skill",
       "category": "Core Libraries & Frameworks",
-      "description": "transformers: Work with state-of-the-art machine learning models for NLP, computer vision, audio, and multimodal tasks using HuggingFace Transformers. This skill should be used when fine-tuning pre-t…"
+      "description": "transformers: Work with state-of-the-art machine learning models for NLP, computer vision, audio, and multimodal tasks using HuggingFace Transformers. This skill should be used when fine-tuning pre-t\u2026"
     },
     {
       "name": "Zarr Python",
@@ -460,13 +460,13 @@
       "name": "Exploratory Data Analysis",
       "url": "https://agentskills.so/agent-skills/data-analysis-visualization/exploratory-data-analysis-agent-skill",
       "category": "Data Analysis & Visualization",
-      "description": "exploratory-data-analysis: EDA toolkit. Analyze CSV/Excel/JSON/Parquet files, statistical summaries, distributions, correlations, outliers, missing data, visualizations, markdown reports, for data pr…"
+      "description": "exploratory-data-analysis: EDA toolkit. Analyze CSV/Excel/JSON/Parquet files, statistical summaries, distributions, correlations, outliers, missing data, visualizations, markdown reports, for data pr\u2026"
     },
     {
       "name": "Scientific Visualization",
       "url": "https://agentskills.so/agent-skills/data-analysis-visualization/scientific-visualization-agent-skill",
       "category": "Data Analysis & Visualization",
-      "description": "scientific-visualization: Create publication figures with matplotlib/seaborn/plotly. Multi-panel layouts, error bars, significance markers, colorblind-safe, export PDF/EPS/TIFF, for journal-ready sci…"
+      "description": "scientific-visualization: Create publication figures with matplotlib/seaborn/plotly. Multi-panel layouts, error bars, significance markers, colorblind-safe, export PDF/EPS/TIFF, for journal-ready sci\u2026"
     },
     {
       "name": "CSV Data Summarizer",
@@ -478,37 +478,37 @@
       "name": "Skill Creator",
       "url": "https://agentskills.so/agent-skills/skill-creation-management/skill-creator-agent-skill",
       "category": "Skill Creation & Management",
-      "description": "Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with speciali…"
+      "description": "Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with speciali\u2026"
     },
     {
       "name": "Theme Factory",
       "url": "https://agentskills.so/agent-skills/skill-creation-management/theme-factory-agent-skill",
       "category": "Skill Creation & Management",
-      "description": "Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. There are 10 pre-set themes with colors/fonts that you can apply t…"
+      "description": "Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. There are 10 pre-set themes with colors/fonts that you can apply t\u2026"
     },
     {
       "name": "Testing Skills with Subagents",
       "url": "https://agentskills.so/agent-skills/skill-creation-management/testing-skills-with-subagents-agent-skill",
       "category": "Skill Creation & Management",
-      "description": "Use when creating or editing skills, before deployment, to verify they work under pressure and resist rationalization - applies RED-GREEN-REFACTOR cycle to process docu…"
+      "description": "Use when creating or editing skills, before deployment, to verify they work under pressure and resist rationalization - applies RED-GREEN-REFACTOR cycle to process docu\u2026"
     },
     {
       "name": "Writing Skills",
       "url": "https://agentskills.so/agent-skills/skill-creation-management/writing-skills-agent-skill",
       "category": "Skill Creation & Management",
-      "description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment - applies TDD to process documentation by testing with subagents before writing, iter…"
+      "description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment - applies TDD to process documentation by testing with subagents before writing, iter\u2026"
     },
     {
       "name": "Skill Customizer",
       "url": "https://agentskills.so/agent-skills/skill-creation-management/skill-customizer-agent-skill",
       "category": "Skill Creation & Management",
-      "description": "skill-customizer: Customize existing skills through iterative improvement based on user feedback and preferences. Use when users want to personalize a skill to match their specific workflow, output p…"
+      "description": "skill-customizer: Customize existing skills through iterative improvement based on user feedback and preferences. Use when users want to personalize a skill to match their specific workflow, output p\u2026"
     },
     {
       "name": "Slack GIF Creator",
       "url": "https://agentskills.so/agent-skills/image-video-processing/slack-gif-creator-agent-skill",
       "category": "Image & Video Processing",
-      "description": "Toolkit for creating animated GIFs optimized for Slack, with validators for size constraints and composable animation primitives. This skill applies when users request animated GIF…"
+      "description": "Toolkit for creating animated GIFs optimized for Slack, with validators for size constraints and composable animation primitives. This skill applies when users request animated GIF\u2026"
     },
     {
       "name": "Video Downloader",
@@ -520,43 +520,43 @@
       "name": "Image Enhancer",
       "url": "https://agentskills.so/agent-skills/image-video-processing/image-enhancer-agent-skill",
       "category": "Image & Video Processing",
-      "description": "image-enhancer: Improves the quality of images, especially screenshots, by enhancing resolution, sharpness, and clarity. Perfect for preparing images for presentations, documentation, or social media…"
+      "description": "image-enhancer: Improves the quality of images, especially screenshots, by enhancing resolution, sharpness, and clarity. Perfect for preparing images for presentations, documentation, or social media\u2026"
     },
     {
       "name": "YouTube Transcript",
       "url": "https://agentskills.so/agent-skills/image-video-processing/youtube-transcript-agent-skill",
       "category": "Image & Video Processing",
-      "description": "youtube-transcript: Download YouTube video transcripts when user provides a YouTube URL or asks to download/get/fetch a transcript from YouTube. Also use when user wants to transcribe or get captions…"
+      "description": "youtube-transcript: Download YouTube video transcripts when user provides a YouTube URL or asks to download/get/fetch a transcript from YouTube. Also use when user wants to transcribe or get captions\u2026"
     },
     {
       "name": "Brand Guidelines",
       "url": "https://agentskills.so/agent-skills/agent-skill-development/brand-guidelines-agent-skill",
       "category": "Agent & Skill Development",
-      "description": "Applies Anthropic's official brand colors and typography to any sort of artifact that may benefit from having Anthropic's look-and-feel. Use it when brand colors or style…"
+      "description": "Applies Anthropic's official brand colors and typography to any sort of artifact that may benefit from having Anthropic's look-and-feel. Use it when brand colors or style\u2026"
     },
     {
       "name": "Artifacts Builder",
       "url": "https://agentskills.so/agent-skills/agent-skill-development/artifacts-builder-agent-skill",
       "category": "Agent & Skill Development",
-      "description": "Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies (React, Tailwind CSS, shadcn/ui). Use for complex artifacts r…"
+      "description": "Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies (React, Tailwind CSS, shadcn/ui). Use for complex artifacts r\u2026"
     },
     {
       "name": "MCP Builder",
       "url": "https://agentskills.so/agent-skills/agent-skill-development/mcp-builder-agent-skill",
       "category": "Agent & Skill Development",
-      "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to int…"
+      "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to int\u2026"
     },
     {
       "name": "Ship Learn Next",
       "url": "https://agentskills.so/agent-skills/agent-skill-development/ship-learn-next-agent-skill",
       "category": "Agent & Skill Development",
-      "description": "ship-learn-next: Transform learning content (like YouTube transcripts, articles, tutorials) into actionable implementation plans using the Ship-Learn-Next framework. Use when user wants to turn advic…"
+      "description": "ship-learn-next: Transform learning content (like YouTube transcripts, articles, tutorials) into actionable implementation plans using the Ship-Learn-Next framework. Use when user wants to turn advic\u2026"
     },
     {
       "name": "Using Superpowers",
       "url": "https://agentskills.so/agent-skills/core-agent-behavior-workflow/using-superpowers-agent-skill",
       "category": "Core Agent Behavior & Workflow",
-      "description": "Use when starting any conversation - establishes mandatory workflows for finding and using skills, including using Read tool before announcing usage, following brainstorming before…"
+      "description": "Use when starting any conversation - establishes mandatory workflows for finding and using skills, including using Read tool before announcing usage, following brainstorming before\u2026"
     },
     {
       "name": "Context Initialization",
@@ -617,6 +617,48 @@
       "url": "https://github.com/eugenepyvovarov/mcpbundler-agent-skills-marketplace",
       "category": "Agent Skills (GitHub)",
       "description": "agent skills marketplace for mcp bundler(can be used with other ai tools with support of agent skills markeplaces). some skills are mine, also borrowed skills(credited to authors)"
+    },
+    {
+      "name": "Remotion Best Practices",
+      "url": "https://skills.sh/trending/remotion-dev",
+      "source": "skills.sh",
+      "category": "Core Development & Workflow",
+      "description": "Programmatic video creation with React using the Remotion framework \u2014 motion graphics, animations, and video exports."
+    },
+    {
+      "name": "Mastra AI Framework",
+      "url": "https://skills.sh/trending/mastra-ai",
+      "source": "skills.sh",
+      "category": "Agent & Skill Development",
+      "description": "Official a16z-backed TypeScript agent framework for building AI workflows, tools, and multi-agent pipelines."
+    },
+    {
+      "name": "Content Repurposing",
+      "url": "https://skills.sh/trending/inference-sh-4",
+      "source": "skills.sh",
+      "category": "Language & Content Generation",
+      "description": "Repurpose content across multiple channels and formats \u2014 from blog posts to social, newsletters, and more."
+    },
+    {
+      "name": "AI Avatar Video",
+      "url": "https://skills.sh/trending/inference-sh-4",
+      "source": "skills.sh",
+      "category": "Image & Video Processing",
+      "description": "Generate talking avatar videos from text or audio using AI \u2014 ideal for tutorials, explainers, and marketing."
+    },
+    {
+      "name": "AI Podcast Creation",
+      "url": "https://skills.sh/trending/inference-sh-4",
+      "source": "skills.sh",
+      "category": "Language & Content Generation",
+      "description": "Full podcast production workflow with AI \u2014 script, voice synthesis, intro/outro, and audio export."
+    },
+    {
+      "name": "AI Marketing Videos",
+      "url": "https://skills.sh/trending/inference-sh-4",
+      "source": "skills.sh",
+      "category": "Image & Video Processing",
+      "description": "Create marketing and promo videos with AI \u2014 voiceover, captions, scenes, and export-ready output."
     }
   ],
   "plugins": [
@@ -624,25 +666,25 @@
       "name": "agent-sdk-dev",
       "url": "https://github.com/anthropics/claude-code/tree/main/plugins/agent-sdk-dev",
       "source": "claude-code",
-      "description": "A comprehensive plugin for creating and verifying Claude Agent SDK applications in Python and TypeScript. The Agent SDK Development Plugin streamlines the entire lifecycle of building Agent SDK appli…"
+      "description": "A comprehensive plugin for creating and verifying Claude Agent SDK applications in Python and TypeScript. The Agent SDK Development Plugin streamlines the entire lifecycle of building Agent SDK appli\u2026"
     },
     {
       "name": "claude-opus-4-5-migration",
       "url": "https://github.com/anthropics/claude-code/tree/main/plugins/claude-opus-4-5-migration",
       "source": "claude-code",
-      "description": "Migrate your code and prompts from Sonnet 4.x and Opus 4.1 to Opus 4.5. This skill updates your code and prompts to be compatible with Opus 4.5. It automates the migration process, handling model str…"
+      "description": "Migrate your code and prompts from Sonnet 4.x and Opus 4.1 to Opus 4.5. This skill updates your code and prompts to be compatible with Opus 4.5. It automates the migration process, handling model str\u2026"
     },
     {
       "name": "code-review",
       "url": "https://github.com/anthropics/claude-code/tree/main/plugins/code-review",
       "source": "claude-code",
-      "description": "Automated code review for pull requests using multiple specialized agents with confidence-based scoring to filter false positives. The Code Review Plugin automates pull request review by launching mu…"
+      "description": "Automated code review for pull requests using multiple specialized agents with confidence-based scoring to filter false positives. The Code Review Plugin automates pull request review by launching mu\u2026"
     },
     {
       "name": "commit-commands",
       "url": "https://github.com/anthropics/claude-code/tree/main/plugins/commit-commands",
       "source": "claude-code",
-      "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests. The Commit Commands Plugin automates common git operations, reducing context switching and manua…"
+      "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests. The Commit Commands Plugin automates common git operations, reducing context switching and manua\u2026"
     },
     {
       "name": "explanatory-output-style",
@@ -654,43 +696,43 @@
       "name": "feature-dev",
       "url": "https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev",
       "source": "claude-code",
-      "description": "A comprehensive, structured workflow for feature development with specialized agents for codebase exploration, architecture design, and quality review. The Feature Development Plugin provides a syste…"
+      "description": "A comprehensive, structured workflow for feature development with specialized agents for codebase exploration, architecture design, and quality review. The Feature Development Plugin provides a syste\u2026"
     },
     {
       "name": "frontend-design",
       "url": "https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design",
       "source": "claude-code",
-      "description": "Generates distinctive, production-grade frontend interfaces that avoid generic AI aesthetics. Claude automatically uses this skill for frontend work. Creates production-ready code with: - Bold aesthe…"
+      "description": "Generates distinctive, production-grade frontend interfaces that avoid generic AI aesthetics. Claude automatically uses this skill for frontend work. Creates production-ready code with: - Bold aesthe\u2026"
     },
     {
       "name": "hookify",
       "url": "https://github.com/anthropics/claude-code/tree/main/plugins/hookify",
       "source": "claude-code",
-      "description": "Easily create custom hooks to prevent unwanted behaviors by analyzing conversation patterns or from explicit instructions. The hookify plugin makes it simple to create hooks without editing complex `…"
+      "description": "Easily create custom hooks to prevent unwanted behaviors by analyzing conversation patterns or from explicit instructions. The hookify plugin makes it simple to create hooks without editing complex `\u2026"
     },
     {
       "name": "learning-output-style",
       "url": "https://github.com/anthropics/claude-code/tree/main/plugins/learning-output-style",
       "source": "claude-code",
-      "description": "This plugin combines the unshipped Learning output style with explanatory functionality as a SessionStart hook. **Note:** This plugin differs from the original unshipped Learning output style by also…"
+      "description": "This plugin combines the unshipped Learning output style with explanatory functionality as a SessionStart hook. **Note:** This plugin differs from the original unshipped Learning output style by also\u2026"
     },
     {
       "name": "plugin-dev",
       "url": "https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev",
       "source": "claude-code",
-      "description": "A comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks, MCP integration, plugin structure, and marketplace publishing. The plugin-dev toolkit provides seven speciali…"
+      "description": "A comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks, MCP integration, plugin structure, and marketplace publishing. The plugin-dev toolkit provides seven speciali\u2026"
     },
     {
       "name": "pr-review-toolkit",
       "url": "https://github.com/anthropics/claude-code/tree/main/plugins/pr-review-toolkit",
       "source": "claude-code",
-      "description": "A comprehensive collection of specialized agents for thorough pull request review, covering code comments, test coverage, error handling, type design, code quality, and code simplification. This plug…"
+      "description": "A comprehensive collection of specialized agents for thorough pull request review, covering code comments, test coverage, error handling, type design, code quality, and code simplification. This plug\u2026"
     },
     {
       "name": "ralph-wiggum",
       "url": "https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum",
       "source": "claude-code",
-      "description": "Implementation of the Ralph Wiggum technique for iterative, self-referential AI development loops in Claude Code. Ralph is a development methodology based on continuous AI agent loops. As Geoffrey Hu…"
+      "description": "Implementation of the Ralph Wiggum technique for iterative, self-referential AI development loops in Claude Code. Ralph is a development methodology based on continuous AI agent loops. As Geoffrey Hu\u2026"
     },
     {
       "name": "security-guidance",
@@ -794,13 +836,37 @@
       "name": "CodeRabbit",
       "url": "https://theresanaiforthat.com/ai/coderabbit/",
       "source": "theresanaiforthat",
-      "description": "Supercharge your entire team with AI-driven contextual feedback on the Pull requests. CodeRabbit provides instant PR summaries, intelligent code walkthroughs, and 1-click commit suggestions. It avoid…"
+      "description": "Supercharge your entire team with AI-driven contextual feedback on the Pull requests. CodeRabbit provides instant PR summaries, intelligent code walkthroughs, and 1-click commit suggestions. It avoid\u2026"
     },
     {
       "name": "Akkio (no-code ML)",
       "url": "https://www.futurepedia.io/tool/akkio",
       "source": "futurepedia",
       "description": "Transform data into predictive power effortlessly, no coding needed."
+    },
+    {
+      "name": "Heroku MCP Server",
+      "url": "https://www.npmjs.com/package/@heroku/mcp-server",
+      "source": "npm",
+      "description": "Official Salesforce/Heroku MCP server for managing apps, dynos, add-ons, and deployments via natural language."
+    },
+    {
+      "name": "Apify Actors MCP",
+      "url": "https://www.npmjs.com/package/@apify/actors-mcp-server",
+      "source": "npm",
+      "description": "Run 4,000+ Apify web scrapers and automation Actors directly from your AI agent via MCP."
+    },
+    {
+      "name": "Dynatrace MCP",
+      "url": "https://www.npmjs.com/package/@dynatrace-oss/dynatrace-mcp-server",
+      "source": "npm",
+      "description": "AI-powered observability \u2014 query Dynatrace metrics, problems, and traces via natural language MCP interface."
+    },
+    {
+      "name": "Datadog MCP",
+      "url": "https://www.npmjs.com/package/@winor30/mcp-server-datadog",
+      "source": "npm",
+      "description": "Access Datadog metrics, monitors, dashboards, and incidents directly from AI agents via MCP."
     }
   ],
   "models": [
@@ -826,7 +892,7 @@
       "context": "205K",
       "pricing": "$0.30/$2.55 per M tokens",
       "source": "openrouter",
-      "description": "GLM-5 is Z.ai’s flagship open-source foundation model engineered for complex systems design and long-horizon agent workflows. Run GLM 5 with API"
+      "description": "GLM-5 is Z.ai\u2019s flagship open-source foundation model engineered for complex systems design and long-horizon agent workflows. Run GLM 5 with API"
     },
     {
       "name": "Gemini 3 Flash Preview",
@@ -834,7 +900,7 @@
       "context": "1.05M",
       "pricing": "$0.50/$3.00 per M tokens",
       "source": "openrouter",
-      "description": "Gemini 3 Flash Preview is a high speed, high value thinking model designed for agentic workflows, multi turn chat, and coding assistance. It delivers near Pro level reasoning and tool use performance…"
+      "description": "Gemini 3 Flash Preview is a high speed, high value thinking model designed for agentic workflows, multi turn chat, and coding assistance. It delivers near Pro level reasoning and tool use performance\u2026"
     },
     {
       "name": "DeepSeek-V3.2",
@@ -850,7 +916,7 @@
       "context": "1M",
       "pricing": "$3/$15 per M tokens",
       "source": "openrouter",
-      "description": "Claude Sonnet 4.5 is Anthropic’s most advanced Sonnet model to date, optimized for real-world agents and coding workflows. Run Claude Sonnet 4.5 with API"
+      "description": "Claude Sonnet 4.5 is Anthropic\u2019s most advanced Sonnet model to date, optimized for real-world agents and coding workflows. Run Claude Sonnet 4.5 with API"
     },
     {
       "name": "Claude Opus 4.6",
@@ -858,7 +924,7 @@
       "context": "1M",
       "pricing": "$5/$25 per M tokens",
       "source": "openrouter",
-      "description": "Opus 4.6 is Anthropic’s strongest model for coding and long-running professional tasks. Run Claude Opus 4.6 with API"
+      "description": "Opus 4.6 is Anthropic\u2019s strongest model for coding and long-running professional tasks. Run Claude Opus 4.6 with API"
     },
     {
       "name": "Grok 4.1 Fast",
@@ -874,7 +940,7 @@
       "context": "131K",
       "pricing": "Free",
       "source": "openrouter",
-      "description": "Trinity-Large-Preview is a frontier-scale open-weight language model from Arcee, built as a 400B-parameter sparse Mixture-of-Experts with 13B active parameters per token using 4-of-256 expert routing…"
+      "description": "Trinity-Large-Preview is a frontier-scale open-weight language model from Arcee, built as a 400B-parameter sparse Mixture-of-Experts with 13B active parameters per token using 4-of-256 expert routing\u2026"
     },
     {
       "name": "Gemini 2.5 Flash",
@@ -919,6 +985,30 @@
       "url": "https://huggingface.co/zai-org/GLM-5",
       "source": "huggingface",
       "description": "GLM-5 open-source foundation model by Z.ai (MIT license). Supports 205K context, complex reasoning, multi-step tool use, and multilingual tasks."
+    },
+    {
+      "name": "NVIDIA Personaplex 7B",
+      "url": "https://huggingface.co/nvidia/personaplex-7b-v1",
+      "source": "huggingface",
+      "description": "NVIDIA's 7B voice/audio-to-audio model for persona-consistent speech synthesis and real-time voice conversion."
+    },
+    {
+      "name": "Mistral Voxtral-Mini-4B",
+      "url": "https://huggingface.co/mistralai/Voxtral-Mini-4B",
+      "source": "huggingface",
+      "description": "Mistral's 4B real-time speech recognition model \u2014 multilingual, low-latency, released Feb 2026."
+    },
+    {
+      "name": "MiniCPM-o-4.5",
+      "url": "https://huggingface.co/openbmb/MiniCPM-o-4_5",
+      "source": "huggingface",
+      "description": "OpenBMB's 9.3B any-to-any multimodal model \u2014 text, image, audio, and video understanding in one."
+    },
+    {
+      "name": "GLM-OCR",
+      "url": "https://huggingface.co/zai-org/GLM-OCR",
+      "source": "huggingface",
+      "description": "Z.ai's document intelligence model \u2014 1M+ downloads, handles complex OCR, tables, and structured extraction."
     }
   ],
   "recipes": [
@@ -932,7 +1022,7 @@
       "name": "Build Your First AI Agent",
       "url": "https://n8n.io/workflows/6270",
       "source": "n8n",
-      "description": "How it works This template launches your very first AI Agent —an AI-powered chatbot that can do more than just talk— it can take action using tools. Think..."
+      "description": "How it works This template launches your very first AI Agent \u2014an AI-powered chatbot that can do more than just talk\u2014 it can take action using tools. Think..."
     },
     {
       "name": "Interactive AI Agent with Chat Interface and Multiple Tools",
@@ -956,13 +1046,13 @@
       "name": "Jarvis: Productivity AI Agent (Tasks, Calendar, Email, MCPs)",
       "url": "https://n8n.io/workflows/8500",
       "source": "n8n",
-      "description": "Who’s it forThis template is designed for anyone who wants to use Telegram as a personal AI assistant hub. If you often juggle tasks, emails, calendars, and..."
+      "description": "Who\u2019s it forThis template is designed for anyone who wants to use Telegram as a personal AI assistant hub. If you often juggle tasks, emails, calendars, and..."
     },
     {
       "name": "Auto-Create TikTok Videos with AI Avatars, ElevenLabs & GPT-4",
       "url": "https://n8n.io/workflows/10000",
       "source": "n8n",
-      "description": "💥 Viral TikTok Video Machine: Auto-Create Videos with Your AI Avatar Workflow Overview 🎯 Who is this for?This workflow is for content creators, marketers,..."
+      "description": "\ud83d\udca5 Viral TikTok Video Machine: Auto-Create Videos with Your AI Avatar Workflow Overview \ud83c\udfaf Who is this for?This workflow is for content creators, marketers,..."
     }
   ],
   "knowledge": [
@@ -1012,7 +1102,7 @@
       "name": "Langchain-Chatchat (local KB + RAG)",
       "url": "https://github.com/chatchat-space/Langchain-Chatchat",
       "source": "github",
-      "description": "Langchain-Chatchat（原Langchain-ChatGLM）基于 Langchain 与 ChatGLM, Qwen 与 Llama 等语言模型的 RAG 与 Agent 应用 | Langchain-Chatchat (formerly langchain-ChatGLM), local knowledge based LLM (like ChatGLM, Qwen and L…"
+      "description": "Langchain-Chatchat\uff08\u539fLangchain-ChatGLM\uff09\u57fa\u4e8e Langchain \u4e0e ChatGLM, Qwen \u4e0e Llama \u7b49\u8bed\u8a00\u6a21\u578b\u7684 RAG \u4e0e Agent \u5e94\u7528 | Langchain-Chatchat (formerly langchain-ChatGLM), local knowledge based LLM (like ChatGLM, Qwen and L\u2026"
     },
     {
       "name": "t2-ragbench (23k+ rows)",

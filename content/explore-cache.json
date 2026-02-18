@@ -144,19 +144,31 @@
     { "name": "Akkio (no-code ML)", "url": "https://www.futurepedia.io/tool/akkio", "source": "futurepedia" }
   ],
   "models": [
-    { "name": "MiniMax-M2.5", "url": "https://openrouter.ai/minimax/minimax-m2.5", "context": "197K", "pricing": "$0.30/$1.10 per M tokens" },
-    { "name": "Kimi K2.5", "url": "https://openrouter.ai/moonshotai/kimi-k2.5", "context": "262K", "pricing": "$0.23/$3.00 per M tokens" },
-    { "name": "GLM-5 (Z.ai)", "url": "https://openrouter.ai/z-ai/glm-5", "context": "205K", "pricing": "$0.30/$2.55 per M tokens" },
-    { "name": "Gemini 3 Flash Preview", "url": "https://openrouter.ai/google/gemini-3-flash-preview", "context": "1.05M", "pricing": "$0.50/$3.00 per M tokens" },
-    { "name": "DeepSeek-V3.2", "url": "https://openrouter.ai/deepseek/deepseek-v3.2", "context": "164K", "pricing": "$0.26/$0.38 per M tokens" },
-    { "name": "Claude Sonnet 4.5", "url": "https://openrouter.ai/anthropic/claude-sonnet-4.5", "context": "1M", "pricing": "$3/$15 per M tokens" },
-    { "name": "Claude Opus 4.6", "url": "https://openrouter.ai/anthropic/claude-opus-4.6", "context": "1M", "pricing": "$5/$25 per M tokens" },
-    { "name": "Grok 4.1 Fast", "url": "https://openrouter.ai/x-ai/grok-4.1-fast", "context": "2M", "pricing": "$0.20/$0.50 per M tokens" },
-    { "name": "Trinity-Large-Preview (FREE)", "url": "https://openrouter.ai/arcee-ai/trinity-large-preview:free", "context": "131K", "pricing": "Free" },
-    { "name": "Gemini 2.5 Flash", "url": "https://openrouter.ai/google/gemini-2.5-flash", "context": "1.05M", "pricing": "$0.30/$2.50 per M tokens" }
+    { "name": "MiniMax-M2.5", "url": "https://openrouter.ai/minimax/minimax-m2.5", "context": "197K", "pricing": "$0.30/$1.10 per M tokens", "source": "openrouter" },
+    { "name": "Kimi K2.5", "url": "https://openrouter.ai/moonshotai/kimi-k2.5", "context": "262K", "pricing": "$0.23/$3.00 per M tokens", "source": "openrouter" },
+    { "name": "GLM-5 (Z.ai)", "url": "https://openrouter.ai/z-ai/glm-5", "context": "205K", "pricing": "$0.30/$2.55 per M tokens", "source": "openrouter" },
+    { "name": "Gemini 3 Flash Preview", "url": "https://openrouter.ai/google/gemini-3-flash-preview", "context": "1.05M", "pricing": "$0.50/$3.00 per M tokens", "source": "openrouter" },
+    { "name": "DeepSeek-V3.2", "url": "https://openrouter.ai/deepseek/deepseek-v3.2", "context": "164K", "pricing": "$0.26/$0.38 per M tokens", "source": "openrouter" },
+    { "name": "Claude Sonnet 4.5", "url": "https://openrouter.ai/anthropic/claude-sonnet-4.5", "context": "1M", "pricing": "$3/$15 per M tokens", "source": "openrouter" },
+    { "name": "Claude Opus 4.6", "url": "https://openrouter.ai/anthropic/claude-opus-4.6", "context": "1M", "pricing": "$5/$25 per M tokens", "source": "openrouter" },
+    { "name": "Grok 4.1 Fast", "url": "https://openrouter.ai/x-ai/grok-4.1-fast", "context": "2M", "pricing": "$0.20/$0.50 per M tokens", "source": "openrouter" },
+    { "name": "Trinity-Large-Preview (FREE)", "url": "https://openrouter.ai/arcee-ai/trinity-large-preview:free", "context": "131K", "pricing": "Free", "source": "openrouter" },
+    { "name": "Gemini 2.5 Flash", "url": "https://openrouter.ai/google/gemini-2.5-flash", "context": "1.05M", "pricing": "$0.30/$2.50 per M tokens", "source": "openrouter" },
+    { "name": "Llama 3.1 (Meta, 110M pulls)", "url": "https://ollama.com/library/llama3.1", "source": "ollama" },
+    { "name": "DeepSeek-R1 (reasoning, 78M pulls)", "url": "https://ollama.com/library/deepseek-r1", "source": "ollama" },
+    { "name": "Gemma 3 (Google, 32M pulls)", "url": "https://ollama.com/library/gemma3", "source": "ollama" },
+    { "name": "Mistral 7B (25M pulls)", "url": "https://ollama.com/library/mistral", "source": "ollama" },
+    { "name": "Qwen2.5 (Alibaba, 21M pulls)", "url": "https://ollama.com/library/qwen2.5", "source": "ollama" },
+    { "name": "GLM-5 (HuggingFace, MIT)", "url": "https://huggingface.co/zai-org/GLM-5", "source": "huggingface" }
   ],
   "recipes": [
-    { "name": "AI Email Assistant: Gmail + ChatGPT + Slack Digests", "url": "https://n8n.io/workflows/5446", "source": "n8n" }
+    { "name": "AI Email Assistant: Gmail + ChatGPT + Slack Digests", "url": "https://n8n.io/workflows/5446", "source": "n8n" },
+    { "name": "Build Your First AI Agent", "url": "https://n8n.io/workflows/6270", "source": "n8n" },
+    { "name": "Interactive AI Agent with Chat Interface and Multiple Tools", "url": "https://n8n.io/workflows/5819", "source": "n8n" },
+    { "name": "Talk to Your Google Sheets Using ChatGPT-5", "url": "https://n8n.io/workflows/7639", "source": "n8n" },
+    { "name": "Generate & Auto-post AI Videos to Social Media with Veo3", "url": "https://n8n.io/workflows/5035", "source": "n8n" },
+    { "name": "Jarvis: Productivity AI Agent (Tasks, Calendar, Email, MCPs)", "url": "https://n8n.io/workflows/8500", "source": "n8n" },
+    { "name": "Auto-Create TikTok Videos with AI Avatars, ElevenLabs & GPT-4", "url": "https://n8n.io/workflows/10000", "source": "n8n" }
   ],
   "knowledge": [
     { "name": "open_ragbench (arXiv, 3k QA pairs)", "url": "https://huggingface.co/datasets/vectara/open_ragbench", "source": "huggingface" },

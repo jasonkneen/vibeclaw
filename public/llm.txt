@@ -1,0 +1,292 @@
+# VibeClaw — Complete Reference for AI Agents
+
+> This file is the canonical knowledge base for VibeClaw. It is loaded by the TinyClaw in-browser AI assistant and is available at https://vibeclaw.dev/llm.txt
+
+---
+
+## What is VibeClaw?
+
+VibeClaw (vibeclaw.dev) is the world's first one-click deployment of a private, secure, instantly usable OpenClaw AI agent server — running entirely in the browser. No installation, no Docker, no CLI, no server required.
+
+VibeClaw is built on two core technologies:
+- **almostnode** — a browser-native Node.js runtime that creates real containers in the browser
+- **OpenClaw** — a professional AI agent framework with sessions, skills, cron jobs, and multi-agent orchestration
+
+---
+
+## Core Philosophy
+
+- **Your key, your browser** — API keys go direct from your browser to Anthropic/OpenRouter. They never touch VibeClaw servers.
+- **Zero install** — open the page, paste a key, boot. Done.
+- **Real runtime, not a demo** — this is a genuine Node.js container running in your browser tab
+- **Open source, MIT licensed** — crustacean friendly
+
+---
+
+## How It Works
+
+1. Visit https://vibeclaw.dev
+2. Select a Flavour (agent personality)
+3. Click "Power On"
+4. almostnode boots a browser-native Node.js container in ~5 seconds
+5. The OpenClaw VFS snapshot (67 files) is loaded into the virtual filesystem
+6. Chat begins — API calls go direct from your browser to Anthropic
+
+---
+
+## Modes
+
+### Sandbox Mode (default)
+- Runs a full OpenClaw instance entirely in your browser
+- Requires an Anthropic API key (or OpenRouter key)
+- Key stored in localStorage — never sent to VibeClaw servers
+- Ideal for: trying OpenClaw, testing prompts, quick prototyping, demos
+
+### Live Gateway Mode
+- Connects to your real running OpenClaw gateway via WebSocket
+- Requires a running OpenClaw installation and a gateway token
+- No API key needed (gateway handles auth)
+- Full dashboard: sessions, agents, files, skills, cron jobs, cost tracking, live logs
+- Default gateway: localhost:18789 (via Vite proxy)
+- Ideal for: monitoring your production OpenClaw, remote management
+
+---
+
+## Flavours
+
+Flavours are preconfigured sandbox personalities. Each flavour defines its own agents, skills, system prompt, and workspace layout. Select before booting — the entire sandbox adapts.
+
+### 🦀 OpenClaw (default)
+- General-purpose coding assistant
+- File access, code review, project management
+- Best for: everyday coding tasks, Q&A, debugging
+
+### 🚀 ShipIt
+- DevOps & infrastructure squad
+- Docker, Kubernetes, CI/CD, monitoring, cloud deployment
+- Best for: shipping products, infrastructure automation
+
+### 💀 R00t
+- Security research squad
+- Penetration testing, CTF challenges, vulnerability analysis, exploit research
+- Best for: security work, ethical hacking practice
+
+### ✨ Pixie
+- Creative studio squad
+- UI/UX design, branding, animation, copywriting, visual storytelling
+- Best for: creative projects, design work, content creation
+
+### 🎓 Professor
+- Teaching assistant squad
+- Explains concepts clearly, creates exercises, code review with pedagogy
+- Best for: learning new technologies, getting explanations, study assistance
+
+### 🦞 TinyClaw
+- Multi-agent orchestrator
+- Routes tasks to specialist agents: Coder, Writer, Reviewer, Designer
+- Parallel fan-out, team routing, result synthesis
+- Best for: complex multi-step projects requiring different skills
+
+---
+
+## Tech Stack
+
+### almostnode
+- Browser-native Node.js runtime
+- 40+ shimmed Node.js modules (fs, path, http, crypto, stream, etc.)
+- Virtual filesystem (VirtualFS) with real read/write operations
+- npm package support — install packages inside the container
+- Container management and lifecycle
+- GitHub: https://github.com/macaly/almostnode
+
+### OpenClaw
+- Professional AI agent framework
+- Session management with token tracking
+- Skill system (installable agent capabilities)
+- Cron job scheduling
+- Multi-node orchestration
+- 80+ method JSON-RPC gateway API
+- WebSocket gateway for remote control
+- Website: https://openclaw.ai
+
+### VibeClaw Site Stack
+- Vite 5 (bundler)
+- TypeScript
+- Netlify (hosting + functions)
+- WebGL (CRT bloom effect)
+- WebGPU (local model inference — coming soon)
+
+---
+
+## Features In Detail
+
+### Complete Runtime in Seconds
+Boot a FULL OpenClaw instance in your browser — complete with virtual filesystem, 40+ Node.js modules, and npm support. Just paste your API key and start coding. Zero install, zero server, zero Docker.
+
+### Your Key, Your Browser
+API calls go direct from your browser to Anthropic. Your key never touches VibeClaw servers. Close the tab and it's gone. Stored in localStorage — clear anytime.
+
+### Real Node.js Container
+This isn't a demo — it's a real Node.js runtime with a virtual filesystem, 40+ shimmed modules, require(), npm packages, and full OpenClaw agent workspace. Powered by almostnode.
+
+### Live Gateway Mode
+Already running OpenClaw? Connect to your live gateway via WebSocket. See all sessions, agents, files, skills, cron jobs, metrics — everything from one dashboard.
+
+### Full Dashboard
+3-column gateway dashboard with streaming chat, session management, workspace file browser, skill status, cron jobs, cost tracking, and live logs. Same API as the official OpenClaw control panel.
+
+### Flavours
+Swap sandbox personalities in one click. TinyClaw multi-agent orchestrator, default Claw assistant, or build your own — different agents, skills, and system prompts per flavour.
+
+### WebGPU Local LLM (coming soon)
+Run Qwen2.5-Coder 1.5B locally via WebGPU — no API key, no network. A fully self-contained coding agent in ~900MB. One download, then fully offline.
+
+### TinyClaw Chat Widget
+The chat widget you're using right now. A drop-in AI chat widget powered by TinyClaw that runs entirely in the browser. Available as an npm package: `tinyclaw-widget`. Supports WebGPU local inference (Qwen2.5-1.5B, ~1GB) with OpenRouter API fallback. Embeddable on any site, works in Chrome extensions.
+
+---
+
+## ClawForge
+
+ClawForge is VibeClaw's visual server builder. Configure an OpenClaw server like you'd spec a Mac:
+
+1. **Configure** — pick agents, skills, prompts, and workspace files from the component library
+2. **Preview** — test live in browser, chat with it, tweak until perfect
+3. **Deploy** — download config, Docker, CLI, or one-click deploy to Railway, Fly.io, Render, Northflank
+
+Access at: https://vibeclaw.dev/forge
+
+---
+
+## Pricing & Tiers
+
+VibeClaw is free to use. You bring your own API key.
+
+- **Free** — full sandbox mode, all flavours, unlimited sessions in browser
+- **Pro** (coming soon) — enhanced features, priority support, team features
+- API keys go direct to Anthropic/OpenRouter — VibeClaw never sees them
+
+---
+
+## API & Integration
+
+### TinyClaw Widget — npm package
+```bash
+npm install tinyclaw-widget
+```
+
+```js
+import { TinyClawWidget } from 'tinyclaw-widget';
+
+new TinyClawWidget({
+  apiKey: 'sk-or-...',     // optional — uses WebGPU if available
+  accent: '#ff5c5c',       // optional branding
+  position: 'bottom-right',
+}).mount();
+```
+
+### Script tag (any site)
+```html
+<script src="https://vibeclaw.dev/tinyclaw-widget.js" data-tc-auto></script>
+```
+
+### Chrome Extension
+```js
+import { TinyClawWidget } from 'tinyclaw-widget';
+new TinyClawWidget({
+  avatar: chrome.runtime.getURL('crab.png'),
+}).mount();
+```
+
+### Configuration options
+- `apiKey` — OpenRouter or direct Anthropic key
+- `model` — model string (default: upstage/solar-pro-3:free)
+- `webllmModel` — local WebGPU model (default: Qwen2.5-1.5B-Instruct-q4f16_1-MLC)
+- `preferLocal` — try WebGPU first (default: true)
+- `kb` — custom knowledge base markdown
+- `avatar` — image URL for the chat mascot
+- `accent` — hex colour for the widget
+- `position` — 'bottom-right' or 'bottom-left'
+- `title` — widget header title
+- `greeting` — first message
+
+---
+
+## ai.txt (Agent Discovery)
+
+VibeClaw is registered with agentdoor.ai. Agents can discover and use VibeClaw at:
+https://vibeclaw.dev/ai.txt
+
+```
+Service: vibeclaw
+Protocol: WebSocket
+Endpoint: https://vibeclaw.dev
+Capabilities: in-browser AI agent runtime, virtual filesystem, Node.js container,
+              npm support, multi-agent orchestration, WebSocket gateway,
+              cron jobs, file read/write, JS/TS execution, streaming chat,
+              session management, skill management, cost tracking
+Pricing: tiered / $0 per request (bring your own key)
+Auth: API key
+```
+
+---
+
+## Community & Links
+
+- **Website**: https://vibeclaw.dev
+- **GitHub**: https://github.com/jasonkneen/vibeclaw
+- **X/Twitter Community**: https://x.com/i/communities/2023680827435978937
+- **Docs**: https://vibeclaw.dev/docs
+- **News/Articles**: https://vibeclaw.dev/news
+- **OpenClaw**: https://openclaw.ai
+- **almostnode**: https://github.com/macaly/almostnode
+- **ClawForge**: https://vibeclaw.dev/forge
+- **Explore**: https://vibeclaw.dev/explore
+
+---
+
+## FAQ
+
+**Q: Is my API key safe?**
+A: Yes. In sandbox mode, your API key stays in your browser and goes directly to Anthropic's API. It's never sent to VibeClaw servers. It's stored in localStorage — clear it anytime. In live mode, no API key is needed.
+
+**Q: What's the difference between Sandbox and Live mode?**
+A: Sandbox boots an isolated OpenClaw container in your browser — just paste your API key and start chatting. Live connects to your actual running OpenClaw gateway via WebSocket for the full production dashboard.
+
+**Q: How does the sandbox actually work?**
+A: VibeClaw uses almostnode — a browser-native Node.js runtime with a virtual filesystem, 40+ shimmed modules, and npm support. It creates a real container, loads the OpenClaw VFS snapshot (67 files), and bootstraps the full runtime. Chat calls go direct to the Anthropic API from your browser.
+
+**Q: What can I do in live gateway mode?**
+A: Everything. The dashboard shows all sessions with token usage bars, agent identity and workspace files (SOUL.md, MEMORY.md, etc.), active and available skills, cron jobs with status, daily cost sparklines, connected nodes, gateway logs, and full streaming chat.
+
+**Q: Do I need to install anything?**
+A: No. For sandbox mode, just open the page and paste your Anthropic API key. For live mode, you need a running OpenClaw gateway.
+
+**Q: What are Flavours?**
+A: Flavours are preconfigured sandbox personalities. Each flavour defines its own agents, skills, system prompt, and workspace layout. The default 🦀 OpenClaw is a coding assistant. 🦞 TinyClaw is a multi-agent orchestrator.
+
+**Q: What about WebGPU / local models?**
+A: Coming soon. We're integrating WebLLM to run Qwen2.5-Coder 1.5B (4-bit quantized, ~900MB) entirely via WebGPU. One download, then fully offline — no API key, no network. The Clawdio widget already runs Qwen2.5-1.5B via WebGPU today.
+
+**Q: Can I use this in production?**
+A: The sandbox is great for trying OpenClaw, testing prompts, and prototyping. For production workloads, run a real OpenClaw gateway and use live mode to monitor and chat with it from anywhere.
+
+**Q: What models are supported?**
+A: Any model available via OpenRouter (free and paid). Direct Anthropic API keys also work. The TinyClaw widget supports WebGPU local models including Qwen2.5-1.5B (~1GB) with no API key required.
+
+---
+
+## About Clawdio (this assistant)
+
+I am Clawdio 🦞 — the VibeClaw in-browser AI assistant. I am proof that this technology works: I'm running entirely in your browser right now, with no server, no backend, and (if your device supports WebGPU) no API key.
+
+I'm powered by either:
+- **WebGPU** (if your device supports it): Qwen2.5-1.5B running locally — completely private
+- **OpenRouter API** (fallback): Fast cloud inference with your API key
+
+I'm also available as an npm package (`tinyclaw-widget`) so you can embed me on any site.
+
+---
+
+*Last updated: February 2026*
+*Source: https://vibeclaw.dev/llm.txt*

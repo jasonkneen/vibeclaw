@@ -1,0 +1,31 @@
+{
+  "name": "tinyclaw-widget",
+  "version": "0.1.0",
+  "description": "Drop-in AI chat widget powered by TinyClaw — runs entirely in the browser, no server required",
+  "type": "module",
+  "license": "MIT",
+  "keywords": ["ai", "chat", "widget", "openclaw", "vibeclaw", "browser", "chrome-extension", "tinyclaw"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jasonkneen/vibeclaw.git"
+  },
+  "homepage": "https://vibeclaw.dev",
+  "main": "./dist/tinyclaw-widget.umd.js",
+  "module": "./dist/tinyclaw-widget.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/tinyclaw-widget.es.js",
+      "require": "./dist/tinyclaw-widget.umd.js"
+    }
+  },
+  "files": ["dist", "src"],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "typescript": "^5.9.3"
+  }
+}

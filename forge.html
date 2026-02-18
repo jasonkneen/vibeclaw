@@ -77,7 +77,7 @@
       font-weight: 700;
       color: var(--text-bright);
     }
-    .nav-links { display: flex; gap: 20px; align-items: center; }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
     .nav-links a {
       font-family: var(--mono);
       font-size: 0.75rem;
@@ -1128,21 +1128,64 @@
       .agent-row > :nth-child(3) { grid-column: 2 / 4; }
       .toast { bottom: 16px; }
     }
-  </style>
+  
+    /* ── Canonical Nav ── */
+    nav { background: rgba(0,0,0,0.85); border-bottom: 1px solid var(--border,#1a1a1a); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 500; }
+    .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; height: 52px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-family: var(--mono,'Courier New',monospace); font-size: 0.9rem; font-weight: 600; color: var(--accent,#ff5c5c); text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; margin: 0; padding: 0; }
+    .nav-links a { font-family: var(--mono,'Courier New',monospace); font-size: 0.78rem; color: var(--text-dim,#666); text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.15s; }
+    .nav-links a:hover { color: var(--text-bright,#fff); }
+    .nav-links a.nav-active { color: var(--text-bright,#fff); }
+    @media (max-width: 600px) {
+      .nav-inner { padding: 0 12px; height: 48px; }
+      .nav-links { gap: 8px; }
+      .nav-links a { font-size: 0.6rem; }
+      .nav-hide-mobile { display: none; }
+    }
+
+    </style>
 </head>
 <body>
 
   <!-- Nav -->
-  <nav class="nav" role="navigation" aria-label="Main navigation">
-    <a href="/" class="nav-brand" aria-label="vibeclaw home"><img src="/crab-nav.png" alt="" style="height:36px;vertical-align:middle;margin-right:6px;"><span style="font-size:1rem;font-weight:700;"><span style="color:var(--accent);">VIBE</span><span style="color:var(--text-bright);">CLAW</span></span></a>
-    <div class="nav-links">
-      <a href="/library.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;display:inline;vertical-align:-1px;margin-right:4px;"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/></svg>My Servers</a>
-      <a href="/news.html">Articles</a>
-      <!-- <a href="/chat.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;display:inline;vertical-align:-1px;margin-right:4px;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Chat</a> -->
-      <span id="upgrade-container" style="margin-left:4px;"></span>
-      <span id="auth-container" style="margin-left:4px;"></span>
+  <!-- Nav -->
+  <nav role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo" aria-label="vibeclaw.dev home"><img src="/logo.png" alt="VibeClaw" style="height:44px;vertical-align:middle;"></a>
+      <ul class="nav-links" role="list">
+        <li><a href="/explore.html">Explore</a></li>
+        <li><a href="/create.html">Create</a></li>
+        <li class="nav-hide-mobile"><a href="/forge.html">Forge</a></li>
+        <li class="nav-hide-mobile"><a href="/news.html">News</a></li>
+        <li class="nav-hide-mobile"><a href="/docs/">Docs</a></li>
+        <li class="nav-more-wrap" style="position:relative;">
+          <button id="nav-more-btn" style="background:none;border:1px solid var(--border,#1a1a1a);border-radius:6px;padding:3px 8px;font-family:var(--mono,'Courier New',monospace);font-size:0.62rem;color:var(--text-dim,#666);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s;white-space:nowrap;">
+            More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div id="nav-more-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#111;border:1px solid #222;border-radius:8px;padding:6px 0;min-width:180px;z-index:1000;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+            <a href="/library.html" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;transition:background 0.1s;">My Library</a>
+            <a href="/gallery.html" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;transition:background 0.1s;">Wallpapers</a>
+            <div style="height:1px;background:#222;margin:4px 0;"></div>
+            <a href="https://openclaw.ai" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;transition:background 0.1s;">OpenClaw</a>
+            <a href="https://github.com/jasonkneen/vibeclaw" style="display:block;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;transition:background 0.1s;">GitHub</a>
+            <a href="https://x.com/i/communities/2023680827435978937" style="display:flex;align-items:center;gap:6px;padding:8px 16px;font-family:var(--mono,'Courier New',monospace);font-size:0.75rem;color:#ccc;text-decoration:none;transition:background 0.1s;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Community</a>
+          </div>
+        </li>
+      </ul>
     </div>
   </nav>
+<script>
+    (function(){
+      var btn=document.getElementById('nav-more-btn'),menu=document.getElementById('nav-more-menu');
+      if(!btn||!menu)return;
+      btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.style.display!=='none';menu.style.display=o?'none':'block';btn.style.borderColor=o?'var(--border,#1a1a1a)':'var(--accent,#ff5c5c)';btn.style.color=o?'var(--text-dim,#666)':'var(--accent,#ff5c5c)';});
+      document.addEventListener('click',function(){menu.style.display='none';btn.style.borderColor='var(--border,#1a1a1a)';btn.style.color='var(--text-dim,#666)';});
+      menu.querySelectorAll('a').forEach(function(a){a.addEventListener('mouseenter',function(){a.style.background='#1a1a1a';});a.addEventListener('mouseleave',function(){a.style.background='transparent';});});
+      var path=location.pathname.replace(/\/$/,'')||'/';
+      document.querySelectorAll('.nav-links a').forEach(function(a){var h=(a.getAttribute('href')||'').replace(/\/$/,'');if(h&&path.endsWith(h))a.classList.add('nav-active');});
+    })();
+  </script>
 
   <!-- Retrieve tab (visible when preview is collapsed) -->
   <div class="preview-retrieve-tab" id="preview-retrieve" title="Open preview chat">
@@ -2738,5 +2781,6 @@ openclaw gateway start
     }
   </script>
 
+  <script src="/clawdio.js"></script>
 </body>
 </html>

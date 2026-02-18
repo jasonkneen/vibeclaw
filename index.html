@@ -18,9 +18,7 @@
     <meta property="og:url" content="https://vibeclaw.dev/">
     <meta property="og:title" content="vibeclaw — AI coding agents in your browser">
     <meta property="og:description" content="Run a FULL OpenClaw instance entirely in your browser. Boot a complete AI agent runtime in seconds — no install, no Docker, no CLI required.">
-    <meta property="og:image" content="https://vibeclaw.dev/og-image.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image" content="https://vibeclaw.dev/logo.png">
     <meta property="og:site_name" content="vibeclaw.dev">
 
     <!-- Twitter Card -->
@@ -29,7 +27,7 @@
     <meta name="twitter:creator" content="@jasonkneen">
     <meta name="twitter:title" content="vibeclaw — AI coding agents in your browser">
     <meta name="twitter:description" content="Run a FULL OpenClaw instance in your browser — no install, no server. Boot a complete AI agent runtime in seconds.">
-    <meta name="twitter:image" content="https://vibeclaw.dev/og-image.png">
+    <meta name="twitter:image" content="https://vibeclaw.dev/logo.png">
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -85,7 +83,7 @@
 
       * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+      html { scroll-behavior: smooth; scroll-padding-top: 70px; overflow-x: hidden; }
       body {
         font-family: var(--sans);
         background: var(--black);
@@ -93,6 +91,7 @@
         min-height: 100vh;
         -webkit-font-smoothing: antialiased;
         position: relative;
+        overflow-x: hidden;
       }
 
       /* Scanline overlay */
@@ -140,7 +139,7 @@
       }
       .nav-links {
         display: flex;
-        gap: 24px;
+        gap: 32px;
         list-style: none;
         align-items: center;
       }
@@ -154,6 +153,7 @@
         transition: color 0.15s;
       }
       .nav-links a:hover { color: var(--text-bright); }
+      .nav-links a.nav-active { color: var(--text-bright); }
 
       /* ── Hero ── */
       .hero {
@@ -172,6 +172,9 @@
         flex: 0 0 400px;
         height: 400px;
         position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .hero-visual canvas {
         display: block;
@@ -220,6 +223,7 @@
         gap: 14px;
         background: var(--surface);
         border: 1px solid var(--border);
+        border-radius: 10px;
         padding: 14px 18px;
         margin-bottom: 28px;
         font-family: var(--mono);
@@ -230,6 +234,7 @@
       .install-box button {
         background: none;
         border: 1px solid var(--border);
+        border-radius: 6px;
         color: var(--text-dim);
         cursor: pointer;
         padding: 8px 12px;
@@ -266,6 +271,7 @@
         letter-spacing: 0.04em;
         transition: all 0.15s;
         border: 1px solid transparent;
+        border-radius: 8px;
       }
       .btn-primary {
         background: var(--accent);
@@ -276,12 +282,14 @@
         box-shadow: 0 0 20px rgba(255, 92, 92, 0.25);
       }
       .btn-secondary {
-        background: transparent;
+        background: rgba(8,8,8,0.92);
         border-color: var(--accent);
         color: var(--accent);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
       }
       .btn-secondary:hover {
-        background: rgba(255,92,92,0.1);
+        background: rgba(255,92,92,0.12);
         border-color: var(--accent);
         color: var(--text-bright);
       }
@@ -376,23 +384,85 @@
       .features-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 1px;
-        background: var(--border);
-        border: 1px solid var(--border);
+        gap: 12px;
         margin-bottom: 80px;
+      }
+      .features-grid .feature-card--featured {
+        grid-column: 1 / -1;
       }
       @media (max-width: 768px) {
         .features-grid { grid-template-columns: 1fr; }
+        .features-grid .feature-card--featured { grid-column: 1; }
       }
       @media (min-width: 769px) and (max-width: 1024px) {
         .features-grid { grid-template-columns: repeat(2, 1fr); }
+        .features-grid .feature-card--featured { grid-column: 1 / -1; }
       }
       .feature-card {
-        background: var(--surface);
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 16px;
         padding: 28px 24px;
-        transition: background 0.15s;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
       }
-      .feature-card:hover { background: var(--surface-2); }
+      .feature-card:hover {
+        background: rgba(255,255,255,0.055);
+        border-color: rgba(255,255,255,0.12);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
+      }
+      .feature-card--featured {
+        background: rgba(255,92,92,0.06);
+        border-color: rgba(255,92,92,0.15);
+        padding: 40px 44px;
+        display: flex;
+        align-items: center;
+        gap: 44px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,92,92,0.06), inset 0 1px 0 rgba(255,92,92,0.06);
+      }
+      .feature-card--featured:hover {
+        background: rgba(255,92,92,0.09);
+        border-color: rgba(255,92,92,0.22);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,92,92,0.12), inset 0 1px 0 rgba(255,92,92,0.08);
+      }
+      .feature-card--featured .feature-icon {
+        width: 60px; height: 60px; flex-shrink: 0;
+      }
+      .feature-card--featured .feature-icon svg {
+        width: 34px; height: 34px;
+      }
+      .feature-card--featured h3 {
+        font-size: 1.35rem !important;
+        margin-bottom: 10px !important;
+      }
+      .feature-card--featured p {
+        font-size: 0.9rem !important;
+        max-width: 700px;
+        color: var(--text) !important;
+        line-height: 1.7 !important;
+      }
+      @media (max-width: 768px) {
+        .feature-card--featured { flex-direction: column; align-items: flex-start; gap: 16px; padding: 28px 24px; }
+      }
+      .feature-card--glass {
+        background: rgba(255,255,255,0.025);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+      }
+      .feature-card--glass:hover {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.12);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+      }
+      .feature-card--glass h3 { color: var(--text-bright); }
+      .feature-card--glass p  { color: rgba(255,255,255,0.5); }
       .feature-icon {
         width: 32px;
         height: 32px;
@@ -483,13 +553,17 @@
       .faq-list {
         display: flex;
         flex-direction: column;
-        gap: 1px;
-        background: var(--border);
-        border: 1px solid var(--border);
+        gap: 6px;
       }
       .faq-item {
         background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: border-color 0.15s;
       }
+      .faq-item:hover { border-color: #2a2a2a; }
+      .faq-item[open] { border-color: var(--accent); }
       .faq-item summary {
         display: flex;
         align-items: center;
@@ -609,10 +683,23 @@
         color: var(--text-dim);
       }
 
+      /* ── Stats bar ── */
+      .stats-bar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 8px 20px;
+        background: var(--black);
+        flex-wrap: wrap;
+      }
+
       /* ── Responsive ── */
       @media (max-width: 900px) {
-        .hero-visual { display: none; }
+        .hero-visual { display: none !important; }
         .hero-crab { display: none !important; }
+        .hero { flex-direction: column; gap: 0; }
+        .hero-content { width: 100%; }
       }
       @media (max-width: 600px) {
         .nav-inner { padding: 0 12px; height: 48px; }
@@ -642,6 +729,22 @@
         footer .footer-links a { font-size: 0.65rem; }
         footer .footer-byline { font-size: 0.65rem; }
         footer .license { font-size: 0.65rem; }
+        /* ── Stats bar ── */
+        .stats-bar { padding: 6px 12px; justify-content: center; gap: 6px; }
+        .stats-bar a { padding: 4px 10px !important; font-size: 0.62rem !important; }
+        /* ── CRT monitor / playground ── */
+        .crt-monitor { padding: 0 8px; }
+        .crt-bezel { padding: 14px 12px 22px; border-radius: 14px; }
+        /* ── Section headers ── */
+        .section-header { padding: 40px 0 28px; }
+        /* ── Hero ── */
+        .hero h1 { font-size: 1.65rem; }
+        .hero .subtitle { font-size: 0.82rem; margin-bottom: 24px; }
+        /* ── Flavour chips bar ── */
+        #pg-creds-sandbox { flex-wrap: wrap !important; gap: 6px !important; padding: 8px 12px !important; }
+        /* ── FAQ ── */
+        .faq-answer { padding: 12px 16px 12px 32px; }
+        .faq-item summary { padding: 14px 16px; font-size: 0.86rem; }
       }
 
       @media (max-width: 380px) {
@@ -651,6 +754,14 @@
         .auth-logout-btn { font-size: 0.45rem !important; padding: 2px 3px !important; }
         footer .footer-links { gap: 8px; }
         footer .footer-links a { font-size: 0.6rem; }
+        /* ── Ultra-narrow ── */
+        .hero h1 { font-size: 1.4rem; }
+        .stats-bar { padding: 4px 10px; gap: 4px; }
+        .stats-bar a { padding: 3px 8px !important; font-size: 0.58rem !important; }
+        .crt-monitor { padding: 0 4px; }
+        .crt-bezel { padding: 10px 8px 16px; border-radius: 10px; }
+        .section-header { padding: 32px 0 20px; }
+        .faq-answer { padding: 10px 12px 10px 24px; }
       }
 
       /* ── Playground ── */
@@ -684,13 +795,14 @@
         background: none;
         border: none;
         border-bottom: 2px solid transparent;
+        border-radius: 6px 6px 0 0;
         cursor: pointer;
         white-space: nowrap;
         transition: color 0.15s, border-color 0.15s, background 0.15s;
       }
       .pg-tab:hover {
         color: var(--text);
-        background: rgba(255,255,255,0.02);
+        background: rgba(255,255,255,0.03);
       }
       .pg-tab.active {
         color: var(--text-bright);
@@ -700,7 +812,7 @@
         width: 6px;
         height: 6px;
         background: var(--text-dim);
-        border-radius: 0;
+        border-radius: 50%;
         flex-shrink: 0;
         transition: background 0.3s;
       }
@@ -735,6 +847,7 @@
         font-family: var(--mono);
         font-size: 0.85rem;
         border: 1px solid var(--border);
+        border-radius: 20px;
         background: transparent;
         color: var(--text-dim);
         cursor: pointer;
@@ -870,6 +983,7 @@
         background: transparent;
         color: var(--accent);
         border: 1px solid var(--accent);
+        border-radius: 6px;
         cursor: pointer;
         transition: background 0.15s, box-shadow 0.15s, color 0.15s;
       }
@@ -1125,7 +1239,7 @@
       #crt-bloom {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         pointer-events: none; z-index: 202; border-radius: 14px;
-        mix-blend-mode: screen; opacity: 0.9;
+        mix-blend-mode: screen; opacity: 0.4;
       }
       .crt-bottom-bar {
         display: flex; align-items: center; justify-content: space-between;
@@ -1183,6 +1297,7 @@
         white-space: nowrap;
         animation: ticker-scroll 60s linear infinite;
         width: max-content;
+        will-change: transform;
       }
       .ticker-content:hover { animation-play-state: paused; }
       .ticker-item {
@@ -1206,6 +1321,7 @@
       .ticker-dot.orange { background: #fb923c; }
       .ticker-reverse {
         animation: ticker-scroll-reverse 55s linear infinite;
+        will-change: transform;
       }
       .ticker-reverse:hover { animation-play-state: paused; }
       @keyframes ticker-scroll {
@@ -1234,6 +1350,154 @@
       .install-box { animation-delay: 0.15s; }
       .cta-row { animation-delay: 0.2s; }
       .badges { animation-delay: 0.25s; }
+      /* ── News Modal ── */
+      .news-modal-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.75);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        z-index: 9000;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+      .news-modal-backdrop.open {
+        opacity: 1; pointer-events: all;
+      }
+      .news-modal {
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -48%) scale(0.97);
+        width: min(760px, calc(100vw - 32px));
+        max-height: min(82vh, 860px);
+        background: #0f0f0f;
+        border: 1px solid #222;
+        border-radius: 16px;
+        display: flex; flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 32px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.04);
+        z-index: 9001;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+      }
+      .news-modal.open {
+        opacity: 1; pointer-events: all;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      .news-modal-header {
+        padding: 28px 32px 20px;
+        border-bottom: 1px solid #1a1a1a;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .news-modal-header::after {
+        content: '';
+        position: absolute; bottom: 0; left: 32px; right: 32px; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--accent)22, transparent);
+      }
+      .news-modal-label {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 10px;
+        display: flex; align-items: center; gap: 8px;
+      }
+      .news-modal-label::before {
+        content: ''; width: 16px; height: 1px; background: var(--accent);
+      }
+      .news-modal-title {
+        font-family: var(--sans);
+        font-size: 1.35rem; font-weight: 700;
+        color: var(--text-bright);
+        line-height: 1.3;
+        margin-bottom: 12px;
+      }
+      .news-modal-meta {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        font-family: var(--mono); font-size: 0.62rem; color: var(--text-dim);
+      }
+      .news-modal-meta-sep { opacity: 0.3; }
+      .news-modal-tag {
+        padding: 2px 8px; border-radius: 20px;
+        background: rgba(255,92,92,0.12); color: var(--accent);
+        font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.04em;
+      }
+      .news-modal-close {
+        position: absolute; top: 20px; right: 20px;
+        width: 32px; height: 32px; border-radius: 50%;
+        background: #1a1a1a; border: 1px solid #2a2a2a;
+        color: #666; cursor: pointer; font-size: 1rem;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.15s;
+      }
+      .news-modal-close:hover { background: #222; color: #ccc; border-color: #444; }
+      .news-modal-body {
+        flex: 1; overflow-y: auto; padding: 28px 32px;
+        scrollbar-width: thin; scrollbar-color: #222 transparent;
+        font-family: var(--sans);
+      }
+      .news-modal-body p {
+        font-size: 0.95rem; line-height: 1.75; color: var(--text);
+        margin-bottom: 16px;
+      }
+      .news-modal-body h2 {
+        font-size: 1.1rem; font-weight: 700; color: var(--text-bright);
+        margin: 28px 0 12px; font-family: var(--sans);
+      }
+      .news-modal-body h3 {
+        font-size: 0.95rem; font-weight: 700; color: var(--text-bright);
+        margin: 20px 0 8px; font-family: var(--sans);
+      }
+      .news-modal-body a { color: var(--accent); text-decoration: none; }
+      .news-modal-body a:hover { text-decoration: underline; }
+      .news-modal-body ul, .news-modal-body ol {
+        padding-left: 24px; margin-bottom: 16px;
+      }
+      .news-modal-body li { color: var(--text); font-size: 0.95rem; line-height: 1.7; margin-bottom: 6px; }
+      .news-modal-body strong { color: var(--text-bright); }
+      .news-modal-external {
+        text-align: center; padding: 32px;
+      }
+      .news-modal-external p {
+        font-size: 0.88rem; color: var(--text-dim); margin-bottom: 20px;
+      }
+      .news-modal-external a.btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 12px 28px; background: var(--accent); color: #000;
+        border-radius: 8px; text-decoration: none;
+        font-family: var(--mono); font-size: 0.78rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.04em;
+        transition: filter 0.15s;
+      }
+      .news-modal-external a.btn:hover { filter: brightness(1.1); }
+      .news-modal-footer {
+        padding: 14px 32px;
+        border-top: 1px solid #1a1a1a;
+        display: flex; align-items: center; justify-content: space-between;
+        flex-shrink: 0;
+      }
+      .news-modal-footer a {
+        font-family: var(--mono); font-size: 0.65rem; color: var(--accent);
+        text-decoration: none; display: flex; align-items: center; gap: 6px;
+        transition: opacity 0.15s;
+      }
+      .news-modal-footer a:hover { opacity: 0.75; }
+      .news-modal-footer-close {
+        font-family: var(--mono); font-size: 0.62rem; color: var(--text-dim);
+      }
+
+      /* Accessibility + GPU: kill all animations for users who prefer it */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+        .ticker-content, .ticker-reverse { animation: none !important; }
+        #hero-canvas { display: none !important; }
+        #crt-bloom { display: none !important; }
+      }
     </style>
   </head>
   <body>
@@ -1248,19 +1512,17 @@
         <ul class="nav-links" role="list">
           <li><a href="/explore.html">Explore</a></li>
           <li><a href="/create.html">Create</a></li>
-          <li class="nav-hide-mobile"><a href="/news.html">Articles</a></li>
+          <li class="nav-hide-mobile"><a href="/forge.html">Forge</a></li>
+          <li class="nav-hide-mobile"><a href="/news.html">News</a></li>
+          <li class="nav-hide-mobile"><a href="./docs/">Docs</a></li>
           <!-- <li><a href="/chat.html">Chat</a></li> -->
           <li class="nav-more-wrap" style="position:relative;">
             <button id="nav-more-btn" style="background:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-family:var(--mono);font-size:0.62rem;color:var(--text-dim);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s;white-space:nowrap;">
               More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div id="nav-more-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:6px 0;min-width:180px;z-index:1000;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
-              <a href="/forge.html" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">Server Forge</a>
               <a href="/library.html" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">My Library</a>
-              <a href="/news.html" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">Articles</a>
               <a href="/gallery.html" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">Wallpapers</a>
-              <div style="height:1px;background:var(--border);margin:4px 0;"></div>
-              <a href="./docs/" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">Docs</a>
               <a href="#demos" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">Demos</a>
               <div style="height:1px;background:var(--border);margin:4px 0;"></div>
               <a href="https://openclaw.ai" style="display:block;padding:8px 16px;font-family:var(--mono);font-size:0.75rem;color:var(--text);text-decoration:none;transition:background 0.1s;">OpenClaw</a>
@@ -1288,11 +1550,11 @@
 
 
     <!-- Repo stats -->
-    <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:6px 16px;background:var(--black);">
-      <a href="https://github.com/jasonkneen/vibeclaw"><img src="https://img.shields.io/badge/🦀_vibeclaw-ff5c5c?style=for-the-badge&logoColor=white" alt="vibeclaw" style="height:20px;"></a>
-      <a id="gh-stars" href="https://github.com/jasonkneen/vibeclaw/stargazers" style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='var(--text-dim)'"><svg viewBox="0 0 16 16" fill="currentColor" style="width:12px;height:12px;"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg> <span id="gh-stars-count">★</span> Stars</a>
+    <div class="stats-bar">
+      <a href="https://github.com/jasonkneen/vibeclaw" style="display:inline-flex;align-items:center;gap:7px;padding:6px 14px;background:var(--accent);border-radius:20px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;font-weight:700;color:#000;letter-spacing:0.05em;text-transform:uppercase;transition:filter 0.15s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">🦀 VibeClaw</a>
+      <a id="gh-stars" href="https://github.com/jasonkneen/vibeclaw/stargazers" style="display:inline-flex;align-items:center;gap:7px;padding:6px 14px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='var(--text-dim)'"><svg viewBox="0 0 16 16" fill="currentColor" style="width:12px;height:12px;opacity:0.7"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span id="gh-stars-count">—</span> Stars</a>
       <script>fetch('https://api.github.com/repos/jasonkneen/vibeclaw').then(r=>r.json()).then(d=>{if(d.stargazers_count!=null)document.getElementById('gh-stars-count').textContent=d.stargazers_count}).catch(()=>{})</script>
-      <a href="https://github.com/jasonkneen/vibeclaw/blob/main/LICENSE"><img src="https://img.shields.io/github/license/jasonkneen/vibeclaw?style=for-the-badge&color=2a2a2a&labelColor=1a1a1a" alt="License" style="height:20px;"></a>
+      <a href="https://github.com/jasonkneen/vibeclaw/blob/main/LICENSE" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px;text-decoration:none;font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);transition:all 0.15s;letter-spacing:0.04em;text-transform:uppercase;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='var(--text-dim)'">MIT License</a>
     </div>
 
     <script>
@@ -1316,6 +1578,12 @@
           a.addEventListener('mouseenter', () => a.style.background = 'var(--surface)');
           a.addEventListener('mouseleave', () => a.style.background = 'transparent');
         });
+        // Highlight active nav link
+        const path = location.pathname.replace(/\/$/, '') || '/';
+        document.querySelectorAll('.nav-links a').forEach(a => {
+          const href = a.getAttribute('href')?.replace(/\/$/, '') || '';
+          if (href && path.endsWith(href)) a.classList.add('nav-active');
+        });
       })();
     </script>
 
@@ -1324,7 +1592,7 @@
     <!-- Hero -->
     <section class="hero" aria-label="Hero section">
       <div class="hero-content" style="position:relative;">
-      <div class="hero-label">Open Source · Powered by almostnode</div>
+      <div class="hero-label">Open Source MIT License · Crustacean Friendly</div>
       <h1>Run <span style="color:var(--accent);">Open</span><span style="color:var(--text-bright);">Claw</span> Securely in your browser in <span id="hero-time" style="display:inline-block;transition:opacity 0.4s ease, transform 0.4s ease;">5s</span></h1>
       <p class="subtitle">The world's first ONE CLICK deployment of a private, secure and instantly usable OpenClaw server.</p>
 
@@ -1334,8 +1602,8 @@
       </div>
 
       </div>
-      <div class="hero-visual" style="display:flex;align-items:center;justify-content:center;">
-        <div id="terminal-carousel" style="border:1px solid var(--border);background:rgba(0,0,0,0.6);padding:40px 48px;max-width:480px;display:flex;flex-direction:column;gap:16px;backdrop-filter:blur(8px);">
+      <div class="hero-visual">
+        <div id="terminal-carousel" style="border:1px solid var(--border);border-radius:14px;background:rgba(0,0,0,0.6);padding:40px 48px;max-width:480px;display:flex;flex-direction:column;gap:16px;backdrop-filter:blur(8px);">
           <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--text-bright);line-height:1.3;transition:opacity 0.5s ease;" id="carousel-title">Complete Runtime in Seconds</div>
           <div style="font-family:var(--mono);font-size:0.9rem;color:var(--text-dim);line-height:1.7;transition:opacity 0.5s ease;" id="carousel-desc">Boot a FULL OpenClaw instance in your browser — complete with virtual filesystem, 40+ Node.js modules, and npm support. Just paste your API key and start coding. Zero install.</div>
         </div>
@@ -1412,13 +1680,13 @@
               <a id="pg-connect-link" href="#" style="display:none;font-family:var(--mono);font-size:0.65rem;color:var(--accent);text-decoration:none;font-weight:700;"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;display:inline-block;vertical-align:0px;margin-right:2px;"><circle cx="12" cy="12" r="10"/></svg> Connect →</a>
             </div>
             <div class="pg-terminal" id="pg-terminal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
-              <button class="pg-launch" data-action="sandbox" style="padding:16px 40px;font-family:var(--mono);font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;background:var(--accent);color:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:background 0.15s,box-shadow 0.15s;" aria-label="Boot OpenClaw gateway" onmouseover="this.style.background='#ff7070';this.style.boxShadow='0 0 20px rgba(255,92,92,0.3)'" onmouseout="this.style.background='var(--accent)';this.style.boxShadow='none'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:18px;height:18px;" aria-hidden="true"><path d="M12 2v6M6.3 5.3a9 9 0 1 0 11.4 0"/></svg> Power On</button>
+              <button class="pg-launch" data-action="sandbox" style="padding:16px 40px;font-family:var(--mono);font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;background:var(--accent);color:#000;border:none;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:background 0.15s,box-shadow 0.15s;" aria-label="Boot OpenClaw gateway" onmouseover="this.style.background='#ff7070';this.style.boxShadow='0 0 20px rgba(255,92,92,0.3)'" onmouseout="this.style.background='var(--accent)';this.style.boxShadow='none'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:18px;height:18px;" aria-hidden="true"><path d="M12 2v6M6.3 5.3a9 9 0 1 0 11.4 0"/></svg> Power On</button>
             </div>
 
             <div id="pg-chat-bar" style="display:none;border-top:1px solid var(--border);background:var(--surface);">
               <div style="display:flex;gap:0;">
                 <input id="pg-chat-input" type="text" placeholder="Message the agent…" disabled style="flex:1;padding:16px 18px;background:transparent;border:none;color:#ffb899;font-family:var(--mono);font-size:0.95rem;outline:none;text-shadow:0 0 8px rgba(255,140,100,0.5);" />
-                <button id="pg-chat-send" disabled style="padding:16px 24px;font-family:var(--mono);font-size:0.9rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;background:var(--accent);color:#000;border:none;cursor:pointer;" aria-label="Send message">Send</button>
+                <button id="pg-chat-send" disabled style="padding:16px 24px;font-family:var(--mono);font-size:0.9rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;background:var(--accent);color:#000;border:none;border-radius:0 8px 8px 0;cursor:pointer;" aria-label="Send message">Send</button>
               </div>
             </div>
             <div id="pg-forge-cta" style="display:none;border-top:1px solid var(--border);background:var(--accent-bg);padding:12px 18px;text-align:center;">
@@ -1803,6 +2071,17 @@ entirely in a browser sandbox.
 
         const el1 = document.getElementById('ticker-content');
         if (el1) renderTicker(el1, items1.length ? items1 : items);
+
+        // Pause ticker CSS animations when not in viewport
+        const tickerEls = document.querySelectorAll('.ticker-content, .ticker-reverse');
+        if (tickerEls.length) {
+          const tickerObs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+              e.target.style.animationPlayState = e.isIntersecting ? 'running' : 'paused';
+            });
+          }, { threshold: 0 });
+          tickerEls.forEach(t => tickerObs.observe(t));
+        }
 
 
       })();
@@ -2251,12 +2530,15 @@ entirely in a browser sandbox.
       </div>
       <div class="features-grid">
 
-        <div class="feature-card">
+        <!-- Featured card — full width -->
+        <div class="feature-card feature-card--featured">
           <div class="feature-icon">
-            <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           </div>
-          <h3>Complete Runtime in Seconds</h3>
-          <p>Boot a FULL OpenClaw instance in your browser — complete with virtual filesystem, 40+ Node.js modules, and npm support. Just paste your API key and start coding. Zero install.</p>
+          <div>
+            <h3>Complete Runtime in Seconds</h3>
+            <p>Boot a FULL OpenClaw instance in your browser — complete with virtual filesystem, 40+ Node.js modules, and npm support. Just paste your API key and start coding. Zero install, zero server, zero Docker.</p>
+          </div>
         </div>
 
         <div class="feature-card">
@@ -2272,7 +2554,7 @@ entirely in a browser sandbox.
             <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
           </div>
           <h3>Real Node.js Container</h3>
-          <p>This isn't a demo — it's a real Node.js runtime with a virtual filesystem, 40+ shimmed modules, require(), npm packages, and full OpenClaw agent workspace. Powered by almostnode.</p>
+          <p>This isn't a demo — it's a real Node.js runtime with a virtual filesystem, 40+ shimmed modules, require(), npm packages, and full OpenClaw agent workspace.</p>
         </div>
 
         <div class="feature-card">
@@ -2299,11 +2581,11 @@ entirely in a browser sandbox.
           <p>Swap sandbox personalities in one click. TinyClaw multi-agent orchestrator, default Claw assistant, or build your own — different agents, skills, and system prompts per flavour.</p>
         </div>
 
-        <div class="feature-card">
+        <div class="feature-card feature-card--glass">
           <div class="feature-icon">
             <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           </div>
-          <h3>WebGPU Local LLM <span style="font-size:0.6rem;color:var(--text-dim);">(coming soon)</span></h3>
+          <h3>WebGPU Local LLM <span style="font-size:0.6rem;opacity:0.4;">(coming soon)</span></h3>
           <p>Run Qwen2.5-Coder 1.5B locally via WebGPU — no API key, no network. A fully self-contained coding agent in ~900MB.</p>
         </div>
 
@@ -2584,7 +2866,7 @@ entirely in a browser sandbox.
 
         var CHARS = '.,-~:;=!*#$@░▒▓█';
         var CL = CHARS.length;
-        var COLS = 200, ROWS = 112;
+        var COLS = 160, ROWS = 90;
         var cw = W / COLS, ch = H / ROWS;
         var fs = Math.max(11, Math.min(cw * 1.4, ch * 0.95));
 
@@ -2592,8 +2874,17 @@ entirely in a browser sandbox.
         var running = true;
         var raf = 0;
 
-        function render() {
-          if (!running) return;
+        var lastClawFrame = 0;
+        var CLAW_FPS = 12;
+        var CLAW_INTERVAL = 1000 / CLAW_FPS;
+
+        function render(ts) {
+          if (!running || document.hidden) return;
+          if (ts - lastClawFrame < CLAW_INTERVAL) {
+            raf = requestAnimationFrame(render);
+            return;
+          }
+          lastClawFrame = ts;
 
           ctx.clearRect(0, 0, W, H);
 
@@ -2736,13 +3027,23 @@ entirely in a browser sandbox.
         var obs = new IntersectionObserver(function(entries) {
           if (entries[0].isIntersecting) {
             running = true;
-            render();
+            raf = requestAnimationFrame(render);
           } else {
             running = false;
             cancelAnimationFrame(raf);
           }
         });
         obs.observe(cvs);
+
+        document.addEventListener('visibilitychange', function() {
+          if (document.hidden) {
+            running = false;
+            cancelAnimationFrame(raf);
+          } else if (cvs.getBoundingClientRect().top < window.innerHeight) {
+            running = true;
+            raf = requestAnimationFrame(render);
+          }
+        });
       }
 
       document.fonts.ready.then(init);
@@ -2840,6 +3141,17 @@ entirely in a browser sandbox.
         }, 8000);
       })();
     </script>
+  <!-- TinyClaw Chat Widget -->
+  <script type="module">
+    window.__clawdioMounted = true;
+    import { TinyClawWidget } from '/packages/tinyclaw-widget/src/index.ts';
+    new TinyClawWidget({
+      accent: '#ff5c5c',
+      title: 'Clawdio',
+      position: 'bottom-right',
+    }).mount();
+  </script>
+
   <script>
   // ── CRT barrel displacement map ──
   (function() {
@@ -2902,21 +3214,16 @@ entirely in a browser sandbox.
         vec2 c = uv - 0.5;
         float dist = length(c);
 
-        // Bloom: radial glow from center-ish
-        float bloom = exp(-dist * 2.2) * 0.28;
+        // Bloom: tight radial glow, very subtle
+        float bloom = exp(-dist * 5.0) * 0.06;
 
-        // Phosphor edge glow
-        float edgeGlow = smoothstep(0.5, 0.3, dist) * 0.12;
+        // Phosphor edge glow — barely there
+        float edgeGlow = smoothstep(0.5, 0.3, dist) * 0.03;
 
-        // Subtle scanline flicker
-        float scanline = sin(uv.y * 800.0) * 0.5 + 0.5;
-        float flicker = 0.97 + 0.03 * sin(u_time * 23.7 + uv.y * 3.0);
+        // Phosphor color: red-orange tint, no flicker (saves ALU)
+        vec3 col = vec3(1.0, 0.35, 0.2) * (bloom + edgeGlow);
 
-        // Phosphor color: red-orange tint
-        vec3 col = vec3(1.0, 0.35, 0.2) * (bloom + edgeGlow) * flicker;
-        col += vec3(1.0, 0.4, 0.2) * scanline * 0.008 * flicker;
-
-        gl_FragColor = vec4(col, (bloom + edgeGlow) * 0.9);
+        gl_FragColor = vec4(col, (bloom + edgeGlow) * 0.5);
       }`;
 
     function makeShader(type, src) {
@@ -2943,12 +3250,36 @@ entirely in a browser sandbox.
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 
     let t = 0;
-    (function loop() {
-      t += 0.016;
-      gl.uniform1f(uTime, t);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      requestAnimationFrame(loop);
-    })();
+    let bloomRaf = 0;
+    let lastBloom = 0;
+    const BLOOM_FPS = 8;
+    const BLOOM_INTERVAL = 1000 / BLOOM_FPS;
+
+    function bloomLoop(ts) {
+      if (document.hidden) { bloomRaf = requestAnimationFrame(bloomLoop); return; }
+      if (ts - lastBloom >= BLOOM_INTERVAL) {
+        t += 0.016;
+        gl.uniform1f(uTime, t);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        lastBloom = ts;
+      }
+      bloomRaf = requestAnimationFrame(bloomLoop);
+    }
+
+    // Pause bloom when CRT not in viewport
+    const bloomObs = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        bloomRaf = requestAnimationFrame(bloomLoop);
+      } else {
+        cancelAnimationFrame(bloomRaf);
+      }
+    });
+    bloomObs.observe(canvas);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) cancelAnimationFrame(bloomRaf);
+      else bloomRaf = requestAnimationFrame(bloomLoop);
+    });
   })();
   </script>
   </body>

@@ -1681,20 +1681,8 @@
       </defs>
     </svg>
     <div class="crt-monitor">
-      <div class="crt-bezel" id="crt-bezel">
-        <span class="crt-screw tl"></span><span class="crt-screw tr"></span>
-        <span class="crt-screw bl"></span><span class="crt-screw br"></span>
-        <div class="crt-brand-top">VibeClaw &nbsp;·&nbsp; OpenClaw Terminal &nbsp;·&nbsp; VB-1</div>
-        <div class="crt-screen-wrap" id="crt-screen-wrap">
-          <canvas id="crt-bloom"></canvas>
-          <div class="crt-scanlines"></div>
-          <div class="crt-vignette"></div>
-    <div class="pg" id="playground">
-      <div class="pg-shell">
-        <span class="pg-status" id="pg-status" style="display:none;"></span>
-
-        <!-- Credential bars (swap based on mode) -->
-        <div id="pg-creds-sandbox" style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--border);background:var(--black);">
+      <!-- Flavour bar — above the CRT bezel -->
+      <div id="pg-creds-sandbox" style="display:flex;align-items:center;gap:10px;padding:10px 4px 14px;">
           <label style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">Flavour</label>
           <select id="pg-flavour-select" style="display:none;">
             <option value="default">🦀 OpenClaw</option>
@@ -1729,8 +1717,18 @@
               });
             })();
           </script>
-
         </div>
+      <div class="crt-bezel" id="crt-bezel">
+        <span class="crt-screw tl"></span><span class="crt-screw tr"></span>
+        <span class="crt-screw bl"></span><span class="crt-screw br"></span>
+        <div class="crt-brand-top">VibeClaw &nbsp;·&nbsp; OpenClaw Terminal &nbsp;·&nbsp; VB-1</div>
+        <div class="crt-screen-wrap" id="crt-screen-wrap">
+          <canvas id="crt-bloom"></canvas>
+          <div class="crt-scanlines"></div>
+          <div class="crt-vignette"></div>
+    <div class="pg" id="playground">
+      <div class="pg-shell">
+        <span class="pg-status" id="pg-status" style="display:none;"></span>
 
 
         <div class="pg-body">
@@ -3204,7 +3202,6 @@ entirely in a browser sandbox.
     </script>
   <!-- TinyClaw Chat Widget -->
   <script type="module">
-    if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') throw new Error('Clawdio: non-local, skipping');
     window.__clawdioMounted = true;
     import { TinyClawWidget } from '/packages/tinyclaw-widget/src/index.ts';
     new TinyClawWidget({

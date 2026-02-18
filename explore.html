@@ -263,20 +263,32 @@
 
     /* Item Card */
     .item-card {
-      background: var(--surface);
+      background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%), var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 1rem;
-      transition: all 0.2s;
+      transition: all 0.22s ease;
       cursor: pointer;
       display: flex;
       flex-direction: column;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
     }
 
     .item-card:hover {
-      border-color: var(--border-hover);
-      background: var(--surface-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
     }
+
+    /* Per-type glow on hover */
+    .item-card:has(.badge-servers):hover  { box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(96,165,250,0.2), 0 0 20px rgba(96,165,250,0.08), inset 0 1px 0 rgba(96,165,250,0.06); border-color: rgba(96,165,250,0.3); }
+    .item-card:has(.badge-skills):hover   { box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(192,132,252,0.2), 0 0 20px rgba(192,132,252,0.08), inset 0 1px 0 rgba(192,132,252,0.06); border-color: rgba(192,132,252,0.3); }
+    .item-card:has(.badge-plugins):hover  { box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(251,146,60,0.2), 0 0 20px rgba(251,146,60,0.08), inset 0 1px 0 rgba(251,146,60,0.06); border-color: rgba(251,146,60,0.3); }
+    .item-card:has(.badge-tools):hover    { box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(74,222,128,0.2), 0 0 20px rgba(74,222,128,0.08), inset 0 1px 0 rgba(74,222,128,0.06); border-color: rgba(74,222,128,0.3); }
+    .item-card:has(.badge-models):hover   { box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(244,114,182,0.2), 0 0 20px rgba(244,114,182,0.08), inset 0 1px 0 rgba(244,114,182,0.06); border-color: rgba(244,114,182,0.3); }
+    .item-card:has(.badge-recipes):hover  { box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(250,204,21,0.2), 0 0 20px rgba(250,204,21,0.08), inset 0 1px 0 rgba(250,204,21,0.06); border-color: rgba(250,204,21,0.3); }
+    .item-card:has(.badge-knowledge):hover{ box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(34,211,238,0.2), 0 0 20px rgba(34,211,238,0.08), inset 0 1px 0 rgba(34,211,238,0.06); border-color: rgba(34,211,238,0.3); }
 
     .item-card-header {
       display: flex;

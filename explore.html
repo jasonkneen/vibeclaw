@@ -34,6 +34,15 @@
       color: var(--text);
       line-height: 1.6;
       overflow-x: hidden;
+      position: relative;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      pointer-events: none;
+      z-index: 1;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -747,6 +756,9 @@
     </style>
 </head>
 <body>
+  <div id="hero-bg" style="position:fixed;top:15%;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;overflow:hidden;">
+    <canvas id="hero-canvas" style="width:100%;height:100%;opacity:0.4;"></canvas>
+  </div>
 
   <!-- Nav -->
   <nav role="navigation" aria-label="Main navigation">
@@ -1382,5 +1394,73 @@
   <script>VibeclawAuth.init().then(function(){VibeclawAuth.renderButton('auth-container');});</script>
   <script src="/clawdio.js"></script>
 
+  <!-- ASCII Claw Background -->
+  <script>
+  (function() {
+    var cvs = document.getElementById('hero-canvas');
+    if (!cvs) return;
+    function init() {
+      var W = window.innerWidth, H = window.innerHeight;
+      if (!W || !H) return;
+      var dpr = window.devicePixelRatio || 1;
+      cvs.width = W * dpr; cvs.height = H * dpr;
+      var ctx = cvs.getContext('2d');
+      ctx.scale(dpr, dpr);
+      var CHARS = '.,-~:;=!*#$@░▒▓█', CL = CHARS.length;
+      var COLS = 160, ROWS = 90;
+      var cw = W / COLS, ch = H / ROWS;
+      var fs = Math.max(11, Math.min(cw * 1.4, ch * 0.95));
+      var A = 0.5, B = 0.3, running = true, raf = 0;
+      var lastFrame = 0, INTERVAL = 1000 / 12;
+      function render(ts) {
+        if (!running || document.hidden) return;
+        if (ts - lastFrame < INTERVAL) { raf = requestAnimationFrame(render); return; }
+        lastFrame = ts;
+        ctx.clearRect(0, 0, W, H);
+        var grad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W*0.45);
+        grad.addColorStop(0, 'rgba(255,60,60,0.12)'); grad.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+        var out = new Int8Array(COLS * ROWS), zb = new Float32Array(COLS * ROWS);
+        for (var k = 0; k < out.length; k++) out[k] = -1;
+        var sA = Math.sin(A), cA = Math.cos(A), sB = Math.sin(B), cB = Math.cos(B);
+        var clawOpen = 0.5 + 0.3 * Math.sin(A * 1.5), S = 2.8;
+        function plot(x,y,z,nx,ny,nz) {
+          x*=S;y*=S;z*=S;z*=0.65;nz*=0.65;
+          var ry=y*cA-z*sA,rz=y*sA+z*cA,rx=x*cB+rz*sB;rz=-x*sB+rz*cB;
+          var D=1/(rz+12),px=(COLS/2+120*D*rx)|0,py=(ROWS/2+60*D*ry)|0;
+          var rny=ny*cA-nz*sA,rnz=ny*sA+nz*cA,rnx=nx*cB+rnz*sB;rnz=-nx*sB+rnz*cB;
+          var key=rnx*0.4+rny*0.5+rnz*0.6,fill=-rnx*0.2+rny*0.3-rnz*0.2;
+          var light=Math.max(key,0)+Math.max(fill,0)*0.5+0.25;
+          var lum=Math.min(Math.max((light*CL)|0,0),CL-1);
+          var idx=px+COLS*py;
+          if(py>=0&&py<ROWS&&px>=0&&px<COLS&&D>zb[idx]){zb[idx]=D;out[idx]=lum;}
+        }
+        var R=2.2,maxP=Math.PI*0.85;
+        for(var side=-1;side<=1;side+=2){
+          for(var p=0;p<maxP;p+=0.005){
+            var frac=p/maxP,tubeR=1.1*(1-0.78*frac);
+            var cx2=R*(1-Math.cos(p)),cy2=(R*Math.sin(p)+clawOpen)*side;
+            var dtx=R*Math.sin(p),dty=R*Math.cos(p)*side,tl=Math.sqrt(dtx*dtx+dty*dty)||1;
+            dtx/=tl;dty/=tl;var nnx=-dty,nny=dtx;
+            for(var t=0;t<6.28;t+=0.02){var ct=Math.cos(t),st=Math.sin(t);plot(cx2+tubeR*ct*nnx,cy2+tubeR*ct*nny,tubeR*st,ct*nnx,ct*nny,st);}
+          }
+        }
+        var jR=1.3;
+        for(var p=0;p<3.14;p+=0.02){var sp=Math.sin(p),cp=Math.cos(p);for(var t=0;t<6.28;t+=0.02){var st=Math.sin(t),ct=Math.cos(t);plot(jR*sp*ct-0.4,jR*sp*st,jR*cp,sp*ct,sp*st,cp);}}
+        for(var p=0;p<3.5;p+=0.02){var aR=1.1-0.1*p,ax=-0.4-p*0.8;for(var t=0;t<6.28;t+=0.02){var ct=Math.cos(t),st=Math.sin(t);plot(ax,aR*ct,aR*st,0,ct,st);}}
+        ctx.font=fs+"px 'Fragment Mono','JetBrains Mono',monospace";
+        ctx.textBaseline='middle';ctx.textAlign='center';
+        for(var j=0;j<ROWS;j++){for(var i=0;i<COLS;i++){var ci=out[i+COLS*j];if(ci>=0){var b=ci/(CL-1);ctx.fillStyle='rgba(255,100,100,'+(0.85+b*0.15).toFixed(2)+')';ctx.shadowColor='#ff6666';ctx.shadowBlur=b>0?14+b*30:0;ctx.fillText(CHARS[ci],i*cw+cw/2,j*ch+ch/2);}}}
+        ctx.shadowBlur=0;
+        A+=0.002;B+=0.0015;
+        raf=requestAnimationFrame(render);
+      }
+      var obs=new IntersectionObserver(function(e){if(e[0].isIntersecting){running=true;raf=requestAnimationFrame(render);}else{running=false;cancelAnimationFrame(raf);}});
+      obs.observe(cvs);
+      document.addEventListener('visibilitychange',function(){if(document.hidden){running=false;cancelAnimationFrame(raf);}else{running=true;raf=requestAnimationFrame(render);}});
+    }
+    document.fonts.ready.then(init);
+  })();
+  </script>
 </body>
 </html>

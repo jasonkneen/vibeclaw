@@ -1004,7 +1004,10 @@
         const response = await fetch(`/api/items?${queryString}`);
         if (!response.ok) throw new Error('Failed to fetch items');
         const data = await response.json();
-        return Array.isArray(data) ? data : (data.items || []);
+        const apiItems = Array.isArray(data) ? data : (data.items || []);
+        // Fall back to cache if API returns empty (DB not seeded yet)
+        if (apiItems.length === 0) throw new Error('empty');
+        return apiItems;
       } catch {
         // Fall back to local cache
         const all = await loadCacheItems();

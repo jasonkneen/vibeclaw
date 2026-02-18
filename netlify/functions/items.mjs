@@ -12,7 +12,7 @@ function getLocalItems() {
     const cachePath = resolve(__dirname, '../../content/explore-cache.json');
     const cache = JSON.parse(readFileSync(cachePath, 'utf-8'));
     const items = [];
-    const typeMap = { servers:'server', skills:'skill', plugins:'plugin', tools:'tool', models:'model', recipes:'recipe', knowledge:'knowledge' };
+    const typeMap = { servers:'servers', skills:'skills', plugins:'plugins', tools:'tools', models:'models', recipes:'recipes', knowledge:'knowledge' };
     for (const [key, entries] of Object.entries(cache)) {
       if (key === 'meta' || !Array.isArray(entries)) continue;
       entries.forEach((entry, i) => {

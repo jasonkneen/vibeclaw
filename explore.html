@@ -1164,6 +1164,7 @@
     }
 
     function applyFiltersAndSort() {
+      currentPage = 0;
       // Filter
       filteredItems = activeTypes.size === 0
         ? [...allItems]

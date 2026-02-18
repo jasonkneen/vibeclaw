@@ -4,182 +4,1027 @@
     "description": "Curated explore page data — scraped from live directories"
   },
   "servers": [
-    { "name": "Brave Search", "url": "https://glama.ai/mcp/servers/@modelcontextprotocol/brave-search", "source": "glama.ai" },
-    { "name": "Filesystem", "url": "https://mcp.so/server/filesystem", "source": "mcp.so" },
-    { "name": "Puppeteer (browser automation)", "url": "https://mcp.so/server/puppeteer/modelcontextprotocol", "source": "mcp.so" },
-    { "name": "GitHub (official)", "url": "https://github.com/github/github-mcp-server", "source": "github" },
-    { "name": "Firecrawl (web scraping)", "url": "https://mcp.so/server/firecrawl-mcp-server/mendableai", "source": "mcp.so" },
-    { "name": "Sequential Thinking", "url": "https://mcp.so/server/sequentialthinking/modelcontextprotocol", "source": "mcp.so" },
-    { "name": "Playwright (Microsoft)", "url": "https://mcp.so/server/playwright-mcp/microsoft", "source": "mcp.so" },
-    { "name": "Context7 (live code docs)", "url": "https://github.com/upstash/context7", "source": "github" },
-    { "name": "Netdata (monitoring)", "url": "https://dxt.so/mcp-server/monitoring/netdata-mcp", "source": "dxt.so" },
-    { "name": "Fetch (web content)", "url": "https://dxt.so/mcp-server/search-and-data-extraction/fetch-mcp-server-mcp", "source": "dxt.so" },
-    { "name": "Daytona (code execution)", "url": "https://dxt.so/mcp-server/code-execution/daytona-mcp", "source": "dxt.so" },
-    { "name": "SafeLine (WAF)", "url": "https://dxt.so/mcp-server/security/safeline-mcp", "source": "dxt.so" },
-    { "name": "MCP Toolbox for Databases", "url": "https://dxt.so/mcp-server/developer-tools/mcp-toolbox-for-databases-mcp", "source": "dxt.so" },
-    { "name": "Klavis ReportGen", "url": "https://dxt.so/mcp-server/workplace-and-productivity/klavis-reportgen-mcp", "source": "dxt.so" },
-    { "name": "Vizro (charts & dashboards)", "url": "https://dxt.so/mcp-server/developer-tools/vizro-mcp", "source": "dxt.so" },
-    { "name": "Lingo.dev (localisation)", "url": "https://dxt.so/mcp-server/translation-services/lingo-dev-mcp", "source": "dxt.so" },
-    { "name": "LangChain MCP Adapters", "url": "https://dxt.so/mcp-server/developer-tools/langchain-mcp-adapters-mcp", "source": "dxt.so" },
-    { "name": "Tianji", "url": "https://dxt.so/mcp-server/developer-tools/tianji-mcp", "source": "dxt.so" },
-    { "name": "Exa Search", "url": "https://dxt.so/mcp-server/developer-tools/exa-mcp", "source": "dxt.so" },
-    { "name": "Supabase", "url": "https://dxt.so/mcp-server/developer-tools/supabase-mcp", "source": "dxt.so" },
-    { "name": "Perplexity", "url": "https://dxt.so/mcp-server/developer-tools/perplexity-mcp", "source": "dxt.so" },
-    { "name": "Nx (monorepo)", "url": "https://dxt.so/mcp-server/developer-tools/nx-mcp", "source": "dxt.so" },
-    { "name": "Grafana", "url": "https://dxt.so/mcp-server/developer-tools/grafana-mcp", "source": "dxt.so" },
-    { "name": "MindsDB", "url": "https://dxt.so/mcp-server/developer-tools/mindsdb-mcp", "source": "dxt.so" },
-    { "name": "Context7", "url": "https://dxt.so/mcp-server/coding-agents/context7-mcp", "source": "dxt.so" },
-    { "name": "GPT Researcher", "url": "https://dxt.so/mcp-server/search-and-data-extraction/gpt-researcher-mcp", "source": "dxt.so" },
-    { "name": "GitHub MCP", "url": "https://dxt.so/mcp-server/coding-agents/github-mcp", "source": "dxt.so" },
-    { "name": "Task Master", "url": "https://dxt.so/mcp-server/coding-agents/task-master-mcp", "source": "dxt.so" },
-    { "name": "Playwright MCP", "url": "https://dxt.so/mcp-server/browser-automation/playwright-mcp", "source": "dxt.so" },
-    { "name": "Gemini Fullstack LangGraph", "url": "https://dxt.so/mcp-server/coding-agents/gemini-fullstack-langgraph-mcp", "source": "dxt.so" },
-    { "name": "Graphiti (knowledge graphs)", "url": "https://dxt.so/mcp-server/developer-tools/graphiti-mcp", "source": "dxt.so" },
-    { "name": "FastMCP", "url": "https://dxt.so/mcp-server/developer-tools/fastmcp-mcp", "source": "dxt.so" },
-    { "name": "Browser MCP (UI-TARS)", "url": "https://dxt.so/mcp-server/browser-automation/browser-mcp-mcp", "source": "dxt.so" },
-    { "name": "LLMware (RAG)", "url": "https://dxt.so/mcp-server/developer-tools/llmware-mcp", "source": "dxt.so" },
-    { "name": "Skyvern (browser automation)", "url": "https://dxt.so/mcp-server/browser-automation/skyvern-mcp", "source": "dxt.so" },
-    { "name": "Blender MCP", "url": "https://dxt.so/mcp-server/developer-tools/blender-model-context-protocol-mcp", "source": "dxt.so" },
-    { "name": "Trigger.dev", "url": "https://dxt.so/mcp-server/developer-tools/trigger-dev-mcp", "source": "dxt.so" },
-    { "name": "Archon (agent builder)", "url": "https://dxt.so/mcp-server/coding-agents/archon-mcp", "source": "dxt.so" }
+    {
+      "name": "Brave Search",
+      "url": "https://glama.ai/mcp/servers/@modelcontextprotocol/brave-search",
+      "source": "glama.ai",
+      "description": "An MCP server implementation that integrates the Brave Search API, providing both web and local search capabilities."
+    },
+    {
+      "name": "Filesystem",
+      "url": "https://mcp.so/server/filesystem",
+      "source": "mcp.so",
+      "description": "Provides tools for reading, writing, and managing local files and directories via MCP. Supports recursive directory listing, file creation, and path-based access."
+    },
+    {
+      "name": "Puppeteer (browser automation)",
+      "url": "https://mcp.so/server/puppeteer/modelcontextprotocol",
+      "source": "mcp.so",
+      "description": "Browser automation via Puppeteer for Claude. Take screenshots, navigate pages, fill forms, and extract web content through a headless Chrome instance."
+    },
+    {
+      "name": "GitHub (official)",
+      "url": "https://github.com/github/github-mcp-server",
+      "source": "github",
+      "description": "GitHub's official MCP Server"
+    },
+    {
+      "name": "Firecrawl (web scraping)",
+      "url": "https://mcp.so/server/firecrawl-mcp-server/mendableai",
+      "source": "mcp.so",
+      "description": "Web scraping and crawling via Firecrawl. Converts websites into LLM-ready markdown, supports crawling entire sites, and handles JavaScript-rendered content."
+    },
+    {
+      "name": "Sequential Thinking",
+      "url": "https://mcp.so/server/sequentialthinking/modelcontextprotocol",
+      "source": "mcp.so",
+      "description": "Dynamic problem-solving through structured thought sequences. Breaks complex problems into sequential steps, enabling adaptive reasoning and multi-phase solutions."
+    },
+    {
+      "name": "Playwright (Microsoft)",
+      "url": "https://mcp.so/server/playwright-mcp/microsoft",
+      "source": "mcp.so",
+      "description": "Browser automation via Microsoft Playwright MCP. Interact with web pages, take screenshots, click elements, fill forms, and run accessibility checks."
+    },
+    {
+      "name": "Context7 (live code docs)",
+      "url": "https://github.com/upstash/context7",
+      "source": "github",
+      "description": "Context7 MCP Server -- Up-to-date code documentation for LLMs and AI code editors"
+    },
+    {
+      "name": "Netdata (monitoring)",
+      "url": "https://dxt.so/mcp-server/monitoring/netdata-mcp",
+      "source": "dxt.so",
+      "description": "Netdata: Netdata - Discovery, exploration, reporting and root cause analysis using all observability data, including metrics, logs, systems, containers, processes, and network connections"
+    },
+    {
+      "name": "Fetch (web content)",
+      "url": "https://dxt.so/mcp-server/search-and-data-extraction/fetch-mcp-server-mcp",
+      "source": "dxt.so",
+      "description": "Fetch MCP Server: mcp-server-fetch is an MCP server that empowers AI agents to fetch and process web content using methods like browser automation, OCR, HTML scraping, and document parsing. It output…"
+    },
+    {
+      "name": "Daytona (code execution)",
+      "url": "https://dxt.so/mcp-server/code-execution/daytona-mcp",
+      "source": "dxt.so",
+      "description": "Daytona: Daytona - Fast and secure execution of your AI generated code with Daytona sandboxes"
+    },
+    {
+      "name": "SafeLine (WAF)",
+      "url": "https://dxt.so/mcp-server/security/safeline-mcp",
+      "source": "dxt.so",
+      "description": "SafeLine: SafeLine - SafeLine is a self-hosted WAF(Web Application Firewall) to protect your web apps from attacks and exploits."
+    },
+    {
+      "name": "MCP Toolbox for Databases",
+      "url": "https://dxt.so/mcp-server/developer-tools/mcp-toolbox-for-databases-mcp",
+      "source": "dxt.so",
+      "description": "MCP Toolbox for Databases - Open source MCP server specializing in easy, fast, and secure tools for Databases. Supports AlloyDB, BigQuery, Bigtable, Cloud SQL, Dgraph, MySQ…"
+    },
+    {
+      "name": "Klavis ReportGen",
+      "url": "https://dxt.so/mcp-server/workplace-and-productivity/klavis-reportgen-mcp",
+      "source": "dxt.so",
+      "description": "Klavis ReportGen - Create professional reports from a simple user query."
+    },
+    {
+      "name": "Vizro (charts & dashboards)",
+      "url": "https://dxt.so/mcp-server/developer-tools/vizro-mcp",
+      "source": "dxt.so",
+      "description": "Vizro: Vizro - Tools and templates to create validated and maintainable data charts and dashboards"
+    },
+    {
+      "name": "Lingo.dev (localisation)",
+      "url": "https://dxt.so/mcp-server/translation-services/lingo-dev-mcp",
+      "source": "dxt.so",
+      "description": "Lingo.dev: Lingo.dev - Make your AI agent speak every language on the planet, using Lingo.dev Localization Engine."
+    },
+    {
+      "name": "LangChain MCP Adapters",
+      "url": "https://dxt.so/mcp-server/developer-tools/langchain-mcp-adapters-mcp",
+      "source": "dxt.so",
+      "description": "langchain-mcp-adapters: The langchain‑mcp‑adapters library bridges Anthropic’s Model Context Protocol (MCP) and LangChain/LangGraph. It converts MCP tools into compatible agents, connects across mult…"
+    },
+    {
+      "name": "Tianji",
+      "url": "https://dxt.so/mcp-server/developer-tools/tianji-mcp",
+      "source": "dxt.so",
+      "description": "Tianji - Interact with Tianji platform whatever selfhosted or cloud platform, powered by Tianji."
+    },
+    {
+      "name": "Exa Search",
+      "url": "https://dxt.so/mcp-server/developer-tools/exa-mcp",
+      "source": "dxt.so",
+      "description": "Exa: Exa - Search Engine made for AIs by Exa"
+    },
+    {
+      "name": "Supabase",
+      "url": "https://dxt.so/mcp-server/developer-tools/supabase-mcp",
+      "source": "dxt.so",
+      "description": "Supabase - Interact with Supabase: Create tables, query data, deploy edge functions, and more."
+    },
+    {
+      "name": "Perplexity",
+      "url": "https://dxt.so/mcp-server/developer-tools/perplexity-mcp",
+      "source": "dxt.so",
+      "description": "Perplexity - An MCP server that connects to Perplexity's Sonar API, enabling real-time web-wide research in conversational AI."
+    },
+    {
+      "name": "Nx (monorepo)",
+      "url": "https://dxt.so/mcp-server/developer-tools/nx-mcp",
+      "source": "dxt.so",
+      "description": "Nx: Nx - Makes Nx's understanding of your codebase accessible to LLMs, providing insights into the codebase architecture, project relationships and runnable tasks thus allowing AI to make precis…"
+    },
+    {
+      "name": "Grafana",
+      "url": "https://dxt.so/mcp-server/developer-tools/grafana-mcp",
+      "source": "dxt.so",
+      "description": "Grafana - Search dashboards, investigate incidents and query datasources in your Grafana instance"
+    },
+    {
+      "name": "MindsDB",
+      "url": "https://dxt.so/mcp-server/developer-tools/mindsdb-mcp",
+      "source": "dxt.so",
+      "description": "Build AI applications that can learn and answer questions over large-scale federated data sources using a federated query engine."
+    },
+    {
+      "name": "Context7",
+      "url": "https://dxt.so/mcp-server/coding-agents/context7-mcp",
+      "source": "dxt.so",
+      "description": "Fetches up-to-date documentation and code examples for LLMs and AI code editors directly from the source."
+    },
+    {
+      "name": "GPT Researcher",
+      "url": "https://dxt.so/mcp-server/search-and-data-extraction/gpt-researcher-mcp",
+      "source": "dxt.so",
+      "description": "Conducts in-depth web and local research on any topic, generating comprehensive reports with citations."
+    },
+    {
+      "name": "GitHub MCP",
+      "url": "https://dxt.so/mcp-server/coding-agents/github-mcp",
+      "source": "dxt.so",
+      "description": "GitHub: Enables advanced automation and interaction capabilities with GitHub APIs for developers and tools using the Model Context Protocol."
+    },
+    {
+      "name": "Task Master",
+      "url": "https://dxt.so/mcp-server/coding-agents/task-master-mcp",
+      "source": "dxt.so",
+      "description": "Streamline AI-driven development workflows by automating task management with Claude."
+    },
+    {
+      "name": "Playwright MCP",
+      "url": "https://dxt.so/mcp-server/browser-automation/playwright-mcp",
+      "source": "dxt.so",
+      "description": "Playwright: Automates browser interactions for Large Language Models (LLMs) using Playwright."
+    },
+    {
+      "name": "Gemini Fullstack LangGraph",
+      "url": "https://dxt.so/mcp-server/coding-agents/gemini-fullstack-langgraph-mcp",
+      "source": "dxt.so",
+      "description": "Builds fullstack AI agents leveraging Google Gemini models and LangGraph for advanced web research and conversational capabilities."
+    },
+    {
+      "name": "Graphiti (knowledge graphs)",
+      "url": "https://dxt.so/mcp-server/developer-tools/graphiti-mcp",
+      "source": "dxt.so",
+      "description": "Graphiti: Builds and queries temporally-aware knowledge graphs tailored for AI agents operating in dynamic environments."
+    },
+    {
+      "name": "FastMCP",
+      "url": "https://dxt.so/mcp-server/developer-tools/fastmcp-mcp",
+      "source": "dxt.so",
+      "description": "Facilitates the creation of Model Context Protocol (MCP) servers with a Pythonic interface."
+    },
+    {
+      "name": "Browser MCP (UI-TARS)",
+      "url": "https://dxt.so/mcp-server/browser-automation/browser-mcp-mcp",
+      "source": "dxt.so",
+      "description": "Browser MCP: Browser MCP (by UI-TARS) - A fast, lightweight MCP server that empowers LLMs with browser automation via Puppeteer’s structured accessibility data, featuring optional vision mode for com…"
+    },
+    {
+      "name": "LLMware (RAG)",
+      "url": "https://dxt.so/mcp-server/developer-tools/llmware-mcp",
+      "source": "dxt.so",
+      "description": "Llmware: Provides a unified framework for building enterprise Retrieval-Augmented Generation (RAG) pipelines with small, specialized models."
+    },
+    {
+      "name": "Skyvern (browser automation)",
+      "url": "https://dxt.so/mcp-server/browser-automation/skyvern-mcp",
+      "source": "dxt.so",
+      "description": "Skyvern: Automates browser-based workflows using LLMs and computer vision for robust and adaptable web interactions."
+    },
+    {
+      "name": "Blender MCP",
+      "url": "https://dxt.so/mcp-server/developer-tools/blender-model-context-protocol-mcp",
+      "source": "dxt.so",
+      "description": "Blender Model Context Protocol: Connects Blender to Claude AI, enabling prompt-assisted 3D modeling, scene creation, and manipulation."
+    },
+    {
+      "name": "Trigger.dev",
+      "url": "https://dxt.so/mcp-server/developer-tools/trigger-dev-mcp",
+      "source": "dxt.so",
+      "description": "Facilitates building and deploying fully-managed AI agents and long-running workflows with built-in durability and observability."
+    },
+    {
+      "name": "Archon (agent builder)",
+      "url": "https://dxt.so/mcp-server/coding-agents/archon-mcp",
+      "source": "dxt.so",
+      "description": "Archon: Autonomously builds, refines, and optimizes other AI agents using an advanced agentic coding workflow and framework knowledge base."
+    }
   ],
   "skills": [
-    { "name": "Dispatching Parallel Agents", "url": "https://agentskills.so/agent-skills/core-development-workflow/dispatching-parallel-agents-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "Executing Plans", "url": "https://agentskills.so/agent-skills/core-development-workflow/executing-plans-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "Finishing a Development Branch", "url": "https://agentskills.so/agent-skills/core-development-workflow/finishing-a-development-branch-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "Sharing Skills", "url": "https://agentskills.so/agent-skills/core-development-workflow/sharing-skills-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "Subagent Driven Development", "url": "https://agentskills.so/agent-skills/core-development-workflow/subagent-driven-development-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "Using Git Worktrees", "url": "https://agentskills.so/agent-skills/core-development-workflow/using-git-worktrees-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "Verification Before Completion", "url": "https://agentskills.so/agent-skills/core-development-workflow/verification-before-completion-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "Writing Plans", "url": "https://agentskills.so/agent-skills/core-development-workflow/writing-plans-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "Git Pushing", "url": "https://agentskills.so/agent-skills/core-development-workflow/git-pushing-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "Review Implementing", "url": "https://agentskills.so/agent-skills/core-development-workflow/review-implementing-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "Using Tmux for Interactive Commands", "url": "https://agentskills.so/agent-skills/core-development-workflow/using-tmux-for-interactive-commands-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "AWS CDK Development", "url": "https://agentskills.so/agent-skills/core-development-workflow/aws-cdk-development-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "Move Code Quality", "url": "https://agentskills.so/agent-skills/core-development-workflow/move-code-quality-agent-skill", "category": "Core Development & Workflow" },
-    { "name": "DOCX Document Handler", "url": "https://agentskills.so/agent-skills/document-file-processing/docx-document-handler-agent-skill", "category": "Document & File Processing" },
-    { "name": "PDF Handler", "url": "https://agentskills.so/agent-skills/document-file-processing/pdf-handler-agent-skill", "category": "Document & File Processing" },
-    { "name": "PPTX Presentation Handler", "url": "https://agentskills.so/agent-skills/document-file-processing/pptx-presentation-handler-agent-skill", "category": "Document & File Processing" },
-    { "name": "XLSX Spreadsheet Handler", "url": "https://agentskills.so/agent-skills/document-file-processing/xlsx-spreadsheet-handler-agent-skill", "category": "Document & File Processing" },
-    { "name": "Invoice Organizer", "url": "https://agentskills.so/agent-skills/document-file-processing/invoice-organizer-agent-skill", "category": "Document & File Processing" },
-    { "name": "File Organizer", "url": "https://agentskills.so/agent-skills/document-file-processing/file-organizer-agent-skill", "category": "Document & File Processing" },
-    { "name": "Article Extractor", "url": "https://agentskills.so/agent-skills/document-file-processing/article-extractor-agent-skill", "category": "Document & File Processing" },
-    { "name": "Markdown to EPUB Converter", "url": "https://agentskills.so/agent-skills/document-file-processing/markdown-to-epub-converter-agent-skill", "category": "Document & File Processing" },
-    { "name": "Web App Testing", "url": "https://agentskills.so/agent-skills/testing-quality-assurance/web-app-testing-agent-skill", "category": "Testing & QA" },
-    { "name": "Test Driven Development", "url": "https://agentskills.so/agent-skills/testing-quality-assurance/test-driven-development-agent-skill", "category": "Testing & QA" },
-    { "name": "Condition Based Waiting", "url": "https://agentskills.so/agent-skills/testing-quality-assurance/condition-based-waiting-agent-skill", "category": "Testing & QA" },
-    { "name": "Requesting Code Review", "url": "https://agentskills.so/agent-skills/testing-quality-assurance/requesting-code-review-agent-skill", "category": "Testing & QA" },
-    { "name": "Testing Anti-Patterns", "url": "https://agentskills.so/agent-skills/testing-quality-assurance/testing-anti-patterns-agent-skill", "category": "Testing & QA" },
-    { "name": "FFUF Web Fuzzing", "url": "https://agentskills.so/agent-skills/testing-quality-assurance/ffuf-web-fuzzing-agent-skill", "category": "Testing & QA" },
-    { "name": "Test Fixing", "url": "https://agentskills.so/agent-skills/testing-quality-assurance/test-fixing-agent-skill", "category": "Testing & QA" },
-    { "name": "PICT Test Designer", "url": "https://agentskills.so/agent-skills/testing-quality-assurance/pict-test-designer-agent-skill", "category": "Testing & QA" },
-    { "name": "Dask", "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/dask-agent-skill", "category": "Core Libraries & Frameworks" },
-    { "name": "Polars", "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/polars-agent-skill", "category": "Core Libraries & Frameworks" },
-    { "name": "PyTorch Lightning", "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/pytorch-lightning-agent-skill", "category": "Core Libraries & Frameworks" },
-    { "name": "Torch Geometric", "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/torch-geometric-agent-skill", "category": "Core Libraries & Frameworks" },
-    { "name": "Transformers", "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/transformers-agent-skill", "category": "Core Libraries & Frameworks" },
-    { "name": "Zarr Python", "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/zarr-python-agent-skill", "category": "Core Libraries & Frameworks" },
-    { "name": "Matplotlib", "url": "https://agentskills.so/agent-skills/data-analysis-visualization/matplotlib-agent-skill", "category": "Data Analysis & Visualization" },
-    { "name": "Seaborn", "url": "https://agentskills.so/agent-skills/data-analysis-visualization/seaborn-agent-skill", "category": "Data Analysis & Visualization" },
-    { "name": "Exploratory Data Analysis", "url": "https://agentskills.so/agent-skills/data-analysis-visualization/exploratory-data-analysis-agent-skill", "category": "Data Analysis & Visualization" },
-    { "name": "Scientific Visualization", "url": "https://agentskills.so/agent-skills/data-analysis-visualization/scientific-visualization-agent-skill", "category": "Data Analysis & Visualization" },
-    { "name": "CSV Data Summarizer", "url": "https://agentskills.so/agent-skills/data-analysis-visualization/csv-data-summarizer-agent-skill", "category": "Data Analysis & Visualization" },
-    { "name": "Skill Creator", "url": "https://agentskills.so/agent-skills/skill-creation-management/skill-creator-agent-skill", "category": "Skill Creation & Management" },
-    { "name": "Theme Factory", "url": "https://agentskills.so/agent-skills/skill-creation-management/theme-factory-agent-skill", "category": "Skill Creation & Management" },
-    { "name": "Testing Skills with Subagents", "url": "https://agentskills.so/agent-skills/skill-creation-management/testing-skills-with-subagents-agent-skill", "category": "Skill Creation & Management" },
-    { "name": "Writing Skills", "url": "https://agentskills.so/agent-skills/skill-creation-management/writing-skills-agent-skill", "category": "Skill Creation & Management" },
-    { "name": "Skill Customizer", "url": "https://agentskills.so/agent-skills/skill-creation-management/skill-customizer-agent-skill", "category": "Skill Creation & Management" },
-    { "name": "Slack GIF Creator", "url": "https://agentskills.so/agent-skills/image-video-processing/slack-gif-creator-agent-skill", "category": "Image & Video Processing" },
-    { "name": "Video Downloader", "url": "https://agentskills.so/agent-skills/image-video-processing/video-downloader-agent-skill", "category": "Image & Video Processing" },
-    { "name": "Image Enhancer", "url": "https://agentskills.so/agent-skills/image-video-processing/image-enhancer-agent-skill", "category": "Image & Video Processing" },
-    { "name": "YouTube Transcript", "url": "https://agentskills.so/agent-skills/image-video-processing/youtube-transcript-agent-skill", "category": "Image & Video Processing" },
-    { "name": "Brand Guidelines", "url": "https://agentskills.so/agent-skills/agent-skill-development/brand-guidelines-agent-skill", "category": "Agent & Skill Development" },
-    { "name": "Artifacts Builder", "url": "https://agentskills.so/agent-skills/agent-skill-development/artifacts-builder-agent-skill", "category": "Agent & Skill Development" },
-    { "name": "MCP Builder", "url": "https://agentskills.so/agent-skills/agent-skill-development/mcp-builder-agent-skill", "category": "Agent & Skill Development" },
-    { "name": "Ship Learn Next", "url": "https://agentskills.so/agent-skills/agent-skill-development/ship-learn-next-agent-skill", "category": "Agent & Skill Development" },
-    { "name": "Using Superpowers", "url": "https://agentskills.so/agent-skills/core-agent-behavior-workflow/using-superpowers-agent-skill", "category": "Core Agent Behavior & Workflow" },
-    { "name": "Context Initialization", "url": "https://agentskills.so/agent-skills/core-agent-behavior-workflow/context-initialization-agent-skill", "category": "Core Agent Behavior & Workflow" },
-    { "name": "Save Thread", "url": "https://agentskills.so/agent-skills/core-agent-behavior-workflow/save-thread-agent-skill", "category": "Core Agent Behavior & Workflow" },
-    { "name": "Search Memory", "url": "https://agentskills.so/agent-skills/core-agent-behavior-workflow/search-memory-agent-skill", "category": "Core Agent Behavior & Workflow" },
-    { "name": "SkillSync", "url": "https://github.com/AlfonsSkills/SkillSync", "category": "Agent Skills (GitHub)" },
-    { "name": "MATLAB Agent Skills", "url": "https://github.com/matlab/skills", "category": "Agent Skills (GitHub)" },
-    { "name": "structure-first", "url": "https://github.com/perhapsspy/structure-first", "category": "Agent Skills (GitHub)" },
-    { "name": "agent-skills-guide", "url": "https://github.com/zebbern/agent-skills-guide", "category": "Agent Skills (GitHub)" },
-    { "name": "ask (skill package manager)", "url": "https://github.com/yeasy/ask", "category": "Agent Skills (GitHub)" },
-    { "name": "context7-auto-research", "url": "https://github.com/BenedictKing/context7-auto-research", "category": "Agent Skills (GitHub)" },
-    { "name": "MCP Bundler Marketplace", "url": "https://github.com/eugenepyvovarov/mcpbundler-agent-skills-marketplace", "category": "Agent Skills (GitHub)" }
+    {
+      "name": "Dispatching Parallel Agents",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/dispatching-parallel-agents-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "Use when facing 3+ independent failures that can be investigated without shared state or dependencies - dispatches multiple Claude agents to investigate and fix independe…"
+    },
+    {
+      "name": "Executing Plans",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/executing-plans-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "Use when partner provides a complete implementation plan to execute in controlled batches with review checkpoints - loads plan, reviews critically, executes tasks in batches, reports…"
+    },
+    {
+      "name": "Finishing a Development Branch",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/finishing-a-development-branch-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured…"
+    },
+    {
+      "name": "Sharing Skills",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/sharing-skills-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "Use when you've developed a broadly useful skill and want to contribute it upstream via pull request - guides process of branching, committing, pushing, and creating PR to contri…"
+    },
+    {
+      "name": "Subagent Driven Development",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/subagent-driven-development-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "Subagent-Driven Development: Use when executing implementation plans with independent tasks in the current session - dispatches fresh subagent for each task with code review between tasks, enabling f…"
+    },
+    {
+      "name": "Using Git Worktrees",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/using-git-worktrees-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - creates isolated git worktrees with smart directory selectio…"
+    },
+    {
+      "name": "Verification Before Completion",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/verification-before-completion-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before ma…"
+    },
+    {
+      "name": "Writing Plans",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/writing-plans-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "Use when design is complete and you need detailed implementation tasks for engineers with zero codebase context - creates comprehensive implementation plans with exact file paths, comp…"
+    },
+    {
+      "name": "Git Pushing",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/git-pushing-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "git-pushing: Stage, commit, and push git changes with conventional commit messages. Use when user wants to commit and push changes, mentions pushing to remote, or asks to save and push their work. Al…"
+    },
+    {
+      "name": "Review Implementing",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/review-implementing-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "review-implementing: Process and implement code review feedback systematically. Use when user provides reviewer comments, PR feedback, code review notes, or asks to implement suggestions from reviews…"
+    },
+    {
+      "name": "Using Tmux for Interactive Commands",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/using-tmux-for-interactive-commands-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "using-tmux-for-interactive-commands: Use when you need to run interactive CLI tools (vim, git rebase -i, Python REPL, etc.) that require real-time input/output - provides tmux-based approach for cont…"
+    },
+    {
+      "name": "AWS CDK Development",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/aws-cdk-development-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "aws-cdk-development: This skill provides AWS CDK best practices, workflows, and patterns for building cloud infrastructure. Use this skill when working with AWS CDK constructs, stacks, or infrastruct…"
+    },
+    {
+      "name": "Move Code Quality",
+      "url": "https://agentskills.so/agent-skills/core-development-workflow/move-code-quality-agent-skill",
+      "category": "Core Development & Workflow",
+      "description": "move-code-quality: Analyzes Move language packages against the official Move Book Code Quality Checklist. Use this skill when reviewing Move code, checking Move 2024 Edition compliance, or analyzing…"
+    },
+    {
+      "name": "DOCX Document Handler",
+      "url": "https://agentskills.so/agent-skills/document-file-processing/docx-document-handler-agent-skill",
+      "category": "Document & File Processing",
+      "description": "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. When Claude needs to work with…"
+    },
+    {
+      "name": "PDF Handler",
+      "url": "https://agentskills.so/agent-skills/document-file-processing/pdf-handler-agent-skill",
+      "category": "Document & File Processing",
+      "description": "Comprehensive PDF manipulation toolkit for extracting text and tables, creating new PDFs, merging/splitting documents, and handling forms. When Claude needs to fill in a PDF form or prog…"
+    },
+    {
+      "name": "PPTX Presentation Handler",
+      "url": "https://agentskills.so/agent-skills/document-file-processing/pptx-presentation-handler-agent-skill",
+      "category": "Document & File Processing",
+      "description": "Presentation creation, editing, and analysis. When Claude needs to work with presentations (.pptx files) for: (1) Creating new presentations, (2) Modifying or editing conte…"
+    },
+    {
+      "name": "XLSX Spreadsheet Handler",
+      "url": "https://agentskills.so/agent-skills/document-file-processing/xlsx-spreadsheet-handler-agent-skill",
+      "category": "Document & File Processing",
+      "description": "Comprehensive spreadsheet creation, editing, and analysis with support for formulas, formatting, data analysis, and visualization. When Claude needs to work with spreadsheet…"
+    },
+    {
+      "name": "Invoice Organizer",
+      "url": "https://agentskills.so/agent-skills/document-file-processing/invoice-organizer-agent-skill",
+      "category": "Document & File Processing",
+      "description": "invoice-organizer: Automatically organizes invoices and receipts for tax preparation by reading messy files, extracting key information, renaming them consistently, and sorting them into logical fold…"
+    },
+    {
+      "name": "File Organizer",
+      "url": "https://agentskills.so/agent-skills/document-file-processing/file-organizer-agent-skill",
+      "category": "Document & File Processing",
+      "description": "file-organizer: Intelligently organizes your files and folders across your computer by understanding context, finding duplicates, suggesting better structures, and automating cleanup tasks. Reduces c…"
+    },
+    {
+      "name": "Article Extractor",
+      "url": "https://agentskills.so/agent-skills/document-file-processing/article-extractor-agent-skill",
+      "category": "Document & File Processing",
+      "description": "article-extractor: Extract clean article content from URLs (blog posts, articles, tutorials) and save as readable text. Use when user wants to download, extract, or save an article/blog post from a U…"
+    },
+    {
+      "name": "Markdown to EPUB Converter",
+      "url": "https://agentskills.so/agent-skills/document-file-processing/markdown-to-epub-converter-agent-skill",
+      "category": "Document & File Processing",
+      "description": "markdown-to-epub-converter: Convert markdown documents and chat summaries into formatted EPUB ebook files that can be read on any device or uploaded to Kindle."
+    },
+    {
+      "name": "Web App Testing",
+      "url": "https://agentskills.so/agent-skills/testing-quality-assurance/web-app-testing-agent-skill",
+      "category": "Testing & QA",
+      "description": "Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and…"
+    },
+    {
+      "name": "Test Driven Development",
+      "url": "https://agentskills.so/agent-skills/testing-quality-assurance/test-driven-development-agent-skill",
+      "category": "Testing & QA",
+      "description": "Test-Driven Development: Use when implementing any feature or bugfix, before writing implementation code - write the test first, watch it fail, write minimal code to pass; ensures tests actually veri…"
+    },
+    {
+      "name": "Condition Based Waiting",
+      "url": "https://agentskills.so/agent-skills/testing-quality-assurance/condition-based-waiting-agent-skill",
+      "category": "Testing & QA",
+      "description": "Condition-Based Waiting: Use when tests have race conditions, timing dependencies, or inconsistent pass/fail behavior - replaces arbitrary timeouts with condition polling to wait for actual state cha…"
+    },
+    {
+      "name": "Requesting Code Review",
+      "url": "https://agentskills.so/agent-skills/testing-quality-assurance/requesting-code-review-agent-skill",
+      "category": "Testing & QA",
+      "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements - dispatches superpowers:code-reviewer subagent to review implement…"
+    },
+    {
+      "name": "Testing Anti-Patterns",
+      "url": "https://agentskills.so/agent-skills/testing-quality-assurance/testing-anti-patterns-agent-skill",
+      "category": "Testing & QA",
+      "description": "Use when writing or changing tests, adding mocks, or tempted to add test-only methods to production code - prevents testing mock behavior, production pollution with test-only m…"
+    },
+    {
+      "name": "FFUF Web Fuzzing",
+      "url": "https://agentskills.so/agent-skills/testing-quality-assurance/ffuf-web-fuzzing-agent-skill",
+      "category": "Testing & QA",
+      "description": "ffuf-web-fuzzing: Expert guidance for ffuf web fuzzing during penetration testing, including authenticated fuzzing with raw requests, auto-calibration, and result analysis"
+    },
+    {
+      "name": "Test Fixing",
+      "url": "https://agentskills.so/agent-skills/testing-quality-assurance/test-fixing-agent-skill",
+      "category": "Testing & QA",
+      "description": "test-fixing: Run tests and systematically fix all failing tests using smart error grouping. Use when user asks to fix failing tests, mentions test failures, runs test suite and failures occur, or req…"
+    },
+    {
+      "name": "PICT Test Designer",
+      "url": "https://agentskills.so/agent-skills/testing-quality-assurance/pict-test-designer-agent-skill",
+      "category": "Testing & QA",
+      "description": "pict-test-designer: Design comprehensive test cases using PICT (Pairwise Independent Combinatorial Testing) for any piece of requirements or code. Analyzes inputs, generates PICT models with paramete…"
+    },
+    {
+      "name": "Dask",
+      "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/dask-agent-skill",
+      "category": "Core Libraries & Frameworks",
+      "description": "dask: Parallel/distributed computing. Scale pandas/NumPy beyond memory, parallel DataFrames/Arrays, multi-file processing, task graphs, for larger-than-RAM datasets and parallel workflows."
+    },
+    {
+      "name": "Polars",
+      "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/polars-agent-skill",
+      "category": "Core Libraries & Frameworks",
+      "description": "polars: Fast DataFrame library (Apache Arrow). Select, filter, group_by, joins, lazy evaluation, CSV/Parquet I/O, expression API, for high-performance data analysis workflows."
+    },
+    {
+      "name": "PyTorch Lightning",
+      "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/pytorch-lightning-agent-skill",
+      "category": "Core Libraries & Frameworks",
+      "description": "pytorch-lightning: Deep learning framework (PyTorch Lightning). Organize PyTorch code into LightningModules, configure Trainers for multi-GPU/TPU, implement data pipelines, callbacks, logging (W&B, T…"
+    },
+    {
+      "name": "Torch Geometric",
+      "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/torch-geometric-agent-skill",
+      "category": "Core Libraries & Frameworks",
+      "description": "torch-geometric: Graph Neural Networks (PyG). Node/graph classification, link prediction, GCN, GAT, GraphSAGE, heterogeneous graphs, molecular property prediction, for geometric deep learning."
+    },
+    {
+      "name": "Transformers",
+      "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/transformers-agent-skill",
+      "category": "Core Libraries & Frameworks",
+      "description": "transformers: Work with state-of-the-art machine learning models for NLP, computer vision, audio, and multimodal tasks using HuggingFace Transformers. This skill should be used when fine-tuning pre-t…"
+    },
+    {
+      "name": "Zarr Python",
+      "url": "https://agentskills.so/agent-skills/core-libraries-frameworks/zarr-python-agent-skill",
+      "category": "Core Libraries & Frameworks",
+      "description": "zarr-python: Chunked N-D arrays for cloud storage. Compressed arrays, parallel I/O, S3/GCS integration, NumPy/Dask/Xarray compatible, for large-scale scientific computing pipelines."
+    },
+    {
+      "name": "Matplotlib",
+      "url": "https://agentskills.so/agent-skills/data-analysis-visualization/matplotlib-agent-skill",
+      "category": "Data Analysis & Visualization",
+      "description": "matplotlib: Foundational plotting library. Create line plots, scatter, bar, histograms, heatmaps, 3D, subplots, export PNG/PDF/SVG, for scientific visualization and publication figures."
+    },
+    {
+      "name": "Seaborn",
+      "url": "https://agentskills.so/agent-skills/data-analysis-visualization/seaborn-agent-skill",
+      "category": "Data Analysis & Visualization",
+      "description": "seaborn: Statistical visualization. Scatter, box, violin, heatmaps, pair plots, regression, correlation matrices, KDE, faceted plots, for exploratory analysis and publication figures."
+    },
+    {
+      "name": "Exploratory Data Analysis",
+      "url": "https://agentskills.so/agent-skills/data-analysis-visualization/exploratory-data-analysis-agent-skill",
+      "category": "Data Analysis & Visualization",
+      "description": "exploratory-data-analysis: EDA toolkit. Analyze CSV/Excel/JSON/Parquet files, statistical summaries, distributions, correlations, outliers, missing data, visualizations, markdown reports, for data pr…"
+    },
+    {
+      "name": "Scientific Visualization",
+      "url": "https://agentskills.so/agent-skills/data-analysis-visualization/scientific-visualization-agent-skill",
+      "category": "Data Analysis & Visualization",
+      "description": "scientific-visualization: Create publication figures with matplotlib/seaborn/plotly. Multi-panel layouts, error bars, significance markers, colorblind-safe, export PDF/EPS/TIFF, for journal-ready sci…"
+    },
+    {
+      "name": "CSV Data Summarizer",
+      "url": "https://agentskills.so/agent-skills/data-analysis-visualization/csv-data-summarizer-agent-skill",
+      "category": "Data Analysis & Visualization",
+      "description": "csv-data-summarizer: Analyzes CSV files, generates summary stats, and plots quick visualizations using Python and pandas."
+    },
+    {
+      "name": "Skill Creator",
+      "url": "https://agentskills.so/agent-skills/skill-creation-management/skill-creator-agent-skill",
+      "category": "Skill Creation & Management",
+      "description": "Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with speciali…"
+    },
+    {
+      "name": "Theme Factory",
+      "url": "https://agentskills.so/agent-skills/skill-creation-management/theme-factory-agent-skill",
+      "category": "Skill Creation & Management",
+      "description": "Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. There are 10 pre-set themes with colors/fonts that you can apply t…"
+    },
+    {
+      "name": "Testing Skills with Subagents",
+      "url": "https://agentskills.so/agent-skills/skill-creation-management/testing-skills-with-subagents-agent-skill",
+      "category": "Skill Creation & Management",
+      "description": "Use when creating or editing skills, before deployment, to verify they work under pressure and resist rationalization - applies RED-GREEN-REFACTOR cycle to process docu…"
+    },
+    {
+      "name": "Writing Skills",
+      "url": "https://agentskills.so/agent-skills/skill-creation-management/writing-skills-agent-skill",
+      "category": "Skill Creation & Management",
+      "description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment - applies TDD to process documentation by testing with subagents before writing, iter…"
+    },
+    {
+      "name": "Skill Customizer",
+      "url": "https://agentskills.so/agent-skills/skill-creation-management/skill-customizer-agent-skill",
+      "category": "Skill Creation & Management",
+      "description": "skill-customizer: Customize existing skills through iterative improvement based on user feedback and preferences. Use when users want to personalize a skill to match their specific workflow, output p…"
+    },
+    {
+      "name": "Slack GIF Creator",
+      "url": "https://agentskills.so/agent-skills/image-video-processing/slack-gif-creator-agent-skill",
+      "category": "Image & Video Processing",
+      "description": "Toolkit for creating animated GIFs optimized for Slack, with validators for size constraints and composable animation primitives. This skill applies when users request animated GIF…"
+    },
+    {
+      "name": "Video Downloader",
+      "url": "https://agentskills.so/agent-skills/image-video-processing/video-downloader-agent-skill",
+      "category": "Image & Video Processing",
+      "description": "video-downloader: Downloads videos from YouTube and other platforms for offline viewing, editing, or archival. Handles various formats and quality options."
+    },
+    {
+      "name": "Image Enhancer",
+      "url": "https://agentskills.so/agent-skills/image-video-processing/image-enhancer-agent-skill",
+      "category": "Image & Video Processing",
+      "description": "image-enhancer: Improves the quality of images, especially screenshots, by enhancing resolution, sharpness, and clarity. Perfect for preparing images for presentations, documentation, or social media…"
+    },
+    {
+      "name": "YouTube Transcript",
+      "url": "https://agentskills.so/agent-skills/image-video-processing/youtube-transcript-agent-skill",
+      "category": "Image & Video Processing",
+      "description": "youtube-transcript: Download YouTube video transcripts when user provides a YouTube URL or asks to download/get/fetch a transcript from YouTube. Also use when user wants to transcribe or get captions…"
+    },
+    {
+      "name": "Brand Guidelines",
+      "url": "https://agentskills.so/agent-skills/agent-skill-development/brand-guidelines-agent-skill",
+      "category": "Agent & Skill Development",
+      "description": "Applies Anthropic's official brand colors and typography to any sort of artifact that may benefit from having Anthropic's look-and-feel. Use it when brand colors or style…"
+    },
+    {
+      "name": "Artifacts Builder",
+      "url": "https://agentskills.so/agent-skills/agent-skill-development/artifacts-builder-agent-skill",
+      "category": "Agent & Skill Development",
+      "description": "Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies (React, Tailwind CSS, shadcn/ui). Use for complex artifacts r…"
+    },
+    {
+      "name": "MCP Builder",
+      "url": "https://agentskills.so/agent-skills/agent-skill-development/mcp-builder-agent-skill",
+      "category": "Agent & Skill Development",
+      "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to int…"
+    },
+    {
+      "name": "Ship Learn Next",
+      "url": "https://agentskills.so/agent-skills/agent-skill-development/ship-learn-next-agent-skill",
+      "category": "Agent & Skill Development",
+      "description": "ship-learn-next: Transform learning content (like YouTube transcripts, articles, tutorials) into actionable implementation plans using the Ship-Learn-Next framework. Use when user wants to turn advic…"
+    },
+    {
+      "name": "Using Superpowers",
+      "url": "https://agentskills.so/agent-skills/core-agent-behavior-workflow/using-superpowers-agent-skill",
+      "category": "Core Agent Behavior & Workflow",
+      "description": "Use when starting any conversation - establishes mandatory workflows for finding and using skills, including using Read tool before announcing usage, following brainstorming before…"
+    },
+    {
+      "name": "Context Initialization",
+      "url": "https://agentskills.so/agent-skills/core-agent-behavior-workflow/context-initialization-agent-skill",
+      "category": "Core Agent Behavior & Workflow",
+      "description": "context-initialization: Always Auto-invoked skill that creates/updates workspace AGENTS.md to instruct the agent to always search for existing skills before attempting any scientific task."
+    },
+    {
+      "name": "Save Thread",
+      "url": "https://agentskills.so/agent-skills/core-agent-behavior-workflow/save-thread-agent-skill",
+      "category": "Core Agent Behavior & Workflow",
+      "description": "Save complete conversation as checkpoint. Only when user explicitly requests ("
+    },
+    {
+      "name": "Search Memory",
+      "url": "https://agentskills.so/agent-skills/core-agent-behavior-workflow/search-memory-agent-skill",
+      "category": "Core Agent Behavior & Workflow",
+      "description": "Search memory store when past insights would improve response. Recognize when user"
+    },
+    {
+      "name": "SkillSync",
+      "url": "https://github.com/AlfonsSkills/SkillSync",
+      "category": "Agent Skills (GitHub)",
+      "description": "Sync skills from Git repositories to local AI coding tools (Gemini CLI / Claude Code / Codex CLI ... )"
+    },
+    {
+      "name": "MATLAB Agent Skills",
+      "url": "https://github.com/matlab/skills",
+      "category": "Agent Skills (GitHub)",
+      "description": "A collection of Agent Skills for MATLAB development. Skills are specialized instruction sets that extend a coding agent's capabilities for specific tasks, automatically activating when needed."
+    },
+    {
+      "name": "structure-first",
+      "url": "https://github.com/perhapsspy/structure-first",
+      "category": "Agent Skills (GitHub)",
+      "description": "A structure-first agent skill for readable, composable code."
+    },
+    {
+      "name": "agent-skills-guide",
+      "url": "https://github.com/zebbern/agent-skills-guide",
+      "category": "Agent Skills (GitHub)",
+      "description": "Guide for creating agent skill files, with examples, templates, and best practices for building custom agent capabilities"
+    },
+    {
+      "name": "ask (skill package manager)",
+      "url": "https://github.com/yeasy/ask",
+      "category": "Agent Skills (GitHub)",
+      "description": "The most powerful Package Manager for Agents Skills: search, query and install/uninstall in seconds!"
+    },
+    {
+      "name": "context7-auto-research",
+      "url": "https://github.com/BenedictKing/context7-auto-research",
+      "category": "Agent Skills (GitHub)",
+      "description": "Auto-research skill for Context7 - Automatically fetches up-to-date documentation when users ask about libraries and frameworks"
+    },
+    {
+      "name": "MCP Bundler Marketplace",
+      "url": "https://github.com/eugenepyvovarov/mcpbundler-agent-skills-marketplace",
+      "category": "Agent Skills (GitHub)",
+      "description": "agent skills marketplace for mcp bundler(can be used with other ai tools with support of agent skills markeplaces). some skills are mine, also borrowed skills(credited to authors)"
+    }
   ],
   "plugins": [
-    { "name": "agent-sdk-dev", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/agent-sdk-dev", "source": "claude-code" },
-    { "name": "claude-opus-4-5-migration", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/claude-opus-4-5-migration", "source": "claude-code" },
-    { "name": "code-review", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/code-review", "source": "claude-code" },
-    { "name": "commit-commands", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/commit-commands", "source": "claude-code" },
-    { "name": "explanatory-output-style", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/explanatory-output-style", "source": "claude-code" },
-    { "name": "feature-dev", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev", "source": "claude-code" },
-    { "name": "frontend-design", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design", "source": "claude-code" },
-    { "name": "hookify", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/hookify", "source": "claude-code" },
-    { "name": "learning-output-style", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/learning-output-style", "source": "claude-code" },
-    { "name": "plugin-dev", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev", "source": "claude-code" },
-    { "name": "pr-review-toolkit", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/pr-review-toolkit", "source": "claude-code" },
-    { "name": "ralph-wiggum", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum", "source": "claude-code" },
-    { "name": "security-guidance", "url": "https://github.com/anthropics/claude-code/tree/main/plugins/security-guidance", "source": "claude-code" },
-    { "name": "Embedbase", "url": "https://github.com/different-ai/embedbase", "source": "chatgpt-plugins" },
-    { "name": "LLM Code Interpreter (E2B)", "url": "https://github.com/e2b-dev/llm-code-interpreter", "source": "chatgpt-plugins" },
-    { "name": "CodeSherpa", "url": "https://github.com/iamgreggarcia/codesherpa", "source": "chatgpt-plugins" },
-    { "name": "LeanDojo ChatGPT (theorem proving)", "url": "https://github.com/lean-dojo/LeanDojoChatGPT", "source": "chatgpt-plugins" },
-    { "name": "datasette-chatgpt-plugin", "url": "https://github.com/simonw/datasette-chatgpt-plugin", "source": "chatgpt-plugins" },
-    { "name": "Dangermode (IPython/Jupyter)", "url": "https://github.com/rgbkrk/dangermode", "source": "chatgpt-plugins" },
-    { "name": "Pandora (files + commands)", "url": "https://github.com/dave1010/pandora", "source": "chatgpt-plugins" },
-    { "name": "EthGPT (Ethereum/EVM)", "url": "https://github.com/xinbenlv/ethgpt", "source": "chatgpt-plugins" }
+    {
+      "name": "agent-sdk-dev",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/agent-sdk-dev",
+      "source": "claude-code",
+      "description": "A comprehensive plugin for creating and verifying Claude Agent SDK applications in Python and TypeScript. The Agent SDK Development Plugin streamlines the entire lifecycle of building Agent SDK appli…"
+    },
+    {
+      "name": "claude-opus-4-5-migration",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/claude-opus-4-5-migration",
+      "source": "claude-code",
+      "description": "Migrate your code and prompts from Sonnet 4.x and Opus 4.1 to Opus 4.5. This skill updates your code and prompts to be compatible with Opus 4.5. It automates the migration process, handling model str…"
+    },
+    {
+      "name": "code-review",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/code-review",
+      "source": "claude-code",
+      "description": "Automated code review for pull requests using multiple specialized agents with confidence-based scoring to filter false positives. The Code Review Plugin automates pull request review by launching mu…"
+    },
+    {
+      "name": "commit-commands",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/commit-commands",
+      "source": "claude-code",
+      "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests. The Commit Commands Plugin automates common git operations, reducing context switching and manua…"
+    },
+    {
+      "name": "explanatory-output-style",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/explanatory-output-style",
+      "source": "claude-code",
+      "description": "This plugin recreates the deprecated Explanatory output style as a SessionStart hook. WARNING: Do not install this plugin unless you are fine with incurring the token"
+    },
+    {
+      "name": "feature-dev",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev",
+      "source": "claude-code",
+      "description": "A comprehensive, structured workflow for feature development with specialized agents for codebase exploration, architecture design, and quality review. The Feature Development Plugin provides a syste…"
+    },
+    {
+      "name": "frontend-design",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design",
+      "source": "claude-code",
+      "description": "Generates distinctive, production-grade frontend interfaces that avoid generic AI aesthetics. Claude automatically uses this skill for frontend work. Creates production-ready code with: - Bold aesthe…"
+    },
+    {
+      "name": "hookify",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/hookify",
+      "source": "claude-code",
+      "description": "Easily create custom hooks to prevent unwanted behaviors by analyzing conversation patterns or from explicit instructions. The hookify plugin makes it simple to create hooks without editing complex `…"
+    },
+    {
+      "name": "learning-output-style",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/learning-output-style",
+      "source": "claude-code",
+      "description": "This plugin combines the unshipped Learning output style with explanatory functionality as a SessionStart hook. **Note:** This plugin differs from the original unshipped Learning output style by also…"
+    },
+    {
+      "name": "plugin-dev",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev",
+      "source": "claude-code",
+      "description": "A comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks, MCP integration, plugin structure, and marketplace publishing. The plugin-dev toolkit provides seven speciali…"
+    },
+    {
+      "name": "pr-review-toolkit",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/pr-review-toolkit",
+      "source": "claude-code",
+      "description": "A comprehensive collection of specialized agents for thorough pull request review, covering code comments, test coverage, error handling, type design, code quality, and code simplification. This plug…"
+    },
+    {
+      "name": "ralph-wiggum",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum",
+      "source": "claude-code",
+      "description": "Implementation of the Ralph Wiggum technique for iterative, self-referential AI development loops in Claude Code. Ralph is a development methodology based on continuous AI agent loops. As Geoffrey Hu…"
+    },
+    {
+      "name": "security-guidance",
+      "url": "https://github.com/anthropics/claude-code/tree/main/plugins/security-guidance",
+      "source": "claude-code",
+      "description": "Security reminder hook that warns about potential security issues when editing files, including command injection, XSS, and unsafe code patterns"
+    },
+    {
+      "name": "Embedbase",
+      "url": "https://github.com/different-ai/embedbase",
+      "source": "chatgpt-plugins",
+      "description": "A dead-simple API to build LLM-powered apps"
+    },
+    {
+      "name": "LLM Code Interpreter (E2B)",
+      "url": "https://github.com/e2b-dev/llm-code-interpreter",
+      "source": "chatgpt-plugins",
+      "description": "[DEPRECATED] Powered by AI Playgrounds by E2B. Code interpreter on steroids for ChatGPT. Run any language, any terminal process, use filesystem freely. All with access to the internet."
+    },
+    {
+      "name": "CodeSherpa",
+      "url": "https://github.com/iamgreggarcia/codesherpa",
+      "source": "chatgpt-plugins",
+      "description": "A code interpreter and ChatGPT plugin."
+    },
+    {
+      "name": "LeanDojo ChatGPT (theorem proving)",
+      "url": "https://github.com/lean-dojo/LeanDojoChatGPT",
+      "source": "chatgpt-plugins",
+      "description": "ChatGPT plugin for theorem proving in Lean"
+    },
+    {
+      "name": "datasette-chatgpt-plugin",
+      "url": "https://github.com/simonw/datasette-chatgpt-plugin",
+      "source": "chatgpt-plugins",
+      "description": "A Datasette plugin that turns a Datasette instance into a ChatGPT plugin"
+    },
+    {
+      "name": "Dangermode (IPython/Jupyter)",
+      "url": "https://github.com/rgbkrk/dangermode",
+      "source": "chatgpt-plugins",
+      "description": "Execute IPython & Jupyter from the comforts of chat.openai.com"
+    },
+    {
+      "name": "Pandora (files + commands)",
+      "url": "https://github.com/dave1010/pandora",
+      "source": "chatgpt-plugins",
+      "description": "ChatGPT Coding Unleashed! Pandora gives ChatGPT the ability to read and write files and run commands on your machine."
+    },
+    {
+      "name": "EthGPT (Ethereum/EVM)",
+      "url": "https://github.com/xinbenlv/ethgpt",
+      "source": "chatgpt-plugins",
+      "description": "ChatGPT Plugin for Ethereum and EVM dApp / smart contract functionalities"
+    }
   ],
   "tools": [
-    { "name": "GitHub Copilot", "url": "https://www.futurepedia.io/tool/copilot", "source": "futurepedia" },
-    { "name": "Tabnine", "url": "https://www.futurepedia.io/tool/tabnine", "source": "futurepedia" },
-    { "name": "Qodo (code review + tests)", "url": "https://www.futurepedia.io/tool/qodo", "source": "futurepedia" },
-    { "name": "Windsurf", "url": "https://www.futurepedia.io/tool/windsurf", "source": "futurepedia" },
-    { "name": "AI2SQL", "url": "https://www.futurepedia.io/tool/ai2sql", "source": "futurepedia" },
-    { "name": "OSSInsight", "url": "https://www.futurepedia.io/tool/oss-insight", "source": "futurepedia" },
-    { "name": "Browse AI (web scraping)", "url": "https://www.futurepedia.io/tool/browse-ai", "source": "futurepedia" },
-    { "name": "CodeRabbit", "url": "https://theresanaiforthat.com/ai/coderabbit/", "source": "theresanaiforthat" },
-    { "name": "Akkio (no-code ML)", "url": "https://www.futurepedia.io/tool/akkio", "source": "futurepedia" }
+    {
+      "name": "GitHub Copilot",
+      "url": "https://www.futurepedia.io/tool/copilot",
+      "source": "futurepedia",
+      "description": "AI tool offers real-time code suggestions and contextual assistance."
+    },
+    {
+      "name": "Tabnine",
+      "url": "https://www.futurepedia.io/tool/tabnine",
+      "source": "futurepedia",
+      "description": "Unlock rapid, secure coding with AI-driven personalized suggestions across IDEs."
+    },
+    {
+      "name": "Qodo (code review + tests)",
+      "url": "https://www.futurepedia.io/tool/qodo",
+      "source": "futurepedia",
+      "description": "Automates code reviews, test generation, and quality assurance."
+    },
+    {
+      "name": "Windsurf",
+      "url": "https://www.futurepedia.io/tool/windsurf",
+      "source": "futurepedia",
+      "description": "Streamline coding with predictive AI, deployment, and integration."
+    },
+    {
+      "name": "AI2SQL",
+      "url": "https://www.futurepedia.io/tool/ai2sql",
+      "source": "futurepedia",
+      "description": "Transforms natural language into SQL queries effortlessly."
+    },
+    {
+      "name": "OSSInsight",
+      "url": "https://www.futurepedia.io/tool/oss-insight",
+      "source": "futurepedia",
+      "description": "Unleash GitHub data insights with AI-powered SQL and real-time analytics."
+    },
+    {
+      "name": "Browse AI (web scraping)",
+      "url": "https://www.futurepedia.io/tool/browse-ai",
+      "source": "futurepedia",
+      "description": "Effortlessly extract and monitor web data without coding, boosting productivity and insights."
+    },
+    {
+      "name": "CodeRabbit",
+      "url": "https://theresanaiforthat.com/ai/coderabbit/",
+      "source": "theresanaiforthat",
+      "description": "Supercharge your entire team with AI-driven contextual feedback on the Pull requests. CodeRabbit provides instant PR summaries, intelligent code walkthroughs, and 1-click commit suggestions. It avoid…"
+    },
+    {
+      "name": "Akkio (no-code ML)",
+      "url": "https://www.futurepedia.io/tool/akkio",
+      "source": "futurepedia",
+      "description": "Transform data into predictive power effortlessly, no coding needed."
+    }
   ],
   "models": [
-    { "name": "MiniMax-M2.5", "url": "https://openrouter.ai/minimax/minimax-m2.5", "context": "197K", "pricing": "$0.30/$1.10 per M tokens", "source": "openrouter" },
-    { "name": "Kimi K2.5", "url": "https://openrouter.ai/moonshotai/kimi-k2.5", "context": "262K", "pricing": "$0.23/$3.00 per M tokens", "source": "openrouter" },
-    { "name": "GLM-5 (Z.ai)", "url": "https://openrouter.ai/z-ai/glm-5", "context": "205K", "pricing": "$0.30/$2.55 per M tokens", "source": "openrouter" },
-    { "name": "Gemini 3 Flash Preview", "url": "https://openrouter.ai/google/gemini-3-flash-preview", "context": "1.05M", "pricing": "$0.50/$3.00 per M tokens", "source": "openrouter" },
-    { "name": "DeepSeek-V3.2", "url": "https://openrouter.ai/deepseek/deepseek-v3.2", "context": "164K", "pricing": "$0.26/$0.38 per M tokens", "source": "openrouter" },
-    { "name": "Claude Sonnet 4.5", "url": "https://openrouter.ai/anthropic/claude-sonnet-4.5", "context": "1M", "pricing": "$3/$15 per M tokens", "source": "openrouter" },
-    { "name": "Claude Opus 4.6", "url": "https://openrouter.ai/anthropic/claude-opus-4.6", "context": "1M", "pricing": "$5/$25 per M tokens", "source": "openrouter" },
-    { "name": "Grok 4.1 Fast", "url": "https://openrouter.ai/x-ai/grok-4.1-fast", "context": "2M", "pricing": "$0.20/$0.50 per M tokens", "source": "openrouter" },
-    { "name": "Trinity-Large-Preview (FREE)", "url": "https://openrouter.ai/arcee-ai/trinity-large-preview:free", "context": "131K", "pricing": "Free", "source": "openrouter" },
-    { "name": "Gemini 2.5 Flash", "url": "https://openrouter.ai/google/gemini-2.5-flash", "context": "1.05M", "pricing": "$0.30/$2.50 per M tokens", "source": "openrouter" },
-    { "name": "Llama 3.1 (Meta, 110M pulls)", "url": "https://ollama.com/library/llama3.1", "source": "ollama" },
-    { "name": "DeepSeek-R1 (reasoning, 78M pulls)", "url": "https://ollama.com/library/deepseek-r1", "source": "ollama" },
-    { "name": "Gemma 3 (Google, 32M pulls)", "url": "https://ollama.com/library/gemma3", "source": "ollama" },
-    { "name": "Mistral 7B (25M pulls)", "url": "https://ollama.com/library/mistral", "source": "ollama" },
-    { "name": "Qwen2.5 (Alibaba, 21M pulls)", "url": "https://ollama.com/library/qwen2.5", "source": "ollama" },
-    { "name": "GLM-5 (HuggingFace, MIT)", "url": "https://huggingface.co/zai-org/GLM-5", "source": "huggingface" }
+    {
+      "name": "MiniMax-M2.5",
+      "url": "https://openrouter.ai/minimax/minimax-m2.5",
+      "context": "197K",
+      "pricing": "$0.30/$1.10 per M tokens",
+      "source": "openrouter",
+      "description": "MiniMax-M2.5 is a SOTA large language model designed for real-world productivity. Run MiniMax M2.5 with API"
+    },
+    {
+      "name": "Kimi K2.5",
+      "url": "https://openrouter.ai/moonshotai/kimi-k2.5",
+      "context": "262K",
+      "pricing": "$0.23/$3.00 per M tokens",
+      "source": "openrouter",
+      "description": "Kimi K2.5 is Moonshot AI's native multimodal model, delivering state-of-the-art visual coding capability and a self-directed agent swarm paradigm. Run Kimi K2.5 with API"
+    },
+    {
+      "name": "GLM-5 (Z.ai)",
+      "url": "https://openrouter.ai/z-ai/glm-5",
+      "context": "205K",
+      "pricing": "$0.30/$2.55 per M tokens",
+      "source": "openrouter",
+      "description": "GLM-5 is Z.ai’s flagship open-source foundation model engineered for complex systems design and long-horizon agent workflows. Run GLM 5 with API"
+    },
+    {
+      "name": "Gemini 3 Flash Preview",
+      "url": "https://openrouter.ai/google/gemini-3-flash-preview",
+      "context": "1.05M",
+      "pricing": "$0.50/$3.00 per M tokens",
+      "source": "openrouter",
+      "description": "Gemini 3 Flash Preview is a high speed, high value thinking model designed for agentic workflows, multi turn chat, and coding assistance. It delivers near Pro level reasoning and tool use performance…"
+    },
+    {
+      "name": "DeepSeek-V3.2",
+      "url": "https://openrouter.ai/deepseek/deepseek-v3.2",
+      "context": "164K",
+      "pricing": "$0.26/$0.38 per M tokens",
+      "source": "openrouter",
+      "description": "DeepSeek-V3.2 is a large language model designed to harmonize high computational efficiency with strong reasoning and agentic tool-use performance. Run DeepSeek V3.2 with API"
+    },
+    {
+      "name": "Claude Sonnet 4.5",
+      "url": "https://openrouter.ai/anthropic/claude-sonnet-4.5",
+      "context": "1M",
+      "pricing": "$3/$15 per M tokens",
+      "source": "openrouter",
+      "description": "Claude Sonnet 4.5 is Anthropic’s most advanced Sonnet model to date, optimized for real-world agents and coding workflows. Run Claude Sonnet 4.5 with API"
+    },
+    {
+      "name": "Claude Opus 4.6",
+      "url": "https://openrouter.ai/anthropic/claude-opus-4.6",
+      "context": "1M",
+      "pricing": "$5/$25 per M tokens",
+      "source": "openrouter",
+      "description": "Opus 4.6 is Anthropic’s strongest model for coding and long-running professional tasks. Run Claude Opus 4.6 with API"
+    },
+    {
+      "name": "Grok 4.1 Fast",
+      "url": "https://openrouter.ai/x-ai/grok-4.1-fast",
+      "context": "2M",
+      "pricing": "$0.20/$0.50 per M tokens",
+      "source": "openrouter",
+      "description": "Grok 4.1 Fast is xAI's best agentic tool calling model that shines in real-world use cases like customer support and deep research. Run Grok 4.1 Fast with API"
+    },
+    {
+      "name": "Trinity-Large-Preview (FREE)",
+      "url": "https://openrouter.ai/arcee-ai/trinity-large-preview:free",
+      "context": "131K",
+      "pricing": "Free",
+      "source": "openrouter",
+      "description": "Trinity-Large-Preview is a frontier-scale open-weight language model from Arcee, built as a 400B-parameter sparse Mixture-of-Experts with 13B active parameters per token using 4-of-256 expert routing…"
+    },
+    {
+      "name": "Gemini 2.5 Flash",
+      "url": "https://openrouter.ai/google/gemini-2.5-flash",
+      "context": "1.05M",
+      "pricing": "$0.30/$2.50 per M tokens",
+      "source": "openrouter",
+      "description": "Gemini 2.5 Flash is Google's state-of-the-art workhorse model, specifically designed for advanced reasoning, coding, mathematics, and scientific tasks. Run Gemini 2.5 Flash with API"
+    },
+    {
+      "name": "Llama 3.1 (Meta, 110M pulls)",
+      "url": "https://ollama.com/library/llama3.1",
+      "source": "ollama",
+      "description": "Llama 3.1 is a new state-of-the-art model from Meta available in 8B, 70B and 405B parameter sizes."
+    },
+    {
+      "name": "DeepSeek-R1 (reasoning, 78M pulls)",
+      "url": "https://ollama.com/library/deepseek-r1",
+      "source": "ollama",
+      "description": "DeepSeek-R1 is a family of open reasoning models with performance approaching that of leading models, such as O3 and Gemini 2.5 Pro."
+    },
+    {
+      "name": "Gemma 3 (Google, 32M pulls)",
+      "url": "https://ollama.com/library/gemma3",
+      "source": "ollama",
+      "description": "The current, most capable model that runs on a single GPU."
+    },
+    {
+      "name": "Mistral 7B (25M pulls)",
+      "url": "https://ollama.com/library/mistral",
+      "source": "ollama",
+      "description": "The 7B model released by Mistral AI, updated to version 0.3."
+    },
+    {
+      "name": "Qwen2.5 (Alibaba, 21M pulls)",
+      "url": "https://ollama.com/library/qwen2.5",
+      "source": "ollama",
+      "description": "Qwen2.5 models are pretrained on Alibaba's latest large-scale dataset, encompassing up to 18 trillion tokens. The model supports up to 128K tokens and has multilingual support."
+    },
+    {
+      "name": "GLM-5 (HuggingFace, MIT)",
+      "url": "https://huggingface.co/zai-org/GLM-5",
+      "source": "huggingface",
+      "description": "GLM-5 open-source foundation model by Z.ai (MIT license). Supports 205K context, complex reasoning, multi-step tool use, and multilingual tasks."
+    }
   ],
   "recipes": [
-    { "name": "AI Email Assistant: Gmail + ChatGPT + Slack Digests", "url": "https://n8n.io/workflows/5446", "source": "n8n" },
-    { "name": "Build Your First AI Agent", "url": "https://n8n.io/workflows/6270", "source": "n8n" },
-    { "name": "Interactive AI Agent with Chat Interface and Multiple Tools", "url": "https://n8n.io/workflows/5819", "source": "n8n" },
-    { "name": "Talk to Your Google Sheets Using ChatGPT-5", "url": "https://n8n.io/workflows/7639", "source": "n8n" },
-    { "name": "Generate & Auto-post AI Videos to Social Media with Veo3", "url": "https://n8n.io/workflows/5035", "source": "n8n" },
-    { "name": "Jarvis: Productivity AI Agent (Tasks, Calendar, Email, MCPs)", "url": "https://n8n.io/workflows/8500", "source": "n8n" },
-    { "name": "Auto-Create TikTok Videos with AI Avatars, ElevenLabs & GPT-4", "url": "https://n8n.io/workflows/10000", "source": "n8n" }
+    {
+      "name": "AI Email Assistant: Gmail + ChatGPT + Slack Digests",
+      "url": "https://n8n.io/workflows/5446",
+      "source": "n8n",
+      "description": "This n8n workflow acts as an AI-powered Inbox Assistant that automatically summarizes and classifies Gmail emails, prioritizes important messages, and sends..."
+    },
+    {
+      "name": "Build Your First AI Agent",
+      "url": "https://n8n.io/workflows/6270",
+      "source": "n8n",
+      "description": "How it works This template launches your very first AI Agent —an AI-powered chatbot that can do more than just talk— it can take action using tools. Think..."
+    },
+    {
+      "name": "Interactive AI Agent with Chat Interface and Multiple Tools",
+      "url": "https://n8n.io/workflows/5819",
+      "source": "n8n",
+      "description": "How it works This template is a complete, hands-on tutorial that lets you build and interact with your very first AI Agent. Think of an AI Agent as a..."
+    },
+    {
+      "name": "Talk to Your Google Sheets Using ChatGPT-5",
+      "url": "https://n8n.io/workflows/7639",
+      "source": "n8n",
+      "description": "This n8n workflow template creates an intelligent data analysis chatbot that can answer questions about data stored in Google Sheets using OpenAI's GPT-5..."
+    },
+    {
+      "name": "Generate & Auto-post AI Videos to Social Media with Veo3",
+      "url": "https://n8n.io/workflows/5035",
+      "source": "n8n",
+      "description": "Workflow Screenshot Automate video creation with Veo3 and auto-post to Instagram, TikTok via Blotato Who is this for? This template is ideal for content..."
+    },
+    {
+      "name": "Jarvis: Productivity AI Agent (Tasks, Calendar, Email, MCPs)",
+      "url": "https://n8n.io/workflows/8500",
+      "source": "n8n",
+      "description": "Who’s it forThis template is designed for anyone who wants to use Telegram as a personal AI assistant hub. If you often juggle tasks, emails, calendars, and..."
+    },
+    {
+      "name": "Auto-Create TikTok Videos with AI Avatars, ElevenLabs & GPT-4",
+      "url": "https://n8n.io/workflows/10000",
+      "source": "n8n",
+      "description": "💥 Viral TikTok Video Machine: Auto-Create Videos with Your AI Avatar Workflow Overview 🎯 Who is this for?This workflow is for content creators, marketers,..."
+    }
   ],
   "knowledge": [
-    { "name": "open_ragbench (arXiv, 3k QA pairs)", "url": "https://huggingface.co/datasets/vectara/open_ragbench", "source": "huggingface" },
-    { "name": "rag-dataset-1200 (general purpose)", "url": "https://huggingface.co/datasets/neural-bridge/rag-dataset-1200", "source": "huggingface" },
-    { "name": "financial-rag-embedding (NVIDIA, 7k+ QA)", "url": "https://huggingface.co/datasets/philschmid/finanical-rag-embedding-dataset", "source": "huggingface" },
-    { "name": "ragas-wikiqa", "url": "https://huggingface.co/datasets/vibrantlabsai/ragas-wikiqa", "source": "huggingface" },
-    { "name": "rag-hallucination-dataset-1000", "url": "https://huggingface.co/datasets/neural-bridge/rag-hallucination-dataset-1000", "source": "huggingface" },
-    { "name": "STaRK (NeurIPS 2024)", "url": "https://huggingface.co/datasets/snap-stanford/stark", "source": "huggingface" },
-    { "name": "financial-knowledge-base-rag", "url": "https://huggingface.co/datasets/SmrYrl/financial-knowledge-base-rag", "source": "huggingface" },
-    { "name": "Langchain-Chatchat (local KB + RAG)", "url": "https://github.com/chatchat-space/Langchain-Chatchat", "source": "github" },
-    { "name": "t2-ragbench (23k+ rows)", "url": "https://huggingface.co/datasets/G4KMU/t2-ragbench", "source": "huggingface" },
-    { "name": "LlamaHub (300+ data loaders)", "url": "https://github.com/run-llama/llama-hub", "source": "github" }
+    {
+      "name": "open_ragbench (arXiv, 3k QA pairs)",
+      "url": "https://huggingface.co/datasets/vectara/open_ragbench",
+      "source": "huggingface",
+      "description": "3,000+ QA pairs sourced from arXiv papers for evaluating RAG systems. Covers scientific domains with grounded answers for retrieval-augmented generation benchmarking."
+    },
+    {
+      "name": "rag-dataset-1200 (general purpose)",
+      "url": "https://huggingface.co/datasets/neural-bridge/rag-dataset-1200",
+      "source": "huggingface",
+      "description": "1,200 question-answer pairs for training and evaluating RAG pipelines across diverse general-knowledge topics."
+    },
+    {
+      "name": "financial-rag-embedding (NVIDIA, 7k+ QA)",
+      "url": "https://huggingface.co/datasets/philschmid/finanical-rag-embedding-dataset",
+      "source": "huggingface",
+      "description": "7,000+ financial QA pairs from NVIDIA for training RAG embedding models on finance-domain documents, earnings calls, and reports."
+    },
+    {
+      "name": "ragas-wikiqa",
+      "url": "https://huggingface.co/datasets/vibrantlabsai/ragas-wikiqa",
+      "source": "huggingface",
+      "description": "Wikipedia-based QA dataset formatted for RAGAS evaluation framework. Assess faithfulness, answer relevancy, and context precision of RAG pipelines."
+    },
+    {
+      "name": "rag-hallucination-dataset-1000",
+      "url": "https://huggingface.co/datasets/neural-bridge/rag-hallucination-dataset-1000",
+      "source": "huggingface",
+      "description": "1,000 adversarial examples designed to trigger hallucinations in RAG systems. Use to stress-test retrieval-augmented generation for factual accuracy."
+    },
+    {
+      "name": "STaRK (NeurIPS 2024)",
+      "url": "https://huggingface.co/datasets/snap-stanford/stark",
+      "source": "huggingface",
+      "description": "NeurIPS 2024 benchmark for semi-structured knowledge graph retrieval. Covers Amazon products, biomedical data, and academic paper graphs for LLM evaluation."
+    },
+    {
+      "name": "financial-knowledge-base-rag",
+      "url": "https://huggingface.co/datasets/SmrYrl/financial-knowledge-base-rag",
+      "source": "huggingface",
+      "description": "Financial knowledge base dataset optimised for RAG pipelines. Covers investment concepts, market terminology, and structured Q&A from financial documents."
+    },
+    {
+      "name": "Langchain-Chatchat (local KB + RAG)",
+      "url": "https://github.com/chatchat-space/Langchain-Chatchat",
+      "source": "github",
+      "description": "Langchain-Chatchat（原Langchain-ChatGLM）基于 Langchain 与 ChatGLM, Qwen 与 Llama 等语言模型的 RAG 与 Agent 应用 | Langchain-Chatchat (formerly langchain-ChatGLM), local knowledge based LLM (like ChatGLM, Qwen and L…"
+    },
+    {
+      "name": "t2-ragbench (23k+ rows)",
+      "url": "https://huggingface.co/datasets/G4KMU/t2-ragbench",
+      "source": "huggingface",
+      "description": "23,000+ row RAG benchmark with diverse documents and questions for measuring retrieval quality and answer generation across multiple domains."
+    },
+    {
+      "name": "LlamaHub (300+ data loaders)",
+      "url": "https://github.com/run-llama/llama-hub",
+      "source": "github",
+      "description": "A library of data loaders for LLMs made by the community -- to be used with LlamaIndex and/or LangChain"
+    }
   ]
 }

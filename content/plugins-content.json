@@ -1,0 +1,134 @@
+{
+  "agent-sdk-dev": {
+    "files": [
+      ".claude-plugin",
+      "README.md",
+      "agents/",
+      "commands/"
+    ],
+    "readme": "# Agent SDK Development Plugin\n\nA comprehensive plugin for creating and verifying Claude Agent SDK applications in Python and TypeScript.\n\n## Overview\n\nThe Agent SDK Development Plugin streamlines the entire lifecycle of building Agent SDK applications, from initial scaffolding to verification against best practices. It helps you quickly start new projects with the latest SDK versions and ensures your applications follow official documentation patterns.\n\n## Features\n\n### Command: `/new-sdk-app`\n",
+    "description": "A comprehensive plugin for creating and verifying Claude Agent SDK applications in Python and TypeScript."
+  },
+  "claude-opus-4-5-migration": {
+    "files": [
+      ".claude-plugin",
+      "README.md",
+      "skills/"
+    ],
+    "readme": "# Claude Opus 4.5 Migration Plugin\n\nMigrate your code and prompts from Sonnet 4.x and Opus 4.1 to Opus 4.5.\n\n## Overview\n\nThis skill updates your code and prompts to be compatible with Opus 4.5. It automates the migration process, handling model strings, beta headers, and other configuration details. If you run into any issues with Opus 4.5 after migration, you can continue using this skill to adjust your prompts.",
+    "description": "Migrate your code and prompts from Sonnet 4.x and Opus 4.1 to Opus 4.5."
+  },
+  "code-review": {
+    "files": [
+      ".claude-plugin",
+      "README.md",
+      "commands/"
+    ],
+    "readme": "# Code Review Plugin\n\nAutomated code review for pull requests using multiple specialized agents with confidence-based scoring to filter false positives.\n\n## Overview\n\nThe Code Review Plugin automates pull request review by launching multiple agents in parallel to independently audit changes from different perspectives. It uses confidence scoring to filter out false positives, ensuring only high-quality, actionable feedback is posted.",
+    "description": "Automated code review for pull requests using multiple specialized agents with confidence-based scoring to filter false positives."
+  },
+  "commit-commands": {
+    "files": [
+      ".claude-plugin",
+      "README.md",
+      "commands/"
+    ],
+    "readme": "# Commit Commands Plugin\n\nStreamline your git workflow with simple commands for committing, pushing, and creating pull requests.\n\n## Overview\n\nThe Commit Commands Plugin automates common git operations, reducing context switching and manual command execution. Instead of running multiple git commands, use a single slash command to handle your entire workflow.",
+    "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests."
+  },
+  "explanatory-output-style": {
+    "files": [
+      ".claude-plugin",
+      "README.md",
+      "hooks-handlers/",
+      "hooks/"
+    ],
+    "readme": "# Explanatory Output Style Plugin\n\nThis plugin recreates the deprecated Explanatory output style as a SessionStart hook.\n\nWARNING: Do not install this plugin unless you are fine with incurring the token cost of this plugin's additional instructions and output.\n\n## What it does\n\nWhen enabled, this plugin automatically adds instructions at the start of each session that encourage Claude to:\n\n1. Provide educational insights about implementation choices\n2. Explain codebase patterns and decisions\n3. ",
+    "description": "Recreates the deprecated Explanatory output style as a SessionStart hook, adding educational insights to Claude responses."
+  },
+  "feature-dev": {
+    "files": [
+      ".claude-plugin",
+      "README.md",
+      "agents/",
+      "commands/"
+    ],
+    "readme": "# Feature Development Plugin\n\nA comprehensive, structured workflow for feature development with specialized agents for codebase exploration, architecture design, and quality review.\n\n## Overview\n\nThe Feature Development Plugin provides a systematic 7-phase approach to building new features. Instead of jumping straight into code, it guides you through understanding the codebase, asking clarifying questions, designing architecture, and ensuring quality\u2014resulting in better-designed features that in",
+    "description": "A comprehensive, structured workflow for feature development with specialized agents for codebase exploration, architecture design, and quality review."
+  },
+  "frontend-design": {
+    "files": [
+      ".claude-plugin",
+      "README.md",
+      "skills/"
+    ],
+    "readme": "# Frontend Design Plugin\n\nGenerates distinctive, production-grade frontend interfaces that avoid generic AI aesthetics.\n\n## What It Does\n\nClaude automatically uses this skill for frontend work. Creates production-ready code with:\n\n- Bold aesthetic choices\n- Distinctive typography and color palettes\n- High-impact animations and visual details\n- Context-aware implementation",
+    "description": "Generates distinctive, production-grade frontend interfaces that avoid generic AI aesthetics."
+  },
+  "hookify": {
+    "files": [
+      ".claude-plugin",
+      ".gitignore",
+      "README.md",
+      "agents/",
+      "commands/",
+      "core/",
+      "examples/",
+      "hooks/",
+      "matchers/",
+      "skills/",
+      "utils/"
+    ],
+    "readme": "# Hookify Plugin\n\nEasily create custom hooks to prevent unwanted behaviors by analyzing conversation patterns or from explicit instructions.\n\n## Overview\n\nThe hookify plugin makes it simple to create hooks without editing complex `hooks.json` files. Instead, you create lightweight markdown configuration files that define patterns to watch for and messages to show when those patterns match.\n\n**Key features:**\n- \ud83c\udfaf Analyze conversations to find unwanted behaviors automatically\n- \ud83d\udcdd Simple markdown c",
+    "description": "Easily create custom hooks to prevent unwanted behaviors by analyzing conversation patterns or from explicit instructions."
+  },
+  "learning-output-style": {
+    "files": [
+      ".claude-plugin",
+      "README.md",
+      "hooks-handlers/",
+      "hooks/"
+    ],
+    "readme": "# Learning Style Plugin\n\nThis plugin combines the unshipped Learning output style with explanatory functionality as a SessionStart hook.\n\n**Note:** This plugin differs from the original unshipped Learning output style by also incorporating all functionality from the explanatory-output-style plugin, providing both interactive learning and educational insights.\n\nWARNING: Do not install this plugin unless you are fine with incurring the token cost of this plugin's additional instructions and the in",
+    "description": "Combines the unshipped Learning output style with explanatory functionality as a SessionStart hook for interactive, educational Claude responses."
+  },
+  "plugin-dev": {
+    "files": [
+      "README.md",
+      "agents/",
+      "commands/",
+      "skills/"
+    ],
+    "readme": "# Plugin Development Toolkit\n\nA comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks, MCP integration, plugin structure, and marketplace publishing.\n\n## Overview\n\nThe plugin-dev toolkit provides seven specialized skills to help you build high-quality Claude Code plugins:\n\n1. **Hook Development** - Advanced hooks API and event-driven automation\n2. **MCP Integration** - Model Context Protocol server integration\n3. **Plugin Structure** - Plugin organization and man",
+    "description": "A comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks, MCP integration, plugin structure, and marketplace publishing."
+  },
+  "pr-review-toolkit": {
+    "files": [
+      ".claude-plugin",
+      "README.md",
+      "agents/",
+      "commands/"
+    ],
+    "readme": "# PR Review Toolkit\n\nA comprehensive collection of specialized agents for thorough pull request review, covering code comments, test coverage, error handling, type design, code quality, and code simplification.\n\n## Overview\n\nThis plugin bundles 6 expert review agents that each focus on a specific aspect of code quality. Use them individually for targeted reviews or together for comprehensive PR analysis.",
+    "description": "A comprehensive collection of specialized agents for thorough pull request review, covering code comments, test coverage, error handling, type design, and code quality."
+  },
+  "ralph-wiggum": {
+    "files": [
+      ".claude-plugin",
+      "README.md",
+      "commands/",
+      "hooks/",
+      "scripts/"
+    ],
+    "readme": "# Ralph Wiggum Plugin\n\nImplementation of the Ralph Wiggum technique for iterative, self-referential AI development loops in Claude Code.\n\n## What is Ralph?\n\nRalph is a development methodology based on continuous AI agent loops. As Geoffrey Huntley describes it: **\"Ralph is a Bash loop\"** - a simple `while true` that repeatedly feeds an AI agent a prompt file, allowing it to iteratively improve its work until completion.\n\nThe technique is named after Ralph Wiggum from The Simpsons, embodying the ",
+    "description": "Implementation of the Ralph Wiggum technique for iterative, self-referential AI development loops in Claude Code."
+  },
+  "security-guidance": {
+    "files": [
+      ".claude-plugin",
+      "hooks/"
+    ],
+    "readme": "",
+    "description": "Security guidance plugin providing hooks for security-aware development practices in Claude Code."
+  }
+}

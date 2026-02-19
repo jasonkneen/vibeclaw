@@ -1423,63 +1423,57 @@ async function elkLayout(nodes, edges, opts = {}) {
   }
 }
 
-/* ── Smart edge — picks nearest side handle, correct bezier direction ── */
-function nodeTopLeft(node) {
-  const w = node.measured?.width  ?? 160;
-  const h = node.measured?.height ?? 175;
-  // ELK returns treeicon positions as top-left, but collapsedserver / livegateway
-  // render with the icon centered inside a wider container — offset accordingly
-  const isCentered = node.type === 'collapsedserver' || node.type === 'livegateway';
-  return {
-    x: isCentered ? node.position.x - w/2 : node.position.x,
-    y: isCentered ? node.position.y - h/2 : node.position.y,
-    w, h,
+/* ── Smart edge — uses ReactFlow's actual handle positions ── */
+function SmartEdge({ id, source, target, style }) {
+  const sInternal = useInternalNode(source);
+  const tInternal = useInternalNode(target);
+  if (!sInternal || !tInternal) return null;
+
+  const getHandles = (internal) => {
+    const pos = internal.internals?.positionAbsolute ?? internal.position;
+    const bounds = internal.internals?.handleBounds;
+    const all = [...(bounds?.source ?? []), ...(bounds?.target ?? [])];
+    return all.map(h => ({
+      x: pos.x + h.x + h.width  / 2,
+      y: pos.y + h.y + h.height / 2,
+      pos: h.position,
+    }));
   };
-}
-function getSmartHandles(sNode, tNode) {
-  const { x: sx0, y: sy0, w: sw, h: sh } = nodeTopLeft(sNode);
-  const { x: tx0, y: ty0, w: tw, h: th } = nodeTopLeft(tNode);
-  const scx = sx0 + sw/2, scy = sy0 + sh/2;
-  const tcx = tx0 + tw/2, tcy = ty0 + th/2;
-  // Source handles
-  const sCandidates = [
-    { x: scx,      y: sy0,      pos: Position.Top },
-    { x: scx,      y: sy0 + sh, pos: Position.Bottom },
-    { x: sx0,      y: scy,      pos: Position.Left },
-    { x: sx0 + sw, y: scy,      pos: Position.Right },
-  ];
-  // Target handles
-  const tCandidates = [
-    { x: tcx,      y: ty0,      pos: Position.Top },
-    { x: tcx,      y: ty0 + th, pos: Position.Bottom },
-    { x: tx0,      y: tcy,      pos: Position.Left },
-    { x: tx0 + tw, y: tcy,      pos: Position.Right },
-  ];
-  // Find the closest pair
+
+  const sHandles = getHandles(sInternal);
+  const tHandles = getHandles(tInternal);
+
+  // Fall back to node-center if no handles registered yet
+  const fallback = (internal) => {
+    const p = internal.internals?.positionAbsolute ?? internal.position;
+    const w = internal.measured?.width  ?? 160;
+    const h = internal.measured?.height ?? 175;
+    return [
+      { x: p.x + w/2, y: p.y,       pos: Position.Top    },
+      { x: p.x + w/2, y: p.y + h,   pos: Position.Bottom },
+      { x: p.x,       y: p.y + h/2, pos: Position.Left   },
+      { x: p.x + w,   y: p.y + h/2, pos: Position.Right  },
+    ];
+  };
+
+  const sCands = sHandles.length ? sHandles : fallback(sInternal);
+  const tCands = tHandles.length ? tHandles : fallback(tInternal);
+
   let best = null, bestDist = Infinity;
-  for (const s of sCandidates) {
-    for (const t of tCandidates) {
+  for (const s of sCands) {
+    for (const t of tCands) {
       const d = Math.hypot(s.x - t.x, s.y - t.y);
       if (d < bestDist) { bestDist = d; best = { s, t }; }
     }
   }
-  return best;
-}
+  if (!best) return null;
 
-function SmartEdge({ id, source, target, style }) {
-  const { getNode } = useReactFlow();
-  const sNode = getNode(source);
-  const tNode = getNode(target);
-  if (!sNode || !tNode) return null;
-  const handles = getSmartHandles(sNode, tNode);
-  if (!handles) return null;
-  const { s, t } = handles;
   const [path] = getBezierPath({
-    sourceX: s.x, sourceY: s.y, sourcePosition: s.pos,
-    targetX: t.x, targetY: t.y, targetPosition: t.pos,
-    curvature: 0.25,
+    sourceX: best.s.x, sourceY: best.s.y, sourcePosition: best.s.pos,
+    targetX: best.t.x, targetY: best.t.y, targetPosition: best.t.pos,
+    curvature: 0.3,
   });
-  return <BaseEdge id={id} path={path} style={style}/>;
+  return <BaseEdge id={id} path={path} style={style} />;
 }
 
 /* ── Templates ── */

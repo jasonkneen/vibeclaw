@@ -1689,17 +1689,17 @@ function CollapsedServerNode({ data, selected }) {
 /* ── Tree Icon Node — same style as gateway icon, colored by category ── */
 const TREE_CATEGORIES = {
   agent:   { color:'#818cf8', bg:'#0c0a1c', border:'#261e4a',
-    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg> },
+    icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg> },
   model:   { color:'#f59e0b', bg:'#120900', border:'#3d2500',
-    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> },
+    icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> },
   skill:   { color:'#4ade80', bg:'#050f08', border:'#163324',
-    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> },
+    icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> },
   channel: { color:'#22d3ee', bg:'#03100f', border:'#0b3038',
-    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill={c} stroke="none"/></svg> },
+    icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill={c} stroke="none"/></svg> },
   cron:    { color:'#a855f7', bg:'#0d0618', border:'#2e1258',
-    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
+    icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
   node:    { color:'#22d3ee', bg:'#03100f', border:'#0b3038',
-    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> },
+    icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> },
 };
 
 function TreeIconNode({ data, selected }) {
@@ -1723,14 +1723,7 @@ function TreeIconNode({ data, selected }) {
           background: isEnabled ? '#4ade80' : '#333',
           boxShadow: isEnabled ? '0 0 5px rgba(74,222,128,0.6)' : 'none',
         }}/>
-        <div style={{
-          width:54, height:54, borderRadius:14,
-          background:`color-mix(in srgb, ${cfg.color} 10%, #0a0a0a)`,
-          border:`1px solid ${cfg.color}28`,
-          display:'flex', alignItems:'center', justifyContent:'center',
-        }}>
-          {cfg.icon(cfg.color)}
-        </div>
+        {cfg.icon(cfg.color)}
         {data.expandable && (
           <span style={{
             position:'absolute', bottom:7, left:'50%', transform:'translateX(-50%)',
@@ -3452,15 +3445,16 @@ function ForgeApp() {
       const sectionEdgeId = `e-live-sec-${section}`;
 
       if (nowExpanded) {
-        // Remove section card, add expanded content
+        // Remove section card, add expanded content — hidden until ELK positions them
         const { addNodes, addEdges } = buildExpandedNodes(section, data, next);
+        const hiddenAdd = addNodes.map(n => ({ ...n, style: { ...(n.style||{}), opacity:0 } }));
         setEdges(eds => [...eds.filter(e => e.id !== sectionEdgeId), ...addEdges]);
-        setNodes(nds => [...nds.filter(n => n.id !== sectionCardId), ...addNodes]);
+        setNodes(nds => [...nds.filter(n => n.id !== sectionCardId), ...hiddenAdd]);
         setTimeout(async () => {
           const cur = rfInstance.current;
           if (!cur) return;
           const laid = await elkLayout(cur.getNodes(), cur.getEdges());
-          setNodes(laid);
+          setNodes(laid.map(n => ({ ...n, style: { ...(n.style||{}), opacity:1, transition:'opacity 0.2s' } })));
           setTimeout(() => cur.fitView({ padding:0.25, duration:400 }), 80);
         }, 50);
       } else {

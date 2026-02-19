@@ -1388,6 +1388,15 @@ async function elkLayout(nodes, edges, opts = {}) {
   }
 }
 
+/* ── Debounce utility ── */
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+}
+
 /* ── Templates ── */
 function loadTemplate(id, setNodes, setEdges, save) {
   const t = {
@@ -2822,6 +2831,21 @@ function ForgeApp() {
   const [showExportModal, setShowExportModal] = useState(false);
   const rfInstance = useRef(null);
 
+  const runLayout = useCallback(async (opts = {}) => {
+    const cur = rfInstance.current;
+    if (!cur) return;
+    const laid = await elkLayout(cur.getNodes(), cur.getEdges(), opts);
+    setNodes(laid);
+    setTimeout(() => cur.fitView({ padding:0.15, duration:400 }), 80);
+  }, [setNodes]);
+
+  const debouncedLayout = useCallback(debounce(runLayout, 100), [runLayout]);
+
+  // Re-layout when node/edge count changes (expand/collapse)
+  useEffect(() => {
+    if (liveMode) debouncedLayout();
+  }, [nodes.length, edges.length, liveMode]);
+
   // Live mode
   const liveMode = true;
   const [liveData, setLiveData] = useState(null);
@@ -3084,13 +3108,7 @@ function ForgeApp() {
           <Background variant="dots" gap={28} size={1} color="#252525" />
           <Controls showInteractive={false} />
           <Panel position="top-right" style={{display:'flex',gap:8,margin:'8px 8px 0 0'}}>
-            <NavBtn onClick={async () => {
-              const cur = rfInstance.current;
-              if (!cur) return;
-              const laid = await elkLayout(cur.getNodes(), cur.getEdges());
-              setNodes(laid);
-              setTimeout(() => cur.fitView({ padding:0.15, duration:400 }), 80);
-            }}>⟳ Arrange</NavBtn>
+            <NavBtn onClick={() => runLayout()}>⟳ Arrange</NavBtn>
             <NavBtn onClick={loadLive} primary>↺ Refresh</NavBtn>
           </Panel>
           <Panel position="bottom-center">

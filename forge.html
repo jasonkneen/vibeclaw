@@ -2847,13 +2847,51 @@ function LiveGatewayPanel({ data, onClose }) {
 }
 
 /* ── Live Node Panel — routes to the right editor by node type ── */
+function LivePairedNodePanel({ data, onClose }) {
+  return (
+    <PanelShell emoji="📱" title={data.name} subtitle={data.platform} subtitleColor="#22d3ee" onClose={onClose}>
+      {[
+        ['ID', data.id],
+        ['Platform', data.platform],
+        ['Version', `v${data.version}`],
+        ['Device Family', data.deviceFamily],
+        ['Model', data.modelIdentifier],
+        ['Paired At', new Date(data.pairedAt).toLocaleString()],
+        ['Last Seen', new Date(data.lastSeen).toLocaleString()],
+      ].map(([k,v]) => v && (
+        <div key={k} style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'8px 12px',background:'#0e0e0e',borderRadius:6,border:'1px solid #1a1a1a',marginBottom:8}}>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#444',flexShrink:0,marginRight:12}}>{k}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#ccc', wordBreak: 'break-all', textAlign:'right'}}>{String(v)}</span>
+        </div>
+      ))}
+      <div style={{marginTop:8,borderTop:'1px solid #1a1a1a',paddingTop:16}}>
+        <div style={panelLabel}>Capabilities</div>
+        <div style={{display:'flex',gap:6,flexWrap:'wrap',marginTop:8}}>
+          {(data.caps||[]).map(c => (
+            <span key={c} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#22d3ee',background:'rgba(34,211,238,0.08)',border:'1px solid rgba(34,211,238,0.2)',borderRadius:4,padding:'2px 6px'}}>{c}</span>
+          ))}
+          {(data.caps||[]).length === 0 && <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#444'}}>none</span>}
+        </div>
+      </div>
+    </PanelShell>
+  );
+}
+
 function LiveNodePanel({ node, skills, onClose, onToggleSkill, onNodeUpdate }) {
   if (!node) return <div style={{width:0,overflow:'hidden',background:'rgba(10,10,10,0.97)',borderLeft:'1px solid #1c1c1c',transition:'width 0.2s'}}/>;
   if (node._nodeType === 'livegateway') return <LiveGatewayPanel data={node} onClose={onClose}/>;
   if (node._nodeType === 'channel') return <LiveChannelPanel data={node} onClose={onClose} onSaved={onClose}/>;
-  if (node._nodeType === 'cronlist') return <LiveCronPanel data={node} onClose={onClose} onSaved={d => { onNodeUpdate?.(node, d); onClose(); }}/>;
+  if (node._nodeType === 'cron' || node._nodeType === 'cronlist') return <LiveCronPanel data={node} onClose={onClose} onSaved={d => { onNodeUpdate?.(node, d); onClose(); }}/>;
+  if (node._nodeType === 'node') return <LivePairedNodePanel data={node} onClose={onClose} />;
   if (node._nodeType === 'agent') return <LiveAgentPanel data={node} onClose={onClose} onSaved={d => { onNodeUpdate?.(node, d); }}/>;
-  return <LiveSkillPanel agent={node} skills={skills} onClose={onClose} onToggleSkill={onToggleSkill}/>;
+  
+  // Default for skillslist, sessionslist, nodeslist etc.
+  if (node._nodeType.endsWith('list') || node.isSkillsView) {
+    return <LiveSkillPanel agent={node} skills={skills} onClose={onClose} onToggleSkill={onToggleSkill}/>;
+  }
+  
+  // Fallback empty panel
+  return <div style={{width:320,flexShrink:0,display:'flex',flexDirection:'column',background:'rgba(10,10,10,0.97)',borderLeft:'1px solid #1c1c1c',overflow:'hidden'}}/>;
 }
 
 /* ── Main App ── */
@@ -3051,9 +3089,7 @@ function ForgeApp() {
   }, [edges, nodes, save, liveMode]);
 
   const onNodeClick = useCallback((_, node) => {
-    if (node.type === 'livegateway') return;
     if (node.type === 'sectioncard') {
-      // Expand this section — replace card with full content
       handleLiveToggle(node.data.sectionKey);
       return;
     }

@@ -1340,6 +1340,7 @@ import {
   useNodesState,
   useEdgesState,
   useReactFlow,
+  useInternalNode,
   Handle,
   Position,
   Panel,
@@ -1423,11 +1424,21 @@ async function elkLayout(nodes, edges, opts = {}) {
 }
 
 /* ── Smart edge — picks nearest side handle, correct bezier direction ── */
+function nodeTopLeft(node) {
+  const w = node.measured?.width  ?? 160;
+  const h = node.measured?.height ?? 175;
+  // ELK returns treeicon positions as top-left, but collapsedserver / livegateway
+  // render with the icon centered inside a wider container — offset accordingly
+  const isCentered = node.type === 'collapsedserver' || node.type === 'livegateway';
+  return {
+    x: isCentered ? node.position.x - w/2 : node.position.x,
+    y: isCentered ? node.position.y - h/2 : node.position.y,
+    w, h,
+  };
+}
 function getSmartHandles(sNode, tNode) {
-  const sw = sNode.measured?.width  ?? 160, sh = sNode.measured?.height ?? 175;
-  const tw = tNode.measured?.width  ?? 160, th = tNode.measured?.height ?? 175;
-  const sx0 = sNode.position.x, sy0 = sNode.position.y;
-  const tx0 = tNode.position.x, ty0 = tNode.position.y;
+  const { x: sx0, y: sy0, w: sw, h: sh } = nodeTopLeft(sNode);
+  const { x: tx0, y: ty0, w: tw, h: th } = nodeTopLeft(tNode);
   const scx = sx0 + sw/2, scy = sy0 + sh/2;
   const tcx = tx0 + tw/2, tcy = ty0 + th/2;
   // Source handles

@@ -1675,7 +1675,7 @@ function CollapsedServerNode({ data, selected }) {
           <div style={{
             fontFamily: "'JetBrains Mono', monospace", fontSize: '0.58rem',
             color: '#555', marginTop: 3,
-          }}>virtual server · click to expand</div>
+          }}>virtual server</div>
         </div>
         <span style={{
           width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
@@ -3093,11 +3093,7 @@ function ForgeApp() {
   }, [edges, nodes, save, liveMode]);
 
   const onNodeClick = useCallback((_, node) => {
-    if (node.type === 'collapsedserver') {
-      // Expand the whole server into the radial diagram
-      handleExpandServer();
-      return;
-    }
+    if (node.type === 'collapsedserver') return;
     if (node.type === 'livegateway') return;
     if (node.type === 'sectioncard') {
       // Expand this section — replace card with full content
@@ -3105,7 +3101,7 @@ function ForgeApp() {
       return;
     }
     setLiveSelectedAgent({ ...node.data, _nodeType: node.type });
-  }, [handleLiveToggle, handleExpandServer]);
+  }, [handleLiveToggle]);
 
   // Update a live node's data after saving (e.g. agent model change)
   const handleNodeUpdate = useCallback((node, patch) => {
@@ -3230,7 +3226,7 @@ function ForgeApp() {
                 <>
                   <span style={{color:'#555'}}>1 virtual server</span>
                   <span style={{color:'#1e1e1e'}}>|</span>
-                  <span>click the server to expand the network diagram</span>
+                  <span>use ⊞ Expand to open the network diagram</span>
                 </>
               ) : (
                 <>

@@ -1355,8 +1355,8 @@ async function elkLayout(nodes, edges, opts = {}) {
     },
     children: nodes.map(n => ({
       id: n.id,
-      width: n.measured?.width ?? n.width ?? 220,
-      height: n.measured?.height ?? n.height ?? 70,
+      width: n.measured?.width ?? n.width ?? (n.type === 'livegateway' ? 180 : 220),
+      height: n.measured?.height ?? n.height ?? (n.type === 'livegateway' ? 70 : 70),
     })),
     edges: edges
       .filter(e => nodes.find(n => n.id === e.source) && nodes.find(n => n.id === e.target))

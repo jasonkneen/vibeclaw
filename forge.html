@@ -51,6 +51,7 @@
       --sans: 'DM Sans', system-ui, sans-serif; --code: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
       --mono: 'Fragment Mono', 'JetBrains Mono', 'Menlo', monospace;
     }
+    html { font-size: 18px; }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: var(--sans);
@@ -1335,7 +1336,6 @@ import { createRoot } from 'react-dom/client';
 import {
   ReactFlow,
   Background,
-  Controls,
   addEdge,
   useNodesState,
   useEdgesState,
@@ -1369,11 +1369,33 @@ async function elkLayout(nodes, edges, opts = {}) {
   if (!nodes.length) return nodes;
 
   const algorithm = opts['elk.algorithm'] || ELK_OPTS['elk.algorithm'];
-  const isRadial = algorithm === 'radial';
+  const isRadial   = algorithm === 'radial';
+  const isLayered  = algorithm === 'layered';
 
-  // Scale radius based on node count so things don't overlap when expanded
   const nodeCount = nodes.length;
-  const radius = nodeCount <= 8 ? 280 : nodeCount <= 20 ? 380 : 500;
+
+  // ── Dynamic spacing: shrinks as node count grows ──────────────────────────
+  // nodeNode: 80 at 10 nodes → 8 at 100 nodes
+  const spacingNum   = Math.max(8, Math.round(800 / nodeCount));
+  const dynNodeNode  = String(spacingNum);
+
+  // For radial: compute minimum radius so the ring actually fits all nodes.
+  // Each node is ~160px wide; circumference must be ≥ nodeCount × (nodeWidth + spacing).
+  const nodeWidth    = 160;
+  const minRadius    = Math.ceil((nodeCount * (nodeWidth + spacingNum)) / (2 * Math.PI) * 1.2);
+  const dynRadius    = String(Math.min(700, Math.max(280, minRadius)));
+
+  // For layered: betweenLayers shrinks similarly
+  const dynBetweenLayers = String(Math.max(80, Math.round(2400 / nodeCount)));
+
+  // Inject dynamic spacing into opts (always applied last, overrides caller values)
+  const spacingOverrides = {
+    'elk.spacing.nodeNode': dynNodeNode,
+    ...(isLayered ? { 'elk.layered.spacing.nodeNodeBetweenLayers': dynBetweenLayers } : {}),
+    ...(algorithm === 'stress' ? {
+      'elk.stress.desiredEdgeLength': String(Math.max(60, Math.round(1200 / nodeCount))),
+    } : {}),
+  };
 
   // Find the gateway node to use as root (radial only)
   const rootNode = isRadial && nodes.find(n => n.type === 'livegateway' || n.id === 'live-gw' || n.id === 'g1');
@@ -1382,11 +1404,12 @@ async function elkLayout(nodes, edges, opts = {}) {
     id: 'root',
     layoutOptions: {
       ...ELK_OPTS,
+      ...opts,                       // caller algorithm/direction opts
+      ...spacingOverrides,           // dynamic spacing always wins — applied last
       ...(isRadial ? {
-        'elk.radial.radius': String(radius),
+        'elk.radial.radius': dynRadius,
         ...(rootNode ? { 'elk.radial.rootNode': rootNode.id } : {}),
       } : {}),
-      ...opts,
     },
     children: nodes.map(n => ({
       id: n.id,
@@ -1644,8 +1667,8 @@ function AgentNode({ data, selected }) {
           <IcoAgent/>
         </div>
         <div style={{flex:1,minWidth:0}}>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.78rem',color:'#e0e0e0'}}>{data.label}</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#818cf8',marginTop:1,display:'flex',alignItems:'center',gap:4}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.95rem',color:'#e0e0e0'}}>{data.label}</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.95rem',color:'#818cf8',marginTop:1,display:'flex',alignItems:'center',gap:4}}>
             <span>{modelSlug}</span>
           </div>
         </div>
@@ -1654,24 +1677,24 @@ function AgentNode({ data, selected }) {
 
       {/* Detail rows */}
       <div style={{padding:'6px 12px',display:'flex',flexDirection:'column',gap:4}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#444',display:'flex',gap:4}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.95rem',color:'#444',display:'flex',gap:4}}>
           <span style={{color:'#333',flexShrink:0}}>model</span>
           <span style={{color:'#666',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{provider}/{modelSlug}</span>
         </div>
         {data.workspace && (
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#444',display:'flex',gap:4}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.95rem',color:'#444',display:'flex',gap:4}}>
             <span style={{color:'#333',flexShrink:0}}>workspace</span>
             <span style={{color:'#555',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{data.workspace.split('/').pop()}</span>
           </div>
         )}
         {data.thinking && (
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#444',display:'flex',gap:4}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.95rem',color:'#444',display:'flex',gap:4}}>
             <span style={{color:'#333',flexShrink:0}}>thinking</span>
             <span style={{color:'#818cf8'}}>{data.thinking}</span>
           </div>
         )}
         {promptPreview && (
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#383838',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',borderTop:'1px solid #111',paddingTop:4,marginTop:2}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.95rem',color:'#383838',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',borderTop:'1px solid #111',paddingTop:4,marginTop:2}}>
             {promptPreview}
           </div>
         )}
@@ -1707,14 +1730,14 @@ function ChannelNode({ data, selected }) {
       <div style={{display:'flex',alignItems:'center',gap:8,padding:'9px 12px',borderBottom:'1px solid #161616'}}>
         <div style={{background:`color-mix(in srgb,${C} 18%,#0a0a0a)`,borderRadius:6,padding:5,display:'flex',flexShrink:0}}><IcoChannel/></div>
         <div style={{flex:1,minWidth:0}}>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.78rem',color:'#e0e0e0'}}>{data.label||data.type}</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:isActive?C:'#333',marginTop:1}}>{isActive?'enabled':'disabled'}</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.95rem',color:'#e0e0e0'}}>{data.label||data.type}</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.95rem',color:isActive?C:'#333',marginTop:1}}>{isActive?'enabled':'disabled'}</div>
         </div>
         <span style={{width:6,height:6,borderRadius:'50%',background:isActive?'#4ade80':'#333',boxShadow:isActive?'0 0 6px #4ade80':'none',flexShrink:0,animation:isActive?'vfPulse 2s ease-in-out infinite':'none'}}/>
       </div>
       <div style={{padding:'6px 12px',display:'flex',flexDirection:'column',gap:3}}>
         {details.slice(0,4).map(([k,v]) => (
-          <div key={k} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.57rem',display:'flex',gap:4}}>
+          <div key={k} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',display:'flex',gap:4}}>
             <span style={{color:'#333',flexShrink:0}}>{k}</span>
             <span style={{color:'#555',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
               {Array.isArray(v)?v.slice(0,2).join(', ')+(v.length>2?`…`:''):String(v)}
@@ -1783,9 +1806,10 @@ function CollapsedServerNode({ data, selected }) {
       </div>
       {/* Name below */}
       <div style={{
-        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.72rem',
-        fontWeight:600, color:'#c0c0c0', textAlign:'center',
-        maxWidth:160, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+        fontFamily:"'JetBrains Mono',monospace", fontSize:'1.05rem',
+        fontWeight:700, color:'#fff', textAlign:'center',
+        maxWidth:180, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+        letterSpacing:'-0.01em',
       }}>{data.label || 'OpenClaw Gateway'}</div>
     </div>
   );
@@ -1887,22 +1911,23 @@ function TreeIconNode({ data, selected }) {
         {data.expandable && (
           <span style={{
             position:'absolute', bottom:7, left:'50%', transform:'translateX(-50%)',
-            fontSize:'0.75rem', color: data.expanded ? cfg.color : '#666',
+            fontSize:'0.92rem', color: data.expanded ? cfg.color : '#666',
             lineHeight:1, zIndex:5,
           }}>{data.expanded ? '▾' : '▸'}</span>
         )}
       </div>
       <div style={{
-        fontFamily:"'JetBrains Mono',monospace", fontSize:'1rem',
-        fontWeight:600, color:'#e0e0e0', textAlign:'center',
-        maxWidth:150, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+        fontFamily:"'JetBrains Mono',monospace", fontSize:'1.05rem',
+        fontWeight:700, color:'#fff', textAlign:'center',
+        maxWidth:160, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+        letterSpacing:'-0.01em',
       }}>{data.label}</div>
       {data.badge && (
         <div style={{
-          fontFamily:"'JetBrains Mono',monospace", fontSize:'0.78rem',
+          fontFamily:"'JetBrains Mono',monospace", fontSize:'0.82rem',
           color: cfg.color, textAlign:'center',
-          maxWidth:150, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
-          marginTop:-4, opacity:0.85,
+          maxWidth:160, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+          marginTop:-2, opacity:0.9,
         }}>{data.badge}</div>
       )}
     </div>
@@ -1953,10 +1978,34 @@ function NavBtn({ children, onClick, primary, title, style: extraStyle }) {
   );
 }
 
+/* ── Tower button — used in the bottom-left control tower ── */
+function TowerBtn({ children, title, active, accent, onClick, disabled }) {
+  const [hov, setHov] = React.useState(false);
+  const bg = active ? '#1e0a0a' : hov ? '#1c1c1c' : '#111';
+  const bd = active ? '#ff5c5c' : hov ? '#3a3a3a' : '#1e1e1e';
+  const cl = (active || accent) ? '#ff5c5c' : hov ? '#fff' : '#666';
+  return (
+    <button title={title} onClick={disabled ? undefined : onClick}
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{
+        width:36, height:36, background:bg, border:`1px solid ${bd}`,
+        borderRadius:7, cursor: disabled ? 'default' : 'pointer',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        color:cl, transition:'all 0.12s', padding:0, flexShrink:0,
+        opacity: disabled ? 0.4 : 1, outline:'none',
+      }}>
+      {children}
+    </button>
+  );
+}
+function TowerSep() {
+  return <div style={{ height:1, background:'#1e1e1e', margin:'2px 0' }}/>;
+}
+
 /* ── Palette ── */
 function PaletteLabel({ children, style }) {
   return (
-    <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',textTransform:'uppercase',letterSpacing:'0.12em',color:'#2e2e2e',padding:'6px 2px 3px',...style}}>
+    <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',textTransform:'uppercase',letterSpacing:'0.12em',color:'#2e2e2e',padding:'6px 2px 3px',...style}}>
       {children}
     </div>
   );
@@ -1974,7 +2023,7 @@ function PaletteItem({ children, color, onClick }) {
         background: hov ? '#1a1a1a' : '#141414',
         border: `1px solid ${hov ? color : '#1e1e1e'}`,
         cursor:'pointer', color: hov ? '#e0e0e0' : '#666',
-        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.72rem',
+        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.9rem',
         textAlign:'left', transition:'all 0.15s', width:'100%',
       }}>
       {children}
@@ -2050,13 +2099,13 @@ function ConfigPanel({ node, onClose, onUpdate }) {
   const inputStyle = {
     background:'#0e0e0e', border:'1px solid #242424', borderRadius:6,
     color:'#e0e0e0', padding:'8px 10px',
-    fontFamily:"'JetBrains Mono',monospace", fontSize:'0.78rem',
+    fontFamily:"'JetBrains Mono',monospace", fontSize:'0.95rem',
     width:'100%', outline:'none', boxSizing:'border-box',
   };
 
   const Field = ({ label, children }) => (
     <div style={{display:'flex',flexDirection:'column',gap:5}}>
-      <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.72rem',textTransform:'uppercase',letterSpacing:'0.08em',color:'#888'}}>{label}</label>
+      <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',textTransform:'uppercase',letterSpacing:'0.08em',color:'#888'}}>{label}</label>
       {children}
     </div>
   );
@@ -2149,14 +2198,14 @@ function AiBuildModal({ onClose, onResult }) {
   return (
     <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.75)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}}>
       <div onClick={e => e.stopPropagation()} style={{background:'#141414',border:'1px solid #2a2a2a',borderRadius:12,padding:28,width:560,maxWidth:'90vw'}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#444',marginBottom:12}}>✨ AI Build</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#444',marginBottom:12}}>✨ AI Build</div>
         <textarea value={prompt} onChange={e => setPrompt(e.target.value)}
           placeholder="Describe your agent network..."
           style={{width:'100%',minHeight:90,background:'#0e0e0e',border:'1px solid #242424',borderRadius:8,color:'#e0e0e0',padding:12,fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',resize:'vertical',outline:'none',boxSizing:'border-box'}} />
         <div style={{display:'flex',gap:6,flexWrap:'wrap',margin:'10px 0'}}>
           {chips.map(c => (
             <button key={c} onClick={() => setPrompt(c)}
-              style={{background:'transparent',border:'1px solid #2a2a2a',borderRadius:20,padding:'4px 10px',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#555',transition:'all 0.15s'}}
+              style={{background:'transparent',border:'1px solid #2a2a2a',borderRadius:20,padding:'4px 10px',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color:'#555',transition:'all 0.15s'}}
               onMouseEnter={e => {e.target.style.borderColor='#ff5c5c';e.target.style.color='#e0e0e0';}}
               onMouseLeave={e => {e.target.style.borderColor='#2a2a2a';e.target.style.color='#555';}}>
               "{c}"
@@ -2198,9 +2247,9 @@ function ExportModal({ nodes, edges, onClose }) {
   return (
     <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.75)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}}>
       <div onClick={e => e.stopPropagation()} style={{background:'#141414',border:'1px solid #2a2a2a',borderRadius:12,padding:28,width:600,maxWidth:'90vw',maxHeight:'80vh',display:'flex',flexDirection:'column',gap:16}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#444'}}>⬇ Export Config</div>
-        <pre style={{background:'#0a0a0a',border:'1px solid #1e1e1e',borderRadius:8,padding:16,fontFamily:"'JetBrains Mono',monospace",fontSize:'0.72rem',color:'#4ade80',overflowY:'auto',flex:1,margin:0}}>{json}</pre>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#444',background:'#0a0a0a',border:'1px solid #1e1e1e',borderRadius:6,padding:'8px 12px'}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#444'}}>⬇ Export Config</div>
+        <pre style={{background:'#0a0a0a',border:'1px solid #1e1e1e',borderRadius:8,padding:16,fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#4ade80',overflowY:'auto',flex:1,margin:0}}>{json}</pre>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.88rem',color:'#444',background:'#0a0a0a',border:'1px solid #1e1e1e',borderRadius:6,padding:'8px 12px'}}>
           curl -fsSL https://vibeclaw.dev/install.sh | bash
         </div>
         <div style={{display:'flex',justifyContent:'flex-end',gap:8}}>
@@ -2233,10 +2282,10 @@ function SectionCardNode({ data, selected }) {
       <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 14px'}}>
         <span style={{fontSize:'1rem'}}>{ICONS[data.label]||'📦'}</span>
         <div style={{flex:1}}>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>{data.label}</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:C,marginTop:1}}>{data.count} {data.count===1?'item':'items'}</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.92rem',color:'#e0e0e0'}}>{data.label}</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.95rem',color:C,marginTop:1}}>{data.count} {data.count===1?'item':'items'}</div>
         </div>
-        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#333'}}>▶</span>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:'#333'}}>▶</span>
       </div>
     </div>
   );
@@ -2277,8 +2326,8 @@ function SkillsListNode({ data, selected }) {
             <IcoSkill/>
           </div>
           <div>
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>Skills</div>
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:'#4ade80',marginTop:1}}>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.92rem',color:'#e0e0e0'}}>Skills</div>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',color:'#4ade80',marginTop:1}}>
               {skills.filter(s=>s.enabled).length} on · {skills.filter(s=>!s.enabled).length} off
             </div>
           </div>
@@ -2289,7 +2338,7 @@ function SkillsListNode({ data, selected }) {
       <div style={{padding:'6px 10px', borderBottom:'1px solid #141414', flexShrink:0}} className="nodrag nopan">
         <input value={filter} onChange={e=>setFilter(e.target.value)}
           placeholder="filter…"
-          style={{width:'100%',background:'#0a0a0a',border:'1px solid #1e1e1e',borderRadius:4,padding:'4px 8px',color:'#aaa',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',outline:'none',boxSizing:'border-box'}}
+          style={{width:'100%',background:'#0a0a0a',border:'1px solid #1e1e1e',borderRadius:4,padding:'4px 8px',color:'#aaa',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',outline:'none',boxSizing:'border-box'}}
         />
       </div>
 
@@ -2300,17 +2349,17 @@ function SkillsListNode({ data, selected }) {
             <div style={{display:'flex',alignItems:'flex-start',gap:6,flex:1,minWidth:0}}>
               <span style={{width:5,height:5,borderRadius:'50%',background:s.enabled?'#4ade80':'#2a2a2a',boxShadow:s.enabled?'0 0 5px #4ade8066':'none',flexShrink:0,marginTop:4}}/>
               <div style={{minWidth:0}}>
-                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:s.enabled?'#bbb':'#3a3a3a'}}>{s.id}</div>
-                {s.description && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',color:'#3a3a3a',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',marginTop:1}}>{s.description}</div>}
+                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:s.enabled?'#bbb':'#3a3a3a'}}>{s.id}</div>
+                {s.description && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',color:'#3a3a3a',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',marginTop:1}}>{s.description}</div>}
               </div>
             </div>
             <button onClick={()=>handleToggle(s)} disabled={!!toggling[s.id]}
-              style={{background:'none',border:`1px solid ${s.enabled?'#2a5c3a':'#222'}`,borderRadius:10,padding:'1px 8px',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',color:s.enabled?'#4ade80':'#333',flexShrink:0}}>
+              style={{background:'none',border:`1px solid ${s.enabled?'#2a5c3a':'#222'}`,borderRadius:10,padding:'1px 8px',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',color:s.enabled?'#4ade80':'#333',flexShrink:0}}>
               {toggling[s.id]?'…':s.enabled?'on':'off'}
             </button>
           </div>
         ))}
-        {filtered.length===0 && <div style={{padding:16,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#2a2a2a'}}>no match</div>}
+        {filtered.length===0 && <div style={{padding:16,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:'#2a2a2a'}}>no match</div>}
       </div>
     </div>
   );
@@ -2333,23 +2382,23 @@ function SessionsListNode({ data }) {
       <div style={{padding:'10px 12px',borderBottom:'1px solid #1a1a1a',display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
         <div style={{background:'color-mix(in srgb,#f59e0b 18%,#0a0a0a)',borderRadius:6,padding:5,fontSize:'0.85rem'}}>🕐</div>
         <div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>Sessions</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:'#f59e0b',marginTop:1}}>{sessions.length} recent · {sessions.reduce((a,s)=>a+(s.messageCount||0),0)} messages</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.92rem',color:'#e0e0e0'}}>Sessions</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',color:'#f59e0b',marginTop:1}}>{sessions.length} recent · {sessions.reduce((a,s)=>a+(s.messageCount||0),0)} messages</div>
         </div>
       </div>
       <div style={{overflowY:'auto',flex:1}}>
         {sessions.map(s => (
           <div key={s.id} style={{padding:'8px 12px',borderBottom:'1px solid #0e0e0e'}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:3}}>
-              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#666'}}>{s.id.slice(0,12)}…</span>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.95rem',color:'#666'}}>{s.id.slice(0,12)}…</span>
               <div style={{display:'flex',gap:8,alignItems:'center'}}>
-                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.52rem',color:'#444'}}>{s.messageCount} msg</span>
-                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.52rem',color:'#333'}}>{s.sizeKb}kb</span>
-                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.52rem',color:'#555'}}>{fmtTime(s.lastActive)}</span>
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#444'}}>{s.messageCount} msg</span>
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#333'}}>{s.sizeKb}kb</span>
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#555'}}>{fmtTime(s.lastActive)}</span>
               </div>
             </div>
             {s.lastUserMessage && (
-              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.62rem',color:'#777',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',borderLeft:'2px solid #333',paddingLeft:6}}>
+              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color:'#777',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',borderLeft:'2px solid #333',paddingLeft:6}}>
                 {s.lastUserMessage}
               </div>
             )}
@@ -2371,8 +2420,8 @@ function CronListNode({ data }) {
       <div style={{padding:'10px 12px',borderBottom:'1px solid #1a1a1a',display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
         <div style={{background:'color-mix(in srgb,#a855f7 18%,#0a0a0a)',borderRadius:6,padding:5,display:'flex',fontSize:'0.85rem'}}>⏱</div>
         <div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>Cron Jobs</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:'#a855f7',marginTop:1}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.92rem',color:'#e0e0e0'}}>Cron Jobs</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',color:'#a855f7',marginTop:1}}>
             {jobs.filter(j=>j.enabled).length} active · {jobs.length} total
             {runningCount > 0 && <span style={{color:'#f59e0b',marginLeft:6}}>· <span className="refresh-spin">⟳</span> {runningCount} running</span>}
           </div>
@@ -2388,14 +2437,14 @@ function CronListNode({ data }) {
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:3}}>
               <div style={{display:'flex',alignItems:'center',gap:6}}>
                 <span className={j.lastStatus==='running'?'cron-running':''} style={{width:5,height:5,borderRadius:'50%',background:j.enabled?(STATUS[j.lastStatus]||'#555'):'#222',flexShrink:0}}/>
-                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:j.enabled?'#ccc':'#444'}}>{j.name}</span>
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',color:j.enabled?'#ccc':'#444'}}>{j.name}</span>
               </div>
               <div style={{display:'flex',alignItems:'center',gap:6}}>
-                {j.lastStatus && <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',color:STATUS[j.lastStatus]||'#555'}}>{j.lastStatus}</span>}
-                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.5rem',color:'#333'}}>edit →</span>
+                {j.lastStatus && <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',color:STATUS[j.lastStatus]||'#555'}}>{j.lastStatus}</span>}
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#333'}}>edit →</span>
               </div>
             </div>
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',paddingLeft:11,display:'flex',flexDirection:'column',gap:2}}>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#333',paddingLeft:11,display:'flex',flexDirection:'column',gap:2}}>
               <span>{j.schedule?.expr || j.schedule?.kind} {j.schedule?.tz ? `(${j.schedule.tz})` : ''}</span>
               <span>last: {j.lastRunAt ? new Date(j.lastRunAt).toLocaleString() : 'never'} {j.lastDurationMs ? `· ${j.lastDurationMs}ms` : ''}</span>
               {j.nextRunAt && <span style={{color:'#555'}}>next: {new Date(j.nextRunAt).toLocaleString()}</span>}
@@ -2407,8 +2456,8 @@ function CronListNode({ data }) {
           style={{padding:'8px 12px',cursor:'pointer',display:'flex',alignItems:'center',gap:6,opacity:0.5,transition:'opacity 0.15s'}}
           onMouseEnter={e=>e.currentTarget.style.opacity='1'}
           onMouseLeave={e=>e.currentTarget.style.opacity='0.5'}>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#a855f7'}}>＋</span>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#888'}}>New Cron Job</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.88rem',color:'#a855f7'}}>＋</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:'#888'}}>New Cron Job</span>
         </div>
       </div>
     </div>
@@ -2424,27 +2473,27 @@ function NodesListNode({ data }) {
       <div style={{padding:'10px 12px',borderBottom:'1px solid #1a1a1a',display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
         <div style={{background:'color-mix(in srgb,#22d3ee 18%,#0a0a0a)',borderRadius:6,padding:5,display:'flex',fontSize:'0.85rem'}}>📱</div>
         <div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>Nodes</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:'#22d3ee',marginTop:1}}>{nodes.length} paired</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.92rem',color:'#e0e0e0'}}>Nodes</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',color:'#22d3ee',marginTop:1}}>{nodes.length} paired</div>
         </div>
       </div>
       <div style={{overflowY:'auto',flex:1}}>
         {nodes.map(n => (
           <div key={n.id} style={{padding:'10px 12px',borderBottom:'1px solid #0e0e0e'}}>
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:4}}>
-              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.72rem',color:'#ccc',fontWeight:600}}>{n.name}</span>
-              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',color:'#22d3ee'}}>{n.platform}</span>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#ccc',fontWeight:600}}>{n.name}</span>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',color:'#22d3ee'}}>{n.platform}</span>
             </div>
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#555',marginBottom:3}}>{n.modelIdentifier || n.deviceFamily} · v{n.version}</div>
-            {n.lastSeen && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.52rem',color:'#333',marginBottom:5}}>last seen {new Date(n.lastSeen).toLocaleString()}</div>}
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.95rem',color:'#555',marginBottom:3}}>{n.modelIdentifier || n.deviceFamily} · v{n.version}</div>
+            {n.lastSeen && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#333',marginBottom:5}}>last seen {new Date(n.lastSeen).toLocaleString()}</div>}
             <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
               {(n.caps||[]).map(c => (
-                <span key={c} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.5rem',color:'#22d3ee',background:'rgba(34,211,238,0.08)',border:'1px solid rgba(34,211,238,0.2)',borderRadius:3,padding:'1px 5px'}}>{c}</span>
+                <span key={c} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#22d3ee',background:'rgba(34,211,238,0.08)',border:'1px solid rgba(34,211,238,0.2)',borderRadius:3,padding:'1px 5px'}}>{c}</span>
               ))}
             </div>
           </div>
         ))}
-        {nodes.length === 0 && <div style={{padding:16,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#2a2a2a'}}>no nodes paired</div>}
+        {nodes.length === 0 && <div style={{padding:16,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:'#2a2a2a'}}>no nodes paired</div>}
       </div>
     </div>
   );
@@ -2460,25 +2509,25 @@ function ModelsListNode({ data }) {
       <div style={{padding:'10px 12px',borderBottom:'1px solid #1a1a1a',display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
         <div style={{background:'color-mix(in srgb,#f97316 18%,#0a0a0a)',borderRadius:6,padding:5,display:'flex',fontSize:'0.85rem'}}>🧠</div>
         <div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>Models</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:C,marginTop:1}}>{providers.length} providers · {data.models?.length||0} models</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.92rem',color:'#e0e0e0'}}>Models</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',color:C,marginTop:1}}>{providers.length} providers · {data.models?.length||0} models</div>
         </div>
       </div>
       <div style={{overflowY:'auto',flex:1}}>
         {providers.map(p => (
           <div key={p.id} style={{padding:'8px 12px',borderBottom:'1px solid #0e0e0e'}}>
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:4}}>
-              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.72rem',color:'#ccc',fontWeight:600}}>{p.id}</span>
-              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.52rem',color:'#444'}}>{p.models?.length||0} models</span>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#ccc',fontWeight:600}}>{p.id}</span>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#444'}}>{p.models?.length||0} models</span>
             </div>
             <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
               {(p.models||[]).map(m => (
-                <span key={m.id} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.5rem',color:C,background:'rgba(249,115,22,0.08)',border:'1px solid rgba(249,115,22,0.2)',borderRadius:3,padding:'1px 5px'}}>{m.id}</span>
+                <span key={m.id} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:C,background:'rgba(249,115,22,0.08)',border:'1px solid rgba(249,115,22,0.2)',borderRadius:3,padding:'1px 5px'}}>{m.id}</span>
               ))}
             </div>
           </div>
         ))}
-        {providers.length === 0 && <div style={{padding:16,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#2a2a2a'}}>no providers configured</div>}
+        {providers.length === 0 && <div style={{padding:16,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:'#2a2a2a'}}>no providers configured</div>}
       </div>
     </div>
   );
@@ -2511,7 +2560,7 @@ function LiveGatewayNode({ data, selected }) {
         </div>
         <div>
           <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.8rem',color:'#e0e0e0'}}>{data.label}</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#444',marginTop:1}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.95rem',color:'#444',marginTop:1}}>
             port {data.port} · v{data.version}
           </div>
         </div>
@@ -2520,22 +2569,22 @@ function LiveGatewayNode({ data, selected }) {
           <span className="nodrag nopan"
             onMouseDown={e=>e.stopPropagation()}
             onClick={e=>{e.preventDefault();e.stopPropagation();window.__liveShowGateway?.();}}
-            style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#444',cursor:'pointer',padding:'2px 6px',border:'1px solid #1e1e1e',borderRadius:4}}>⚙</span>
+            style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color:'#444',cursor:'pointer',padding:'2px 6px',border:'1px solid #1e1e1e',borderRadius:4}}>⚙</span>
         </div>
       </div>
 
       {/* Overview stats — like admin main page */}
       <div style={{padding:'8px 14px',borderBottom:'1px solid #141414',display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem'}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem'}}>
           <span style={{color:'#333'}}>status </span><span style={{color:'#4ade80'}}>online</span>
         </div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem'}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem'}}>
           <span style={{color:'#333'}}>ws </span><span style={{color:'#555'}}>:{data.port}</span>
         </div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem'}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem'}}>
           <span style={{color:'#333'}}>sessions </span><span style={{color:'#f59e0b'}}>{data.sessionCount||0}</span>
         </div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem'}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem'}}>
           <span style={{color:'#333'}}>cron </span><span style={{color:'#a855f7'}}>{data.cronCount||0} jobs</span>
         </div>
       </div>
@@ -2557,11 +2606,11 @@ function LiveGatewayNode({ data, selected }) {
             }}>
             <div style={{display:'flex',alignItems:'center',gap:8}}>
               <span style={{width:6,height:6,borderRadius:'50%',background: expanded ? s.color : '#2a2a2a',transition:'all 0.2s',boxShadow: expanded ? `0 0 6px ${s.color}88` : 'none'}}/>
-              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color: expanded ? '#ccc' : '#555'}}>{s.label}</span>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.88rem',color: expanded ? '#ccc' : '#555'}}>{s.label}</span>
             </div>
             <div style={{display:'flex',alignItems:'center',gap:8}}>
-              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.62rem',color: expanded ? s.color : '#333'}}>{s.count}</span>
-              <span style={{color: expanded ? s.color : '#333',fontSize:'0.65rem',transition:'transform 0.2s',display:'inline-block',transform: expanded ? 'rotate(90deg)' : 'none'}}>▶</span>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color: expanded ? s.color : '#333'}}>{s.count}</span>
+              <span style={{color: expanded ? s.color : '#333',fontSize:'0.82rem',transition:'transform 0.2s',display:'inline-block',transform: expanded ? 'rotate(90deg)' : 'none'}}>▶</span>
             </div>
           </div>
         );
@@ -3007,7 +3056,7 @@ function LiveSkillPanel({ agent, skills, onClose, onToggleSkill }) {
           transition:'all 0.2s',
         }}/>
         <span style={{
-          fontFamily:"'JetBrains Mono',monospace", fontSize:'0.72rem',
+          fontFamily:"'JetBrains Mono',monospace", fontSize:'0.9rem',
           color: s.enabled ? '#ccc' : '#444',
           transition:'color 0.2s',
         }}>{s.id}</span>
@@ -3015,7 +3064,7 @@ function LiveSkillPanel({ agent, skills, onClose, onToggleSkill }) {
       <button onClick={() => handleToggle(s)} disabled={!!toggling[s.id]} style={{
         background:'none', border:`1px solid ${s.enabled ? '#2a5c3a' : '#2a2a2a'}`,
         borderRadius:20, padding:'2px 10px', cursor:'pointer',
-        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.58rem',
+        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.95rem',
         color: s.enabled ? '#4ade80' : '#444',
         transition:'all 0.15s',
       }}>
@@ -3036,20 +3085,20 @@ function LiveSkillPanel({ agent, skills, onClose, onToggleSkill }) {
             {agent.isSkillsView ? '🔧 Skills' : `🤖 ${agent.label}`}
           </div>
           {!agent.isSkillsView && (
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#888',marginTop:2}}>{agent.model}</div>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color:'#888',marginTop:2}}>{agent.model}</div>
           )}
         </div>
         <button onClick={onClose} style={{background:'none',border:'none',color:'#444',fontSize:'1.1rem',cursor:'pointer',padding:'2px 6px'}}>×</button>
       </div>
       {/* Stats bar */}
       <div style={{padding:'8px 14px',borderBottom:'1px solid #272727',display:'flex',gap:14}}>
-        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#4ade80'}}>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color:'#4ade80'}}>
           ◉ {enabled.length} on
         </span>
-        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#777'}}>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color:'#777'}}>
           ○ {disabled.length} off
         </span>
-        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#555'}}>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color:'#555'}}>
           {skills.length} total
         </span>
       </div>
@@ -3061,7 +3110,7 @@ function LiveSkillPanel({ agent, skills, onClose, onToggleSkill }) {
           style={{
             width:'100%', background:'#0e0e0e', border:'1px solid #1e1e1e',
             borderRadius:5, padding:'5px 9px', color:'#aaa', outline:'none',
-            fontFamily:"'JetBrains Mono',monospace", fontSize:'0.7rem', boxSizing:'border-box',
+            fontFamily:"'JetBrains Mono',monospace", fontSize:'0.88rem', boxSizing:'border-box',
           }}
         />
       </div>
@@ -3069,18 +3118,18 @@ function LiveSkillPanel({ agent, skills, onClose, onToggleSkill }) {
       <div style={{overflowY:'auto',flex:1}}>
         {enabled.length > 0 && (
           <>
-            <div style={{padding:'6px 14px 2px',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#2a2a2a'}}>Active</div>
+            <div style={{padding:'6px 14px 2px',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#2a2a2a'}}>Active</div>
             {enabled.map(s => <SkillRow key={s.id} s={s}/>)}
           </>
         )}
         {disabled.length > 0 && (
           <>
-            <div style={{padding:'10px 14px 2px',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#2a2a2a'}}>Disabled</div>
+            <div style={{padding:'10px 14px 2px',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#2a2a2a'}}>Disabled</div>
             {disabled.map(s => <SkillRow key={s.id} s={s}/>)}
           </>
         )}
         {filtered.length === 0 && (
-          <div style={{padding:24,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#333'}}>no skills match</div>
+          <div style={{padding:24,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.88rem',color:'#333'}}>no skills match</div>
         )}
       </div>
     </div>
@@ -3093,7 +3142,7 @@ const panelInput = {
   color:'#e8e8e8', padding:'8px 12px', fontFamily:"'JetBrains Mono',monospace",
   fontSize:'0.9rem', width:'100%', outline:'none', boxSizing:'border-box',
 };
-const panelLabel = { fontFamily:"'JetBrains Mono',monospace", fontSize:'0.72rem',
+const panelLabel = { fontFamily:"'JetBrains Mono',monospace", fontSize:'0.9rem',
   textTransform:'uppercase', letterSpacing:'0.08em', color:'#999', display:'block', marginBottom:5 };
 const panelField = ({ label, children }) => (
   <div style={{marginBottom:12}}>
@@ -3107,18 +3156,18 @@ function PanelShell({ emoji, title, subtitle, subtitleColor='#4ade80', onClose, 
       <div style={{padding:'12px 14px',borderBottom:'1px solid #272727',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0}}>
         <div>
           <div style={{fontSize:'0.82rem',fontWeight:600,color:'#f0f0f0'}}>{emoji} {title}</div>
-          {subtitle && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:subtitleColor,marginTop:2}}>{subtitle}</div>}
+          {subtitle && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color:subtitleColor,marginTop:2}}>{subtitle}</div>}
         </div>
-        <button onClick={onClose} title="Deselect node" style={{background:'none',border:'1px solid #222',borderRadius:5,color:'#555',fontSize:'0.7rem',cursor:'pointer',padding:'3px 7px',fontFamily:"'JetBrains Mono',monospace",lineHeight:1}}>← back</button>
+        <button onClick={onClose} title="Deselect node" style={{background:'none',border:'1px solid #222',borderRadius:5,color:'#555',fontSize:'0.88rem',cursor:'pointer',padding:'3px 7px',fontFamily:"'JetBrains Mono',monospace",lineHeight:1}}>← back</button>
       </div>
       <div style={{overflowY:'auto',flex:1,padding:16}}>{children}</div>
       {onSave && (
         <div style={{padding:'12px 16px',borderTop:'1px solid #272727',flexShrink:0}}>
-          {saveStatus && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:saveStatus.startsWith('✓')?'#4ade80':'#ef4444',marginBottom:8,textAlign:'center'}}>{saveStatus}</div>}
+          {saveStatus && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:saveStatus.startsWith('✓')?'#4ade80':'#ef4444',marginBottom:8,textAlign:'center'}}>{saveStatus}</div>}
           <button onClick={onSave} disabled={saving} style={{
             width:'100%',background:'#ff5c5c',border:'none',borderRadius:6,
             padding:'8px',color:'#000',fontFamily:"'JetBrains Mono',monospace",
-            fontSize:'0.72rem',fontWeight:700,cursor:'pointer',opacity:saving?0.6:1,
+            fontSize:'0.9rem',fontWeight:700,cursor:'pointer',opacity:saving?0.6:1,
           }}>{saving ? 'Saving…' : '✓ Save Changes'}</button>
         </div>
       )}
@@ -3149,7 +3198,7 @@ function PanelToggle({ value, onChange }) {
 function PanelSection({ label }) {
   return (
     <div style={{
-      fontFamily:"'JetBrains Mono',monospace", fontSize:'0.7rem',
+      fontFamily:"'JetBrains Mono',monospace", fontSize:'0.88rem',
       color:'#777', textTransform:'uppercase', letterSpacing:'0.1em',
       borderBottom:'1px solid #2a2a2a', paddingBottom:6, marginBottom:10, marginTop:18,
     }}>{label}</div>
@@ -3245,7 +3294,7 @@ function LiveAgentPanel({ data, models, onClose, onSaved, onDeleted }) {
         <>
           <textarea value={fallbacks} onChange={e=>setFallbacks(e.target.value)} rows={3}
             style={{...panelInput,resize:'vertical',lineHeight:1.6}} placeholder={'one per line — used if primary fails'}/>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>tried in order if primary rate-limits or errors</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#333',marginTop:3}}>tried in order if primary rate-limits or errors</div>
         </>
       })}
       {panelField({ label:'Thinking', children: SEL(thinking, setThinking, [['','off'],['low','low'],['medium','medium'],['high','high']]) })}
@@ -3274,7 +3323,7 @@ function LiveAgentPanel({ data, models, onClose, onSaved, onDeleted }) {
       <textarea value={prompt} onChange={e=>setPrompt(e.target.value)} rows={8}
         style={{...panelInput,resize:'vertical',lineHeight:1.5,width:'100%',boxSizing:'border-box'}}
         placeholder={'Leave empty to use workspace SOUL.md / AGENTS.md'}/>
-      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>workspace files override this at runtime</div>
+      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#333',marginTop:3}}>workspace files override this at runtime</div>
 
       {data.agentId && data.agentId !== 'main' && data.agentId !== 'defaults' && (
         <>
@@ -3287,10 +3336,10 @@ function LiveAgentPanel({ data, models, onClose, onSaved, onDeleted }) {
                     body: JSON.stringify({ agentDelete: { agentId: data.agentId } }) });
                   setDeleting(false);
                   onDeleted?.();
-                }} disabled={deleting} style={{flex:1,background:'#7f1d1d',border:'1px solid #ef4444',borderRadius:5,padding:'7px',color:'#fca5a5',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>{deleting?'Deleting…':'⚠ Confirm Delete'}</button>
-                <button onClick={()=>setConfirmDel(false)} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:5,padding:'7px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>Cancel</button>
+                }} disabled={deleting} style={{flex:1,background:'#7f1d1d',border:'1px solid #ef4444',borderRadius:5,padding:'7px',color:'#fca5a5',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',cursor:'pointer'}}>{deleting?'Deleting…':'⚠ Confirm Delete'}</button>
+                <button onClick={()=>setConfirmDel(false)} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:5,padding:'7px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',cursor:'pointer'}}>Cancel</button>
               </div>
-            : <button onClick={()=>setConfirmDel(true)} style={{width:'100%',background:'none',border:'1px solid #3a1818',borderRadius:5,padding:'7px',color:'#ef4444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>✕ Delete Agent</button>
+            : <button onClick={()=>setConfirmDel(true)} style={{width:'100%',background:'none',border:'1px solid #3a1818',borderRadius:5,padding:'7px',color:'#ef4444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',cursor:'pointer'}}>✕ Delete Agent</button>
           }
         </>
       )}
@@ -3425,7 +3474,7 @@ function LiveChannelPanel({ data, onClose, onSaved, onDeleted, onCreated }) {
           <textarea value={allowFrom} onChange={e=>setAllowFrom(e.target.value)} rows={4}
             style={{...panelInput,resize:'vertical',lineHeight:1.7}}
             placeholder={'+447700900000\n+447700900001'}/>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>one number per line · only used when dmPolicy = allowlist</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#333',marginTop:3}}>one number per line · only used when dmPolicy = allowlist</div>
         </>
       })}
 
@@ -3439,7 +3488,7 @@ function LiveChannelPanel({ data, onClose, onSaved, onDeleted, onCreated }) {
           <textarea value={extraJson} onChange={e=>setExtraJson(e.target.value)} rows={3}
             style={{...panelInput,resize:'vertical',lineHeight:1.5}}
             placeholder={'{"customField": "value"}'}/>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>merged on top of the above fields</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#333',marginTop:3}}>merged on top of the above fields</div>
         </>
       )}
 
@@ -3450,14 +3499,14 @@ function LiveChannelPanel({ data, onClose, onSaved, onDeleted, onCreated }) {
           {accounts.map(acct => (
             <div key={acct.id} style={{background:'#141414',border:'1px solid #1e1e1e',borderRadius:6,marginBottom:8,overflow:'hidden'}}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'6px 10px',borderBottom:'1px solid #1a1a1a'}}>
-                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#22d3ee'}}>{acct.id}</span>
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',color:'#22d3ee'}}>{acct.id}</span>
                 <div style={{display:'flex',gap:4}}>
                   <button onClick={() => setEditingAcct(editingAcct?.id === acct.id ? null : {...acct})}
-                    style={{background:'none',border:'1px solid #2a2a2a',borderRadius:3,padding:'2px 7px',color:'#888',fontSize:'0.58rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
+                    style={{background:'none',border:'1px solid #2a2a2a',borderRadius:3,padding:'2px 7px',color:'#888',fontSize:'0.95rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
                     {editingAcct?.id === acct.id ? 'done' : '⚙ edit'}
                   </button>
                   <button onClick={() => deleteAccount(acct.id)}
-                    style={{background:'none',border:'1px solid #3a1818',borderRadius:3,padding:'2px 7px',color:'#ef4444',fontSize:'0.58rem',cursor:'pointer'}}>✕</button>
+                    style={{background:'none',border:'1px solid #3a1818',borderRadius:3,padding:'2px 7px',color:'#ef4444',fontSize:'0.95rem',cursor:'pointer'}}>✕</button>
                 </div>
               </div>
               {editingAcct?.id === acct.id && (
@@ -3470,7 +3519,7 @@ function LiveChannelPanel({ data, onClose, onSaved, onDeleted, onCreated }) {
                     await saveAccount(id, rest);
                     setAccounts(prev => prev.map(a => a.id === id ? {...a,...rest} : a));
                     setEditingAcct(null);
-                  }} style={{background:'#22d3ee',border:'none',borderRadius:4,padding:'5px',color:'#000',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',fontWeight:700,cursor:'pointer'}}>
+                  }} style={{background:'#22d3ee',border:'none',borderRadius:4,padding:'5px',color:'#000',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',fontWeight:700,cursor:'pointer'}}>
                     Save Override
                   </button>
                 </div>
@@ -3480,12 +3529,12 @@ function LiveChannelPanel({ data, onClose, onSaved, onDeleted, onCreated }) {
           {addingAcct ? (
             <div style={{display:'flex',gap:4,marginBottom:8}}>
               <input value={newAcctId} onChange={e=>setNewAcctId(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addAccount()}
-                style={{...panelInput,flex:1,fontSize:'0.65rem'}} placeholder="account ID (e.g. custom-1)"/>
-              <button onClick={addAccount} style={{background:'#22d3ee',border:'none',borderRadius:4,padding:'3px 8px',color:'#000',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',cursor:'pointer'}}>+</button>
-              <button onClick={()=>{setAddingAcct(false);setNewAcctId('');}} style={{background:'none',border:'1px solid #333',borderRadius:4,padding:'3px 7px',color:'#666',fontSize:'0.65rem',cursor:'pointer'}}>✕</button>
+                style={{...panelInput,flex:1,fontSize:'0.82rem'}} placeholder="account ID (e.g. custom-1)"/>
+              <button onClick={addAccount} style={{background:'#22d3ee',border:'none',borderRadius:4,padding:'3px 8px',color:'#000',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',cursor:'pointer'}}>+</button>
+              <button onClick={()=>{setAddingAcct(false);setNewAcctId('');}} style={{background:'none',border:'1px solid #333',borderRadius:4,padding:'3px 7px',color:'#666',fontSize:'0.82rem',cursor:'pointer'}}>✕</button>
             </div>
           ) : (
-            <button onClick={()=>setAddingAcct(true)} style={{width:'100%',background:'none',border:'1px dashed #1e1e1e',borderRadius:5,padding:'5px',color:'#444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.62rem',cursor:'pointer',marginBottom:8}}>+ add account override</button>
+            <button onClick={()=>setAddingAcct(true)} style={{width:'100%',background:'none',border:'1px dashed #1e1e1e',borderRadius:5,padding:'5px',color:'#444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',cursor:'pointer',marginBottom:8}}>+ add account override</button>
           )}
         </>
       )}
@@ -3501,12 +3550,12 @@ function LiveChannelPanel({ data, onClose, onSaved, onDeleted, onCreated }) {
                   await patch({ channelDelete: { channelId: channelType } });
                   setDeleting(false);
                   onDeleted?.();
-                }} disabled={deleting} style={{flex:1,background:'#7f1d1d',border:'1px solid #ef4444',borderRadius:5,padding:'7px',color:'#fca5a5',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>
+                }} disabled={deleting} style={{flex:1,background:'#7f1d1d',border:'1px solid #ef4444',borderRadius:5,padding:'7px',color:'#fca5a5',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',cursor:'pointer'}}>
                   {deleting ? 'Deleting…' : '⚠ Confirm Delete'}
                 </button>
-                <button onClick={()=>setConfirmDel(false)} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:5,padding:'7px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>Cancel</button>
+                <button onClick={()=>setConfirmDel(false)} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:5,padding:'7px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',cursor:'pointer'}}>Cancel</button>
               </div>
-            : <button onClick={()=>setConfirmDel(true)} style={{width:'100%',background:'none',border:'1px solid #3a1818',borderRadius:5,padding:'7px',color:'#ef4444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>✕ Remove Channel</button>
+            : <button onClick={()=>setConfirmDel(true)} style={{width:'100%',background:'none',border:'1px solid #3a1818',borderRadius:5,padding:'7px',color:'#ef4444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',cursor:'pointer'}}>✕ Remove Channel</button>
           }
         </>
       )}
@@ -3629,7 +3678,7 @@ function LiveCronPanel({ data, onClose, onSaved, onCreated, onAgentList }) {
         <button onClick={trigger} disabled={triggering} style={{
           width:'100%',background:'transparent',border:'1px solid #2a2a2a',borderRadius:6,
           padding:'7px',color:'#666',fontFamily:"'JetBrains Mono',monospace",
-          fontSize:'0.7rem',cursor:'pointer',marginTop:12,marginBottom:6,
+          fontSize:'0.88rem',cursor:'pointer',marginTop:12,marginBottom:6,
         }}>{triggering ? '↺ Running…' : '▶ Trigger Now'}</button>
       )}
 
@@ -3641,10 +3690,10 @@ function LiveCronPanel({ data, onClose, onSaved, onCreated, onAgentList }) {
                 body: JSON.stringify({ cronDelete: { jobId: data.id } }) });
               setDeletingJob(false);
               onClose?.();
-            }} disabled={deletingJob} style={{flex:1,background:'#7f1d1d',border:'1px solid #ef4444',borderRadius:5,padding:'6px',color:'#fca5a5',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',cursor:'pointer'}}>{deletingJob?'Deleting…':'⚠ Confirm Delete'}</button>
-            <button onClick={()=>setConfirmJob(false)} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:5,padding:'6px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',cursor:'pointer'}}>Cancel</button>
+            }} disabled={deletingJob} style={{flex:1,background:'#7f1d1d',border:'1px solid #ef4444',borderRadius:5,padding:'6px',color:'#fca5a5',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',cursor:'pointer'}}>{deletingJob?'Deleting…':'⚠ Confirm Delete'}</button>
+            <button onClick={()=>setConfirmJob(false)} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:5,padding:'6px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',cursor:'pointer'}}>Cancel</button>
           </div>
-        : <button onClick={()=>setConfirmJob(true)} style={{width:'100%',background:'none',border:'1px solid #3a1818',borderRadius:5,padding:'6px',color:'#ef4444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',cursor:'pointer',marginTop:4}}>✕ Delete Job</button>
+        : <button onClick={()=>setConfirmJob(true)} style={{width:'100%',background:'none',border:'1px solid #3a1818',borderRadius:5,padding:'6px',color:'#ef4444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',cursor:'pointer',marginTop:4}}>✕ Delete Job</button>
       )}
     </PanelShell>
   );
@@ -3783,10 +3832,10 @@ function LiveGatewayPanel({ data, onClose }) {
 
       {creatingAgent ? (
         <div style={{background:'#141414',border:'1px solid #818cf8',borderRadius:7,padding:'10px 12px',marginBottom:12,display:'flex',flexDirection:'column',gap:6}}>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#818cf8',marginBottom:2}}>New Named Agent</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:'#818cf8',marginBottom:2}}>New Named Agent</div>
           {panelField({ label:'Agent ID', children: <input value={newAgentId} onChange={e=>setNewAgentId(e.target.value)} style={panelInput} placeholder="e.g. researcher"/> })}
           {panelField({ label:'Model',    children: <input value={newAgentModel} onChange={e=>setNewAgentModel(e.target.value)} style={panelInput} placeholder="inherits defaults"/> })}
-          {newAgentMsg && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#4ade80'}}>{newAgentMsg}</div>}
+          {newAgentMsg && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color:'#4ade80'}}>{newAgentMsg}</div>}
           <div style={{display:'flex',gap:6}}>
             <button onClick={async () => {
               if (!newAgentId.trim()) return;
@@ -3859,7 +3908,7 @@ function LiveGatewayPanel({ data, onClose }) {
         <PanelSection label="Plugins"/>
         {Object.entries(cfg.plugins).map(([pid, pc]) => (
           <div key={pid} style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
-            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>{pid}</span>
+            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',color:'#888'}}>{pid}</span>
             <PanelToggle value={pc.enabled !== false} onChange={v => {
               fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
                 body: JSON.stringify({ pluginsPatch: { [pid]: { enabled: v } } }) });
@@ -3872,9 +3921,9 @@ function LiveGatewayPanel({ data, onClose }) {
       <button onClick={restart} disabled={restarting} style={{
         width:'100%',background:'transparent',border:'1px solid #333',borderRadius:6,
         padding:'8px',color:'#888',fontFamily:"'JetBrains Mono',monospace",
-        fontSize:'0.72rem',cursor:'pointer',marginBottom:6,
+        fontSize:'0.9rem',cursor:'pointer',marginBottom:6,
       }}>{restarting ? '↺ Restarting…' : '↺ Restart Gateway'}</button>
-      {restartMsg && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#4ade80',textAlign:'center'}}>{restartMsg}</div>}
+      {restartMsg && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color:'#4ade80',textAlign:'center'}}>{restartMsg}</div>}
 
     </PanelShell>
   );
@@ -3914,21 +3963,21 @@ function SingleSkillPanel({ data, skills, onClose, onToggleSkill }) {
       <PanelSection label="Info"/>
       {[['Skill ID', skillId], ['Category', cat], ...(data.description ? [['Description', data.description]] : [])].map(([k,v]) => (
         <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'7px 10px',background:'#181818',borderRadius:5,border:'1px solid #2a2a2a',marginBottom:6}}>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#999'}}>{k}</span>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#ccc',textAlign:'right',maxWidth:180,wordBreak:'break-all'}}>{String(v)}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:'#999'}}>{k}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:'#ccc',textAlign:'right',maxWidth:180,wordBreak:'break-all'}}>{String(v)}</span>
         </div>
       ))}
 
       <PanelSection label="Config"/>
       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
-        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>Enabled</span>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',color:'#888'}}>Enabled</span>
         <PanelToggle value={enabled} onChange={setEnabled}/>
       </div>
       {panelField({ label:'API Key', children:
         <>
           <input type="password" value={apiKey} onChange={e=>setApiKey(e.target.value)}
             style={panelInput} placeholder={hasApiKey ? '••••••••••••' : 'optional API key'}/>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>required for some skills (image gen, TTS, etc.)</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#333',marginTop:3}}>required for some skills (image gen, TTS, etc.)</div>
         </>
       })}
 
@@ -3957,7 +4006,7 @@ function LiveSessionPanel({ data, onClose }) {
 
       <PanelSection label="Identity"/>
       <div onClick={copyId} title="click to copy" style={{
-        fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#555',
+        fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',color:'#555',
         background:'#111',borderRadius:5,padding:'7px 10px',marginBottom:10,
         cursor:'pointer',wordBreak:'break-all',border:'1px solid #1e1e1e',
       }}>
@@ -4010,7 +4059,7 @@ function LiveSessionPanel({ data, onClose }) {
       }} style={{
         width:'100%',background:'none',border:'1px solid #3a1818',borderRadius:5,
         padding:'7px',color:'#ef4444',fontFamily:"'JetBrains Mono',monospace",
-        fontSize:'0.68rem',cursor:'pointer',
+        fontSize:'0.85rem',cursor:'pointer',
       }}>✕ Delete Session</button>
 
     </PanelShell>
@@ -4134,7 +4183,7 @@ function LiveModelsPanel({ data, onClose }) {
 
   return (
     <PanelShell emoji="🧠" title="Model Providers" subtitle={`${providers.length} providers`} subtitleColor="#f97316" onClose={onClose}>
-      {status && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#4ade80',marginBottom:8,textAlign:'center'}}>{status}</div>}
+      {status && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:'#4ade80',marginBottom:8,textAlign:'center'}}>{status}</div>}
 
       {providers.map(prov => (
         <div key={prov.id} style={{background:'#141414',border:'1px solid #2a2a2a',borderRadius:8,marginBottom:10,overflow:'hidden'}}>
@@ -4142,11 +4191,11 @@ function LiveModelsPanel({ data, onClose }) {
             <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'1rem',fontWeight:700,color:'#fb923c'}}>{prov.id}</span>
             <div style={{display:'flex',gap:6}}>
               <button onClick={() => setEditing(editing?.providerId === prov.id ? null : { providerId:prov.id, apiKey:prov.apiKey||'', baseUrl:prov.baseUrl||'' })}
-                style={{background:'none',border:'1px solid #444',borderRadius:4,padding:'4px 10px',color:'#bbb',fontSize:'0.78rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
+                style={{background:'none',border:'1px solid #444',borderRadius:4,padding:'4px 10px',color:'#bbb',fontSize:'0.95rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
                 {editing?.providerId === prov.id ? 'done' : '⚙ edit'}
               </button>
               <button onClick={() => removeProvider(prov.id)}
-                style={{background:'none',border:'1px solid #5a2020',borderRadius:4,padding:'4px 10px',color:'#f87171',fontSize:'0.78rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
+                style={{background:'none',border:'1px solid #5a2020',borderRadius:4,padding:'4px 10px',color:'#f87171',fontSize:'0.95rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
                 ✕
               </button>
             </div>
@@ -4161,7 +4210,7 @@ function LiveModelsPanel({ data, onClose }) {
                 <input value={editing.baseUrl} onChange={e=>setEditing(ed=>({...ed,baseUrl:e.target.value}))} style={panelInput} placeholder="https://api.openai.com/v1"/>
               })}
               <button onClick={() => saveProvider(prov.id, { apiKey:editing.apiKey, baseUrl:editing.baseUrl })}
-                disabled={saving} style={{background:'#f97316',border:'none',borderRadius:4,padding:'4px 10px',color:'#000',fontSize:'0.65rem',fontFamily:"'JetBrains Mono',monospace",fontWeight:700,cursor:'pointer'}}>
+                disabled={saving} style={{background:'#f97316',border:'none',borderRadius:4,padding:'4px 10px',color:'#000',fontSize:'0.82rem',fontFamily:"'JetBrains Mono',monospace",fontWeight:700,cursor:'pointer'}}>
                 Save
               </button>
             </div>
@@ -4172,19 +4221,19 @@ function LiveModelsPanel({ data, onClose }) {
               {(prov.models||[]).map(m => (
                 <div key={m.id} style={{display:'flex',alignItems:'center',gap:4,background:'rgba(249,115,22,0.12)',border:'1px solid rgba(249,115,22,0.35)',borderRadius:5,padding:'4px 8px'}}>
                   <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:'#fdba74'}}>{m.id}</span>
-                  <button onClick={() => removeModel(prov.id, m.id)} style={{background:'none',border:'none',color:'#888',cursor:'pointer',fontSize:'0.75rem',padding:'0 2px',lineHeight:1}}>✕</button>
+                  <button onClick={() => removeModel(prov.id, m.id)} style={{background:'none',border:'none',color:'#888',cursor:'pointer',fontSize:'0.92rem',padding:'0 2px',lineHeight:1}}>✕</button>
                 </div>
               ))}
             </div>
             {addingTo === prov.id ? (
               <div style={{display:'flex',gap:4}}>
                 <input value={newModelId} onChange={e=>setNewModelId(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addModel(prov.id)}
-                  style={{...panelInput,flex:1,fontSize:'0.65rem'}} placeholder="model-id e.g. gpt-4.1"/>
-                <button onClick={() => addModel(prov.id)} style={{background:'#f97316',border:'none',borderRadius:4,padding:'3px 8px',color:'#000',fontSize:'0.65rem',fontFamily:"'JetBrains Mono',monospace",cursor:'pointer'}}>+</button>
-                <button onClick={() => { setAddingTo(null); setNewModelId(''); }} style={{background:'none',border:'1px solid #333',borderRadius:4,padding:'3px 8px',color:'#666',fontSize:'0.65rem',cursor:'pointer'}}>✕</button>
+                  style={{...panelInput,flex:1,fontSize:'0.82rem'}} placeholder="model-id e.g. gpt-4.1"/>
+                <button onClick={() => addModel(prov.id)} style={{background:'#f97316',border:'none',borderRadius:4,padding:'3px 8px',color:'#000',fontSize:'0.82rem',fontFamily:"'JetBrains Mono',monospace",cursor:'pointer'}}>+</button>
+                <button onClick={() => { setAddingTo(null); setNewModelId(''); }} style={{background:'none',border:'1px solid #333',borderRadius:4,padding:'3px 8px',color:'#666',fontSize:'0.82rem',cursor:'pointer'}}>✕</button>
               </div>
             ) : (
-              <button onClick={() => setAddingTo(prov.id)} style={{background:'none',border:'1px solid #2a2a2a',borderRadius:4,padding:'3px 10px',color:'#555',fontSize:'0.6rem',fontFamily:"'JetBrains Mono',monospace",cursor:'pointer',width:'100%'}}>+ add model</button>
+              <button onClick={() => setAddingTo(prov.id)} style={{background:'none',border:'1px solid #2a2a2a',borderRadius:4,padding:'3px 10px',color:'#555',fontSize:'0.8rem',fontFamily:"'JetBrains Mono',monospace",cursor:'pointer',width:'100%'}}>+ add model</button>
             )}
           </div>
         </div>
@@ -4196,12 +4245,12 @@ function LiveModelsPanel({ data, onClose }) {
           {panelField({ label:'API Key',     children: <input type="password" value={newApiKey} onChange={e=>setNewApiKey(e.target.value)} style={panelInput} placeholder="sk-..."/> })}
           {panelField({ label:'Base URL',    children: <input value={newBaseUrl} onChange={e=>setNewBaseUrl(e.target.value)} style={panelInput} placeholder="optional custom base URL"/> })}
           <div style={{display:'flex',gap:6}}>
-            <button onClick={createProvider} style={{flex:1,background:'#f97316',border:'none',borderRadius:4,padding:'6px',color:'#000',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',fontWeight:700,cursor:'pointer'}}>Create</button>
-            <button onClick={() => { setNewProv(false); setNewProvId(''); setNewApiKey(''); setNewBaseUrl(''); }} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:4,padding:'6px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>Cancel</button>
+            <button onClick={createProvider} style={{flex:1,background:'#f97316',border:'none',borderRadius:4,padding:'6px',color:'#000',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',fontWeight:700,cursor:'pointer'}}>Create</button>
+            <button onClick={() => { setNewProv(false); setNewProvId(''); setNewApiKey(''); setNewBaseUrl(''); }} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:4,padding:'6px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',cursor:'pointer'}}>Cancel</button>
           </div>
         </div>
       ) : (
-        <button onClick={() => setNewProv(true)} style={{width:'100%',background:'none',border:'1px dashed #2a2a2a',borderRadius:6,padding:'8px',color:'#555',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer',marginTop:4}}>+ add provider</button>
+        <button onClick={() => setNewProv(true)} style={{width:'100%',background:'none',border:'1px dashed #2a2a2a',borderRadius:6,padding:'8px',color:'#555',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',cursor:'pointer',marginTop:4}}>+ add provider</button>
       )}
     </PanelShell>
   );
@@ -4244,8 +4293,8 @@ function GroupSummaryPanel({ data, onClose }) {
     <PanelShell emoji={cfg.icon ? '' : '📦'} title={data.label || 'Group'} subtitle={catLabel} subtitleColor={color} onClose={onClose}>
       {infoRows.map(([k,v]) => (
         <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'8px 12px',background:'#181818',borderRadius:6,border:'1px solid #2a2a2a',marginBottom:8}}>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#999'}}>{k}</span>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color: k==='Status'&&data.enabled!==false?'#4ade80':'#ccc'}}>{v}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.88rem',color:'#999'}}>{k}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.88rem',color: k==='Status'&&data.enabled!==false?'#4ade80':'#ccc'}}>{v}</span>
         </div>
       ))}
     </PanelShell>
@@ -4334,12 +4383,12 @@ function ForgeApp() {
 
   // ── Layout presets ──────────────────────────────────────────────
   const LAYOUT_OPTS = {
-    down:   { label:'Down',   icon:'↓', elk:{ 'elk.algorithm':'layered','elk.direction':'DOWN',  'elk.layered.spacing.nodeNodeBetweenLayers':'200','elk.spacing.nodeNode':'40','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
-    right:  { label:'Right',  icon:'→', elk:{ 'elk.algorithm':'layered','elk.direction':'RIGHT', 'elk.layered.spacing.nodeNodeBetweenLayers':'260','elk.spacing.nodeNode':'40','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
-    up:     { label:'Up',     icon:'↑', elk:{ 'elk.algorithm':'layered','elk.direction':'UP',    'elk.layered.spacing.nodeNodeBetweenLayers':'200','elk.spacing.nodeNode':'40','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
-    left:   { label:'Left',   icon:'←', elk:{ 'elk.algorithm':'layered','elk.direction':'LEFT',  'elk.layered.spacing.nodeNodeBetweenLayers':'260','elk.spacing.nodeNode':'40','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
-    radial: { label:'Radial', icon:'◎', elk:{ 'elk.algorithm':'radial', 'elk.spacing.nodeNode':'100' } },
-    stress: { label:'Force',  icon:'⬡', elk:{ 'elk.algorithm':'stress', 'elk.spacing.nodeNode':'120','elk.stress.desiredEdgeLength':'200' } },
+    down:   { label:'Down',   icon:'↓', elk:{ 'elk.algorithm':'layered','elk.direction':'DOWN',  'elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+    right:  { label:'Right',  icon:'→', elk:{ 'elk.algorithm':'layered','elk.direction':'RIGHT', 'elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+    up:     { label:'Up',     icon:'↑', elk:{ 'elk.algorithm':'layered','elk.direction':'UP',    'elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+    left:   { label:'Left',   icon:'←', elk:{ 'elk.algorithm':'layered','elk.direction':'LEFT',  'elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+    radial: { label:'Radial', icon:'◎', elk:{ 'elk.algorithm':'radial'  } },
+    stress: { label:'Force',  icon:'⬡', elk:{ 'elk.algorithm':'stress', 'elk.stress.desiredEdgeLength':'200' } },
   };
 
   const EDGE_STYLES = {
@@ -4788,8 +4837,42 @@ function ForgeApp() {
 
   const runningCron = liveData?.cronJobs?.filter(j => j.lastStatus === 'running').length || 0;
 
-  const PANEL_W = 340;
   const TAB_W   = 20;
+  const [panelW, setPanelW] = useState(() => {
+    const v = parseInt(localStorage.getItem('forge-panel-w'));
+    return isNaN(v) ? 340 : Math.max(220, Math.min(720, v));
+  });
+
+  // Drag-resize state (refs so pointermove doesn't stale-close)
+  const resizeDragging = React.useRef(false);
+  const resizeStartX   = React.useRef(0);
+  const resizeStartW   = React.useRef(0);
+
+  const onResizePointerDown = React.useCallback((e) => {
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    resizeDragging.current = true;
+    resizeStartX.current   = e.clientX;
+    resizeStartW.current   = panelW;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, [panelW]);
+
+  const onResizePointerMove = React.useCallback((e) => {
+    if (!resizeDragging.current) return;
+    const dx  = resizeStartX.current - e.clientX;   // panel grows to the left
+    const raw = resizeStartW.current + dx;
+    const clamped = Math.max(220, Math.min(720, raw));
+    setPanelW(clamped);
+  }, []);
+
+  const onResizePointerUp = React.useCallback((e) => {
+    if (!resizeDragging.current) return;
+    resizeDragging.current = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    try { localStorage.setItem('forge-panel-w', String(panelW)); } catch(_) {}
+  }, [panelW]);
 
   // After panel open/close, re-fit the view so the diagram uses the new canvas width
   React.useEffect(() => {
@@ -4810,7 +4893,7 @@ function ForgeApp() {
             padding:'0 16px',
             height:34,
             display:'flex', alignItems:'center', gap:0,
-            fontFamily:"'JetBrains Mono',monospace", fontSize:'0.68rem',
+            fontFamily:"'JetBrains Mono',monospace", fontSize:'0.85rem',
             userSelect:'none',
           }}>
 
@@ -4825,13 +4908,13 @@ function ForgeApp() {
                 : liveError
                   ? <span style={{width:7,height:7,borderRadius:'50%',background:'#ef4444',boxShadow:'0 0 8px rgba(239,68,68,0.8)',flexShrink:0}}/>
                   : <span style={{width:7,height:7,borderRadius:'50%',background:'#4ade80',boxShadow:'0 0 8px rgba(74,222,128,0.8)',flexShrink:0}}/>}
-              <span style={{color: liveError ? '#ef4444' : '#4ade80', fontWeight:700, letterSpacing:'0.08em', fontSize:'0.65rem'}}>
+              <span style={{color: liveError ? '#ef4444' : '#4ade80', fontWeight:700, letterSpacing:'0.08em', fontSize:'0.82rem'}}>
                 {liveError ? 'ERROR' : 'LIVE'}
               </span>
               {liveError
-                ? <span style={{color:'#7f1d1d',fontSize:'0.6rem',maxWidth:200,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{liveError}</span>
+                ? <span style={{color:'#7f1d1d',fontSize:'0.8rem',maxWidth:200,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{liveError}</span>
                 : liveData?.gateway?.version
-                  ? <span style={{color:'#444',fontSize:'0.6rem'}}>v{liveData.gateway.version}</span>
+                  ? <span style={{color:'#444',fontSize:'0.8rem'}}>v{liveData.gateway.version}</span>
                   : null
               }
             </div>
@@ -4907,26 +4990,64 @@ function ForgeApp() {
           proOptions={{ hideAttribution: true }}
         >
           <Background variant="dots" gap={28} size={1} color="#252525" />
-          <Controls position="bottom-left" showInteractive={false} style={{
-            background:'#111', border:'1px solid #2a2a2a', borderRadius:8,
-            overflow:'hidden', boxShadow:'0 4px 16px rgba(0,0,0,0.6)',
-          }}/>
-          <Panel position="top-right" style={{display:'flex',gap:6,marginTop: liveMode ? 42 : 8,marginRight:8,alignItems:'center'}}>
-            {!liveCollapsed && <>
+
+          {/* ── Bottom-left control tower ── */}
+          <Panel position="bottom-left" style={{ marginBottom:16, marginLeft:16, userSelect:'none' }}>
+            <div style={{ display:'flex', flexDirection:'column', gap:2,
+              background:'rgba(10,10,10,0.94)', border:'1px solid #1e1e1e',
+              borderRadius:10, padding:4,
+              boxShadow:'0 8px 32px rgba(0,0,0,0.7)',
+              backdropFilter:'blur(8px)',
+            }}>
+              {/* Zoom */}
+              <TowerBtn title="Zoom In"  onClick={() => rfInstance.current?.zoomIn({ duration:180 })}>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M15 15l3.5 3.5"/><path d="M8.5 6v5M6 8.5h5"/></svg>
+              </TowerBtn>
+              <TowerBtn title="Zoom Out" onClick={() => rfInstance.current?.zoomOut({ duration:180 })}>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M15 15l3.5 3.5"/><path d="M6 8.5h5"/></svg>
+              </TowerBtn>
+              <TowerBtn title="Fit View" onClick={() => rfInstance.current?.fitView({ padding:0.2, duration:300 })}>
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg>
+              </TowerBtn>
+              <TowerSep/>
+              {/* Layout direction */}
               {Object.entries(LAYOUT_OPTS).map(([key, preset]) => (
-                <NavBtn key={key} title={preset.label}
-                  style={layoutKey === key ? {background:'#ff5c5c',color:'#000',borderColor:'#ff5c5c'} : {}}
-                  onClick={() => {
-                    setLayoutKey(key);
-                    treeElkRef.current = preset.elk;
-                    applyFamilyTree(ftExpandedIdsRef.current);
-                  }}>{preset.icon}</NavBtn>
+                <TowerBtn key={key} title={preset.label} active={layoutKey===key}
+                  onClick={() => { setLayoutKey(key); treeElkRef.current=preset.elk; applyFamilyTree(ftExpandedIdsRef.current); }}>
+                  <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:'0.82rem', lineHeight:1 }}>
+                    {preset.icon}
+                  </span>
+                </TowerBtn>
               ))}
-              <div style={{width:1,height:18,background:'#333',margin:'0 2px'}}/>
-              <NavBtn onClick={handleCollapseToServer}>⊟</NavBtn>
-            </>}
-            {liveCollapsed && <NavBtn onClick={handleExpandServer} primary>⊞ Expand</NavBtn>}
-            <NavBtn onClick={liveLoading ? undefined : loadLive} primary>{liveLoading ? '↻…' : '↺ Refresh'}</NavBtn>
+              <TowerSep/>
+              {/* Edge style */}
+              {[['solid',undefined],['dashed','5 3'],['dotted','1.5 4'],['longdash','9 4']].map(([key,dash]) => (
+                <TowerBtn key={key} title={key} active={edgeStyleKey===key} onClick={() => setEdgeStyleKey(key)}>
+                  <svg width="20" height="14" viewBox="0 0 20 14">
+                    <line x1="1" y1="7" x2="19" y2="7" stroke="currentColor" strokeWidth="2"
+                      strokeLinecap="round" strokeDasharray={dash||undefined}/>
+                  </svg>
+                </TowerBtn>
+              ))}
+              <TowerSep/>
+              {/* Collapse / Expand */}
+              {!liveCollapsed
+                ? <TowerBtn title="Collapse to gateway" onClick={handleCollapseToServer}>
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="16" height="16" rx="2"/><path d="M6 10h8"/></svg>
+                  </TowerBtn>
+                : <TowerBtn title="Expand all" accent onClick={handleExpandServer}>
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="16" height="16" rx="2"/><path d="M10 6v8M6 10h8"/></svg>
+                  </TowerBtn>
+              }
+              <TowerSep/>
+              {/* Refresh */}
+              <TowerBtn title="Refresh live data" accent disabled={liveLoading}
+                onClick={liveLoading ? undefined : loadLive}>
+                <span style={{ display:'inline-flex', animation: liveLoading ? 'cronSpin 1s linear infinite' : 'none' }}>
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M1 4v6h6"/><path d="M3.5 15a8 8 0 1 0 .5-8.6L1 10"/></svg>
+                </span>
+              </TowerBtn>
+            </div>
           </Panel>
 
         </ReactFlow>
@@ -4936,7 +5057,7 @@ function ForgeApp() {
       {liveMode && (
         <div style={{
           display:'flex', flexShrink:0,
-          width: sidePanelOpen ? TAB_W + PANEL_W : TAB_W,
+          width: sidePanelOpen ? TAB_W + 5 + panelW : TAB_W,
           transition:'width 0.25s cubic-bezier(0.4,0,0.2,1)',
           overflow:'hidden',
           borderLeft:'1px solid #141414',
@@ -4961,7 +5082,7 @@ function ForgeApp() {
           >
             {/* Chevron */}
             <span style={{
-              fontSize:'0.65rem', lineHeight:1,
+              fontSize:'0.82rem', lineHeight:1,
               transform: sidePanelOpen ? 'rotate(0deg)' : 'rotate(180deg)',
               transition:'transform 0.25s',
               display:'inline-block',
@@ -4970,7 +5091,7 @@ function ForgeApp() {
             {/* Vertical label when collapsed */}
             {!sidePanelOpen && liveSelectedAgent && (
               <span style={{
-                fontFamily:"'JetBrains Mono',monospace", fontSize:'0.5rem', color:'#333',
+                fontFamily:"'JetBrains Mono',monospace", fontSize:'0.9rem', color:'#333',
                 writingMode:'vertical-rl', textOrientation:'mixed',
                 transform:'rotate(180deg)', maxHeight:120,
                 overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
@@ -4981,9 +5102,25 @@ function ForgeApp() {
             )}
           </button>
 
-          {/* Panel content — fixed width inside the expanding container */}
+          {/* Drag-resize handle — thin strip on the left edge */}
+          {sidePanelOpen && (
+            <div
+              onPointerDown={onResizePointerDown}
+              onPointerMove={onResizePointerMove}
+              onPointerUp={onResizePointerUp}
+              style={{
+                width:5, flexShrink:0, height:'100%',
+                cursor:'col-resize', background:'transparent',
+                transition:'background 0.15s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background='#2a2a2a'}
+              onMouseLeave={e => e.currentTarget.style.background='transparent'}
+            />
+          )}
+
+          {/* Panel content — dynamic width */}
           <div style={{
-            width: PANEL_W, flexShrink:0, height:'100%',
+            width: panelW, flexShrink:0, height:'100%',
             display:'flex', flexDirection:'column', overflow:'hidden',
           }}>
             {liveSelectedAgent ? (
@@ -5022,7 +5159,7 @@ function ForgeApp() {
                 <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#777',lineHeight:1.7}}>
                   click any node<br/>to inspect &amp; edit
                 </div>
-                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.75rem',color:'#444',marginTop:4,lineHeight:1.9}}>
+                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.92rem',color:'#444',marginTop:4,lineHeight:1.9}}>
                   ESC · clear selection<br/>R · refresh
                 </div>
               </div>

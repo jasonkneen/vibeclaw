@@ -1659,7 +1659,9 @@ const nodeTypes = {
   skillslist:   SkillsListNode,
   sessionslist: SessionsListNode,
   cronlist:     CronListNode,
+  cron:         CronItemNode,
   nodeslist:    NodesListNode,
+  node:         NodeItemNode,
   model:        ModelNode,
   channel:      ChannelNode,
 };
@@ -2170,6 +2172,48 @@ function NodesListNode({ data }) {
       </div>
     </div>
   );
+}
+
+function NodeItemNode({ data, selected }) {
+    const C = '#22d3ee';
+    return (
+        <div className={`vf-node${selected ? ' selected' : ''}`}
+            style={{ border: `1.5px solid ${C}`, padding: 0, overflow: 'hidden', width: 220 }}>
+            <Handle type="target" position={Position.Left}
+                style={{ background: C, border: `2px solid ${C}`, width: 10, height: 10, top: '50%', transform: 'translateY(-50%)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 12px' }}>
+                <div style={{ background: `color-mix(in srgb,${C} 18%,#0a0a0a)`, borderRadius: 6, padding: 5, display: 'flex', flexShrink: 0 }}>
+                    📱
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 700, fontSize: '0.78rem', color: '#e0e0e0' }}>{data.name}</div>
+                    <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: '0.58rem', color: C, marginTop: 1 }}>{data.platform} v{data.version}</div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function CronItemNode({ data, selected }) {
+    const C = '#a855f7';
+    const isActive = data.enabled;
+    const scheduleStr = data.schedule?.expr || data.schedule?.kind || 'unknown';
+    return (
+        <div className={`vf-node${selected ? ' selected' : ''}`}
+            style={{ border: `1.5px solid ${isActive ? C : '#2a2a2a'}`, padding: 0, overflow: 'hidden', width: 220, opacity: isActive ? 1 : 0.5 }}>
+            <Handle type="target" position={Position.Left}
+                style={{ background: C, border: `2px solid ${C}`, width: 10, height: 10, top: '50%', transform: 'translateY(-50%)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 12px' }}>
+                <div style={{ background: `color-mix(in srgb,${C} 18%,#0a0a0a)`, borderRadius: 6, padding: 5, display: 'flex', flexShrink: 0 }}>
+                    ⏱
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 700, fontSize: '0.78rem', color: isActive ? '#e0e0e0' : '#555' }}>{data.name}</div>
+                    <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: '0.58rem', color: C, marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{scheduleStr}</div>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 /* ── Live Gateway Node — expandable sections ── */

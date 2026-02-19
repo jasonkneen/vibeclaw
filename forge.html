@@ -3110,14 +3110,53 @@ function ForgeApp() {
     'elk.layered.nodePlacement.strategy': 'SIMPLE',
   };
 
-  const applyFamilyTree = useCallback(async (expandedIds) => {
+  const applyFamilyTree = useCallback(async (expandedIds, forceRelayout = false) => {
     const data = liveDataRef.current;
     if (!data) return;
     const { nodes: lnodes, edges: ledges } = buildFamilyTree(data, expandedIds);
     setEdges(ledges);
-    const laid = await elkLayout(lnodes, ledges, TREE_ELK);
+
+    // On first load or forced re-layout, use ELK for full positioning
+    const currentNodes = rfInstance.current?.getNodes() || [];
+    const existingPos = new Map(currentNodes.map(n => [n.id, n.position]));
+    const isFirstLoad = existingPos.size === 0;
+
+    if (isFirstLoad || forceRelayout) {
+      const laid = await elkLayout(lnodes, ledges, TREE_ELK);
+      setNodes(laid);
+      setTimeout(() => rfInstance.current?.fitView({ padding: 0.12, duration: 350 }), 150);
+      return;
+    }
+
+    // For expansions/collapses: preserve existing positions, manually place new children
+    const hasNew = lnodes.some(n => !existingPos.has(n.id));
+
+    if (!hasNew) {
+      // Collapsing — just restore known positions (removes children from node list)
+      setNodes(lnodes.map(n => ({ ...n, position: existingPos.get(n.id) || n.position })));
+      return;
+    }
+
+    // Expanding — place new child nodes below their parent
+    const laid = lnodes.map(n => {
+      if (existingPos.has(n.id)) return { ...n, position: existingPos.get(n.id) };
+      const parentEdge = ledges.find(e => e.target === n.id);
+      const parentPos = parentEdge ? existingPos.get(parentEdge.source) : null;
+      if (parentPos) {
+        const siblings = lnodes.filter(s =>
+          !existingPos.has(s.id) &&
+          ledges.some(e => e.target === s.id && e.source === parentEdge.source)
+        );
+        const idx = siblings.findIndex(s => s.id === n.id);
+        const spacing = 150;
+        const offset = (idx - (siblings.length - 1) / 2) * spacing;
+        return { ...n, position: { x: parentPos.x + offset, y: parentPos.y + 200 } };
+      }
+      return n;
+    });
+
     setNodes(laid);
-    setTimeout(() => rfInstance.current?.fitView({ padding: 0.12, duration: 350 }), 150);
+    setTimeout(() => rfInstance.current?.fitView({ padding: 0.15, duration: 350 }), 150);
   }, []);
 
   const handleExpandServer = useCallback(async () => {
@@ -3126,17 +3165,53 @@ function ForgeApp() {
     setLiveCollapsed(false);
     setLiveExpanded({});
     setFtExpandedIds(new Set());
-    await applyFamilyTree(new Set());
+    await applyFamilyTree(new Set(), true);
     setLiveSelectedAgent(null);
   }, [applyFamilyTree]);
 
   const handleTreeNodeToggle = useCallback(async (node) => {
     if (!node.data?.expandable) return;
+    // Capture positions NOW, before any state change, so they're never stale
+    const currentNodes = rfInstance.current?.getNodes() || [];
+    const snapshotPos = new Map(currentNodes.map(n => [n.id, n.position]));
+
     setFtExpandedIds(prev => {
       const next = new Set(prev);
       if (next.has(node.id)) next.delete(node.id);
       else next.add(node.id);
-      applyFamilyTree(next);
+
+      const data = liveDataRef.current;
+      if (!data) return next;
+      const { nodes: lnodes, edges: ledges } = buildFamilyTree(data, next);
+
+      const hasNew = lnodes.some(n => !snapshotPos.has(n.id));
+
+      if (!hasNew) {
+        // Collapsing — restore known positions, drop removed children
+        setEdges(ledges);
+        setNodes(lnodes.map(n => ({ ...n, position: snapshotPos.get(n.id) || n.position })));
+        return next;
+      }
+
+      // Expanding — preserve existing, place new children below parent
+      setEdges(ledges);
+      setNodes(lnodes.map(n => {
+        if (snapshotPos.has(n.id)) return { ...n, position: snapshotPos.get(n.id) };
+        const parentEdge = ledges.find(e => e.target === n.id);
+        const parentPos = parentEdge ? snapshotPos.get(parentEdge.source) : null;
+        if (parentPos) {
+          const siblings = lnodes.filter(s =>
+            !snapshotPos.has(s.id) &&
+            ledges.some(e => e.target === s.id && e.source === parentEdge.source)
+          );
+          const idx = siblings.findIndex(s => s.id === n.id);
+          const spacing = 150;
+          const offset = (idx - (siblings.length - 1) / 2) * spacing;
+          return { ...n, position: { x: parentPos.x + offset, y: parentPos.y + 200 } };
+        }
+        return n;
+      }));
+
       return next;
     });
   }, [applyFamilyTree]);

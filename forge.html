@@ -1144,7 +1144,129 @@
       .nav-hide-mobile { display: none; }
     }
 
+
+    /* ── VF Node Cards ── */
+    .vf-node {
+      width: 210px;
+      background: #111111;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+      cursor: grab;
+      font-family: 'DM Sans', sans-serif;
+      transition: box-shadow 0.15s, transform 0.12s;
+    }
+    .vf-node:hover {
+      box-shadow: 0 10px 36px rgba(0,0,0,0.8);
+      transform: translateY(-1px);
+    }
+    .vf-node.selected {
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.12), 0 10px 36px rgba(0,0,0,0.8);
+      filter: brightness(1.08);
+    }
+    /* Inner layout */
+    .vf-node-inner {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 14px 12px 12px;
+    }
+    /* Coloured icon badge */
+    .vf-node-badge-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .vf-node-badge-icon svg {
+      position: relative; z-index: 1;
+    }
+    /* Text block */
+    .vf-node-text { flex: 1; min-width: 0; }
+    .vf-node-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e8e8e8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+      margin-bottom: 2px;
+    }
+    .vf-node-type {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      opacity: 0.38;
+      color: #fff;
+    }
+    /* Status dot */
+    .vf-status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #4ade80; flex-shrink: 0;
+      animation: vfPulse 2s ease-in-out infinite;
+    }
+    @keyframes vfPulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.35; transform:scale(0.65); }
+    }
+
+    /* ── ReactFlow Overrides ── */
+    .react-flow__background { background: #0a0a0a !important; }
+    .react-flow__controls {
+      background: #141414 !important;
+      border: 1px solid #242424 !important;
+      border-radius: 8px !important;
+      box-shadow: none !important;
+    }
+    .react-flow__controls-button {
+      background: #141414 !important;
+      border-bottom-color: #242424 !important;
+      color: #555 !important;
+      fill: #555 !important;
+    }
+    .react-flow__controls-button:hover {
+      background: #1e1e1e !important;
+      fill: #e0e0e0 !important;
+    }
+    .react-flow__edge-path { stroke-opacity: 0.7; }
+    .react-flow__handle {
+      width: 10px !important; height: 10px !important;
+      background: #191919 !important;
+      border: 2px solid #3a3a3a !important;
+      transition: border-color 0.15s, transform 0.15s !important;
+    }
+    .react-flow__handle:hover {
+      border-color: #ff5c5c !important;
+      transform: scale(1.3) !important;
+    }
+    .react-flow__node { padding: 0 !important; }
+    @keyframes nodeIn {
+      from { opacity:0; transform: scale(0.85); }
+      to   { opacity:1; transform: scale(1); }
+    }
+    .react-flow__node { animation: nodeIn 0.18s ease-out; }
+    #forge-root { height: calc(100vh - 57px); overflow: hidden; }
+
     </style>
+
+  <!-- React Flow stylesheet -->
+  <link rel="stylesheet" href="https://esm.sh/@xyflow/react@12/dist/style.css">
+  <!-- Babel standalone for in-browser JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- ESM importmap -->
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18",
+      "react-dom": "https://esm.sh/react-dom@18",
+      "react-dom/client": "https://esm.sh/react-dom@18/client",
+      "@xyflow/react": "https://esm.sh/@xyflow/react@12?deps=react@18,react-dom@18"
+    }
+  }
+  </script>
 </head>
 <body>
 
@@ -1187,1584 +1309,1669 @@
     })();
   </script>
 
-  <!-- Retrieve tab (visible when preview is collapsed) -->
-  <div class="preview-retrieve-tab" id="preview-retrieve" title="Open preview chat">
-    💬 Preview
-  </div>
+  <div id="forge-root"></div>
 
-  <!-- Preview Chat Panel (fixed overlay, outside grid) -->
-  <div class="forge-preview-chat" id="preview-chat">
-    <div class="preview-header">
-      <div class="preview-title">
-        <span id="preview-title-text">💬 Preview</span>
-      </div>
-      <div class="preview-header-actions">
-        <button class="preview-hdr-btn" id="preview-pin" title="Pin open">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 11V4a1 1 0 011-1h4a1 1 0 011 1v7"/><path d="M5 11h14l-1.5 6H6.5z"/></svg>
-        </button>
-        <button class="preview-hdr-btn" id="preview-collapse" title="Collapse">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-        </button>
-        <button class="preview-hdr-btn" id="preview-clear" title="Clear chat">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-        </button>
-        <button class="preview-hdr-btn" id="preview-close" title="Close">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="preview-messages" id="preview-messages">
-      <div class="preview-empty">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        <p>Type a message to test your agent</p>
-      </div>
-    </div>
-    <div class="preview-input-bar">
-      <div class="preview-input-row">
-        <textarea id="preview-input" class="preview-input" placeholder="Message..." rows="1"></textarea>
-        <button id="preview-send" class="preview-send">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
+  <script type="text/babel" data-type="module">
+import React, { useState, useCallback, useRef } from 'react';
+import { createRoot } from 'react-dom/client';
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  addEdge,
+  useNodesState,
+  useEdgesState,
+  Handle,
+  Position,
+  Panel,
+} from '@xyflow/react';
 
-  <!-- Layout -->
-  <main>
-  <div class="forge-layout" id="forge-layout">
-    <!-- Main configurator -->
-    <article class="forge-main">
-      <h1 class="forge-title">Build your server in <span style="color:var(--accent);">5s</span></h1>
-      <p class="forge-subtitle">Pick a quick start, tweak the skills, preview it live. Deploy anywhere.</p>
-
-      <!-- AI Build (primary) -->
-      <div style="margin-bottom:24px;background:var(--surface);border:1px solid var(--accent);border-radius:8px;padding:16px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span style="font-family:var(--mono);font-size:0.8rem;font-weight:700;color:var(--accent);">✨ AI Build</span>
-          <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);">— describe your server and we'll build it</span>
-        </div>
-        <textarea id="ai-build-input" placeholder="e.g. I need an agent that monitors my GitHub repos, reviews PRs automatically, and sends me Slack summaries every morning..." style="width:100%;min-height:70px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:var(--mono);font-size:0.8rem;color:var(--text-bright);resize:vertical;box-sizing:border-box;"></textarea>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <button id="ai-build-go" style="padding:8px 20px;font-family:var(--mono);font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;background:var(--accent);color:#000;border:none;border-radius:4px;cursor:pointer;">Build it</button>
-            <span id="ai-build-status" style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);"></span>
-          </div>
-          <button id="toggle-manual" style="padding:8px 16px;font-family:var(--mono);font-size:0.7rem;font-weight:700;color:var(--text);background:transparent;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:border-color 0.15s,color 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">⚙ Manual Setup</button>
-        </div>
-      </div>
-
-      <!-- Prompt Chips -->
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;justify-content:center;">
-        <button class="prompt-chip" data-prompt="A coding agent that writes, reviews, and refactors code" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"coding agent"</button>
-        <button class="prompt-chip" data-prompt="A research assistant that browses the web and summarises findings" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"web researcher"</button>
-        <button class="prompt-chip" data-prompt="An agent that monitors GitHub repos, reviews PRs, and manages CI/CD" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"GitHub bot"</button>
-        <button class="prompt-chip" data-prompt="A personal assistant that handles email, calendar, and daily scheduling" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"daily assistant"</button>
-        <button class="prompt-chip" data-prompt="A security auditor that scans code for vulnerabilities and suggests fixes" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"security scanner"</button>
-        <button class="prompt-chip" data-prompt="A multi-agent team with a lead, coder, writer, and reviewer" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"agent squad"</button>
-        <button class="prompt-chip" data-prompt="A content writer that creates blog posts, docs, and marketing copy" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"content writer"</button>
-        <button class="prompt-chip" data-prompt="A data pipeline agent that parses CSV/JSON, runs queries, and builds charts" style="background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">"data pipeline"</button>
-      </div>
-
-      <!-- Featured Community Servers -->
-      <div style="margin-bottom:32px;">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;">
-          <span style="font-family:var(--mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);">Featured Community Servers</span>
-          <a href="/explore.html" style="font-family:var(--mono);font-size:0.6rem;color:var(--accent);text-decoration:none;">Browse all →</a>
-        </div>
-        <div id="featured-servers" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:10px;">
-          <div class="featured-server" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div style="font-size:1.2rem;margin-bottom:6px;">🤖</div>
-            <div style="font-family:var(--mono);font-size:0.75rem;font-weight:700;color:var(--text-bright);">PR Reviewer</div>
-            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);margin-top:2px;">Auto-reviews GitHub PRs with security checks</div>
-            <div style="font-family:var(--mono);font-size:0.55rem;color:var(--text-dim);margin-top:6px;">⬇ 1.2k · ⭐ 89</div>
-          </div>
-          <div class="featured-server" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div style="font-size:1.2rem;margin-bottom:6px;">📰</div>
-            <div style="font-family:var(--mono);font-size:0.75rem;font-weight:700;color:var(--text-bright);">Daily Digest</div>
-            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);margin-top:2px;">Morning news summary from RSS, HN & Reddit</div>
-            <div style="font-family:var(--mono);font-size:0.55rem;color:var(--text-dim);margin-top:6px;">⬇ 890 · ⭐ 67</div>
-          </div>
-          <div class="featured-server" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div style="font-size:1.2rem;margin-bottom:6px;">🧪</div>
-            <div style="font-family:var(--mono);font-size:0.75rem;font-weight:700;color:var(--text-bright);">Test Squad</div>
-            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);margin-top:2px;">Multi-agent team that writes & runs test suites</div>
-            <div style="font-family:var(--mono);font-size:0.55rem;color:var(--text-dim);margin-top:6px;">⬇ 650 · ⭐ 54</div>
-          </div>
-          <div class="featured-server" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div style="font-size:1.2rem;margin-bottom:6px;">📊</div>
-            <div style="font-family:var(--mono);font-size:0.75rem;font-weight:700;color:var(--text-bright);">CSV Wizard</div>
-            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);margin-top:2px;">Drop a CSV, get instant analysis & charts</div>
-            <div style="font-family:var(--mono);font-size:0.55rem;color:var(--text-dim);margin-top:6px;">⬇ 520 · ⭐ 41</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Manual setup (hidden by default) -->
-      <div id="manual-setup" style="display:none;">
-        <div class="template-bar">
-          <label>Start from</label>
-          <select id="template-select" class="template-select">
-            <option value="">Blank server</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- All manual config steps (hidden until quick start / AI / manual toggle) -->
-      <div id="manual-steps" style="display:none;">
-
-      <!-- Server name -->
-      <div class="server-name-row">
-        <input id="server-emoji" class="agent-emoji-input" type="text" value="🦀" maxlength="4" />
-        <input id="server-name" class="agent-text-input" type="text" placeholder="My Server" value="My Server" style="flex:1;font-size:1.1rem;padding:12px 16px;" />
-      </div>
-
-      <!-- Step 1: Runtime -->
-      <div class="step">
-        <div class="step-header">
-          <span class="step-num">01</span>
-          <span class="step-title">Runtime</span>
-        </div>
-        <p class="step-desc">Choose your server's core mode.</p>
-        <div class="option-grid" id="runtime-options">
-          <div class="option-card selected" data-value="single">
-            <div class="option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-            <div class="option-name">Standard</div>
-            <div class="option-desc">Single agent, clean and fast</div>
-          </div>
-          <div class="option-card" data-value="multi">
-            <div class="option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M17 14a4 4 0 014 4v2"/></svg></div>
-            <div class="option-name">Multi-Agent</div>
-            <div class="option-desc">Agent squads with team routing</div>
-          </div>
-          <div class="option-card" data-value="minimal">
-            <div class="option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-            <div class="option-name">Minimal</div>
-            <div class="option-desc">Lightweight, low-resource mode</div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Quick Start Chips -->
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 24px;">
-        <span style="font-family:var(--mono);font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);width:100%;margin-bottom:4px;">Quick Start</span>
-        <button class="qs-chip" data-prompt="A coding assistant that can read, write, and execute code with GitHub integration" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🦀 Coding Agent</button>
-        <button class="qs-chip" data-prompt="A research agent that searches the web, analyses sources, and summarises findings with citations" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🔍 Research</button>
-        <button class="qs-chip" data-prompt="A DevOps agent for Docker, CI/CD pipelines, deployment, and infrastructure management with GitHub and security skills" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🐳 DevOps</button>
-        <button class="qs-chip" data-prompt="A content writer that creates blog posts, documentation, and copy with web research for fact-checking" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">✍️ Writer</button>
-        <button class="qs-chip" data-prompt="A security specialist that audits code for vulnerabilities, reviews dependencies, and helps with threat modelling" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🛡️ Security</button>
-        <button class="qs-chip" data-prompt="A data analyst that parses CSVs, JSON, and APIs, writes transformation scripts, and generates visualisations" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">📊 Data</button>
-        <button class="qs-chip" data-prompt="A personal assistant that manages email, calendar, tasks, and reminders with scheduling and web browsing" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">📅 Assistant</button>
-        <button class="qs-chip" data-prompt="A creative studio agent that generates images, brainstorms ideas, and helps with visual design" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🎨 Creative</button>
-        <button class="qs-chip" data-prompt="A multi-agent squad with a lead orchestrator, coder, researcher, writer, and security reviewer working as a team" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:0.65rem;color:var(--text);transition:border-color 0.15s,background 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text-bright)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🦞 Squad</button>
-      </div>
-
-      <!-- Step 2: Agents -->
-      <div class="step">
-        <div class="step-header">
-          <span class="step-num">02</span>
-          <span class="step-title">Agents</span>
-        </div>
-        <p class="step-desc">Add agents to your server. The first agent is the lead.</p>
-        <div class="agent-list" id="agent-list">
-          <div class="agent-row active" data-idx="0">
-            <input type="text" class="agent-emoji-input" value="🦀" maxlength="4" data-field="emoji" />
-            <input type="text" class="agent-text-input" placeholder="Agent name" value="Claw" data-field="name" />
-            <input type="text" class="agent-text-input" placeholder="Role / description" value="General-purpose coding assistant" data-field="desc" />
-            <span style="font-size:0.65rem;color:var(--text-dim);font-family:var(--mono);">LEAD</span>
-          </div>
-        </div>
-        <button class="btn-add" id="add-agent-btn">+ Add Agent</button>
-      </div>
-
-      <!-- Step 3: Skills -->
-      <div class="step">
-        <div class="step-header">
-          <span class="step-num">03</span>
-          <span class="step-title">Skills</span>
-        </div>
-        <p class="step-desc">Toggle the skills your server should have.</p>
-        <div class="skill-grid" id="skill-grid">
-          <div class="skill-card enabled" data-skill="chat">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
-            <div>
-              <div class="skill-name">Chat</div>
-              <div class="skill-desc">Conversational AI via LLM</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-          <div class="skill-card enabled" data-skill="filesystem">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></span>
-            <div>
-              <div class="skill-name">Filesystem</div>
-              <div class="skill-desc">Read, write, and manage files</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-          <div class="skill-card enabled" data-skill="execute">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
-            <div>
-              <div class="skill-name">Execute</div>
-              <div class="skill-desc">Run shell commands</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-          <div class="skill-card" data-skill="web-browse">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></span>
-            <div>
-              <div class="skill-name">Web Browse</div>
-              <div class="skill-desc">Search and fetch web pages</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-          <div class="skill-card" data-skill="github">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></span>
-            <div>
-              <div class="skill-name">GitHub</div>
-              <div class="skill-desc">PRs, issues, repos, CI</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-          <div class="skill-card" data-skill="docker">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 6V4a2 2 0 012-2h8a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="13"/><line x1="14" y1="11" x2="14" y2="13"/></svg></span>
-            <div>
-              <div class="skill-name">Docker</div>
-              <div class="skill-desc">Container build & deploy</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-          <div class="skill-card" data-skill="image-gen">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
-            <div>
-              <div class="skill-name">Image Gen</div>
-              <div class="skill-desc">Generate and edit images</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-          <div class="skill-card" data-skill="scheduling">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
-            <div>
-              <div class="skill-name">Scheduling</div>
-              <div class="skill-desc">Cron jobs and reminders</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-          <div class="skill-card" data-skill="browser-auto">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l3 3 5-5"/></svg></span>
-            <div>
-              <div class="skill-name">Browser Auto</div>
-              <div class="skill-desc">Navigate, click, fill, screenshot</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-          <div class="skill-card" data-skill="security">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-            <div>
-              <div class="skill-name">Security</div>
-              <div class="skill-desc">Vuln scan, threat modeling</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-          <div class="skill-card" data-skill="email">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></span>
-            <div>
-              <div class="skill-name">Email</div>
-              <div class="skill-desc">Read and send emails</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-          <div class="skill-card" data-skill="calendar">
-            <span class="skill-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-            <div>
-              <div class="skill-name">Calendar</div>
-              <div class="skill-desc">Events and scheduling</div>
-            </div>
-            <div class="skill-toggle"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 4: Personality -->
-      <div class="step">
-        <div class="step-header">
-          <span class="step-num">04</span>
-          <span class="step-title">Personality</span>
-        </div>
-        <p class="step-desc">Define how your agent behaves. This becomes the system prompt.</p>
-        <textarea id="system-prompt" class="forge-textarea" placeholder="You are a helpful coding assistant. Be concise, direct, and pragmatic...">You are 🦀 Claw, a helpful coding assistant. Be concise, direct, and pragmatic. Show code, not just descriptions. Always explain the 'why' behind your suggestions.</textarea>
-      </div>
-
-      <!-- Step 5: Workspace Files -->
-      <div class="step">
-        <div class="step-header">
-          <span class="step-num">05</span>
-          <span class="step-title">Workspace Files</span>
-        </div>
-        <p class="step-desc">Set up the markdown files that define your agent's memory, identity, and tools.</p>
-        <div class="file-tabs" id="file-tabs">
-          <button class="file-tab active" data-file="AGENTS.md">AGENTS.md</button>
-          <button class="file-tab" data-file="SOUL.md">SOUL.md</button>
-          <button class="file-tab" data-file="USER.md">USER.md</button>
-          <button class="file-tab" data-file="TOOLS.md">TOOLS.md</button>
-        </div>
-        <textarea id="file-editor" class="forge-textarea" style="border-top-left-radius:0;border-top-right-radius:0;min-height:160px;">## My Agent
-
-This is your agent's workspace configuration. Define how it operates, what it remembers, and how it interacts.
-
-## Memory
-
-Update this file as you learn about the workspace and user preferences.</textarea>
-      </div>
-
-      <!-- Step 6: Model -->
-      <div class="step">
-        <div class="step-header">
-          <span class="step-num">06</span>
-          <span class="step-title">Model</span>
-        </div>
-        <p class="step-desc">Choose the LLM that powers your server.</p>
-        <div class="model-grid" id="model-grid">
-          <div class="model-card selected" data-model="upstage/solar-pro-3:free">
-            <div class="model-header">
-              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M4.22 4.22l2.83 2.83m9.9 9.9l2.83 2.83M1 12h4m14 0h4M4.22 19.78l2.83-2.83m9.9-9.9l2.83-2.83"/></svg>
-              <div class="model-name">Solar Pro 3</div>
-            </div>
-            <div class="model-provider">Upstage</div>
-            <span class="model-badge">FREE</span>
-          </div>
-          <div class="model-card" data-model="qwen/qwen3-8b:free">
-            <div class="model-header">
-              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-              <div class="model-name">Qwen3 8B</div>
-            </div>
-            <div class="model-provider">Alibaba</div>
-            <span class="model-badge">FREE</span>
-          </div>
-          <div class="model-card" data-model="microsoft/phi-4-reasoning:free">
-            <div class="model-header">
-              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>
-              <div class="model-name">Phi-4 Reasoning</div>
-            </div>
-            <div class="model-provider">Microsoft</div>
-            <span class="model-badge">FREE</span>
-          </div>
-          <div class="model-card" data-model="google/gemma-3-4b-it:free">
-            <div class="model-header">
-              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l1.5 4.5H18l-3.5 2.5L16 15l-4-3-4 3 1.5-5L6 7.5h4.5z"/></svg>
-              <div class="model-name">Gemma 3 4B</div>
-            </div>
-            <div class="model-provider">Google</div>
-            <span class="model-badge">FREE</span>
-          </div>
-          <div class="model-card" data-model="mistralai/mistral-small-3.1-24b-instruct:free">
-            <div class="model-header">
-              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v4m0 12v4M6 8l-3-2m18 2l-3-2M6 16l-3 2m18-2l-3 2"/><circle cx="12" cy="12" r="4"/></svg>
-              <div class="model-name">Mistral Small 3.1</div>
-            </div>
-            <div class="model-provider">Mistral AI</div>
-            <span class="model-badge">FREE</span>
-          </div>
-          <!-- Pro models — visible in preview mode -->
-          <!-- Pro models — visible in preview mode -->
-          <div class="model-card pro-model" data-model="anthropic/claude-opus-4.6" style="display:none;">
-            <div class="model-header">
-              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l3 3 5-5"/></svg>
-              <div class="model-name">Claude Opus 4.6</div>
-            </div>
-            <div class="model-provider">Anthropic</div>
-            <span class="model-badge" style="background:linear-gradient(135deg,rgba(255,92,92,0.15),rgba(255,150,50,0.15));color:var(--accent);border-color:rgba(255,92,92,0.3);">PRO</span>
-          </div>
-          <div class="model-card pro-model" data-model="anthropic/claude-sonnet-4.5" style="display:none;">
-            <div class="model-header">
-              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l3 3 5-5"/></svg>
-              <div class="model-name">Claude Sonnet 4.5</div>
-            </div>
-            <div class="model-provider">Anthropic</div>
-            <span class="model-badge" style="background:linear-gradient(135deg,rgba(255,92,92,0.15),rgba(255,150,50,0.15));color:var(--accent);border-color:rgba(255,92,92,0.3);">PRO</span>
-          </div>
-          <div class="model-card pro-model" data-model="openai/gpt-5.2" style="display:none;">
-            <div class="model-header">
-              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-              <div class="model-name">GPT-5.2</div>
-            </div>
-            <div class="model-provider">OpenAI</div>
-            <span class="model-badge" style="background:linear-gradient(135deg,rgba(255,92,92,0.15),rgba(255,150,50,0.15));color:var(--accent);border-color:rgba(255,92,92,0.3);">PRO</span>
-          </div>
-          <div class="model-card pro-model" data-model="google/gemini-3-pro-preview" style="display:none;">
-            <div class="model-header">
-              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l1.5 4.5H18l-3.5 2.5L16 15l-4-3-4 3 1.5-5L6 7.5h4.5z"/></svg>
-              <div class="model-name">Gemini 3 Pro</div>
-            </div>
-            <div class="model-provider">Google</div>
-            <span class="model-badge" style="background:linear-gradient(135deg,rgba(255,92,92,0.15),rgba(255,150,50,0.15));color:var(--accent);border-color:rgba(255,92,92,0.3);">PRO</span>
-          </div>
-          <div class="model-card pro-model" data-model="openai/o3" style="display:none;">
-            <div class="model-header">
-              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
-              <div class="model-name">o3</div>
-            </div>
-            <div class="model-provider">OpenAI</div>
-            <span class="model-badge" style="background:linear-gradient(135deg,rgba(255,92,92,0.15),rgba(255,150,50,0.15));color:var(--accent);border-color:rgba(255,92,92,0.3);">PRO</span>
-          </div>
-        </div>
-      </div>
-
-      </div><!-- /manual-steps -->
-
-    </article>
-
-    <!-- Sidebar -->
-    <div class="forge-sidebar">
-      <div class="sidebar-actions" style="margin-bottom:20px;">
-        <button class="btn-forge btn-preview" id="preview-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;display:inline;vertical-align:-1px;margin-right:6px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>Preview</button>
-        <button class="btn-forge btn-deploy" id="deploy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/></svg>Deploy</button>
-        <button class="btn-forge btn-save" id="save-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline;vertical-align:-2px;margin-right:6px;"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save</button>
-      </div>
-      <div class="sidebar-title" style="display:flex;align-items:center;justify-content:space-between;">Your Server <span id="draft-status" style="font-size:0.6rem;font-weight:400;color:var(--text-dim);opacity:0;transition:opacity 0.3s;"></span></div>
-      <div class="sidebar-server-name" id="sidebar-name">
-        <span id="sidebar-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><rect x="3" y="3" width="18" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
-        <span id="sidebar-name-text">My Server</span>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-label">Runtime</div>
-        <div class="sidebar-value" id="sidebar-runtime">Standard</div>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-label">Agents</div>
-        <ul class="sidebar-list" id="sidebar-agents">
-          <li>Claw</li>
-        </ul>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-label">Skills</div>
-        <ul class="sidebar-list" id="sidebar-skills">
-          <li>Chat</li>
-          <li>Filesystem</li>
-          <li>Execute</li>
-        </ul>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-label">Model</div>
-        <div class="sidebar-value" id="sidebar-model">Solar Pro 3</div>
-      </div>
-
-    </div>
-  </div>
-  </main>
-
-  <!-- Deploy Modal -->
-  <div id="deploy-modal" class="modal-overlay" style="display:none;">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 class="modal-title">Deploy your server</h2>
-        <button class="modal-close" id="deploy-close">&times;</button>
-      </div>
-      <p class="modal-desc">Your server spec is ready. Choose how you want to deploy it.</p>
-
-      <div class="deploy-grid">
-        <!-- Download -->
-        <div class="deploy-option" id="deploy-download">
-          <div class="deploy-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-          <div class="deploy-info">
-            <div class="deploy-name">Download Package</div>
-            <div class="deploy-desc">openclaw.json config, workspace files, setup script, and README</div>
-          </div>
-        </div>
-
-        <!-- JSON Spec -->
-        <div class="deploy-option" id="deploy-json">
-          <div class="deploy-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-          <div class="deploy-info">
-            <div class="deploy-name">Server Spec (JSON)</div>
-            <div class="deploy-desc">Download the raw server specification file</div>
-          </div>
-        </div>
-
-        <!-- Quick install -->
-        <div class="deploy-option" id="deploy-docker">
-          <div class="deploy-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></div>
-          <div class="deploy-info">
-            <div class="deploy-name">Quick Install</div>
-            <div class="deploy-desc">One-line install script — installs OpenClaw and starts the gateway</div>
-          </div>
-        </div>
-
-        <!-- npm -->
-        <div class="deploy-option" id="deploy-cli">
-          <div class="deploy-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0022 16z"/></svg></div>
-          <div class="deploy-info">
-            <div class="deploy-name">npm</div>
-            <div class="deploy-desc">Install via npm and run the setup wizard</div>
-          </div>
-        </div>
-
-        <!-- One-click providers -->
-        <div class="deploy-divider">One-click deploy</div>
-
-        <div class="deploy-option deploy-provider" id="deploy-railway">
-          <div class="deploy-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></div>
-          <div class="deploy-info">
-            <div class="deploy-name">Railway</div>
-            <div class="deploy-desc">Deploy to Railway with one click</div>
-          </div>
-          <span class="deploy-badge">soon</span>
-        </div>
-
-        <div class="deploy-option deploy-provider" id="deploy-flyio">
-          <div class="deploy-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
-          <div class="deploy-info">
-            <div class="deploy-name">Fly.io</div>
-            <div class="deploy-desc">Deploy to Fly.io globally</div>
-          </div>
-          <span class="deploy-badge">soon</span>
-        </div>
-
-        <div class="deploy-option deploy-provider" id="deploy-render">
-          <div class="deploy-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
-          <div class="deploy-info">
-            <div class="deploy-name">Render</div>
-            <div class="deploy-desc">Deploy as a Render web service</div>
-          </div>
-          <span class="deploy-badge">soon</span>
-        </div>
-      </div>
-
-      <!-- Command preview area -->
-      <div id="deploy-command-area" style="display:none;">
-        <div class="command-label" id="deploy-command-label"></div>
-        <div class="command-box">
-          <code id="deploy-command-text"></code>
-          <button class="command-copy" id="deploy-copy-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast notification -->
-  <div id="toast" class="toast"></div>
-
-  <script>
-    // ── Toast notification system ──
-    function showToast(message, type = 'success', duration = 3000) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.className = 'toast show ' + type;
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, duration);
-    }
-
-    // ── State ──
-    const state = {
-      emoji: '🦀',
-      name: 'My Server',
-      runtime: 'single',
-      agents: [
-        { emoji: '🦀', name: 'Claw', desc: 'General-purpose coding assistant' }
+/* ── Templates ── */
+function loadTemplate(id, setNodes, setEdges, save) {
+  const t = {
+    quickstart: {
+      nodes: [
+        { id:'g1', type:'gateway', position:{x:0,y:0}, data:{label:'My Gateway'} },
+        { id:'a1', type:'agent',   position:{x:300,y:0}, data:{label:'Assistant',model:'upstage/solar-pro-3:free'} },
       ],
-      skills: new Set(['chat', 'filesystem', 'execute']),
-      systemPrompt: '',
-      files: {
-        'AGENTS.md': '## My Agent\n\nThis is your agent\'s workspace configuration. Define how it operates, what it remembers, and how it interacts.\n\n## Memory\n\nUpdate this file as you learn about the workspace and user preferences.',
-        'SOUL.md': '# Soul\n\nBe helpful, concise, and direct. Have opinions. Show code, not just words.',
-        'USER.md': '# About the User\n\nAdd notes about the user\'s preferences, timezone, and workflow here.',
-        'TOOLS.md': '# Tools\n\nNote down tool-specific config: camera names, SSH hosts, API endpoints, etc.'
-      },
-      activeFile: 'AGENTS.md',
-      model: 'upstage/solar-pro-3:free',
-    };
+      edges: [{id:'e1',source:'g1',target:'a1',type:'smoothstep',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}}],
+    },
+    team: {
+      nodes: [
+        { id:'g1', type:'gateway', position:{x:0,y:120},   data:{label:'My Gateway'} },
+        { id:'a1', type:'agent',   position:{x:320,y:-40}, data:{label:'Lead Agent'} },
+        { id:'a2', type:'agent',   position:{x:320,y:120}, data:{label:'Coder'} },
+        { id:'a3', type:'agent',   position:{x:320,y:280}, data:{label:'Reviewer'} },
+      ],
+      edges: [
+        {id:'e1',source:'g1',target:'a1',type:'smoothstep',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
+        {id:'e2',source:'g1',target:'a2',type:'smoothstep',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
+        {id:'e3',source:'g1',target:'a3',type:'smoothstep',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
+      ],
+    },
+    research: {
+      nodes: [
+        { id:'g1', type:'gateway', position:{x:0,y:80},     data:{label:'Research Gateway'} },
+        { id:'a1', type:'agent',   position:{x:300,y:20},  data:{label:'Research Agent'} },
+        { id:'s1', type:'skill',   position:{x:580,y:-80}, data:{label:'Web Search',skill:'web-search'} },
+        { id:'m1', type:'model',   position:{x:580,y:120}, data:{label:'GPT-4o',provider:'openai'} },
+      ],
+      edges: [
+        {id:'e1',source:'g1',target:'a1',type:'smoothstep',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
+        {id:'e2',source:'a1',target:'s1',type:'smoothstep',style:{stroke:'#818cf8',strokeWidth:1.5,opacity:0.65}},
+        {id:'e3',source:'a1',target:'m1',type:'smoothstep',style:{stroke:'#818cf8',strokeWidth:1.5,opacity:0.65}},
+      ],
+    },
+  };
+  const tmpl = t[id];
+  if (!tmpl) return;
+  setNodes(tmpl.nodes);
+  setEdges(tmpl.edges);
+  save(tmpl.nodes, tmpl.edges);
+}
 
-    let allFlavours = [];
-
-    // ── Helpers ──
-    const $ = id => document.getElementById(id);
-    const $$ = sel => document.querySelectorAll(sel);
-
-    // ── Auto-save draft ──
-    let _draftTimer = null;
-    const DRAFT_KEY = 'clawforge-draft';
-    function saveDraft() {
-      clearTimeout(_draftTimer);
-      _draftTimer = setTimeout(() => {
-        try {
-          // Save current file editor content
-          state.files[state.activeFile] = $('file-editor').value;
-          state.systemPrompt = $('system-prompt').value;
-          const draft = {
-            emoji: state.emoji,
-            name: state.name,
-            runtime: state.runtime,
-            agents: state.agents,
-            skills: [...state.skills],
-            systemPrompt: state.systemPrompt,
-            files: state.files,
-            activeFile: state.activeFile,
-            model: state.model,
-            savedAt: Date.now()
-          };
-          localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-          // Flash draft status
-          const ds = $('draft-status');
-          if (ds) {
-            ds.textContent = 'Draft saved';
-            ds.style.opacity = '1';
-            clearTimeout(ds._fadeTimer);
-            ds._fadeTimer = setTimeout(() => { ds.style.opacity = '0'; }, 2000);
-          }
-        } catch (e) { console.warn('Draft save error:', e); }
-      }, 500);
-    }
-
-    function updateSidebar() {
-      saveDraft();
-      // Show user emoji if set, otherwise show server icon
-      const emojiEl = $('sidebar-emoji');
-      if (state.emoji && state.emoji.trim()) {
-        emojiEl.textContent = state.emoji;
-        emojiEl.style.fontSize = '1.3rem';
-      }
-      $('sidebar-name-text').textContent = state.name;
-
-      const runtimeNames = { single: 'Standard', multi: 'Multi-Agent', minimal: 'Minimal' };
-      $('sidebar-runtime').textContent = runtimeNames[state.runtime] || state.runtime;
-
-      const agentIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0113 0"/></svg>';
-      $('sidebar-agents').innerHTML = state.agents
-        .map(a => `<li>${agentIcon}${escHtml(a.name || 'Unnamed')}</li>`).join('');
-
-      const skillIcons = {
-        'chat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
-        'filesystem': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
-        'execute': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
-        'web-browse': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>',
-        'github': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>',
-        'docker': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><rect x="2" y="6" width="20" height="12" rx="2"/></svg>',
-        'image-gen': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
-        'scheduling': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-        'browser-auto': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l3 3 5-5"/></svg>',
-        'security': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-        'email': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>',
-        'calendar': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
-      };
-      const skillLabels = {
-        'chat': 'Chat', 'filesystem': 'Filesystem', 'execute': 'Execute',
-        'web-browse': 'Web Browse', 'github': 'GitHub', 'docker': 'Docker',
-        'image-gen': 'Image Gen', 'scheduling': 'Scheduling', 'browser-auto': 'Browser Auto',
-        'security': 'Security', 'email': 'Email', 'calendar': 'Calendar',
-      };
-      $('sidebar-skills').innerHTML = [...state.skills]
-        .map(s => `<li>${skillIcons[s] || ''}${skillLabels[s] || s}</li>`).join('');
-
-      const modelEl = document.querySelector('.model-card.selected');
-      $('sidebar-model').textContent = modelEl
-        ? modelEl.querySelector('.model-name').textContent
-        : state.model.split('/').pop();
-    }
-
-    // ── Server name ──
-    $('server-emoji').addEventListener('input', e => {
-      state.emoji = e.target.value || '🦀';
-      updateSidebar();
-    });
-    $('server-name').addEventListener('input', e => {
-      state.name = e.target.value || 'My Server';
-      updateSidebar();
-    });
-
-    // ── Runtime ──
-    $$('#runtime-options .option-card').forEach(card => {
-      card.addEventListener('click', () => {
-        $$('#runtime-options .option-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        state.runtime = card.dataset.value;
-        updateSidebar();
+/* ── Apply AI result ── */
+function applyAiResult(data, setNodes, setEdges) {
+  try {
+    const nodes = [];
+    const edges = [];
+    if (data.agents) {
+      nodes.push({ id:'g1', type:'gateway', position:{x:0,y:0}, data:{label:data.name||'Gateway'} });
+      data.agents.forEach((a, i) => {
+        const id = `a${i}`;
+        nodes.push({ id, type:'agent', position:{x:320,y:i*220-((data.agents.length-1)*110)}, data:{label:a.name,model:a.model||'upstage/solar-pro-3:free',systemPrompt:a.systemPrompt||''} });
+        edges.push({ id:`e${i}`, source:'g1', target:id, type:'smoothstep', style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65} });
       });
-    });
+      (data.skills||[]).forEach((s, i) => {
+        const id = `s${i}`;
+        nodes.push({ id, type:'skill', position:{x:580,y:i*100}, data:{label:s.name||s.source||'skill'} });
+      });
+    }
+    if (nodes.length) { setNodes(nodes); setEdges(edges); }
+  } catch(e) { console.error('AI result parse error', e); }
+}
 
-    // ── Agents ──
-    function renderAgents() {
-      const list = $('agent-list');
-      list.innerHTML = state.agents.map((a, i) => `
-        <div class="agent-row ${i === 0 ? 'active' : ''}" data-idx="${i}">
-          <input type="text" class="agent-emoji-input" value="${a.emoji}" maxlength="4" data-field="emoji" />
-          <input type="text" class="agent-text-input" placeholder="Agent name" value="${escHtml(a.name)}" data-field="name" />
-          <input type="text" class="agent-text-input" placeholder="Role / description" value="${escHtml(a.desc)}" data-field="desc" />
-          ${i === 0
-            ? '<span style="font-size:0.65rem;color:var(--text-dim);font-family:var(--mono);">LEAD</span>'
-            : '<button class="btn-small danger" data-remove="' + i + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>'
-          }
+/* ── Node components ── */
+
+/* ── Compact clean SVG icons — 22px, white strokes ── */
+const IcoGateway = () => (
+  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="3" width="18" height="13" rx="2"/>
+    <path d="M7 19h8M11 16v3"/>
+  </svg>
+);
+const IcoAgent = () => (
+  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="8" r="4"/>
+    <path d="M4 19c0-3.314 3.134-6 7-6s7 2.686 7 6"/>
+    <circle cx="11" cy="2" r="1" fill="#fff" stroke="none"/>
+  </svg>
+);
+const IcoSkill = () => (
+  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l.7-.7a2 2 0 10-2.8-2.8l-.9.5z"/>
+    <path d="M5 19l9-9"/>
+    <path d="M7.3 7.3a1 1 0 000 1.4l6 6a1 1 0 001.4 0"/>
+    <path d="M5 5l2 2"/>
+    <circle cx="5" cy="17" r="2"/>
+  </svg>
+);
+const IcoModel = () => (
+  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+    <path d="M2 17l10 5 10-5"/>
+    <path d="M2 12l10 5 10-5"/>
+  </svg>
+);
+const IcoChannel = () => (
+  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 2L11 13"/>
+    <path d="M22 2L15 22l-4-9-9-4 20-7z"/>
+  </svg>
+);
+
+/* ── Shared node shell ── */
+function VFNode({ selected, color, icon, label, sub, handles='both', status='active' }) {
+  // status: 'active' | 'inactive' | 'error' | 'warning'
+  const STATUS_DOT = { active:'#4ade80', inactive:'#333', error:'#ef4444', warning:'#f59e0b' };
+  const dotColor = STATUS_DOT[status] || '#333';
+  const isActive = status === 'active';
+  const C = status === 'inactive' ? '#2a2a2a' : color;
+  return (
+    <div className={`vf-node${selected ? ' selected' : ''}`}
+         style={{border:`1.5px solid ${C}`, opacity: status === 'inactive' ? 0.45 : 1}}>
+      {(handles==='both'||handles==='left') &&
+        <Handle type="target" position={Position.Left}
+          style={{background:C, border:`2px solid ${C}`, width:10, height:10, top:'50%', transform:'translateY(-50%)'}}/>}
+      <div className="vf-node-inner">
+        <div className="vf-node-badge-icon"
+             style={{background:`color-mix(in srgb, ${C} 18%, #0a0a0a)`}}>
+          {icon}
         </div>
-      `).join('');
+        <div className="vf-node-text">
+          <div className="vf-node-name" style={{color: status==='inactive'?'#444':'#e8e8e8'}}>{label}</div>
+          <div className="vf-node-type">{sub}</div>
+        </div>
+        <span style={{
+          width:6, height:6, borderRadius:'50%', flexShrink:0,
+          background: dotColor,
+          boxShadow: isActive ? `0 0 6px ${dotColor}` : 'none',
+          animation: isActive ? 'vfPulse 2s ease-in-out infinite' : 'none',
+        }}/>
+      </div>
+      {(handles==='both'||handles==='right') &&
+        <Handle type="source" position={Position.Right}
+          style={{background:C, border:`2px solid ${C}`, width:10, height:10, top:'50%', transform:'translateY(-50%)'}}/>}
+    </div>
+  );
+}
 
-      // Bind inputs
-      list.querySelectorAll('.agent-row').forEach(row => {
-        const idx = parseInt(row.dataset.idx);
-        row.querySelectorAll('input').forEach(inp => {
-          inp.addEventListener('input', () => {
-            state.agents[idx][inp.dataset.field] = inp.value;
-            updateSidebar();
-          });
-        });
-        const rmBtn = row.querySelector('[data-remove]');
-        if (rmBtn) rmBtn.addEventListener('click', () => {
-          state.agents.splice(idx, 1);
-          renderAgents();
-          updateSidebar();
-        });
+function GatewayNode({ data, selected }) {
+  return <VFNode selected={selected} color="#ff5c5c"
+    icon={<IcoGateway/>} label={data.label||'My Gateway'} sub="gateway" status="active"/>;
+}
+function AgentNode({ data, selected }) {
+  if (!data.liveAgent) {
+    return <VFNode selected={selected} color="#818cf8" status="active"
+      icon={<IcoAgent/>} label={data.label||'New Agent'} sub={data.model?.split('/').pop()||'agent'}/>;
+  }
+  const C = '#818cf8';
+  const isActive = data.enabled !== false;
+  const modelSlug = data.model?.split('/').pop() || data.model || '—';
+  const provider = data.model?.split('/')[0] || '';
+  const promptPreview = data.systemPrompt?.split('\n').find(l => l.trim()) || '';
+  return (
+    <div className={`vf-node${selected?' selected':''}`}
+         style={{border:`1.5px solid ${C}`,padding:0,overflow:'hidden',width:240}}>
+      <Handle type="target" position={Position.Left}
+        style={{background:C,border:`2px solid ${C}`,width:10,height:10,top:'50%',transform:'translateY(-50%)'}}/>
+      <Handle type="source" position={Position.Right}
+        style={{background:C,border:`2px solid ${C}`,width:10,height:10,top:'50%',transform:'translateY(-50%)'}}/>
+
+      {/* Header */}
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'9px 12px',borderBottom:'1px solid #161616'}}>
+        <div style={{background:'color-mix(in srgb,#818cf8 18%,#0a0a0a)',borderRadius:6,padding:5,display:'flex',flexShrink:0}}>
+          <IcoAgent/>
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.78rem',color:'#e0e0e0'}}>{data.label}</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#818cf8',marginTop:1,display:'flex',alignItems:'center',gap:4}}>
+            <span>{modelSlug}</span>
+          </div>
+        </div>
+        <span style={{width:6,height:6,borderRadius:'50%',background:isActive?'#4ade80':'#333',boxShadow:isActive?'0 0 6px #4ade80':'none',flexShrink:0,animation:isActive?'vfPulse 2s ease-in-out infinite':'none'}}/>
+      </div>
+
+      {/* Detail rows */}
+      <div style={{padding:'6px 12px',display:'flex',flexDirection:'column',gap:4}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#444',display:'flex',gap:4}}>
+          <span style={{color:'#333',flexShrink:0}}>model</span>
+          <span style={{color:'#666',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{provider}/{modelSlug}</span>
+        </div>
+        {data.workspace && (
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#444',display:'flex',gap:4}}>
+            <span style={{color:'#333',flexShrink:0}}>workspace</span>
+            <span style={{color:'#555',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{data.workspace.split('/').pop()}</span>
+          </div>
+        )}
+        {data.thinking && (
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#444',display:'flex',gap:4}}>
+            <span style={{color:'#333',flexShrink:0}}>thinking</span>
+            <span style={{color:'#818cf8'}}>{data.thinking}</span>
+          </div>
+        )}
+        {promptPreview && (
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#383838',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',borderTop:'1px solid #111',paddingTop:4,marginTop:2}}>
+            {promptPreview}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+function SkillNode({ data, selected }) {
+  return <VFNode selected={selected} color="#4ade80"
+    icon={<IcoSkill/>} label={data.label||'New Skill'} sub="skill" status="active"/>;
+}
+function ModelNode({ data, selected }) {
+  return <VFNode selected={selected} color="#f59e0b"
+    icon={<IcoModel/>} label={data.label||'GPT-4o'} sub={data.provider||'model'} status="active"/>;
+}
+function ChannelNode({ data, selected }) {
+  if (!data.dmPolicy && !data.groupPolicy) {
+    const status = data.enabled === false ? 'inactive' : 'active';
+    return <VFNode selected={selected} color="#22d3ee" status={status}
+      icon={<IcoChannel/>} label={data.label||'Telegram'} sub="channel"/>;
+  }
+  const C = '#22d3ee';
+  const isActive = data.enabled !== false;
+  const skip = new Set(['label','enabled','_nodeType','id','type','accounts']);
+  const details = Object.entries(data).filter(([k,v]) => !skip.has(k) && v !== undefined && v !== null && v !== '');
+  return (
+    <div className={`vf-node${selected?' selected':''}`}
+         style={{border:`1.5px solid ${isActive?C:'#1c1c1c'}`,padding:0,overflow:'hidden',width:220,opacity:isActive?1:0.45}}>
+      <Handle type="target" position={Position.Left}
+        style={{background:C,border:`2px solid ${C}`,width:10,height:10,top:'50%',transform:'translateY(-50%)'}}/>
+      <Handle type="source" position={Position.Right}
+        style={{background:C,border:`2px solid ${C}`,width:10,height:10,top:'50%',transform:'translateY(-50%)'}}/>
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'9px 12px',borderBottom:'1px solid #161616'}}>
+        <div style={{background:`color-mix(in srgb,${C} 18%,#0a0a0a)`,borderRadius:6,padding:5,display:'flex',flexShrink:0}}><IcoChannel/></div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.78rem',color:'#e0e0e0'}}>{data.label||data.type}</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:isActive?C:'#333',marginTop:1}}>{isActive?'enabled':'disabled'}</div>
+        </div>
+        <span style={{width:6,height:6,borderRadius:'50%',background:isActive?'#4ade80':'#333',boxShadow:isActive?'0 0 6px #4ade80':'none',flexShrink:0,animation:isActive?'vfPulse 2s ease-in-out infinite':'none'}}/>
+      </div>
+      <div style={{padding:'6px 12px',display:'flex',flexDirection:'column',gap:3}}>
+        {details.slice(0,4).map(([k,v]) => (
+          <div key={k} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.57rem',display:'flex',gap:4}}>
+            <span style={{color:'#333',flexShrink:0}}>{k}</span>
+            <span style={{color:'#555',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+              {Array.isArray(v)?v.slice(0,2).join(', ')+(v.length>2?`…`:''):String(v)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const nodeTypes = {
+  gateway:      GatewayNode,
+  livegateway:  LiveGatewayNode,
+  agent:        AgentNode,
+  skill:        SkillNode,
+  skillslist:   SkillsListNode,
+  sessionslist: SessionsListNode,
+  cronlist:     CronListNode,
+  nodeslist:    NodesListNode,
+  model:        ModelNode,
+  channel:      ChannelNode,
+};
+
+/* ── Nav Button ── */
+function NavBtn({ children, onClick, primary }) {
+  const [hov, setHov] = React.useState(false);
+  return (
+    <button onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.65rem',
+        fontWeight:700, textTransform:'uppercase', letterSpacing:'0.05em',
+        background: primary ? '#ff5c5c' : hov ? '#1a1a1a' : 'transparent',
+        border: `1px solid ${primary ? '#ff5c5c' : hov ? '#ff5c5c' : '#2a2a2a'}`,
+        color: primary ? '#000' : hov ? '#e0e0e0' : '#666',
+        padding:'5px 12px', borderRadius:5, cursor:'pointer',
+        transition:'all 0.15s',
+      }}>
+      {children}
+    </button>
+  );
+}
+
+/* ── Palette ── */
+function PaletteLabel({ children, style }) {
+  return (
+    <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',textTransform:'uppercase',letterSpacing:'0.12em',color:'#2e2e2e',padding:'6px 2px 3px',...style}}>
+      {children}
+    </div>
+  );
+}
+
+function PaletteItem({ children, color, onClick }) {
+  const [hov, setHov] = React.useState(false);
+  return (
+    <button onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        display:'flex', alignItems:'center', gap:7,
+        padding:'9px 10px', borderRadius:7,
+        background: hov ? '#1a1a1a' : '#141414',
+        border: `1px solid ${hov ? color : '#1e1e1e'}`,
+        cursor:'pointer', color: hov ? '#e0e0e0' : '#666',
+        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.72rem',
+        textAlign:'left', transition:'all 0.15s', width:'100%',
+      }}>
+      {children}
+    </button>
+  );
+}
+
+function Palette({ onAdd }) {
+  const nodeItems = [
+    { type:'gateway', emoji:'🖥️', label:'Gateway', color:'#ff5c5c' },
+    { type:'agent',   emoji:'🤖', label:'Agent',   color:'#818cf8' },
+    { type:'skill',   emoji:'🔧', label:'Skill',   color:'#4ade80' },
+    { type:'model',   emoji:'🧠', label:'Model',   color:'#f59e0b' },
+    { type:'channel', emoji:'📡', label:'Channel', color:'#22d3ee' },
+  ];
+  const templates = [
+    { id:'quickstart', emoji:'⚡', label:'Quick Start' },
+    { id:'team',       emoji:'👥', label:'Team Setup' },
+    { id:'research',   emoji:'🔬', label:'Research Stack' },
+  ];
+
+  return (
+    <div style={{
+      width:196, flexShrink:0,
+      background:'rgba(10,10,10,0.97)',
+      borderRight:'1px solid #1c1c1c',
+      padding:'14px 10px', display:'flex',
+      flexDirection:'column', gap:5, overflowY:'auto',
+    }}>
+      <PaletteLabel>Nodes</PaletteLabel>
+      {nodeItems.map(n => (
+        <PaletteItem key={n.type} color={n.color} onClick={() => onAdd(n.type)}>
+          <span style={{width:8,height:8,borderRadius:'50%',background:n.color,opacity:0.8,flexShrink:0,display:'inline-block'}} />
+          {n.emoji} {n.label}
+        </PaletteItem>
+      ))}
+      <PaletteLabel style={{marginTop:10}}>Templates</PaletteLabel>
+      {templates.map(t => (
+        <PaletteItem key={t.id} color="#444" onClick={() => onAdd(t.id)}>
+          {t.emoji} {t.label}
+        </PaletteItem>
+      ))}
+    </div>
+  );
+}
+
+/* ── Config Panel ── */
+function ConfigPanel({ node, onClose, onUpdate }) {
+  const emojis = {gateway:'🖥️', agent:'🤖', skill:'🔧', model:'🧠', channel:'📡'};
+  const models = [
+    'upstage/solar-pro-3:free','anthropic/claude-3-5-sonnet',
+    'openai/gpt-4o','meta-llama/llama-3.3-70b-instruct:free',
+    'google/gemini-2.0-flash-exp:free',
+  ];
+  const skills = ['web-search','summarize','github','gmail','calendar','apple-notes','browser','image-gen'];
+  const channels = ['telegram','slack','discord','whatsapp','signal','imessage'];
+
+  const panelStyle = {
+    width: node ? 300 : 0,
+    overflow: node ? 'auto' : 'hidden',
+    flexShrink: 0,
+    background: 'rgba(10,10,10,0.97)',
+    borderLeft: '1px solid #1c1c1c',
+    transition: 'width 0.2s cubic-bezier(0.4,0,0.2,1)',
+    display: 'flex', flexDirection: 'column',
+  };
+
+  if (!node) return <div style={panelStyle} />;
+
+  const type = node.type;
+  const d = node.data || {};
+
+  const inputStyle = {
+    background:'#0e0e0e', border:'1px solid #242424', borderRadius:6,
+    color:'#e0e0e0', padding:'8px 10px',
+    fontFamily:"'JetBrains Mono',monospace", fontSize:'0.78rem',
+    width:'100%', outline:'none', boxSizing:'border-box',
+  };
+
+  const Field = ({ label, children }) => (
+    <div style={{display:'flex',flexDirection:'column',gap:5}}>
+      <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',textTransform:'uppercase',letterSpacing:'0.08em',color:'#444'}}>{label}</label>
+      {children}
+    </div>
+  );
+
+  return (
+    <div style={panelStyle}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderBottom:'1px solid #1c1c1c'}}>
+        <span style={{fontSize:'0.85rem',fontWeight:600,color:'#e0e0e0'}}>
+          {emojis[type]} {d.label}
+        </span>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'#444',fontSize:'1.1rem',cursor:'pointer',padding:'2px 6px',borderRadius:4}}>×</button>
+      </div>
+      <div style={{padding:16,display:'flex',flexDirection:'column',gap:14,overflowY:'auto',flex:1}}>
+        <Field label="Name">
+          <input style={inputStyle} value={d.label||''} onChange={e => onUpdate(node.id,'label',e.target.value)} />
+        </Field>
+        {type === 'agent' && <>
+          <Field label="Model">
+            <select style={inputStyle} value={d.model||models[0]} onChange={e => onUpdate(node.id,'model',e.target.value)}>
+              {models.map(m => <option key={m}>{m}</option>)}
+            </select>
+          </Field>
+          <Field label="System Prompt">
+            <textarea style={{...inputStyle,minHeight:90,resize:'vertical'}}
+              value={d.systemPrompt||''} onChange={e => onUpdate(node.id,'systemPrompt',e.target.value)} />
+          </Field>
+        </>}
+        {type === 'gateway' && (
+          <Field label="Description">
+            <textarea style={{...inputStyle,minHeight:70,resize:'vertical'}}
+              value={d.desc||''} onChange={e => onUpdate(node.id,'desc',e.target.value)} />
+          </Field>
+        )}
+        {type === 'skill' && (
+          <Field label="Skill">
+            <select style={inputStyle} value={d.skill||skills[0]} onChange={e => onUpdate(node.id,'skill',e.target.value)}>
+              {skills.map(s => <option key={s}>{s}</option>)}
+            </select>
+          </Field>
+        )}
+        {type === 'model' && (
+          <Field label="Provider">
+            <input style={inputStyle} value={d.provider||'openai'} onChange={e => onUpdate(node.id,'provider',e.target.value)} />
+          </Field>
+        )}
+        {type === 'channel' && (
+          <Field label="Channel Type">
+            <select style={inputStyle} value={d.channelType||channels[0]} onChange={e => onUpdate(node.id,'channelType',e.target.value)}>
+              {channels.map(c => <option key={c}>{c}</option>)}
+            </select>
+          </Field>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── AI Build Modal ── */
+function AiBuildModal({ onClose, onResult }) {
+  const [prompt, setPrompt] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const chips = ['coding agent','web researcher','GitHub bot','daily assistant','agent squad'];
+
+  const build = async () => {
+    if (!prompt.trim()) return;
+    setLoading(true);
+    try {
+      const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'upstage/solar-pro-3:free',
+          messages: [
+            { role: 'system', content: `You are an OpenClaw server configurator. Given a user description, output a JSON object with: name (string), agents (array of {name, model, systemPrompt}), skills (array of {source}). Respond ONLY with valid JSON, no markdown.` },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 500,
+        })
       });
+      const data = await resp.json();
+      const text = data.choices?.[0]?.message?.content || '';
+      const config = JSON.parse(text);
+      onResult(config);
+    } catch(e) {
+      console.error('AI build error:', e);
     }
+    setLoading(false);
+  };
 
-    function escHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
+  return (
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.75)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <div onClick={e => e.stopPropagation()} style={{background:'#141414',border:'1px solid #2a2a2a',borderRadius:12,padding:28,width:560,maxWidth:'90vw'}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#444',marginBottom:12}}>✨ AI Build</div>
+        <textarea value={prompt} onChange={e => setPrompt(e.target.value)}
+          placeholder="Describe your agent network..."
+          style={{width:'100%',minHeight:90,background:'#0e0e0e',border:'1px solid #242424',borderRadius:8,color:'#e0e0e0',padding:12,fontFamily:"'JetBrains Mono',monospace",fontSize:'0.8rem',resize:'vertical',outline:'none',boxSizing:'border-box'}} />
+        <div style={{display:'flex',gap:6,flexWrap:'wrap',margin:'10px 0'}}>
+          {chips.map(c => (
+            <button key={c} onClick={() => setPrompt(c)}
+              style={{background:'transparent',border:'1px solid #2a2a2a',borderRadius:20,padding:'4px 10px',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#555',transition:'all 0.15s'}}
+              onMouseEnter={e => {e.target.style.borderColor='#ff5c5c';e.target.style.color='#e0e0e0';}}
+              onMouseLeave={e => {e.target.style.borderColor='#2a2a2a';e.target.style.color='#555';}}>
+              "{c}"
+            </button>
+          ))}
+        </div>
+        <div style={{display:'flex',justifyContent:'flex-end',gap:8,marginTop:14}}>
+          <NavBtn onClick={onClose}>Cancel</NavBtn>
+          <NavBtn primary onClick={build}>{loading ? 'Building…' : 'Build it →'}</NavBtn>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-    $('add-agent-btn').addEventListener('click', () => {
-      const emojis = ['🤖','🔍','✍️','🎨','🛡️','📡','⚙️','🧪','📊','🎯'];
-      state.agents.push({
-        emoji: emojis[state.agents.length % emojis.length],
-        name: '',
-        desc: ''
+/* ── Export Modal ── */
+function ExportModal({ nodes, edges, onClose }) {
+  const gateways = nodes.filter(n => n.type === 'gateway');
+  const agents   = nodes.filter(n => n.type === 'agent');
+  const skills   = nodes.filter(n => n.type === 'skill');
+  const spec = {
+    specVersion: '1.0',
+    id: 'srv_' + Math.random().toString(36).slice(2,10),
+    name: gateways[0]?.data?.label || 'My Gateway',
+    runtime: {
+      type: agents.length > 1 ? 'multi' : 'single',
+      model: { provider:'openrouter', model: agents[0]?.data?.model || 'upstage/solar-pro-3:free' },
+    },
+    agents: agents.map((a, i) => ({
+      id: i===0 ? 'main' : (a.data.label||'').toLowerCase().replace(/\W+/g,'') || `agent${i}`,
+      name: a.data.label, role: i===0 ? 'lead' : 'specialist',
+      systemPrompt: a.data.systemPrompt || '',
+    })),
+    skills: skills.map(s => ({ source: `builtin:${s.data.skill||s.data.label}` })),
+    workspace: {},
+  };
+  const json = JSON.stringify(spec, null, 2);
+
+  return (
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.75)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <div onClick={e => e.stopPropagation()} style={{background:'#141414',border:'1px solid #2a2a2a',borderRadius:12,padding:28,width:600,maxWidth:'90vw',maxHeight:'80vh',display:'flex',flexDirection:'column',gap:16}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#444'}}>⬇ Export Config</div>
+        <pre style={{background:'#0a0a0a',border:'1px solid #1e1e1e',borderRadius:8,padding:16,fontFamily:"'JetBrains Mono',monospace",fontSize:'0.72rem',color:'#4ade80',overflowY:'auto',flex:1,margin:0}}>{json}</pre>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#444',background:'#0a0a0a',border:'1px solid #1e1e1e',borderRadius:6,padding:'8px 12px'}}>
+          curl -fsSL https://vibeclaw.dev/install.sh | bash
+        </div>
+        <div style={{display:'flex',justifyContent:'flex-end',gap:8}}>
+          <NavBtn onClick={onClose}>Close</NavBtn>
+          <NavBtn primary onClick={() => {
+            const blob = new Blob([json], {type:'application/json'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${spec.name.toLowerCase().replace(/\s+/g,'-')}.json`;
+            a.click();
+          }}>⬇ Download JSON</NavBtn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Skills List Node — canvas node showing all skills ── */
+function SkillsListNode({ data, selected }) {
+  const [filter, setFilter] = React.useState('');
+  const [toggling, setToggling] = React.useState({});
+  const skills = data.skills || [];
+
+  const filtered = skills.filter(s => !filter || s.id.toLowerCase().includes(filter.toLowerCase()));
+  const on = filtered.filter(s => s.enabled);
+  const off = filtered.filter(s => !s.enabled);
+
+  const handleToggle = async (skill) => {
+    setToggling(t => ({...t, [skill.id]: true}));
+    try {
+      await fetch('/api/gateway-patch', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ skillPatch: { skillId: skill.id, enabled: !skill.enabled } }),
       });
-      renderAgents();
-      updateSidebar();
-    });
+      window.__liveSkillToggled?.(skill.id, !skill.enabled);
+    } catch(e) {}
+    setToggling(t => ({...t, [skill.id]: false}));
+  };
 
-    // ── Skills ──
-    $$('.skill-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const skill = card.dataset.skill;
-        if (state.skills.has(skill)) {
-          state.skills.delete(skill);
-          card.classList.remove('enabled');
-        } else {
-          state.skills.add(skill);
-          card.classList.add('enabled');
-        }
-        updateSidebar();
-      });
-    });
+  return (
+    <div className={`vf-node${selected?' selected':''}`}
+         style={{border:'1.5px solid #4ade80', padding:0, overflow:'hidden', width:260, maxHeight:480, display:'flex', flexDirection:'column'}}>
+      <Handle type="target" position={Position.Left}
+        style={{background:'#4ade80',border:'2px solid #4ade80',width:10,height:10,top:24,transform:'none'}}/>
 
-    // ── System prompt ──
-    $('system-prompt').addEventListener('input', e => {
-      state.systemPrompt = e.target.value;
-      saveDraft();
-    });
+      {/* Header */}
+      <div style={{padding:'10px 12px', borderBottom:'1px solid #1a1a1a', display:'flex', alignItems:'center', justifyContent:'space-between', flexShrink:0}}>
+        <div style={{display:'flex', alignItems:'center', gap:8}}>
+          <div style={{background:'color-mix(in srgb,#4ade80 18%,#0a0a0a)', borderRadius:6, padding:5, display:'flex'}}>
+            <IcoSkill/>
+          </div>
+          <div>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>Skills</div>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:'#4ade80',marginTop:1}}>
+              {skills.filter(s=>s.enabled).length} on · {skills.filter(s=>!s.enabled).length} off
+            </div>
+          </div>
+        </div>
+      </div>
 
-    // ── File editor ──
-    const fileTabs = $$('#file-tabs .file-tab');
-    fileTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        // Save current
-        state.files[state.activeFile] = $('file-editor').value;
-        // Switch
-        fileTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        state.activeFile = tab.dataset.file;
-        $('file-editor').value = state.files[state.activeFile] || '';
-      });
-    });
+      {/* Filter */}
+      <div style={{padding:'6px 10px', borderBottom:'1px solid #141414', flexShrink:0}} className="nodrag nopan">
+        <input value={filter} onChange={e=>setFilter(e.target.value)}
+          placeholder="filter…"
+          style={{width:'100%',background:'#0a0a0a',border:'1px solid #1e1e1e',borderRadius:4,padding:'4px 8px',color:'#aaa',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',outline:'none',boxSizing:'border-box'}}
+        />
+      </div>
 
-    // Auto-save file editor
-    $('file-editor').addEventListener('input', () => {
-      state.files[state.activeFile] = $('file-editor').value;
-      saveDraft();
-    });
+      {/* Skill rows */}
+      <div style={{overflowY:'auto', flex:1}} className="nodrag nopan">
+        {[...on, ...off].map(s => (
+          <div key={s.id} style={{padding:'6px 10px',borderBottom:'1px solid #0e0e0e',display:'flex',alignItems:'flex-start',gap:6,justifyContent:'space-between'}}>
+            <div style={{display:'flex',alignItems:'flex-start',gap:6,flex:1,minWidth:0}}>
+              <span style={{width:5,height:5,borderRadius:'50%',background:s.enabled?'#4ade80':'#2a2a2a',boxShadow:s.enabled?'0 0 5px #4ade8066':'none',flexShrink:0,marginTop:4}}/>
+              <div style={{minWidth:0}}>
+                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:s.enabled?'#bbb':'#3a3a3a'}}>{s.id}</div>
+                {s.description && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',color:'#3a3a3a',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',marginTop:1}}>{s.description}</div>}
+              </div>
+            </div>
+            <button onClick={()=>handleToggle(s)} disabled={!!toggling[s.id]}
+              style={{background:'none',border:`1px solid ${s.enabled?'#2a5c3a':'#222'}`,borderRadius:10,padding:'1px 8px',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',color:s.enabled?'#4ade80':'#333',flexShrink:0}}>
+              {toggling[s.id]?'…':s.enabled?'on':'off'}
+            </button>
+          </div>
+        ))}
+        {filtered.length===0 && <div style={{padding:16,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#2a2a2a'}}>no match</div>}
+      </div>
+    </div>
+  );
+}
 
-    // ── Model ──
-    $$('.model-card').forEach(card => {
-      card.addEventListener('click', () => {
-        $$('.model-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        state.model = card.dataset.model;
-        updateSidebar();
-      });
-    });
+/* ── Sessions List Node ── */
+function SessionsListNode({ data }) {
+  const sessions = data.sessions || [];
+  const fmtTime = iso => {
+    if (!iso) return '';
+    const d = new Date(iso), now = new Date();
+    const diff = now - d;
+    if (diff < 3600000) return `${Math.floor(diff/60000)}m ago`;
+    if (diff < 86400000) return `${Math.floor(diff/3600000)}h ago`;
+    return d.toLocaleDateString();
+  };
+  return (
+    <div className="vf-node" style={{border:'1.5px solid #f59e0b',padding:0,overflow:'hidden',width:320,maxHeight:440,display:'flex',flexDirection:'column'}}>
+      <Handle type="target" position={Position.Left} style={{background:'#f59e0b',border:'2px solid #f59e0b',width:10,height:10,top:24}}/>
+      <div style={{padding:'10px 12px',borderBottom:'1px solid #1a1a1a',display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
+        <div style={{background:'color-mix(in srgb,#f59e0b 18%,#0a0a0a)',borderRadius:6,padding:5,fontSize:'0.85rem'}}>🕐</div>
+        <div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>Sessions</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:'#f59e0b',marginTop:1}}>{sessions.length} recent · {sessions.reduce((a,s)=>a+(s.messageCount||0),0)} messages</div>
+        </div>
+      </div>
+      <div style={{overflowY:'auto',flex:1}}>
+        {sessions.map(s => (
+          <div key={s.id} style={{padding:'8px 12px',borderBottom:'1px solid #0e0e0e'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:3}}>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#666'}}>{s.id.slice(0,12)}…</span>
+              <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.52rem',color:'#444'}}>{s.messageCount} msg</span>
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.52rem',color:'#333'}}>{s.sizeKb}kb</span>
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.52rem',color:'#555'}}>{fmtTime(s.lastActive)}</span>
+              </div>
+            </div>
+            {s.lastUserMessage && (
+              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.62rem',color:'#777',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',borderLeft:'2px solid #333',paddingLeft:6}}>
+                {s.lastUserMessage}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-    // ── Quick Start presets ──
-    const quickStartPresets = {
-      coding: {
-        emoji: '🦀', name: 'Code Agent', runtime: 'single',
-        agents: [{ emoji: '🦀', name: 'Claw', desc: 'Full-stack coding assistant' }],
-        skills: ['chat', 'filesystem', 'execute', 'github'],
-        prompt: 'You are 🦀 Claw, an expert full-stack developer. Write clean, production-ready code. Be concise and pragmatic. Show code, not descriptions. Always explain the "why" behind your suggestions.'
-      },
-      research: {
-        emoji: '🔍', name: 'Research Agent', runtime: 'single',
-        agents: [{ emoji: '🔍', name: 'Scout', desc: 'Web research & analysis agent' }],
-        skills: ['chat', 'filesystem', 'web-browse'],
-        prompt: 'You are 🔍 Scout, a research agent. Search the web thoroughly, cross-reference sources, summarise findings clearly with citations. Be analytical and objective.'
-      },
-      devops: {
-        emoji: '🐳', name: 'DevOps Agent', runtime: 'single',
-        agents: [{ emoji: '🐳', name: 'Harbor', desc: 'Infrastructure & deployment agent' }],
-        skills: ['chat', 'filesystem', 'execute', 'docker', 'github'],
-        prompt: 'You are 🐳 Harbor, a DevOps engineer. Help with Docker, CI/CD pipelines, deployment, infrastructure-as-code, and monitoring. Prioritise reliability and security.'
-      },
-      writer: {
-        emoji: '✍️', name: 'Writer Agent', runtime: 'single',
-        agents: [{ emoji: '✍️', name: 'Inky', desc: 'Content writer & editor' }],
-        skills: ['chat', 'filesystem', 'web-browse'],
-        prompt: 'You are ✍️ Inky, a skilled content writer. Write engaging, clear prose. Adapt your tone to the audience. Offer editorial feedback when asked. Be creative but precise.'
-      },
-      security: {
-        emoji: '🛡️', name: 'Security Agent', runtime: 'single',
-        agents: [{ emoji: '🛡️', name: 'Sentinel', desc: 'Security audit & hardening agent' }],
-        skills: ['chat', 'filesystem', 'execute', 'security', 'github'],
-        prompt: 'You are 🛡️ Sentinel, a security specialist. Audit code for vulnerabilities, suggest hardening measures, review dependencies, and help with threat modelling. Always err on the side of caution.'
-      },
+/* ── Cron Jobs Node ── */
+function CronListNode({ data }) {
+  const jobs = data.cronJobs || [];
+  const STATUS = { ok:'#4ade80', error:'#ef4444', running:'#f59e0b' };
+  return (
+    <div className="vf-node" style={{border:'1.5px solid #a855f7',padding:0,overflow:'hidden',width:300,maxHeight:420,display:'flex',flexDirection:'column'}}>
+      <Handle type="target" position={Position.Left} style={{background:'#a855f7',border:'2px solid #a855f7',width:10,height:10,top:24}}/>
+      <div style={{padding:'10px 12px',borderBottom:'1px solid #1a1a1a',display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
+        <div style={{background:'color-mix(in srgb,#a855f7 18%,#0a0a0a)',borderRadius:6,padding:5,display:'flex',fontSize:'0.85rem'}}>⏱</div>
+        <div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>Cron Jobs</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:'#a855f7',marginTop:1}}>{jobs.filter(j=>j.enabled).length} active · {jobs.length} total</div>
+        </div>
+      </div>
+      <div style={{overflowY:'auto',flex:1}} className="nodrag nopan">
+        {jobs.map(j => (
+          <div key={j.id}
+            onClick={e=>{e.stopPropagation();window.__liveCronClick?.(j);}}
+            style={{padding:'8px 12px',borderBottom:'1px solid #0e0e0e',cursor:'pointer',transition:'background 0.1s'}}
+            onMouseEnter={e=>e.currentTarget.style.background='#111'}
+            onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:3}}>
+              <div style={{display:'flex',alignItems:'center',gap:6}}>
+                <span style={{width:5,height:5,borderRadius:'50%',background:j.enabled?(STATUS[j.lastStatus]||'#555'):'#222',flexShrink:0}}/>
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:j.enabled?'#ccc':'#444'}}>{j.name}</span>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:6}}>
+                {j.lastStatus && <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',color:STATUS[j.lastStatus]||'#555'}}>{j.lastStatus}</span>}
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.5rem',color:'#333'}}>edit →</span>
+              </div>
+            </div>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',paddingLeft:11,display:'flex',flexDirection:'column',gap:2}}>
+              <span>{j.schedule?.expr || j.schedule?.kind} {j.schedule?.tz ? `(${j.schedule.tz})` : ''}</span>
+              <span>last: {j.lastRunAt ? new Date(j.lastRunAt).toLocaleString() : 'never'} {j.lastDurationMs ? `· ${j.lastDurationMs}ms` : ''}</span>
+              {j.nextRunAt && <span style={{color:'#555'}}>next: {new Date(j.nextRunAt).toLocaleString()}</span>}
+              {j.payloadMessage && <span style={{color:'#444',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:240}}>↳ {j.payloadMessage}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Nodes List Node ── */
+function NodesListNode({ data }) {
+  const nodes = data.nodes || [];
+  return (
+    <div className="vf-node" style={{border:'1.5px solid #22d3ee',padding:0,overflow:'hidden',width:260,maxHeight:300,display:'flex',flexDirection:'column'}}>
+      <Handle type="target" position={Position.Left} style={{background:'#22d3ee',border:'2px solid #22d3ee',width:10,height:10,top:24}}/>
+      <div style={{padding:'10px 12px',borderBottom:'1px solid #1a1a1a',display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
+        <div style={{background:'color-mix(in srgb,#22d3ee 18%,#0a0a0a)',borderRadius:6,padding:5,display:'flex',fontSize:'0.85rem'}}>📱</div>
+        <div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>Nodes</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:'#22d3ee',marginTop:1}}>{nodes.length} paired</div>
+        </div>
+      </div>
+      <div style={{overflowY:'auto',flex:1}}>
+        {nodes.map(n => (
+          <div key={n.id} style={{padding:'10px 12px',borderBottom:'1px solid #0e0e0e'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:4}}>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.72rem',color:'#ccc',fontWeight:600}}>{n.name}</span>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',color:'#22d3ee'}}>{n.platform}</span>
+            </div>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#555',marginBottom:3}}>{n.modelIdentifier || n.deviceFamily} · v{n.version}</div>
+            {n.lastSeen && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.52rem',color:'#333',marginBottom:5}}>last seen {new Date(n.lastSeen).toLocaleString()}</div>}
+            <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
+              {(n.caps||[]).map(c => (
+                <span key={c} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.5rem',color:'#22d3ee',background:'rgba(34,211,238,0.08)',border:'1px solid rgba(34,211,238,0.2)',borderRadius:3,padding:'1px 5px'}}>{c}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+        {nodes.length === 0 && <div style={{padding:16,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#2a2a2a'}}>no nodes paired</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ── Live Gateway Node — expandable sections ── */
+function LiveGatewayNode({ data, selected }) {
+  const sections = [
+    { key:'agents',   label:'Agents',   count: data.agentCount||0,   color:'#818cf8' },
+    { key:'skills',   label:'Skills',   count: data.skillCount||0,   color:'#4ade80' },
+    { key:'channels', label:'Channels', count: data.channelCount||0, color:'#22d3ee' },
+    { key:'sessions', label:'Sessions', count: data.sessionCount||0, color:'#f59e0b' },
+    { key:'cron',     label:'Cron Jobs',count: data.cronCount||0,    color:'#a855f7' },
+    { key:'nodes',    label:'Nodes',    count: data.nodeCount||0,    color:'#22d3ee' },
+  ];
+
+  return (
+    <div className={`vf-node${selected?' selected':''}`}
+         style={{border:'1.5px solid #ff5c5c', minWidth:240, padding:0, overflow:'hidden'}}>
+      <Handle type="source" position={Position.Right}
+        style={{background:'#ff5c5c',border:'2px solid #ff5c5c',width:10,height:10,top:'50%',transform:'translateY(-50%)'}}/>
+      <Handle type="target" position={Position.Left}
+        style={{background:'#ff5c5c',border:'2px solid #ff5c5c',width:10,height:10,top:'50%',transform:'translateY(-50%)'}}/>
+
+      {/* Header */}
+      <div style={{display:'flex',alignItems:'center',gap:10,padding:'10px 14px',borderBottom:'1px solid #1c1c1c'}}>
+        <div style={{background:'color-mix(in srgb,#ff5c5c 18%,#0a0a0a)',borderRadius:8,padding:7,display:'flex'}}>
+          <IcoGateway/>
+        </div>
+        <div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.8rem',color:'#e0e0e0'}}>{data.label}</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:'#444',marginTop:1}}>
+            port {data.port} · v{data.version}
+          </div>
+        </div>
+        <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:8}}>
+          <span style={{width:7,height:7,borderRadius:'50%',background:'#4ade80',boxShadow:'0 0 8px #4ade8066'}}/>
+          <span className="nodrag nopan"
+            onMouseDown={e=>e.stopPropagation()}
+            onClick={e=>{e.preventDefault();e.stopPropagation();window.__liveShowGateway?.();}}
+            style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#444',cursor:'pointer',padding:'2px 6px',border:'1px solid #1e1e1e',borderRadius:4}}>ⓘ</span>
+        </div>
+      </div>
+
+      {/* Expandable sections */}
+      {sections.map(s => {
+        const expanded = data.expanded?.[s.key];
+        return (
+          <div key={s.key}
+            className="nodrag nopan"
+            onMouseDown={e => e.stopPropagation()}
+            onClick={e => { e.preventDefault(); e.stopPropagation(); window.__liveToggle?.(s.key); }}
+            style={{
+              display:'flex', alignItems:'center', justifyContent:'space-between',
+              padding:'8px 14px', cursor:'pointer',
+              borderBottom:'1px solid #141414',
+              background: expanded ? `color-mix(in srgb,${s.color} 6%,#0a0a0a)` : 'transparent',
+              transition:'background 0.15s',
+            }}>
+            <div style={{display:'flex',alignItems:'center',gap:8}}>
+              <span style={{width:6,height:6,borderRadius:'50%',background: expanded ? s.color : '#2a2a2a',transition:'all 0.2s',boxShadow: expanded ? `0 0 6px ${s.color}88` : 'none'}}/>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color: expanded ? '#ccc' : '#555'}}>{s.label}</span>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:8}}>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.62rem',color: expanded ? s.color : '#333'}}>{s.count}</span>
+              <span style={{color: expanded ? s.color : '#333',fontSize:'0.65rem',transition:'transform 0.2s',display:'inline-block',transform: expanded ? 'rotate(90deg)' : 'none'}}>▶</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Live Mode: start with just gateway, expand on demand ── */
+function buildLiveInitial(data) {
+  return {
+    nodes: [{
+      id: 'live-gw',
+      type: 'livegateway',
+      position: { x: 0, y: 0 },
       data: {
-        emoji: '📊', name: 'Data Analyst', runtime: 'single',
-        agents: [{ emoji: '📊', name: 'Datum', desc: 'Data analysis & visualisation agent' }],
-        skills: ['chat', 'filesystem', 'execute', 'web-browse'],
-        prompt: 'You are 📊 Datum, a data analyst. Parse CSVs, JSON, and APIs. Write scripts to transform, query, and visualise data. Explain insights clearly with numbers. Generate charts when useful.'
+        label: 'OpenClaw Gateway',
+        port: data.gateway?.port,
+        version: data.gateway?.version,
+        agentCount: data.agents?.length || 0,
+        skillCount: data.skills?.length || 0,
+        channelCount: data.channels?.length || 0,
+        sessionCount: data.sessions?.length || 0,
+        cronCount: data.cronJobs?.length || 0,
+        nodeCount: data.nodes?.length || 0,
+        expanded: {},
       },
-      assistant: {
-        emoji: '📅', name: 'Personal Assistant', runtime: 'single',
-        agents: [{ emoji: '📅', name: 'Friday', desc: 'Personal assistant & organiser' }],
-        skills: ['chat', 'filesystem', 'email', 'calendar', 'scheduling', 'web-browse'],
-        prompt: 'You are 📅 Friday, a personal assistant. Help manage emails, calendar, tasks, and reminders. Be proactive — flag important things, suggest follow-ups, and keep everything organised.'
-      },
-      creative: {
-        emoji: '🎨', name: 'Creative Studio', runtime: 'single',
-        agents: [{ emoji: '🎨', name: 'Pixel', desc: 'Creative design & ideation agent' }],
-        skills: ['chat', 'filesystem', 'image-gen', 'web-browse'],
-        prompt: 'You are 🎨 Pixel, a creative director. Generate images, brainstorm ideas, create mood boards, and help with visual design. Think bold, original, and visually striking.'
-      },
-      squad: {
-        emoji: '🦞', name: 'Agent Squad', runtime: 'multi',
-        agents: [
-          { emoji: '🦞', name: 'Lead', desc: 'Squad orchestrator & router' },
-          { emoji: '🦀', name: 'Claw', desc: 'Coding & technical tasks' },
-          { emoji: '🔍', name: 'Scout', desc: 'Research & web browsing' },
-          { emoji: '✍️', name: 'Inky', desc: 'Writing & documentation' },
-          { emoji: '🛡️', name: 'Sentinel', desc: 'Security & code review' }
-        ],
-        skills: ['chat', 'filesystem', 'execute', 'web-browse', 'github', 'security'],
-        prompt: 'You are 🦞 Lead, an orchestrator managing a team of specialist agents. Route tasks to the right agent: Claw for code, Scout for research, Inky for writing, Sentinel for security. Coordinate complex tasks across the team.'
+    }],
+    edges: [],
+  };
+}
+
+function buildExpandedNodes(section, data, currentExpanded) {
+  const addNodes = [];
+  const addEdges = [];
+  const EDGE = (id,s,t,color,active=true) => ({
+    id, source:s, target:t, type:'smoothstep',
+    style:{stroke:active?color:'#2a2a2a', strokeWidth:active?1.5:1, opacity:active?0.65:0.2},
+    animated: active,
+  });
+
+  if (section === 'agents') {
+    (data.agents||[]).forEach((ag,i) => {
+      const total = data.agents.length;
+      const angle = (i / total) * Math.PI * 0.8 - Math.PI * 0.4;
+      const x = 380 + Math.sin(angle) * 60;
+      const y = (i - (total-1)/2) * 160;
+      addNodes.push({ id:`live-ag-${ag.id}`, type:'agent', position:{x,y},
+        data:{
+          label: ag.name||ag.id,
+          model: ag.model,
+          agentId: ag.id,
+          enabled: ag.enabled,
+          liveAgent: true,
+          workspace: ag.workspace,
+          systemPrompt: ag.systemPrompt,
+          thinking: ag.thinking,
+          fallbackModels: ag.fallbackModels,
+        } });
+      addEdges.push(EDGE(`eag-${ag.id}`,'live-gw',`live-ag-${ag.id}`,'#818cf8', ag.enabled!==false));
+    });
+  }
+
+  if (section === 'skills') {
+    addNodes.push({ id:'live-skills', type:'skillslist', position:{x:380, y:-280},
+      data:{ skills: data.skills || [] } });
+    addEdges.push(EDGE('eskills','live-gw','live-skills','#4ade80'));
+  }
+
+  if (section === 'channels') {
+    (data.channels||[]).forEach((ch,i) => {
+      const total = data.channels.length;
+      const y = (i - (total-1)/2) * 140;
+      const { id: _id, ...chConfig } = ch;
+      addNodes.push({ id:`live-ch-${ch.id}`, type:'channel', position:{x:-360,y},
+        data:{ label:ch.type||ch.id, enabled:ch.enabled, ...chConfig } });
+      addEdges.push(EDGE(`ech-${ch.id}`,`live-ch-${ch.id}`,'live-gw','#22d3ee', ch.enabled!==false));
+    });
+  }
+
+  if (section === 'sessions') {
+    addNodes.push({ id:'live-sessions', type:'sessionslist', position:{x:420, y:280},
+      data:{ sessions: data.sessions||[] } });
+    addEdges.push(EDGE('esessions','live-gw','live-sessions','#f59e0b'));
+  }
+
+  if (section === 'cron') {
+    const anyActive = (data.cronJobs||[]).some(j => j.enabled !== false);
+    addNodes.push({ id:'live-cron', type:'cronlist', position:{x:0, y:360},
+      data:{ cronJobs: data.cronJobs||[] } });
+    addEdges.push(EDGE('ecron','live-gw','live-cron','#a855f7', anyActive));
+  }
+
+  if (section === 'nodes') {
+    addNodes.push({ id:'live-nodes', type:'nodeslist', position:{x:-420, y:-240},
+      data:{ nodes: data.nodes||[] } });
+    addEdges.push(EDGE('enodes','live-gw','live-nodes','#22d3ee'));
+  }
+
+  return { addNodes, addEdges };
+}
+
+/* ── Live Skill Panel (replaces ConfigPanel in live mode) ── */
+function LiveSkillPanel({ agent, skills, onClose, onToggleSkill }) {
+  const [filter, setFilter] = React.useState('');
+  const [toggling, setToggling] = React.useState({});
+
+  if (!agent) return (
+    <div style={{width:0,overflow:'hidden',background:'rgba(10,10,10,0.97)',borderLeft:'1px solid #1c1c1c',transition:'width 0.2s'}} />
+  );
+
+  const filtered = skills.filter(s =>
+    !filter || s.id.toLowerCase().includes(filter.toLowerCase())
+  );
+  const enabled = filtered.filter(s => s.enabled);
+  const disabled = filtered.filter(s => !s.enabled);
+
+  const handleToggle = async (skill) => {
+    setToggling(t => ({...t, [skill.id]: true}));
+    try {
+      await fetch('/api/gateway-patch', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          patch: { skills: { entries: { [skill.id]: { enabled: !skill.enabled } } } }
+        }),
+      });
+      onToggleSkill(skill.id, !skill.enabled);
+    } catch(e) { console.error('Patch failed', e); }
+    setToggling(t => ({...t, [skill.id]: false}));
+  };
+
+  const SkillRow = ({ s }) => (
+    <div style={{
+      display:'flex', alignItems:'center', justifyContent:'space-between',
+      padding:'7px 14px',
+      borderBottom:'1px solid #141414',
+      opacity: toggling[s.id] ? 0.5 : 1,
+      transition:'opacity 0.15s',
+    }}>
+      <div style={{display:'flex',alignItems:'center',gap:8}}>
+        <span style={{
+          width:6, height:6, borderRadius:'50%', flexShrink:0,
+          background: s.enabled ? '#4ade80' : '#333',
+          boxShadow: s.enabled ? '0 0 6px #4ade8088' : 'none',
+          transition:'all 0.2s',
+        }}/>
+        <span style={{
+          fontFamily:"'JetBrains Mono',monospace", fontSize:'0.72rem',
+          color: s.enabled ? '#ccc' : '#444',
+          transition:'color 0.2s',
+        }}>{s.id}</span>
+      </div>
+      <button onClick={() => handleToggle(s)} disabled={!!toggling[s.id]} style={{
+        background:'none', border:`1px solid ${s.enabled ? '#2a5c3a' : '#2a2a2a'}`,
+        borderRadius:20, padding:'2px 10px', cursor:'pointer',
+        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.58rem',
+        color: s.enabled ? '#4ade80' : '#444',
+        transition:'all 0.15s',
+      }}>
+        {toggling[s.id] ? '…' : s.enabled ? 'on' : 'off'}
+      </button>
+    </div>
+  );
+
+  return (
+    <div style={{
+      width:300, flexShrink:0, display:'flex', flexDirection:'column',
+      background:'rgba(10,10,10,0.97)', borderLeft:'1px solid #1c1c1c',
+      transition:'width 0.2s', overflow:'hidden',
+    }}>
+      {/* Header */}
+      <div style={{padding:'12px 14px',borderBottom:'1px solid #1c1c1c',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div>
+          <div style={{fontSize:'0.82rem',fontWeight:600,color:'#e0e0e0'}}>
+            {agent.isSkillsView ? '🔧 Skills' : `🤖 ${agent.label}`}
+          </div>
+          {!agent.isSkillsView && (
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#444',marginTop:2}}>{agent.model}</div>
+          )}
+        </div>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'#444',fontSize:'1.1rem',cursor:'pointer',padding:'2px 6px'}}>×</button>
+      </div>
+      {/* Stats bar */}
+      <div style={{padding:'8px 14px',borderBottom:'1px solid #1c1c1c',display:'flex',gap:14}}>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#4ade80'}}>
+          ◉ {enabled.length} on
+        </span>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#444'}}>
+          ○ {disabled.length} off
+        </span>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#333'}}>
+          {skills.length} total
+        </span>
+      </div>
+      {/* Search */}
+      <div style={{padding:'8px 14px',borderBottom:'1px solid #1c1c1c'}}>
+        <input
+          placeholder="filter skills…"
+          value={filter} onChange={e => setFilter(e.target.value)}
+          style={{
+            width:'100%', background:'#0e0e0e', border:'1px solid #1e1e1e',
+            borderRadius:5, padding:'5px 9px', color:'#aaa', outline:'none',
+            fontFamily:"'JetBrains Mono',monospace", fontSize:'0.7rem', boxSizing:'border-box',
+          }}
+        />
+      </div>
+      {/* Skill list */}
+      <div style={{overflowY:'auto',flex:1}}>
+        {enabled.length > 0 && (
+          <>
+            <div style={{padding:'6px 14px 2px',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#2a2a2a'}}>Active</div>
+            {enabled.map(s => <SkillRow key={s.id} s={s}/>)}
+          </>
+        )}
+        {disabled.length > 0 && (
+          <>
+            <div style={{padding:'10px 14px 2px',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',textTransform:'uppercase',letterSpacing:'0.1em',color:'#2a2a2a'}}>Disabled</div>
+            {disabled.map(s => <SkillRow key={s.id} s={s}/>)}
+          </>
+        )}
+        {filtered.length === 0 && (
+          <div style={{padding:24,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#333'}}>no skills match</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Shared edit panel shell ── */
+const panelInput = {
+  background:'#0e0e0e', border:'1px solid #242424', borderRadius:6,
+  color:'#e0e0e0', padding:'7px 10px', fontFamily:"'JetBrains Mono',monospace",
+  fontSize:'0.72rem', width:'100%', outline:'none', boxSizing:'border-box',
+};
+const panelLabel = { fontFamily:"'JetBrains Mono',monospace", fontSize:'0.58rem',
+  textTransform:'uppercase', letterSpacing:'0.08em', color:'#444', display:'block', marginBottom:4 };
+const panelField = ({ label, children }) => (
+  <div style={{marginBottom:12}}>
+    <span style={panelLabel}>{label}</span>
+    {children}
+  </div>
+);
+function PanelShell({ emoji, title, subtitle, subtitleColor='#4ade80', onClose, children, saving, onSave, saveStatus }) {
+  return (
+    <div style={{width:320,flexShrink:0,display:'flex',flexDirection:'column',background:'rgba(10,10,10,0.97)',borderLeft:'1px solid #1c1c1c',overflow:'hidden'}}>
+      <div style={{padding:'12px 14px',borderBottom:'1px solid #1c1c1c',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0}}>
+        <div>
+          <div style={{fontSize:'0.82rem',fontWeight:600,color:'#e0e0e0'}}>{emoji} {title}</div>
+          {subtitle && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:subtitleColor,marginTop:2}}>{subtitle}</div>}
+        </div>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'#444',fontSize:'1.1rem',cursor:'pointer'}}>×</button>
+      </div>
+      <div style={{overflowY:'auto',flex:1,padding:16}}>{children}</div>
+      {onSave && (
+        <div style={{padding:'12px 16px',borderTop:'1px solid #1c1c1c',flexShrink:0}}>
+          {saveStatus && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:saveStatus.startsWith('✓')?'#4ade80':'#ef4444',marginBottom:8,textAlign:'center'}}>{saveStatus}</div>}
+          <button onClick={onSave} disabled={saving} style={{
+            width:'100%',background:'#ff5c5c',border:'none',borderRadius:6,
+            padding:'8px',color:'#000',fontFamily:"'JetBrains Mono',monospace",
+            fontSize:'0.72rem',fontWeight:700,cursor:'pointer',opacity:saving?0.6:1,
+          }}>{saving ? 'Saving…' : '✓ Save Changes'}</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Agent Edit Panel ── */
+function LiveAgentPanel({ data, onClose, onSaved }) {
+  const [model, setModel] = React.useState(data.model || '');
+  const [prompt, setPrompt] = React.useState(data.systemPrompt || '');
+  const [workspace, setWorkspace] = React.useState(data.workspace || '');
+  const [thinking, setThinking] = React.useState(data.thinking || '');
+  const [saving, setSaving] = React.useState(false);
+
+  const [saveStatus, setSaveStatus] = React.useState('');
+  const save = async () => {
+    setSaving(true);
+    setSaveStatus('');
+    try {
+      const r = await fetch('/api/gateway-patch', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ agentPatch: {
+          agentId: data.agentId || 'main',
+          patch: { model, systemPrompt: prompt, workspace, ...(thinking ? { thinking } : {}) },
+        }}),
+      });
+      const d = await r.json();
+      setSaveStatus(d.ok ? '✓ Saved' : `✗ ${d.error}`);
+      if (d.ok) onSaved?.({ model, systemPrompt: prompt, workspace });
+    } catch(e) { setSaveStatus(`✗ ${e.message}`); }
+    setSaving(false);
+    setTimeout(() => setSaveStatus(''), 3000);
+  };
+
+  const MODELS = ['anthropic/claude-sonnet-4-6','anthropic/claude-3-5-haiku','openai/gpt-4o','openai/gpt-4o-mini','google/gemini-2.0-flash-exp:free','meta-llama/llama-3.3-70b-instruct:free','upstage/solar-pro-3:free'];
+
+  const THINKING = ['', 'low', 'medium', 'high'];
+  return (
+    <PanelShell emoji="🤖" title={data.label||'Agent'} subtitle={model} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
+      {panelField({ label:'Model', children:
+        <select value={model} onChange={e=>setModel(e.target.value)} style={panelInput}>
+          {MODELS.map(m => <option key={m} value={m}>{m}</option>)}
+          {!MODELS.includes(model) && <option value={model}>{model}</option>}
+        </select>
+      })}
+      {panelField({ label:'System Prompt', children:
+        <textarea value={prompt} onChange={e=>setPrompt(e.target.value)}
+          rows={8} style={{...panelInput, resize:'vertical', lineHeight:1.5}} />
+      })}
+      {panelField({ label:'Workspace', children:
+        <input value={workspace} onChange={e=>setWorkspace(e.target.value)} style={panelInput} placeholder="/path/to/workspace" />
+      })}
+      {panelField({ label:'Thinking Mode', children:
+        <select value={thinking} onChange={e=>setThinking(e.target.value)} style={panelInput}>
+          {THINKING.map(t => <option key={t} value={t}>{t || 'off'}</option>)}
+        </select>
+      })}
+      {data.fallbackModels?.length > 0 && (
+        <div style={{marginBottom:12,padding:'8px 10px',background:'#0e0e0e',border:'1px solid #1a1a1a',borderRadius:6}}>
+          <span style={panelLabel}>Fallback Models</span>
+          {data.fallbackModels.map(m => (
+            <div key={m} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#555',marginBottom:2}}>· {m}</div>
+          ))}
+        </div>
+      )}
+    </PanelShell>
+  );
+}
+
+/* ── Channel Edit Panel ── */
+function LiveChannelPanel({ data, onClose, onSaved }) {
+  const skip = new Set(['label','_nodeType','id','type','accounts']);
+  const editableFields = Object.entries(data).filter(([k]) => !skip.has(k));
+  const [fields, setFields] = React.useState(
+    Object.fromEntries(editableFields.map(([k,v]) => [k, Array.isArray(v) ? v.join('\n') : typeof v === 'object' ? JSON.stringify(v,null,2) : String(v??'')]))
+  );
+  const [saving, setSaving] = React.useState(false);
+
+  const [saveStatus, setSaveStatus] = React.useState('');
+  const save = async () => {
+    setSaving(true); setSaveStatus('');
+    try {
+      const patch = {};
+      for (const [k,v] of Object.entries(fields)) {
+        const orig = data[k];
+        if (Array.isArray(orig)) patch[k] = v.split('\n').map(s=>s.trim()).filter(Boolean);
+        else if (typeof orig === 'boolean') patch[k] = v === 'true';
+        else if (typeof orig === 'number') patch[k] = Number(v);
+        else patch[k] = v;
       }
-    };
+      const r = await fetch('/api/gateway-patch', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ channelPatch: { channelId: data.id, patch } }),
+      });
+      const d = await r.json();
+      setSaveStatus(d.ok ? '✓ Saved' : `✗ ${d.error}`);
+      if (d.ok) onSaved?.();
+    } catch(e) { setSaveStatus(`✗ ${e.message}`); }
+    setSaving(false);
+    setTimeout(() => setSaveStatus(''), 3000);
+  };
 
-    function showManualSteps() {
-      $('manual-steps').style.display = 'block';
+  return (
+    <PanelShell emoji="📡" title={data.label||data.id} subtitle={data.enabled?'enabled':'disabled'} subtitleColor={data.enabled?'#4ade80':'#555'} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
+      {editableFields.map(([k,v]) => (
+        panelField({ label: k, children:
+          typeof v === 'boolean'
+            ? <select value={fields[k]} onChange={e=>setFields(f=>({...f,[k]:e.target.value}))} style={panelInput}>
+                <option value="true">true</option><option value="false">false</option>
+              </select>
+            : Array.isArray(v)
+              ? <textarea value={fields[k]} onChange={e=>setFields(f=>({...f,[k]:e.target.value}))} rows={3} style={{...panelInput,resize:'vertical'}} placeholder="one per line"/>
+              : <input value={fields[k]} onChange={e=>setFields(f=>({...f,[k]:e.target.value}))} style={panelInput}/>
+        })
+      ))}
+    </PanelShell>
+  );
+}
+
+/* ── Cron Edit Panel ── */
+function LiveCronPanel({ data, onClose, onSaved }) {
+  const [enabled, setEnabled] = React.useState(data.enabled !== false);
+  const [saving, setSaving] = React.useState(false);
+
+  const [saveStatus, setSaveStatus] = React.useState('');
+  const save = async () => {
+    setSaving(true); setSaveStatus('');
+    try {
+      const r = await fetch('/api/gateway-patch', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ cronPatch: { jobId: data.id, patch: { enabled } } }),
+      });
+      const d = await r.json();
+      setSaveStatus(d.ok ? '✓ Saved' : `✗ ${d.error}`);
+      if (d.ok) onSaved?.({ enabled });
+    } catch(e) { setSaveStatus(`✗ ${e.message}`); }
+    setSaving(false);
+    setTimeout(() => setSaveStatus(''), 3000);
+  };
+
+  const STATUS_COLOR = { ok:'#4ade80', error:'#ef4444', running:'#f59e0b' };
+  const scheduleStr = data.schedule?.expr || data.schedule?.kind || 'unknown';
+
+  const [triggering, setTriggering] = React.useState(false);
+  const trigger = async () => {
+    setTriggering(true);
+    try {
+      await fetch('/api/gateway-patch', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ cronPatch: { jobId: data.id, patch: { _triggerNow: true } } }),
+      });
+    } catch {}
+    setTimeout(() => setTriggering(false), 2000);
+  };
+
+  return (
+    <PanelShell emoji="⏱" title={data.name||data.id} subtitle={data.lastStatus} subtitleColor={STATUS_COLOR[data.lastStatus]||'#555'} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
+      {[
+        ['Schedule', scheduleStr + (data.schedule?.tz ? ` (${data.schedule.tz})` : '')],
+        ['Next Run', data.nextRunAt ? new Date(data.nextRunAt).toLocaleString() : '—'],
+        ['Last Run', data.lastRunAt ? `${new Date(data.lastRunAt).toLocaleString()}${data.lastDurationMs ? ` · ${data.lastDurationMs}ms` : ''}` : 'never'],
+        ['Total Runs', data.totalRuns || 0],
+        ['Payload', data.payloadKind],
+        ['Delivery', data.deliveryMode || 'none'],
+        ['Target', data.sessionTarget],
+      ].map(([k,v]) => v !== undefined && (
+        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'7px 10px',background:'#0e0e0e',borderRadius:5,border:'1px solid #1a1a1a',marginBottom:6}}>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#444'}}>{k}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#888',textAlign:'right',maxWidth:180,wordBreak:'break-all'}}>{String(v)}</span>
+        </div>
+      ))}
+      {data.payloadMessage && (
+        <div style={{marginBottom:10,padding:'8px 10px',background:'#0e0e0e',border:'1px solid #1a1a1a',borderRadius:5}}>
+          <div style={panelLabel}>Message</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#666',lineHeight:1.5}}>{data.payloadMessage}</div>
+        </div>
+      )}
+      {data.consecutiveErrors > 0 && (
+        <div style={{marginBottom:10,padding:'8px 10px',background:'rgba(239,68,68,0.05)',border:'1px solid #3a1a1a',borderRadius:5}}>
+          <div style={panelLabel}>Consecutive Errors</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#ef4444'}}>{data.consecutiveErrors}</div>
+        </div>
+      )}
+      <button onClick={trigger} disabled={triggering} style={{
+        width:'100%',background:'transparent',border:'1px solid #2a2a2a',borderRadius:6,
+        padding:'7px',color:'#666',fontFamily:"'JetBrains Mono',monospace",
+        fontSize:'0.7rem',cursor:'pointer',marginBottom:12,
+      }}>{triggering ? '↺ Triggering…' : '▶ Trigger Now'}</button>
+      {panelField({ label:'Enabled', children:
+        <div style={{display:'flex',gap:8}}>
+          {[true,false].map(v => (
+            <button key={String(v)} onClick={()=>setEnabled(v)} style={{
+              flex:1, padding:'7px', borderRadius:6, cursor:'pointer',
+              fontFamily:"'JetBrains Mono',monospace", fontSize:'0.7rem',
+              background: enabled===v ? (v?'rgba(74,222,128,0.1)':'rgba(239,68,68,0.1)') : '#0e0e0e',
+              border: `1px solid ${enabled===v ? (v?'#4ade80':'#ef4444') : '#242424'}`,
+              color: enabled===v ? (v?'#4ade80':'#ef4444') : '#444',
+            }}>{v ? 'Enabled' : 'Disabled'}</button>
+          ))}
+        </div>
+      })}
+    </PanelShell>
+  );
+}
+
+/* ── Gateway Info Panel ── */
+function LiveGatewayPanel({ data, onClose }) {
+  const [restarting, setRestarting] = React.useState(false);
+  const [restartMsg, setRestartMsg] = React.useState('');
+
+  const restart = async () => {
+    setRestarting(true);
+    try {
+      await fetch('/api/gateway-patch', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action: 'restart' }),
+      });
+      setRestartMsg('↺ Restart signal sent');
+    } catch(e) { setRestartMsg(`✗ ${e.message}`); }
+    setRestarting(false);
+    setTimeout(() => setRestartMsg(''), 4000);
+  };
+
+  return (
+    <PanelShell emoji="🖥️" title="OpenClaw Gateway" subtitle="● online" subtitleColor="#4ade80" onClose={onClose}>
+      {[
+        ['Port', data.port],
+        ['Version', `v${data.version}`],
+        ['Agents', data.agentCount],
+        ['Skills', data.skillCount],
+        ['Channels', data.channelCount],
+        ['Sessions', data.sessionCount],
+        ['Cron Jobs', data.cronCount],
+        ['Nodes', data.nodeCount],
+      ].map(([k,v]) => (
+        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'8px 12px',background:'#0e0e0e',borderRadius:6,border:'1px solid #1a1a1a',marginBottom:8}}>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#444'}}>{k}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#ccc'}}>{v}</span>
+        </div>
+      ))}
+      <div style={{marginTop:16,borderTop:'1px solid #1a1a1a',paddingTop:16}}>
+        <button onClick={restart} disabled={restarting} style={{
+          width:'100%',background:'transparent',border:'1px solid #333',borderRadius:6,
+          padding:'8px',color:'#888',fontFamily:"'JetBrains Mono',monospace",
+          fontSize:'0.72rem',cursor:'pointer',
+        }}>{restarting ? '↺ Restarting…' : '↺ Restart Gateway'}</button>
+        {restartMsg && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#4ade80',marginTop:8,textAlign:'center'}}>{restartMsg}</div>}
+      </div>
+    </PanelShell>
+  );
+}
+
+/* ── Live Node Panel — routes to the right editor by node type ── */
+function LiveNodePanel({ node, skills, onClose, onToggleSkill, onNodeUpdate }) {
+  if (!node) return <div style={{width:0,overflow:'hidden',background:'rgba(10,10,10,0.97)',borderLeft:'1px solid #1c1c1c',transition:'width 0.2s'}}/>;
+  if (node._nodeType === 'livegateway') return <LiveGatewayPanel data={node} onClose={onClose}/>;
+  if (node._nodeType === 'channel') return <LiveChannelPanel data={node} onClose={onClose} onSaved={onClose}/>;
+  if (node._nodeType === 'cronlist') return <LiveCronPanel data={node} onClose={onClose} onSaved={d => { onNodeUpdate?.(node, d); onClose(); }}/>;
+  if (node._nodeType === 'agent') return <LiveAgentPanel data={node} onClose={onClose} onSaved={d => { onNodeUpdate?.(node, d); }}/>;
+  return <LiveSkillPanel agent={node} skills={skills} onClose={onClose} onToggleSkill={onToggleSkill}/>;
+}
+
+/* ── Main App ── */
+const INITIAL_NODES = [{
+  id: 'gateway-1', type: 'gateway',
+  position: { x: 0, y: 0 },
+  data: { label: 'My Gateway', desc: '' },
+}];
+
+function ForgeApp() {
+  const [nodes, setNodes, onNodesChange] = useNodesState(INITIAL_NODES);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const rfInstance = useRef(null);
+
+  // Live mode
+  const [liveMode, setLiveMode] = useState(false);
+  const [liveData, setLiveData] = useState(null);
+  const [liveSkills, setLiveSkills] = useState([]);
+  const [liveLoading, setLiveLoading] = useState(false);
+  const [liveError, setLiveError] = useState(null);
+  const [liveSelectedAgent, setLiveSelectedAgent] = useState(null);
+  const liveNodesRef = useRef([]);
+  const liveEdgesRef = useRef([]);
+
+  const save = useCallback((nds, eds) => {
+    localStorage.setItem('vf-forge', JSON.stringify({ nodes: nds, edges: eds }));
+  }, []);
+
+  // On mount: load saved designer state
+  React.useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('vf-forge'));
+      if (saved?.nodes?.length) { setNodes(saved.nodes); setEdges(saved.edges||[]); }
+    } catch(e) {}
+  }, []);
+
+  // Track which sections are expanded
+  const [liveExpanded, setLiveExpanded] = useState({});
+  const liveDataRef = useRef(null);
+
+  // Load live data — start with just the gateway node
+  const loadLive = useCallback(async () => {
+    setLiveLoading(true);
+    setLiveError(null);
+    setLiveExpanded({});
+    try {
+      const resp = await fetch('/api/gateway-live');
+      const data = await resp.json();
+      if (!data.ok) throw new Error(data.error || 'Failed');
+      setLiveData(data);
+      liveDataRef.current = data;
+      setLiveSkills(data.skills || []);
+      const { nodes: lnodes, edges: ledges } = buildLiveInitial(data);
+      setNodes(lnodes);
+      setEdges(ledges);
+      setLiveSelectedAgent(null);
+      setTimeout(() => rfInstance.current?.fitView({ padding:0.3, duration:400 }), 100);
+    } catch(e) {
+      setLiveError(e.message);
     }
+    setLiveLoading(false);
+  }, []);
 
-    function applyPreset(preset) {
-      showManualSteps();
-      state.emoji = preset.emoji;
-      state.name = preset.name;
-      state.runtime = preset.runtime;
-      state.agents = preset.agents.map(a => ({ emoji: a.emoji, name: a.name, desc: a.desc }));
-      state.skills = new Set(preset.skills);
-      state.systemPrompt = preset.prompt;
-      $('server-emoji').value = state.emoji;
-      $('server-name').value = state.name;
-      $('system-prompt').value = state.systemPrompt;
-      $$('#runtime-options .option-card').forEach(c => {
-        c.classList.toggle('selected', c.dataset.value === state.runtime);
-      });
-      renderAgents();
-      $$('.skill-card').forEach(card => {
-        card.classList.toggle('enabled', state.skills.has(card.dataset.skill));
-      });
-      updateSidebar();
-    }
+  // Expand/collapse sections from gateway node
+  const handleLiveToggle = useCallback((section) => {
+    const data = liveDataRef.current;
+    if (!data) return;
 
-    // Prompt chip sidebar presets
-    const chipPresets = {
-      '"coding agent"':    { name: 'Coding Agent',     emoji: '🦀', agents: ['Coder'],               skills: ['Execute','Filesystem','GitHub'],   model: 'Solar Pro 3' },
-      '"web researcher"':  { name: 'Web Researcher',   emoji: '🔍', agents: ['Researcher'],           skills: ['Web Search','Browser','Filesystem'], model: 'Solar Pro 3' },
-      '"GitHub bot"':      { name: 'GitHub Bot',       emoji: '🐙', agents: ['DevOps'],               skills: ['GitHub','Execute','Filesystem'],    model: 'Solar Pro 3' },
-      '"daily assistant"': { name: 'Daily Assistant',   emoji: '📅', agents: ['Assistant'],            skills: ['Email','Calendar','Web Search'],    model: 'Solar Pro 3' },
-      '"security scanner"':{ name: 'Security Scanner', emoji: '🛡️', agents: ['Auditor'],              skills: ['Execute','Filesystem','GitHub'],    model: 'Solar Pro 3' },
-      '"agent squad"':     { name: 'Agent Squad',      emoji: '🦞', agents: ['Lead','Coder','Writer','Reviewer'], skills: ['Execute','Filesystem','GitHub','Web Search'], model: 'Solar Pro 3' },
-      '"content writer"':  { name: 'Content Writer',   emoji: '✍️', agents: ['Writer'],               skills: ['Filesystem','Web Search','Browser'],model: 'Solar Pro 3' },
-      '"data pipeline"':   { name: 'Data Pipeline',    emoji: '📊', agents: ['Analyst'],              skills: ['Execute','Filesystem','Web Search'],model: 'Solar Pro 3' },
-    };
+    setLiveExpanded(prev => {
+      const nowExpanded = !prev[section];
+      const next = { ...prev, [section]: nowExpanded };
 
-    // Prompt chips — populate AI textarea + update sidebar
-    document.querySelectorAll('.prompt-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        $('ai-build-input').value = chip.dataset.prompt;
-        $('ai-build-input').focus();
-        document.querySelectorAll('.prompt-chip').forEach(c => { c.style.borderColor = 'var(--border)'; c.style.color = 'var(--text-dim)'; });
-        chip.style.borderColor = 'var(--accent)';
-        chip.style.color = 'var(--text-bright)';
-
-        // Update sidebar preview
-        const preset = chipPresets[chip.textContent.trim()];
-        if (preset) {
-          $('sidebar-name-text').textContent = preset.name;
-          $('sidebar-emoji').innerHTML = preset.emoji;
-          $('sidebar-runtime').textContent = 'Standard';
-          $('sidebar-agents').innerHTML = preset.agents.map(a => '<li>' + a + '</li>').join('');
-          $('sidebar-skills').innerHTML = preset.skills.map(s => '<li>' + s + '</li>').join('');
-          $('sidebar-model').textContent = preset.model;
-        }
-      });
-    });
-
-    // Quick start chips — populate AI input and auto-submit
-    document.querySelectorAll('.qs-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        const prompt = chip.dataset.prompt;
-        $('ai-build-input').value = prompt;
-        // Highlight active chip
-        document.querySelectorAll('.qs-chip').forEach(c => { c.style.borderColor = 'var(--border)'; c.style.background = 'var(--surface)'; });
-        chip.style.borderColor = 'var(--accent)';
-        chip.style.background = 'rgba(255,92,92,0.08)';
-        // Auto-trigger build
-        $('ai-build-go').click();
-      });
-    });
-
-    // Quick start card clicks (legacy/manual)
-    document.querySelectorAll('.quickstart-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const qs = card.dataset.qs;
-        if (qs === 'custom') return;
-        const preset = quickStartPresets[qs];
-        if (preset) applyPreset(preset);
-        document.querySelectorAll('.quickstart-card').forEach(c => c.style.borderColor = 'var(--border)');
-        card.style.borderColor = 'var(--accent)';
-      });
-    });
-
-    // Toggle manual setup
-    $('toggle-manual').addEventListener('click', (e) => {
-      e.preventDefault();
-      const manual = $('manual-setup');
-      const steps = $('manual-steps');
-      const link = $('toggle-manual');
-      const showing = steps.style.display !== 'none';
-      manual.style.display = showing ? 'none' : 'block';
-      steps.style.display = showing ? 'none' : 'block';
-      link.innerHTML = showing ? '⚙ Manual Setup' : '✕ Hide Manual';
-    });
-
-    // ── AI Build ──
-    $('ai-build-go').addEventListener('click', async () => {
-      const input = $('ai-build-input').value.trim();
-      if (!input) return;
-      const statusEl = $('ai-build-status');
-      const btn = $('ai-build-go');
-      btn.disabled = true;
-      statusEl.textContent = 'Thinking...';
-
-      try {
-        const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'upstage/solar-pro-3:free',
-            messages: [
-              { role: 'system', content: `You are an OpenClaw server configurator. Given a user's description, output a JSON object with these fields:
-- emoji: single emoji for the server
-- name: short server name (2-3 words)
-- runtime: "single" or "multi"
-- agents: array of {emoji, name, desc} objects
-- skills: array of skill IDs from: chat, filesystem, execute, web-browse, github, docker, image-gen, scheduling, browser-auto, security, email, calendar
-- prompt: a system prompt for the lead agent (2-4 sentences, specific and actionable)
-
-Respond ONLY with valid JSON, no markdown, no explanation.` },
-              { role: 'user', content: input }
-            ],
-            max_tokens: 500
-          })
-        });
-        const data = await resp.json();
-        const text = data.choices?.[0]?.message?.content || '';
-        const config = JSON.parse(text);
-        applyPreset(config);
-        statusEl.textContent = '✓ Applied!';
-        setTimeout(() => { statusEl.textContent = ''; }, 2000);
-      } catch (err) {
-        statusEl.textContent = 'Error — try again or set up manually';
-        console.error('AI build error:', err);
-      }
-      btn.disabled = false;
-    });
-
-    // ── Load flavours as templates ──
-    async function loadFlavours() {
-      try {
-        const resp = await fetch('/flavours.json');
-        allFlavours = await resp.json();
-        const sel = $('template-select');
-        allFlavours.forEach(f => {
-          const opt = document.createElement('option');
-          opt.value = f.id;
-          opt.textContent = `${f.emoji} ${f.name}`;
-          sel.appendChild(opt);
-        });
-      } catch {}
-    }
-
-    $('template-select').addEventListener('change', () => {
-      const id = $('template-select').value;
-      if (!id) {
-        // Reset to blank
-        state.emoji = '🦀';
-        state.name = 'My Server';
-        state.runtime = 'single';
-        state.agents = [{ emoji: '🦀', name: 'Claw', desc: 'General-purpose coding assistant' }];
-        state.skills = new Set(['chat', 'filesystem', 'execute']);
-        state.model = 'upstage/solar-pro-3:free';
-        $('system-prompt').value = 'You are 🦀 Claw, a helpful coding assistant. Be concise, direct, and pragmatic.';
-        state.systemPrompt = $('system-prompt').value;
+      if (nowExpanded) {
+        // Add child nodes
+        const { addNodes, addEdges } = buildExpandedNodes(section, data, next);
+        setNodes(nds => [...nds.filter(n => !n.id.startsWith(`live-${section.slice(0,-1)}`)), ...addNodes]);
+        setEdges(eds => [...eds.filter(e => !e.id.startsWith(`e${section.slice(0,-1)}`)), ...addEdges]);
+        setTimeout(() => rfInstance.current?.fitView({ padding:0.15, duration:400 }), 80);
       } else {
-        const fl = allFlavours.find(f => f.id === id);
-        if (!fl) return;
-        state.emoji = fl.emoji;
-        state.name = fl.name;
-        state.runtime = (fl.teams && fl.teams.length > 0) ? 'multi' : 'single';
-        state.agents = fl.agents.map(a => ({ emoji: a.emoji, name: a.name, desc: a.description }));
-        state.skills = new Set((fl.skills || []).map(s => s.name));
-        // Also enable the built-in skills
-        ['chat', 'filesystem', 'execute'].forEach(s => state.skills.add(s));
-        state.systemPrompt = fl.systemPrompt || '';
-        $('system-prompt').value = state.systemPrompt;
+        // Remove child nodes
+        const prefixMap = { agents:'live-ag-', channels:'live-ch-', skills:'live-skills', sessions:'live-sessions', cron:'live-cron', nodes:'live-nodes' };
+        const edgePrefixMap = { agents:'eag-', channels:'ech-', skills:'eskills', sessions:'esessions', cron:'ecron', nodes:'enodes' };
+        const prefix = prefixMap[section] || `live-${section}`;
+        const edgePrefix = edgePrefixMap[section] || `e${section}`;
+        setNodes(nds => nds.filter(n => !n.id.startsWith(prefix)));
+        setEdges(eds => eds.filter(e => !e.id.startsWith(edgePrefix)));
       }
 
-      // Update UI
-      $('server-emoji').value = state.emoji;
-      $('server-name').value = state.name;
-      $$('#runtime-options .option-card').forEach(c => {
-        c.classList.toggle('selected', c.dataset.value === state.runtime);
-      });
-      renderAgents();
-      $$('.skill-card').forEach(card => {
-        card.classList.toggle('enabled', state.skills.has(card.dataset.skill));
-      });
-      updateSidebar();
+      // Update gateway node expanded state
+      setNodes(nds => nds.map(n =>
+        n.id === 'live-gw' ? { ...n, data: { ...n.data, expanded: next } } : n
+      ));
+
+      return next;
     });
+  }, []);
 
-    // ── Build spec ──
-    function buildSpec() {
-      state.files[state.activeFile] = $('file-editor').value;
-      state.systemPrompt = $('system-prompt').value;
-      return {
-        specVersion: '1.0',
-        id: 'srv_' + Math.random().toString(36).slice(2, 10),
-        name: state.name,
-        emoji: state.emoji,
-        runtime: { type: state.runtime, model: { provider: 'openrouter', model: state.model } },
-        agents: state.agents.map((a, i) => ({
-          id: i === 0 ? 'main' : a.name.toLowerCase().replace(/[^a-z0-9]/g, '') || 'agent' + i,
-          name: a.name,
-          emoji: a.emoji,
-          role: i === 0 ? 'lead' : 'specialist',
-          description: a.desc,
-          ...(i === 0 ? { systemPrompt: state.systemPrompt } : {})
-        })),
-        skills: [...state.skills].map(s => ({ source: 'builtin:' + s })),
-        workspace: { ...state.files },
-      };
-    }
+  // Register global handlers
+  React.useEffect(() => {
+    window.__liveToggle = handleLiveToggle;
+    window.__liveCronClick = (job) => {
+      setLiveSelectedAgent({ ...job, _nodeType: 'cronlist' });
+    };
+    window.__liveShowGateway = () => {
+      const gwNode = nodes.find(n => n.id === 'live-gw');
+      if (gwNode) setLiveSelectedAgent({ ...gwNode.data, _nodeType: 'livegateway' });
+    };
+    window.__liveSkillToggled = (skillId, newEnabled) => {
+      // Update the skills list node data in-place
+      setNodes(nds => nds.map(n =>
+        n.id === 'live-skills'
+          ? { ...n, data: { ...n.data, skills: n.data.skills.map(s => s.id === skillId ? {...s, enabled:newEnabled} : s) } }
+          : n
+      ));
+      setLiveSkills(prev => prev.map(s => s.id === skillId ? {...s, enabled:newEnabled} : s));
+    };
+    return () => { delete window.__liveToggle; delete window.__liveShowGateway; delete window.__liveSkillToggled; };
+  }, [handleLiveToggle, nodes]);
 
-    // ── Inline Preview Chat ──
-    let previewMessages = [];
-    let previewGenerating = false;
-    let previewAbortController = null;
-    let previewPinned = false;
-
-    // ── Markdown renderer for preview ──
-    function renderMd(text) {
-      let h = escHtml(text);
-      // Code blocks with language tag + copy button
-      h = h.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
-        const langTag = lang ? `<span class="preview-code-lang">${lang}</span>` : '';
-        return `<pre>${langTag}<code>${code.trim()}</code></pre>`;
-      });
-      // Inline code
-      h = h.replace(/`([^`]+)`/g, '<code>$1</code>');
-      // Headers
-      h = h.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-      h = h.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-      h = h.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-      // Bold + italic
-      h = h.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
-      h = h.replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--text-bright);">$1</strong>');
-      h = h.replace(/\*(.+?)\*/g, '<em>$1</em>');
-      // Blockquotes
-      h = h.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
-      // Unordered lists
-      h = h.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
-      h = h.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-      // Ordered lists
-      h = h.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-      // Links
-      h = h.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:var(--accent);">$1</a>');
-      // Line breaks (but not inside blocks)
-      h = h.replace(/\n/g, '<br>');
-      // Clean up excess breaks around block elements
-      h = h.replace(/<br>\s*(<\/?(?:pre|ul|ol|li|h[1-3]|blockquote))/g, '$1');
-      h = h.replace(/(<\/(?:pre|ul|ol|li|h[1-3]|blockquote)>)\s*<br>/g, '$1');
-      return h;
-    }
-
-    function renderPreviewMessages() {
-      const container = $('preview-messages');
-      const empty = container.querySelector('.preview-empty');
-
-      if (previewMessages.length === 0 && !previewGenerating) {
-        if (empty) empty.style.display = '';
-        container.querySelectorAll('.preview-msg').forEach(el => el.remove());
-        return;
-      }
-
-      if (empty) empty.style.display = 'none';
-
-      let html = '';
-      for (const msg of previewMessages) {
-        const isUser = msg.role === 'user';
-        const cls = isUser ? 'user' : 'assistant';
-        const emoji = isUser ? '👤' : (state.emoji || '🤖');
-        const rendered = isUser ? escHtml(msg.content) : renderMd(msg.content);
-        html += `<div class="preview-msg ${cls}">
-          <div class="preview-msg-avatar">${emoji}</div>
-          <div class="preview-msg-bubble">${rendered}</div>
-        </div>`;
-      }
-
-      if (previewGenerating) {
-        html += `<div class="preview-msg assistant">
-          <div class="preview-msg-avatar">${state.emoji || '🤖'}</div>
-          <div class="preview-msg-bubble"><div class="preview-loading"><span></span><span></span><span></span></div></div>
-        </div>`;
-      }
-
-      container.querySelectorAll('.preview-msg').forEach(el => el.remove());
-      container.insertAdjacentHTML('beforeend', html);
-      container.scrollTop = container.scrollHeight;
-    }
-
-    async function sendPreviewMessage() {
-      const input = $('preview-input');
-      const text = input.value.trim();
-      if (!text || previewGenerating) return;
-
-      input.value = '';
-      input.style.height = 'auto';
-
-      const userMsg = { role: 'user', content: text };
-      previewMessages.push(userMsg);
-      previewGenerating = true;
-      renderPreviewMessages();
-
-      if (previewAbortController) previewAbortController.abort();
-      previewAbortController = new AbortController();
-
+  const toggleLive = useCallback(() => {
+    if (liveMode) {
+      setLiveMode(false);
+      setLiveSelectedAgent(null);
+      setLiveExpanded({});
+      liveDataRef.current = null;
       try {
-        const spec = buildSpec();
-        const sysPrompt = spec.agents[0]?.systemPrompt || 'You are a helpful assistant.';
-        const chatMessages = [
-          { role: 'system', content: sysPrompt },
-          ...previewMessages.filter(m => m.role !== 'system').map(m => ({ role: m.role, content: m.content })),
-        ];
-
-        const resp = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: spec.runtime?.model?.model || 'upstage/solar-pro-3:free',
-            messages: chatMessages,
-            max_tokens: 2048,
-          }),
-          signal: previewAbortController.signal,
-        });
-
-        if (!resp.ok) {
-          let errMsg = `Error ${resp.status}`;
-          try { const e = await resp.json(); errMsg = e.error?.message || e.message || errMsg; } catch {}
-          throw new Error(errMsg);
-        }
-
-        const data = await resp.json();
-        const content = data.choices?.[0]?.message?.content || 'No response';
-
-        previewMessages.push({ role: 'assistant', content });
-      } catch (err) {
-        if (err.name === 'AbortError') return;
-        previewMessages.push({ role: 'assistant', content: `⚠️ ${err.message}` });
-      } finally {
-        previewGenerating = false;
-        previewAbortController = null;
-        renderPreviewMessages();
-      }
-    }
-
-    function openPreview() {
-      const panel = $('preview-chat');
-      const spec = buildSpec();
-      $('preview-title-text').textContent = `${spec.emoji || '🤖'} ${spec.name || 'Preview'}`;
-      panel.classList.add('active');
-      panel.classList.remove('collapsed');
-      $('preview-retrieve').classList.remove('visible');
-      if (previewMessages.length === 0) renderPreviewMessages();
-      setTimeout(() => $('preview-input').focus(), 150);
-    }
-
-    function closePreview() {
-      $('preview-chat').classList.remove('active', 'collapsed');
-      $('preview-retrieve').classList.remove('visible');
-      previewPinned = false;
-      $('preview-pin').classList.remove('active');
-    }
-
-    function collapsePreview() {
-      $('preview-chat').classList.add('collapsed');
-      $('preview-retrieve').classList.add('visible');
-    }
-
-    $('preview-btn').addEventListener('click', () => {
-      const panel = $('preview-chat');
-      const isOpen = panel.classList.contains('active') && !panel.classList.contains('collapsed');
-      if (isOpen) {
-        closePreview();
-      } else {
-        openPreview();
-      }
-    });
-
-    // Pin — keeps panel open when clicking outside
-    $('preview-pin').addEventListener('click', () => {
-      previewPinned = !previewPinned;
-      $('preview-pin').classList.toggle('active', previewPinned);
-    });
-
-    // Collapse — slide off-screen, show retrieve tab
-    $('preview-collapse').addEventListener('click', collapsePreview);
-
-    // Retrieve — bring back from collapsed
-    $('preview-retrieve').addEventListener('click', () => {
-      const panel = $('preview-chat');
-      panel.classList.remove('collapsed');
-      $('preview-retrieve').classList.remove('visible');
-      setTimeout(() => $('preview-input').focus(), 150);
-    });
-
-    // Clear chat
-    $('preview-clear').addEventListener('click', () => {
-      previewMessages = [];
-      renderPreviewMessages();
-    });
-
-    // Close
-    $('preview-close').addEventListener('click', closePreview);
-
-    $('preview-send').addEventListener('click', sendPreviewMessage);
-
-    $('preview-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendPreviewMessage();
-      }
-    });
-
-    // Auto-resize preview input
-    $('preview-input').addEventListener('input', function() {
-      this.style.height = 'auto';
-      this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-    });
-
-    // ── Save to library ──
-    $('save-btn').addEventListener('click', () => {
-      // Force immediate save — bypass debounce
-      clearTimeout(_draftTimer);
-      state.files[state.activeFile] = $('file-editor').value;
-      state.systemPrompt = $('system-prompt').value;
-      const draft = {
-        emoji: state.emoji, name: state.name, runtime: state.runtime,
-        agents: state.agents, skills: [...state.skills],
-        systemPrompt: state.systemPrompt, files: state.files,
-        activeFile: state.activeFile, model: state.model, savedAt: Date.now()
-      };
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-      const ds = $('draft-status');
-      if (ds) { ds.textContent = 'Saved'; ds.style.opacity = '1'; ds.style.color = 'var(--green)';
-        clearTimeout(ds._fadeTimer); ds._fadeTimer = setTimeout(() => { ds.style.opacity = '0'; ds.style.color = 'var(--text-dim)'; }, 2000); }
-    });
-
-    // ── Deploy modal ──
-    const deployModal = $('deploy-modal');
-    const deployCommandArea = $('deploy-command-area');
-    const deployCommandLabel = $('deploy-command-label');
-    const deployCommandText = $('deploy-command-text');
-    let deploySpec = null;
-
-    function showDeployModal() {
-      deploySpec = buildSpec();
-      deployModal.style.display = '';
-      deployCommandArea.style.display = 'none';
-    }
-
-    function hideDeployModal() {
-      deployModal.style.display = 'none';
-    }
-
-    function showCommand(label, cmd) {
-      deployCommandLabel.textContent = label;
-      deployCommandText.textContent = cmd;
-      deployCommandArea.style.display = '';
-    }
-
-    function downloadBlob(content, filename, type) {
-      const blob = new Blob([content], { type });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function specToSlug(spec) {
-      return (spec.name || 'server').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    }
-
-    function generateOpenClawConfig(spec) {
-      const model = spec.runtime?.model?.model || 'anthropic/claude-sonnet-4';
-      // Map OpenRouter model IDs to OpenClaw provider/model format
-      const provider = model.includes('/') ? model.split('/')[0] : 'anthropic';
-      const modelId = model.includes('/') ? model : `anthropic/${model}`;
-
-      const config = {
-        agents: {
-          defaults: {
-            model: { primary: modelId },
-            workspace: './workspace',
-          },
-        },
-        sessions: {
-          defaults: {
-            model: modelId,
-          },
-        },
-      };
-      return JSON.stringify(config, null, 2);
-    }
-
-    function generateSetupScript(spec) {
-      const slug = specToSlug(spec);
-      return `#!/bin/bash
-# ${spec.name} — Setup Script
-# Generated by VibeClaw (vibeclaw.dev)
-set -e
-
-echo "Setting up ${spec.name}..."
-
-# Install OpenClaw if not present
-if ! command -v openclaw &> /dev/null; then
-  echo "Installing OpenClaw..."
-  curl -fsSL https://openclaw.ai/install.sh | bash -s -- --no-onboard
-fi
-
-# Create workspace directory
-mkdir -p workspace
-
-# Copy config
-cp openclaw.json ~/.openclaw/openclaw.json
-
-# Copy workspace files
-for f in workspace/*; do
-  [ -f "$f" ] && cp "$f" ~/.openclaw/workspace/
-done
-
-echo ""
-echo "Done! Run: openclaw gateway start"
-echo ""
-`;
-    }
-
-    function generateReadme(spec) {
-      const agentList = (spec.agents || []).map(a => `- **${a.name}** — ${a.description || a.role || ''}`).join('\n');
-      const skillList = (spec.skills || []).map(s => `- ${(s.source || s.name || '').replace('builtin:', '')}`).join('\n');
-      return `# ${spec.name}
-
-> Generated by [VibeClaw](https://vibeclaw.dev/forge)
-
-## Agents
-
-${agentList}
-
-## Skills
-
-${skillList}
-
-## Setup
-
-\`\`\`bash
-# Option 1: Run the setup script
-chmod +x setup.sh && ./setup.sh
-
-# Option 2: Manual
-curl -fsSL https://openclaw.ai/install.sh | bash
-cp openclaw.json ~/.openclaw/openclaw.json
-cp workspace/* ~/.openclaw/workspace/
-openclaw gateway start
-\`\`\`
-`;
-    }
-
-    $('deploy-btn').addEventListener('click', showDeployModal);
-    $('deploy-close').addEventListener('click', hideDeployModal);
-    deployModal.addEventListener('click', (e) => {
-      if (e.target === deployModal) hideDeployModal();
-    });
-
-    // Download package — real openclaw.json + workspace files + setup script
-    $('deploy-download').addEventListener('click', () => {
-      if (!deploySpec) return;
-      const slug = specToSlug(deploySpec);
-
-      // Build all files
-      const files = {
-        'openclaw.json': generateOpenClawConfig(deploySpec),
-        'setup.sh': generateSetupScript(deploySpec),
-        'README.md': generateReadme(deploySpec),
-      };
-      // Add workspace files
-      const ws = deploySpec.workspace || {};
-      for (const [name, content] of Object.entries(ws)) {
-        if (content) files[`workspace/${name}`] = content;
-      }
-      // Add server spec for reference
-      files['server-spec.json'] = JSON.stringify(deploySpec, null, 2);
-
-      // Download as a single JSON manifest (with clear file paths)
-      // Users can extract with a simple script, or we can add zip later
-      const pkg = { _generator: 'VibeClaw v1.0', _url: 'https://vibeclaw.dev', files };
-      downloadBlob(JSON.stringify(pkg, null, 2), `${slug}.vibeclaw.json`, 'application/json');
-      hideDeployModal();
-    });
-
-    // Raw JSON spec
-    $('deploy-json').addEventListener('click', () => {
-      if (!deploySpec) return;
-      downloadBlob(JSON.stringify(deploySpec, null, 2), `${specToSlug(deploySpec)}-spec.json`, 'application/json');
-      hideDeployModal();
-    });
-
-    // Docker command — not available yet, show install instructions instead
-    $('deploy-docker').addEventListener('click', () => {
-      if (!deploySpec) return;
-      showCommand('Install & Run', `curl -fsSL https://openclaw.ai/install.sh | bash && openclaw gateway start`);
-    });
-
-    // CLI command — real openclaw install
-    $('deploy-cli').addEventListener('click', () => {
-      if (!deploySpec) return;
-      showCommand('Install OpenClaw', `npm install -g openclaw && openclaw onboard`);
-    });
-
-    // Copy command
-    $('deploy-copy-btn').addEventListener('click', () => {
-      const text = deployCommandText.textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        $('deploy-copy-btn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" style="width:14px;height:14px;"><polyline points="20 6 9 17 4 12"/></svg>';
-        setTimeout(() => {
-          $('deploy-copy-btn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
-        }, 1500);
-      });
-    });
-
-    // ── Init ──
-    state.systemPrompt = $('system-prompt').value;
-
-    // Check if loaded with a template ID or library index
-    const params = new URLSearchParams(location.search);
-    if (params.has('template')) {
-      loadFlavours().then(() => {
-        $('template-select').value = params.get('template');
-        $('template-select').dispatchEvent(new Event('change'));
-      });
-    } else if (params.has('load')) {
-      // Load from library
-      try {
-        const library = JSON.parse(localStorage.getItem('clawforge-library') || '[]');
-        const idx = parseInt(params.get('load'));
-        const srv = library[idx];
-        if (srv) {
-          state.emoji = srv.emoji || '🦀';
-          state.name = srv.name || 'My Server';
-          state.runtime = srv.runtime?.type || 'single';
-          state.agents = (srv.agents || []).map(a => ({
-            emoji: a.emoji || '🤖',
-            name: a.name || '',
-            desc: a.description || a.role || ''
-          }));
-          state.skills = new Set((srv.skills || []).map(s =>
-            s.source ? s.source.replace('builtin:', '') : s.name || ''
-          ).filter(Boolean));
-          state.systemPrompt = (srv.agents && srv.agents[0] && srv.agents[0].systemPrompt) || '';
-          if (srv.workspace) {
-            Object.assign(state.files, srv.workspace);
-          }
-          state.model = srv.runtime?.model?.model || state.model;
-
-          // Update all UI
-          $('server-emoji').value = state.emoji;
-          $('server-name').value = state.name;
-          $('system-prompt').value = state.systemPrompt;
-          $('file-editor').value = state.files[state.activeFile] || '';
-          $$('#runtime-options .option-card').forEach(c => {
-            c.classList.toggle('selected', c.dataset.value === state.runtime);
-          });
-          $$('.skill-card').forEach(card => {
-            card.classList.toggle('enabled', state.skills.has(card.dataset.skill));
-          });
-          $$('.model-card').forEach(c => {
-            c.classList.toggle('selected', c.dataset.model === state.model);
-          });
-          renderAgents();
-          updateSidebar();
-        }
-      } catch (e) { console.warn('Load from library error:', e); }
+        const saved = JSON.parse(localStorage.getItem('vf-forge'));
+        if (saved?.nodes?.length) { setNodes(saved.nodes); setEdges(saved.edges||[]); }
+        else { setNodes(INITIAL_NODES); setEdges([]); }
+      } catch(e) { setNodes(INITIAL_NODES); setEdges([]); }
     } else {
-      // Check for a saved draft
-      try {
-        const draftRaw = localStorage.getItem(DRAFT_KEY);
-        if (draftRaw) {
-          const draft = JSON.parse(draftRaw);
-          // Only restore if draft is less than 7 days old
-          if (draft.savedAt && (Date.now() - draft.savedAt) < 7 * 24 * 60 * 60 * 1000) {
-            state.emoji = draft.emoji || state.emoji;
-            state.name = draft.name || state.name;
-            state.runtime = draft.runtime || state.runtime;
-            state.agents = draft.agents || state.agents;
-            state.skills = new Set(draft.skills || [...state.skills]);
-            state.systemPrompt = draft.systemPrompt || state.systemPrompt;
-            if (draft.files) Object.assign(state.files, draft.files);
-            state.model = draft.model || state.model;
-
-            // Update UI
-            $('server-emoji').value = state.emoji;
-            $('server-name').value = state.name;
-            $('system-prompt').value = state.systemPrompt;
-            $('file-editor').value = state.files[state.activeFile] || '';
-            $$('#runtime-options .option-card').forEach(c => {
-              c.classList.toggle('selected', c.dataset.value === state.runtime);
-            });
-            $$('.skill-card').forEach(card => {
-              card.classList.toggle('enabled', state.skills.has(card.dataset.skill));
-            });
-            $$('.model-card').forEach(c => {
-              c.classList.toggle('selected', c.dataset.model === state.model);
-            });
-            renderAgents();
-            updateSidebar();
-          }
-        }
-      } catch (e) { console.warn('Draft restore error:', e); }
-      loadFlavours();
+      setLiveMode(true);
+      loadLive();
     }
+  }, [liveMode, loadLive]);
+
+  const onConnect = useCallback(params => {
+    if (liveMode) return;
+    const newEdges = addEdge({
+      ...params, type:'smoothstep',
+      style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65},
+    }, edges);
+    setEdges(newEdges);
+    save(nodes, newEdges);
+  }, [edges, nodes, save, liveMode]);
+
+  const onNodeClick = useCallback((_, node) => {
+    if (liveMode) {
+      if (node.type === 'livegateway') return; // sections handle their own clicks
+      setLiveSelectedAgent({ ...node.data, _nodeType: node.type });
+      return;
+    }
+    setSelectedNode(node);
+  }, [liveMode]);
+
+  // Update a live node's data after saving (e.g. agent model change)
+  const handleNodeUpdate = useCallback((node, patch) => {
+    setNodes(nds => nds.map(n =>
+      n.id.includes(node.agentId || node.id) ? { ...n, data: { ...n.data, ...patch } } : n
+    ));
+  }, []);
+
+  const onPaneClick = useCallback(() => {
+    setSelectedNode(null);
+    if (liveMode) setLiveSelectedAgent(null);
+  }, [liveMode]);
+
+  const updateNode = useCallback((id, key, value) => {
+    setNodes(nds => {
+      const updated = nds.map(n =>
+        n.id === id ? { ...n, data: { ...n.data, [key]: value } } : n
+      );
+      save(updated, edges);
+      return updated;
+    });
+    setSelectedNode(prev =>
+      prev?.id === id ? { ...prev, data: { ...prev.data, [key]: value } } : prev
+    );
+  }, [edges, save]);
+
+  const addNode = useCallback(type => {
+    if (liveMode) return;
+    if (['quickstart','team','research'].includes(type)) {
+      loadTemplate(type, setNodes, setEdges, save);
+      setSelectedNode(null);
+      return;
+    }
+    const defaults = {
+      gateway:{ label:'My Gateway', desc:'' },
+      agent:  { label:'New Agent', model:'upstage/solar-pro-3:free', systemPrompt:'' },
+      skill:  { label:'New Skill', skill:'web-search' },
+      model:  { label:'GPT-4o', provider:'openai' },
+      channel:{ label:'Telegram', channelType:'telegram' },
+    };
+    const vp = rfInstance.current?.getViewport() || { x:0, y:0, zoom:1 };
+    const x = (-vp.x + window.innerWidth/2) / vp.zoom - 100;
+    const y = (-vp.y + window.innerHeight/2) / vp.zoom - 40;
+    const id = `${type}-${Date.now()}`;
+    const newNode = { id, type, position:{x,y}, data: defaults[type] || { label:'Node' } };
+    setNodes(nds => { const upd = [...nds, newNode]; save(upd, edges); return upd; });
+  }, [edges, save, liveMode]);
+
+  const handleToggleSkill = useCallback((skillId, newEnabled) => {
+    setLiveSkills(prev => prev.map(s => s.id === skillId ? {...s, enabled:newEnabled} : s));
+  }, []);
+
+  const liveStatusText = liveLoading ? 'loading…' : liveError ? `error: ${liveError}` :
+    liveData ? `${liveData.agents?.length||0} agent · ${liveSkills.filter(s=>s.enabled).length} skills on · ${liveData.channels?.length||0} channel` : '';
+
+  return (
+    <div style={{display:'flex', height:'calc(100vh - 57px)', overflow:'hidden'}}>
+      {!liveMode && <Palette onAdd={addNode} />}
+      <div style={{flex:1, position:'relative'}}>
+        {/* Live mode banner */}
+        {liveMode && (
+          <div style={{
+            position:'absolute', top:0, left:0, right:0, zIndex:10,
+            background:'rgba(74,222,128,0.07)', borderBottom:'1px solid #1a3a28',
+            padding:'6px 14px', display:'flex', alignItems:'center', gap:10,
+            fontFamily:"'JetBrains Mono',monospace", fontSize:'0.65rem',
+          }}>
+            <span style={{width:6,height:6,borderRadius:'50%',background:'#4ade80',boxShadow:'0 0 8px #4ade80'}}/>
+            <span style={{color:'#4ade80'}}>LIVE</span>
+            <span style={{color:'#2a4a38'}}>{liveStatusText}</span>
+            <button onClick={loadLive} disabled={liveLoading} style={{
+              marginLeft:'auto', background:'none', border:'1px solid #1a3a28',
+              borderRadius:4, padding:'2px 10px', cursor:'pointer',
+              fontFamily:"'JetBrains Mono',monospace", fontSize:'0.6rem', color:'#4ade80',
+            }}>{liveLoading ? '…' : '↺ refresh'}</button>
+          </div>
+        )}
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={liveMode ? undefined : onNodesChange}
+          onEdgesChange={liveMode ? undefined : onEdgesChange}
+          onConnect={onConnect}
+          onNodeClick={onNodeClick}
+          onPaneClick={onPaneClick}
+          onInit={inst => rfInstance.current = inst}
+          nodeTypes={nodeTypes}
+          defaultEdgeOptions={{ type:'smoothstep', style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65} }}
+          fitView
+          nodesDraggable={!liveMode}
+          nodesConnectable={!liveMode}
+          style={{ background:'#0a0a0a', paddingTop: liveMode ? 32 : 0 }}
+          proOptions={{ hideAttribution: true }}
+        >
+          <Background variant="dots" gap={28} size={1} color="#252525" />
+          <Controls showInteractive={false} />
+          <Panel position="top-right" style={{display:'flex',gap:8,margin:'8px 8px 0 0'}}>
+            {!liveMode && <>
+              <NavBtn onClick={() => setShowAiModal(true)}>✨ AI Build</NavBtn>
+              <NavBtn onClick={() => setShowExportModal(true)}>⬇ Export</NavBtn>
+            </>}
+            <NavBtn onClick={toggleLive} primary={liveMode}>
+              {liveMode ? '⬡ Designer' : '◉ Live'}
+            </NavBtn>
+            {!liveMode && <NavBtn primary>▶ Deploy</NavBtn>}
+          </Panel>
+          <Panel position="bottom-center">
+            <div style={{
+              background:'rgba(10,10,10,0.92)', border:'1px solid #1e1e1e',
+              borderRadius:8, padding:'6px 16px',
+              display:'flex', alignItems:'center', gap:12,
+              fontFamily:"'JetBrains Mono',monospace", fontSize:'0.65rem', color:'#444',
+            }}>
+              {liveMode ? (
+                <>
+                  <span style={{color:'#4ade80'}}>live</span>
+                  <span style={{color:'#1e1e1e'}}>|</span>
+                  <span>click an agent to manage skills</span>
+                </>
+              ) : (
+                <>
+                  <span>{nodes.length} node{nodes.length!==1?'s':''}</span>
+                  <span style={{color:'#1e1e1e'}}>|</span>
+                  <span>{edges.length} connection{edges.length!==1?'s':''}</span>
+                  <span style={{color:'#1e1e1e'}}>|</span>
+                  <span>forge v2</span>
+                </>
+              )}
+            </div>
+          </Panel>
+        </ReactFlow>
+      </div>
+
+      {liveMode ? (
+        <LiveNodePanel
+          node={liveSelectedAgent}
+          skills={liveSkills}
+          onClose={() => setLiveSelectedAgent(null)}
+          onToggleSkill={handleToggleSkill}
+          onNodeUpdate={handleNodeUpdate}
+        />
+      ) : (
+        <ConfigPanel node={selectedNode} onClose={() => setSelectedNode(null)} onUpdate={updateNode} />
+      )}
+
+      {showAiModal && (
+        <AiBuildModal
+          onClose={() => setShowAiModal(false)}
+          onResult={result => { applyAiResult(result, setNodes, setEdges); setShowAiModal(false); }}
+        />
+      )}
+      {showExportModal && (
+        <ExportModal nodes={nodes} edges={edges} onClose={() => setShowExportModal(false)} />
+      )}
+    </div>
+  );
+}
+
+const root = createRoot(document.getElementById('forge-root'));
+root.render(<ForgeApp />);
   </script>
 
   <script src="/auth.js"></script>

@@ -1732,6 +1732,13 @@ function TreeIconNode({ data, selected }) {
         }}>
           {cfg.icon(cfg.color)}
         </div>
+        {data.expandable && (
+          <span style={{
+            position:'absolute', bottom:7, left:'50%', transform:'translateX(-50%)',
+            fontSize:'0.55rem', color: data.expanded ? cfg.color : '#3a3a3a',
+            lineHeight:1,
+          }}>{data.expanded ? '▾' : '▸'}</span>
+        )}
       </div>
       <div style={{
         fontFamily:"'JetBrains Mono',monospace", fontSize:'0.65rem',
@@ -2350,8 +2357,8 @@ function LiveGatewayNode({ data, selected }) {
   );
 }
 
-/* ── Family Tree: ~10 icon nodes mirroring what's in the gateway admin ── */
-function buildFamilyTree(data) {
+/* ── Family Tree: ~10 icon nodes + expandable children ── */
+function buildFamilyTree(data, expandedIds = new Set()) {
   const E = (id, s, t, color) => ({
     id, source:s, target:t, type:'smoothstep',
     style:{ stroke:color, strokeWidth:1.5, opacity:0.45 },
@@ -2369,17 +2376,27 @@ function buildFamilyTree(data) {
   }];
   const edges = [];
 
-  // Each agent — with its model as a child
+  // Each agent
   (data.agents||[]).forEach((ag,i) => {
     const agId = `ft-ag-${ag.id||i}`;
     nodes.push({ id:agId, type:'treeicon', position:{x:0,y:0},
-      data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false } });
+      data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false, expandable:true, expanded:expandedIds.has(agId) } });
     edges.push(E(`e-ag-${i}`, 'live-server', agId, '#818cf8'));
-    if (ag.model) {
-      const mId = `ft-model-${i}`;
-      nodes.push({ id:mId, type:'treeicon', position:{x:0,y:0},
-        data:{ label:ag.model.split('/').pop(), category:'model', enabled:true } });
-      edges.push(E(`e-model-${i}`, agId, mId, '#f59e0b'));
+    if (expandedIds.has(agId)) {
+      // Model
+      if (ag.model) {
+        const mId = `ft-model-${i}`;
+        nodes.push({ id:mId, type:'treeicon', position:{x:0,y:0},
+          data:{ label:ag.model.split('/').pop(), category:'model', enabled:true } });
+        edges.push(E(`e-model-${i}`, agId, mId, '#f59e0b'));
+      }
+      // Fallback models
+      (ag.fallbackModels||[]).forEach((fm,j) => {
+        const fmId = `ft-fm-${i}-${j}`;
+        nodes.push({ id:fmId, type:'treeicon', position:{x:0,y:0},
+          data:{ label:fm.split('/').pop(), category:'model', enabled:true } });
+        edges.push(E(`e-fm-${i}-${j}`, agId, fmId, '#f59e0b'));
+      });
     }
   });
 
@@ -2394,12 +2411,21 @@ function buildFamilyTree(data) {
   // Each cron job
   (data.cronJobs||[]).forEach((job,i) => {
     const id = `ft-cr-${job.id||i}`;
+    const schedLabel = job.schedule?.kind === 'cron' ? job.schedule.expr
+      : job.schedule?.kind === 'every' ? `every ${Math.round((job.schedule.everyMs||0)/60000)}m`
+      : job.schedule?.kind || 'scheduled';
     nodes.push({ id, type:'treeicon', position:{x:0,y:0},
-      data:{ label:job.name||job.id||'Cron', category:'cron', enabled:job.enabled!==false } });
+      data:{ label:job.name||job.id||'Cron', category:'cron', enabled:job.enabled!==false, expandable:true, expanded:expandedIds.has(id) } });
     edges.push(E(`e-cr-${i}`, 'live-server', id, '#a855f7'));
+    if (expandedIds.has(id)) {
+      const schedId = `${id}-sched`;
+      nodes.push({ id:schedId, type:'treeicon', position:{x:0,y:0},
+        data:{ label:schedLabel, category:'cron', enabled:job.enabled!==false } });
+      edges.push(E(`e-cr-sched-${i}`, id, schedId, '#a855f7'));
+    }
   });
 
-  // Each paired node/device
+  // Each paired device
   (data.nodes||[]).forEach((nd,i) => {
     const id = `ft-nd-${nd.id||i}`;
     nodes.push({ id, type:'treeicon', position:{x:0,y:0},
@@ -2407,12 +2433,20 @@ function buildFamilyTree(data) {
     edges.push(E(`e-nd-${i}`, 'live-server', id, '#22d3ee'));
   });
 
-  // Skills as a single summary
+  // Skills — summary node, expands to all individual skills
   const enabledSkills = (data.skills||[]).filter(s=>s.enabled!==false);
   if (enabledSkills.length > 0) {
     nodes.push({ id:'ft-skills', type:'treeicon', position:{x:0,y:0},
-      data:{ label:`${enabledSkills.length} Skills`, category:'skill', enabled:true } });
+      data:{ label:`${enabledSkills.length} Skills`, category:'skill', enabled:true, expandable:true, expanded:expandedIds.has('ft-skills') } });
     edges.push(E('e-skills', 'live-server', 'ft-skills', '#4ade80'));
+    if (expandedIds.has('ft-skills')) {
+      enabledSkills.forEach((sk,i) => {
+        const skId = `ft-sk-${sk.id||i}`;
+        nodes.push({ id:skId, type:'treeicon', position:{x:0,y:0},
+          data:{ label:sk.id||sk.name||'Skill', category:'skill', enabled:true } });
+        edges.push(E(`e-sk-${i}`, 'ft-skills', skId, '#4ade80'));
+      });
+    }
   }
 
   return { nodes, edges };
@@ -2999,6 +3033,7 @@ function ForgeApp() {
   // Live mode
   const liveMode = true;
   const [liveCollapsed, setLiveCollapsed] = useState(false);
+  const [ftExpandedIds, setFtExpandedIds] = useState(new Set());
   const [liveData, setLiveData] = useState(null);
   const [liveSkills, setLiveSkills] = useState([]);
   const [liveLoading, setLiveLoading] = useState(false);
@@ -3034,24 +3069,44 @@ function ForgeApp() {
   }], []);
 
   // Expand from collapsed to full radial view
+  const TREE_ELK = {
+    'elk.algorithm': 'layered',
+    'elk.direction': 'DOWN',
+    'elk.layered.spacing.nodeNodeBetweenLayers': '80',
+    'elk.spacing.nodeNode': '50',
+    'elk.layered.nodePlacement.strategy': 'SIMPLE',
+  };
+
+  const applyFamilyTree = useCallback(async (expandedIds) => {
+    const data = liveDataRef.current;
+    if (!data) return;
+    const { nodes: lnodes, edges: ledges } = buildFamilyTree(data, expandedIds);
+    setEdges(ledges);
+    const laid = await elkLayout(lnodes, ledges, TREE_ELK);
+    setNodes(laid);
+    setTimeout(() => rfInstance.current?.fitView({ padding: 0.12, duration: 350 }), 150);
+  }, []);
+
   const handleExpandServer = useCallback(async () => {
     const data = liveDataRef.current;
     if (!data) return;
     setLiveCollapsed(false);
     setLiveExpanded({});
-    const { nodes: lnodes, edges: ledges } = buildFamilyTree(data);
-    setEdges(ledges);
-    const laid = await elkLayout(lnodes, ledges, {
-      'elk.algorithm': 'layered',
-      'elk.direction': 'DOWN',
-      'elk.layered.spacing.nodeNodeBetweenLayers': '80',
-      'elk.spacing.nodeNode': '50',
-      'elk.layered.nodePlacement.strategy': 'SIMPLE',
-    });
-    setNodes(laid);
+    setFtExpandedIds(new Set());
+    await applyFamilyTree(new Set());
     setLiveSelectedAgent(null);
-    setTimeout(() => rfInstance.current?.fitView({ padding: 0.15, duration: 400 }), 150);
-  }, []);
+  }, [applyFamilyTree]);
+
+  const handleTreeNodeToggle = useCallback(async (node) => {
+    if (!node.data?.expandable) return;
+    setFtExpandedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(node.id)) next.delete(node.id);
+      else next.add(node.id);
+      applyFamilyTree(next);
+      return next;
+    });
+  }, [applyFamilyTree]);
 
   // Collapse back to the single server icon
   const handleCollapseToServer = useCallback(() => {
@@ -3081,22 +3136,13 @@ function ForgeApp() {
       setLiveSkills(data.skills || []);
       // Start expanded — build the full family tree
       setLiveCollapsed(false);
-      const { nodes: lnodes, edges: ledges } = buildFamilyTree(data);
-      setEdges(ledges);
-      const laid = await elkLayout(lnodes, ledges, {
-        'elk.algorithm': 'layered',
-        'elk.direction': 'DOWN',
-        'elk.layered.spacing.nodeNodeBetweenLayers': '80',
-        'elk.spacing.nodeNode': '50',
-        'elk.layered.nodePlacement.strategy': 'SIMPLE',
-      });
-      setNodes(laid);
-      setTimeout(() => rfInstance.current?.fitView({ padding: 0.15, duration: 400 }), 150);
+      setFtExpandedIds(new Set());
+      await applyFamilyTree(new Set());
     } catch(e) {
       setLiveError(e.message);
     }
     setLiveLoading(false);
-  }, [buildCollapsedServerNode]);
+  }, [buildCollapsedServerNode, applyFamilyTree]);
 
   // Expand/collapse sections from gateway node
   const handleLiveToggle = useCallback((section) => {
@@ -3213,12 +3259,15 @@ function ForgeApp() {
     if (node.type === 'collapsedserver') return;
     if (node.type === 'livegateway') return;
     if (node.type === 'sectioncard') {
-      // Expand this section — replace card with full content
       handleLiveToggle(node.data.sectionKey);
       return;
     }
+    if (node.type === 'treeicon') {
+      handleTreeNodeToggle(node);
+      return;
+    }
     setLiveSelectedAgent({ ...node.data, _nodeType: node.type });
-  }, [handleLiveToggle]);
+  }, [handleLiveToggle, handleTreeNodeToggle]);
 
   // Update a live node's data after saving (e.g. agent model change)
   const handleNodeUpdate = useCallback((node, patch) => {

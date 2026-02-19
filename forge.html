@@ -1690,13 +1690,15 @@ function CollapsedServerNode({ data, selected }) {
 const TREE_CATEGORIES = {
   agent:   { color:'#818cf8', bg:'#0c0a1c', border:'#261e4a',
     icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg> },
+  model:   { color:'#f59e0b', bg:'#120900', border:'#3d2500',
+    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> },
   skill:   { color:'#4ade80', bg:'#050f08', border:'#163324',
     icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> },
   channel: { color:'#22d3ee', bg:'#03100f', border:'#0b3038',
     icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill={c} stroke="none"/></svg> },
   cron:    { color:'#a855f7', bg:'#0d0618', border:'#2e1258',
     icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
-  node:    { color:'#f59e0b', bg:'#120900', border:'#3d2500',
+  node:    { color:'#22d3ee', bg:'#03100f', border:'#0b3038',
     icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> },
 };
 
@@ -2348,11 +2350,11 @@ function LiveGatewayNode({ data, selected }) {
   );
 }
 
-/* ── Family Tree: top-down network diagram from gateway ── */
+/* ── Family Tree: top-down network diagram with real hierarchy ── */
 function buildFamilyTree(data) {
   const EDGE = (id, s, t, color) => ({
     id, source:s, target:t, type:'smoothstep',
-    style:{ stroke:color, strokeWidth:1.5, opacity:0.5 },
+    style:{ stroke:color, strokeWidth:1.5, opacity:0.45 },
   });
 
   const nodes = [{
@@ -2367,35 +2369,53 @@ function buildFamilyTree(data) {
   }];
   const edges = [];
 
+  // ── Agents → children of gateway; Model → child of each agent
   (data.agents||[]).forEach((ag,i) => {
-    const id=`tree-ag-${ag.id||i}`;
-    nodes.push({ id, type:'treeicon', position:{x:0,y:0}, data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false } });
-    edges.push(EDGE(`e-ag-${i}`,'live-server',id,'#818cf8'));
+    const agId = `tree-ag-${ag.id||i}`;
+    nodes.push({ id:agId, type:'treeicon', position:{x:0,y:0},
+      data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false } });
+    edges.push(EDGE(`e-ag-${i}`, 'live-server', agId, '#818cf8'));
+
+    // Model under each agent
+    if (ag.model) {
+      const modelId = `tree-model-${i}`;
+      nodes.push({ id:modelId, type:'treeicon', position:{x:0,y:0},
+        data:{ label:ag.model.split('/').pop(), category:'model', enabled:true } });
+      edges.push(EDGE(`e-model-${i}`, agId, modelId, '#f59e0b'));
+    }
   });
 
-  (data.skills||[]).filter(s=>s.enabled!==false).forEach((sk,i) => {
-    const id=`tree-sk-${sk.id||i}`;
-    nodes.push({ id, type:'treeicon', position:{x:0,y:0}, data:{ label:sk.id||sk.name||'Skill', category:'skill', enabled:true } });
-    edges.push(EDGE(`e-sk-${i}`,'live-server',id,'#4ade80'));
-  });
-
+  // ── Channels → direct children of gateway
   (data.channels||[]).forEach((ch,i) => {
-    const id=`tree-ch-${ch.id||i}`;
-    nodes.push({ id, type:'treeicon', position:{x:0,y:0}, data:{ label:ch.type||ch.id||'Channel', category:'channel', enabled:ch.enabled!==false } });
-    edges.push(EDGE(`e-ch-${i}`,'live-server',id,'#22d3ee'));
+    const id = `tree-ch-${ch.id||i}`;
+    nodes.push({ id, type:'treeicon', position:{x:0,y:0},
+      data:{ label:ch.type||ch.id||'Channel', category:'channel', enabled:ch.enabled!==false } });
+    edges.push(EDGE(`e-ch-${i}`, 'live-server', id, '#22d3ee'));
   });
 
-  (data.cronJobs||[]).filter(j=>j.enabled!==false).forEach((job,i) => {
-    const id=`tree-cr-${job.id||i}`;
-    nodes.push({ id, type:'treeicon', position:{x:0,y:0}, data:{ label:job.name||job.id||'Cron', category:'cron', enabled:true } });
-    edges.push(EDGE(`e-cr-${i}`,'live-server',id,'#a855f7'));
+  // ── Cron jobs → direct children of gateway
+  (data.cronJobs||[]).forEach((job,i) => {
+    const id = `tree-cr-${job.id||i}`;
+    nodes.push({ id, type:'treeicon', position:{x:0,y:0},
+      data:{ label:job.name||job.id||'Cron', category:'cron', enabled:job.enabled!==false } });
+    edges.push(EDGE(`e-cr-${i}`, 'live-server', id, '#a855f7'));
   });
 
+  // ── Paired nodes → direct children of gateway
   (data.nodes||[]).forEach((nd,i) => {
-    const id=`tree-nd-${nd.id||i}`;
-    nodes.push({ id, type:'treeicon', position:{x:0,y:0}, data:{ label:nd.name||nd.id||'Node', category:'node', enabled:true } });
-    edges.push(EDGE(`e-nd-${i}`,'live-server',id,'#f59e0b'));
+    const id = `tree-nd-${nd.id||i}`;
+    nodes.push({ id, type:'treeicon', position:{x:0,y:0},
+      data:{ label:nd.name||nd.id||'Node', category:'node', enabled:true } });
+    edges.push(EDGE(`e-nd-${i}`, 'live-server', id, '#22d3ee'));
   });
+
+  // ── Skills → single summary node under gateway (too many to show individually)
+  const enabledSkills = (data.skills||[]).filter(s=>s.enabled!==false);
+  if (enabledSkills.length > 0) {
+    nodes.push({ id:'tree-skills', type:'treeicon', position:{x:0,y:0},
+      data:{ label:`${enabledSkills.length} Skills`, category:'skill', enabled:true } });
+    edges.push(EDGE('e-skills', 'live-server', 'tree-skills', '#4ade80'));
+  }
 
   return { nodes, edges };
 }

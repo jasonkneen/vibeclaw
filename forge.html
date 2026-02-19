@@ -1339,9 +1339,12 @@ import {
   addEdge,
   useNodesState,
   useEdgesState,
+  useReactFlow,
   Handle,
   Position,
   Panel,
+  BaseEdge,
+  getBezierPath,
 } from '@xyflow/react';
 import ELK from 'elkjs';
 
@@ -1386,8 +1389,8 @@ async function elkLayout(nodes, edges, opts = {}) {
     },
     children: nodes.map(n => ({
       id: n.id,
-      width: n.measured?.width ?? n.width ?? (n.type === 'treeicon' ? 130 : 220),
-      height: n.measured?.height ?? n.height ?? (n.type === 'treeicon' ? 130 : 70),
+      width:  n.measured?.width  ?? n.width  ?? (n.type === 'treeicon' ? 160 : 220),
+      height: n.measured?.height ?? n.height ?? (n.type === 'treeicon' ? 175 : 70),
     })),
     edges: edges
       .filter(e => nodes.find(n => n.id === e.source) && nodes.find(n => n.id === e.target))
@@ -1419,6 +1422,55 @@ async function elkLayout(nodes, edges, opts = {}) {
   }
 }
 
+/* ── Smart edge — picks nearest side handle, correct bezier direction ── */
+function getSmartHandles(sNode, tNode) {
+  const sw = sNode.measured?.width  ?? 160, sh = sNode.measured?.height ?? 175;
+  const tw = tNode.measured?.width  ?? 160, th = tNode.measured?.height ?? 175;
+  const sx0 = sNode.position.x, sy0 = sNode.position.y;
+  const tx0 = tNode.position.x, ty0 = tNode.position.y;
+  const scx = sx0 + sw/2, scy = sy0 + sh/2;
+  const tcx = tx0 + tw/2, tcy = ty0 + th/2;
+  // Source handles
+  const sCandidates = [
+    { x: scx,      y: sy0,      pos: Position.Top },
+    { x: scx,      y: sy0 + sh, pos: Position.Bottom },
+    { x: sx0,      y: scy,      pos: Position.Left },
+    { x: sx0 + sw, y: scy,      pos: Position.Right },
+  ];
+  // Target handles
+  const tCandidates = [
+    { x: tcx,      y: ty0,      pos: Position.Top },
+    { x: tcx,      y: ty0 + th, pos: Position.Bottom },
+    { x: tx0,      y: tcy,      pos: Position.Left },
+    { x: tx0 + tw, y: tcy,      pos: Position.Right },
+  ];
+  // Find the closest pair
+  let best = null, bestDist = Infinity;
+  for (const s of sCandidates) {
+    for (const t of tCandidates) {
+      const d = Math.hypot(s.x - t.x, s.y - t.y);
+      if (d < bestDist) { bestDist = d; best = { s, t }; }
+    }
+  }
+  return best;
+}
+
+function SmartEdge({ id, source, target, style }) {
+  const { getNode } = useReactFlow();
+  const sNode = getNode(source);
+  const tNode = getNode(target);
+  if (!sNode || !tNode) return null;
+  const handles = getSmartHandles(sNode, tNode);
+  if (!handles) return null;
+  const { s, t } = handles;
+  const [path] = getBezierPath({
+    sourceX: s.x, sourceY: s.y, sourcePosition: s.pos,
+    targetX: t.x, targetY: t.y, targetPosition: t.pos,
+    curvature: 0.25,
+  });
+  return <BaseEdge id={id} path={path} style={style}/>;
+}
+
 /* ── Templates ── */
 function loadTemplate(id, setNodes, setEdges, save) {
   const t = {
@@ -1427,7 +1479,7 @@ function loadTemplate(id, setNodes, setEdges, save) {
         { id:'g1', type:'gateway', position:{x:0,y:0}, data:{label:'My Gateway'} },
         { id:'a1', type:'agent',   position:{x:300,y:0}, data:{label:'Assistant',model:'upstage/solar-pro-3:free'} },
       ],
-      edges: [{id:'e1',source:'g1',target:'a1',type:'smoothstep',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}}],
+      edges: [{id:'e1',source:'g1',target:'a1',type:'smartEdge',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}}],
     },
     team: {
       nodes: [
@@ -1437,9 +1489,9 @@ function loadTemplate(id, setNodes, setEdges, save) {
         { id:'a3', type:'agent',   position:{x:320,y:280}, data:{label:'Reviewer'} },
       ],
       edges: [
-        {id:'e1',source:'g1',target:'a1',type:'smoothstep',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
-        {id:'e2',source:'g1',target:'a2',type:'smoothstep',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
-        {id:'e3',source:'g1',target:'a3',type:'smoothstep',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
+        {id:'e1',source:'g1',target:'a1',type:'smartEdge',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
+        {id:'e2',source:'g1',target:'a2',type:'smartEdge',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
+        {id:'e3',source:'g1',target:'a3',type:'smartEdge',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
       ],
     },
     research: {
@@ -1450,9 +1502,9 @@ function loadTemplate(id, setNodes, setEdges, save) {
         { id:'m1', type:'model',   position:{x:580,y:120}, data:{label:'GPT-4o',provider:'openai'} },
       ],
       edges: [
-        {id:'e1',source:'g1',target:'a1',type:'smoothstep',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
-        {id:'e2',source:'a1',target:'s1',type:'smoothstep',style:{stroke:'#818cf8',strokeWidth:1.5,opacity:0.65}},
-        {id:'e3',source:'a1',target:'m1',type:'smoothstep',style:{stroke:'#818cf8',strokeWidth:1.5,opacity:0.65}},
+        {id:'e1',source:'g1',target:'a1',type:'smartEdge',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}},
+        {id:'e2',source:'a1',target:'s1',type:'smartEdge',style:{stroke:'#818cf8',strokeWidth:1.5,opacity:0.65}},
+        {id:'e3',source:'a1',target:'m1',type:'smartEdge',style:{stroke:'#818cf8',strokeWidth:1.5,opacity:0.65}},
       ],
     },
   };
@@ -1473,7 +1525,7 @@ function applyAiResult(data, setNodes, setEdges) {
       data.agents.forEach((a, i) => {
         const id = `a${i}`;
         nodes.push({ id, type:'agent', position:{x:320,y:i*220-((data.agents.length-1)*110)}, data:{label:a.name,model:a.model||'upstage/solar-pro-3:free',systemPrompt:a.systemPrompt||''} });
-        edges.push({ id:`e${i}`, source:'g1', target:id, type:'smoothstep', style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65} });
+        edges.push({ id:`e${i}`, source:'g1', target:id, type:'smartEdge', style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65} });
       });
       (data.skills||[]).forEach((s, i) => {
         const id = `s${i}`;
@@ -1760,19 +1812,26 @@ function TreeIconNode({ data, selected }) {
   const imgUrl = useNodeImage(data.label || 'node', data.category || 'agent');
   return (
     <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:9, background:'transparent' }}>
-      <Handle type="target" position={Position.Top} style={{ opacity:0, pointerEvents:'none' }}/>
-      <Handle type="source" position={Position.Bottom} style={{ opacity:0, pointerEvents:'none' }}/>
+      {/* Hidden handles on all 4 sides — SmartEdge picks the closest one */}
+      {[Position.Top, Position.Bottom, Position.Left, Position.Right].map(pos => (
+        <React.Fragment key={pos}>
+          <Handle type="source" position={pos} style={{opacity:0,pointerEvents:'none',width:4,height:4}}/>
+          <Handle type="target" position={pos} style={{opacity:0,pointerEvents:'none',width:4,height:4}}/>
+        </React.Fragment>
+      ))}
       <div style={{
         width:100, height:100, borderRadius:22,
         backgroundColor: cfg.bg,
         backgroundImage: `url(${imgUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        border:`1.5px solid ${cfg.color}`,
+        border:`2.5px solid ${cfg.color}`,
         display:'flex', alignItems:'center', justifyContent:'center',
         position:'relative', opacity: isEnabled ? 1 : 0.4,
         overflow: 'hidden',
-        boxShadow: selected ? `0 0 0 3px ${cfg.color}33, 0 8px 32px rgba(0,0,0,0.9)` : '0 6px 28px rgba(0,0,0,0.8)',
+        boxShadow: selected
+          ? `0 0 0 4px ${cfg.color}66, 0 0 20px ${cfg.color}44, 0 8px 32px rgba(0,0,0,0.9)`
+          : `0 6px 28px rgba(0,0,0,0.8), 0 0 0 0px transparent`,
         transition:'border-color 0.2s, box-shadow 0.2s',
       }}>
         {/* Layer 0 — colour-mix tint so AI image feels themed */}
@@ -1860,6 +1919,10 @@ const nodeTypes = {
   modelslist:   ModelsListNode,
   model:        ModelNode,
   channel:      ChannelNode,
+};
+
+const edgeTypes = {
+  smartEdge: SmartEdge,
 };
 
 /* ── Nav Button ── */
@@ -2538,8 +2601,8 @@ function skillCat(id) { return SKILL_CATS[id] || 'Other'; }
 /* ── Family Tree: ~10 icon nodes + expandable children ── */
 function buildFamilyTree(data, expandedIds = new Set(), edgeDash) {
   const E = (id, s, t, color='#666') => ({
-    id, source:s, target:t, type:'default',
-    style:{ stroke:color, strokeWidth:2.5, opacity:0.85,
+    id, source:s, target:t, type:'smartEdge',
+    style:{ stroke:color, strokeWidth:2, opacity:0.5,
       ...(edgeDash ? { strokeDasharray: edgeDash } : {}) },
   });
 
@@ -2767,7 +2830,7 @@ function buildFamilyTree(data, expandedIds = new Set(), edgeDash) {
 /* ── Live Mode: gateway + all section nodes visible but collapsed ── */
 function buildLiveInitial(data) {
   const EDGE = (id,s,t,color,active=true) => ({
-    id, source:s, target:t, type:'smoothstep',
+    id, source:s, target:t, type:'smartEdge',
     style:{stroke:active?color:'#2a2a2a', strokeWidth:active?1.5:1, opacity:active?0.65:0.2},
     animated: active,
   });
@@ -2821,7 +2884,7 @@ function buildExpandedNodes(section, data, currentExpanded) {
   const addNodes = [];
   const addEdges = [];
   const EDGE = (id,s,t,color,active=true) => ({
-    id, source:s, target:t, type:'smoothstep',
+    id, source:s, target:t, type:'smartEdge',
     style:{stroke:active?color:'#2a2a2a', strokeWidth:active?1.5:1, opacity:active?0.65:0.2},
     animated: active,
   });
@@ -4556,7 +4619,7 @@ function ForgeApp() {
         ]);
         setEdges(eds => [
           ...eds.filter(e => !e.id.startsWith(edgePrefix) && e.id !== sectionEdgeId),
-          { id:sectionEdgeId, source:'live-gw', target:sectionCardId, type:'smoothstep',
+          { id:sectionEdgeId, source:'live-gw', target:sectionCardId, type:'smartEdge',
             style:{stroke:COLORS[section],strokeWidth:1.5,opacity:0.65}, animated:true },
         ]);
         setTimeout(async () => {
@@ -4625,7 +4688,7 @@ function ForgeApp() {
   const onConnect = useCallback(params => {
     if (liveMode) return;
     const newEdges = addEdge({
-      ...params, type:'smoothstep',
+      ...params, type:'smartEdge',
       style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65},
     }, edges);
     setEdges(newEdges);
@@ -4824,7 +4887,8 @@ function ForgeApp() {
           onPaneClick={onPaneClick}
           onInit={inst => rfInstance.current = inst}
           nodeTypes={nodeTypes}
-          defaultEdgeOptions={{ type:'smoothstep', style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65} }}
+          edgeTypes={edgeTypes}
+          defaultEdgeOptions={{ type:'smartEdge', style:{stroke:'#ff5c5c',strokeWidth:2,opacity:0.45} }}
           nodesDraggable={!liveMode}
           nodesConnectable={!liveMode}
           minZoom={0.05}

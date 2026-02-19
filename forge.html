@@ -1775,27 +1775,56 @@ function TreeIconNode({ data, selected }) {
         boxShadow: selected ? `0 0 0 3px ${cfg.color}33, 0 8px 32px rgba(0,0,0,0.9)` : '0 6px 28px rgba(0,0,0,0.8)',
         transition:'border-color 0.2s, box-shadow 0.2s',
       }}>
-        {/* Dim overlay — tinted with category colour so image feels themed */}
+        {/* Layer 0 — colour-mix tint so AI image feels themed */}
         <div style={{
-          position:'absolute', inset:0,
-          background:`color-mix(in srgb, ${cfg.bg} 70%, transparent)`,
-          zIndex:0,
+          position:'absolute', inset:0, zIndex:0, pointerEvents:'none',
+          background:`color-mix(in srgb, ${cfg.bg} 65%, transparent)`,
         }}/>
-        {/* Status dot */}
-        <span style={{
-          position:'absolute', top:8, right:8, width:6, height:6, borderRadius:'50%', zIndex:2,
-          background: isEnabled ? '#4ade80' : '#333',
-          boxShadow: isEnabled ? '0 0 5px rgba(74,222,128,0.6)' : 'none',
-        }}/>
-        {/* Icon sits above the overlay */}
+
+        {/* Icon */}
         <div style={{position:'relative', zIndex:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
           {cfg.icon(cfg.color)}
         </div>
+
+        {/* Layer 2 — glass gradient: dark base → transparent → faint top light */}
+        <div style={{
+          position:'absolute', inset:0, borderRadius:20, zIndex:2, pointerEvents:'none',
+          background:`linear-gradient(to top,
+            rgba(0,0,0,0.55) 0%,
+            rgba(0,0,0,0.20) 38%,
+            rgba(0,0,0,0.00) 60%,
+            rgba(255,255,255,0.04) 100%)`,
+        }}/>
+
+        {/* Layer 3 — top specular blob: convex glass catching overhead light */}
+        <div style={{
+          position:'absolute', top:0, left:'10%', right:'10%', height:'55%',
+          zIndex:3, pointerEvents:'none',
+          background:`radial-gradient(ellipse at 50% -10%,
+            rgba(255,255,255,0.13) 0%,
+            rgba(255,255,255,0.04) 45%,
+            transparent 72%)`,
+        }}/>
+
+        {/* Layer 4 — bottom rim shadow for physical depth */}
+        <div style={{
+          position:'absolute', bottom:0, left:0, right:0, height:'30%',
+          zIndex:4, pointerEvents:'none', borderRadius:'0 0 20px 20px',
+          background:`linear-gradient(to top, rgba(0,0,0,0.30) 0%, transparent 100%)`,
+        }}/>
+
+        {/* Status dot — above glass */}
+        <span style={{
+          position:'absolute', top:8, right:8, width:7, height:7, borderRadius:'50%', zIndex:5,
+          background: isEnabled ? '#4ade80' : '#333',
+          boxShadow: isEnabled ? '0 0 6px rgba(74,222,128,0.8)' : 'none',
+        }}/>
+
         {data.expandable && (
           <span style={{
             position:'absolute', bottom:7, left:'50%', transform:'translateX(-50%)',
             fontSize:'0.75rem', color: data.expanded ? cfg.color : '#666',
-            lineHeight:1, zIndex:2,
+            lineHeight:1, zIndex:5,
           }}>{data.expanded ? '▾' : '▸'}</span>
         )}
       </div>
@@ -4270,7 +4299,9 @@ function ForgeApp() {
   const applyFamilyTree = useCallback(async (expandedIds) => {
     const data = liveDataRef.current;
     if (!data) return;
-    const { nodes: lnodes, edges: ledges } = buildFamilyTree(data, expandedIds);
+    const EDGE_STYLE_DASHES = { solid:undefined, dashed:'10 5', dotted:'2 6', longdash:'18 7' };
+    const dash = EDGE_STYLE_DASHES[edgeStyleRef.current];
+    const { nodes: lnodes, edges: ledges } = buildFamilyTree(data, expandedIds, dash);
     setEdges(ledges);
     const laid = await elkLayout(lnodes, ledges, treeElkRef.current);
     setNodes(laid);

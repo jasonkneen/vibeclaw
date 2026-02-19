@@ -1722,6 +1722,8 @@ const TREE_CATEGORIES = {
     icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
   node:    { color:'#22d3ee', bg:'#03100f', border:'#0b3038',
     icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> },
+  command: { color:'#a855f7', bg:'#0d0618', border:'#2e1258',
+    icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> },
 };
 
 function TreeIconNode({ data, selected }) {
@@ -1790,6 +1792,7 @@ const nodeTypes = {
   sessionslist: SessionsListNode,
   cronlist:     CronListNode,
   nodeslist:    NodesListNode,
+  modelslist:   ModelsListNode,
   model:        ModelNode,
   channel:      ChannelNode,
 };
@@ -2261,6 +2264,13 @@ function CronListNode({ data }) {
             </div>
           </div>
         ))}
+        <div onClick={e=>{e.stopPropagation();window.__liveNewCron?.();}}
+          style={{padding:'8px 12px',cursor:'pointer',display:'flex',alignItems:'center',gap:6,opacity:0.5,transition:'opacity 0.15s'}}
+          onMouseEnter={e=>e.currentTarget.style.opacity='1'}
+          onMouseLeave={e=>e.currentTarget.style.opacity='0.5'}>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#a855f7'}}>＋</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#888'}}>New Cron Job</span>
+        </div>
       </div>
     </div>
   );
@@ -2301,6 +2311,40 @@ function NodesListNode({ data }) {
   );
 }
 
+/* ── Models List Node ── */
+function ModelsListNode({ data }) {
+  const providers = data.providers || [];
+  const C = '#f97316';
+  return (
+    <div className="vf-node" style={{border:`1.5px solid ${C}`,padding:0,overflow:'hidden',width:280,maxHeight:320,display:'flex',flexDirection:'column'}}>
+      <Handle type="target" position={Position.Left} style={{background:C,border:`2px solid ${C}`,width:10,height:10,top:24}}/>
+      <div style={{padding:'10px 12px',borderBottom:'1px solid #1a1a1a',display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
+        <div style={{background:'color-mix(in srgb,#f97316 18%,#0a0a0a)',borderRadius:6,padding:5,display:'flex',fontSize:'0.85rem'}}>🧠</div>
+        <div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>Models</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:C,marginTop:1}}>{providers.length} providers · {data.models?.length||0} models</div>
+        </div>
+      </div>
+      <div style={{overflowY:'auto',flex:1}}>
+        {providers.map(p => (
+          <div key={p.id} style={{padding:'8px 12px',borderBottom:'1px solid #0e0e0e'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:4}}>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.72rem',color:'#ccc',fontWeight:600}}>{p.id}</span>
+              <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.52rem',color:'#444'}}>{p.models?.length||0} models</span>
+            </div>
+            <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
+              {(p.models||[]).map(m => (
+                <span key={m.id} style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.5rem',color:C,background:'rgba(249,115,22,0.08)',border:'1px solid rgba(249,115,22,0.2)',borderRadius:3,padding:'1px 5px'}}>{m.id}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+        {providers.length === 0 && <div style={{padding:16,textAlign:'center',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#2a2a2a'}}>no providers configured</div>}
+      </div>
+    </div>
+  );
+}
+
 /* ── Live Gateway Node — expandable sections ── */
 function LiveGatewayNode({ data, selected }) {
   const sections = [
@@ -2310,6 +2354,7 @@ function LiveGatewayNode({ data, selected }) {
     { key:'sessions', label:'Sessions', count: data.sessionCount||0, color:'#f59e0b' },
     { key:'cron',     label:'Cron Jobs',count: data.cronCount||0,    color:'#a855f7' },
     { key:'nodes',    label:'Nodes',    count: data.nodeCount||0,    color:'#22d3ee' },
+    { key:'models',   label:'Models',   count: data.modelCount||0,   color:'#f97316' },
   ];
 
   return (
@@ -2486,6 +2531,10 @@ function buildFamilyTree(data, expandedIds = new Set()) {
                  _nodeType:'channel', ...ch } });
         edges.push(E(`e-ch-${i}`, 'ft-channels-group', id, '#22d3ee'));
       });
+      // "New channel" add button
+      nodes.push({ id:'ft-ch-new', type:'treeicon', position:{x:0,y:0},
+        data:{ label:'＋ Add Channel', category:'channel', enabled:true, _nodeType:'newchannel', _new:true } });
+      edges.push(E('e-ch-new', 'ft-channels-group', 'ft-ch-new', '#22d3ee'));
     }
   }
 
@@ -2567,6 +2616,40 @@ function buildFamilyTree(data, expandedIds = new Set()) {
     }
   }
 
+  // System / Commands node
+  nodes.push({ id:'ft-commands', type:'treeicon', position:{x:0,y:0},
+    data:{ label:'System Config', category:'command', enabled:true, _nodeType:'commands',
+           _config: { commands: data.config?.commands, web: data.config?.web, talk: data.config?.talk } } });
+  edges.push(E('e-commands', 'live-server', 'ft-commands', '#a855f7'));
+
+  // Model providers — one parent node → provider children → model leaves
+  const providers = data.modelProviders || [];
+  if (providers.length > 0) {
+    const totalModels = providers.reduce((s,p) => s + (p.models?.length||0), 0);
+    nodes.push({ id:'ft-models-group', type:'treeicon', position:{x:0,y:0},
+      data:{ label:`${providers.length} Provider${providers.length===1?'':'s'} · ${totalModels} Models`,
+             category:'model', enabled:true, expandable:true, expanded:expandedIds.has('ft-models-group'),
+             _nodeType:'modelslist', providers, models: data.models||[] } });
+    edges.push(E('e-models-group', 'live-server', 'ft-models-group', '#f97316'));
+    if (expandedIds.has('ft-models-group')) {
+      providers.forEach((prov,i) => {
+        const provId = `ft-prov-${prov.id||i}`;
+        nodes.push({ id:provId, type:'treeicon', position:{x:0,y:0},
+          data:{ label:prov.id, category:'model', enabled:true, expandable:(prov.models?.length||0)>0,
+                 expanded:expandedIds.has(provId) } });
+        edges.push(E(`e-prov-${i}`, 'ft-models-group', provId, '#f97316'));
+        if (expandedIds.has(provId)) {
+          (prov.models||[]).forEach((m,j) => {
+            const mId = `ft-pm-${prov.id}-${j}`;
+            nodes.push({ id:mId, type:'treeicon', position:{x:0,y:0},
+              data:{ label:m.name||m.id, category:'model', enabled:true } });
+            edges.push(E(`e-pm-${prov.id}-${j}`, provId, mId, '#f97316'));
+          });
+        }
+      });
+    }
+  }
+
   return { nodes, edges };
 }
 
@@ -2579,12 +2662,13 @@ function buildLiveInitial(data) {
   });
 
   const sections = [
-    { id:'live-sec-agents',   label:'Agents',    count: data.agents?.length||0,   color:'#818cf8', x:380,  y:-180 },
-    { id:'live-sec-skills',   label:'Skills',    count: data.skills?.length||0,   color:'#4ade80', x:380,  y:-40  },
-    { id:'live-sec-channels', label:'Channels',  count: data.channels?.length||0, color:'#22d3ee', x:-380, y:-100 },
-    { id:'live-sec-sessions', label:'Sessions',  count: data.sessions?.length||0, color:'#f59e0b', x:380,  y:100  },
-    { id:'live-sec-cron',     label:'Cron Jobs', count: data.cronJobs?.length||0, color:'#a855f7', x:0,    y:300  },
-    { id:'live-sec-nodes',    label:'Nodes',     count: data.nodes?.length||0,    color:'#22d3ee', x:-380, y:60   },
+    { id:'live-sec-agents',   label:'Agents',    count: data.agents?.length||0,          color:'#818cf8', x:380,  y:-180 },
+    { id:'live-sec-skills',   label:'Skills',    count: data.skills?.length||0,          color:'#4ade80', x:380,  y:-40  },
+    { id:'live-sec-channels', label:'Channels',  count: data.channels?.length||0,        color:'#22d3ee', x:-380, y:-100 },
+    { id:'live-sec-sessions', label:'Sessions',  count: data.sessions?.length||0,        color:'#f59e0b', x:380,  y:100  },
+    { id:'live-sec-cron',     label:'Cron Jobs', count: data.cronJobs?.length||0,        color:'#a855f7', x:0,    y:300  },
+    { id:'live-sec-nodes',    label:'Nodes',     count: data.nodes?.length||0,           color:'#22d3ee', x:-380, y:60   },
+    { id:'live-sec-models',   label:'Models',    count: data.models?.length||0,          color:'#f97316', x:-380, y:220  },
   ];
 
   const nodes = [{
@@ -2595,12 +2679,13 @@ function buildLiveInitial(data) {
       label: 'OpenClaw Gateway',
       port: data.gateway?.port,
       version: data.gateway?.version,
-      agentCount: data.agents?.length || 0,
-      skillCount: data.skills?.length || 0,
-      channelCount: data.channels?.length || 0,
-      sessionCount: data.sessions?.length || 0,
-      cronCount: data.cronJobs?.length || 0,
-      nodeCount: data.nodes?.length || 0,
+      agentCount:   data.agents?.length    || 0,
+      skillCount:   data.skills?.length    || 0,
+      channelCount: data.channels?.length  || 0,
+      sessionCount: data.sessions?.length  || 0,
+      cronCount:    data.cronJobs?.length  || 0,
+      nodeCount:    data.nodes?.length     || 0,
+      modelCount:   data.models?.length    || 0,
       expanded: {},
     },
   }];
@@ -2686,6 +2771,12 @@ function buildExpandedNodes(section, data, currentExpanded) {
     addNodes.push({ id:'live-nodes', type:'nodeslist', position:{x:-420, y:-240},
       data:{ nodes: data.nodes||[] } });
     addEdges.push(EDGE('enodes','live-gw','live-nodes','#22d3ee'));
+  }
+
+  if (section === 'models') {
+    addNodes.push({ id:'live-models', type:'modelslist', position:{x:0, y:-380},
+      data:{ providers: data.modelProviders||[], models: data.models||[] } });
+    addEdges.push(EDGE('emodels','live-gw','live-models','#f97316'));
   }
 
   return { addNodes, addEdges };
@@ -2856,16 +2947,59 @@ function PanelShell({ emoji, title, subtitle, subtitleColor='#4ade80', onClose, 
   );
 }
 
+/* ── Toggle helper ── */
+function PanelToggle({ value, onChange }) {
+  return (
+    <div onClick={() => onChange(!value)} style={{
+      width:36, height:20, borderRadius:10, cursor:'pointer', flexShrink:0,
+      background: value ? '#4ade80' : '#2a2a2a',
+      border: `1px solid ${value ? '#4ade80' : '#444'}`,
+      position:'relative', transition:'all 0.2s',
+    }}>
+      <div style={{
+        position:'absolute', top:2, left: value ? 16 : 2,
+        width:14, height:14, borderRadius:'50%',
+        background: value ? '#000' : '#666',
+        transition:'left 0.2s',
+      }}/>
+    </div>
+  );
+}
+
+/* ── Section divider ── */
+function PanelSection({ label }) {
+  return (
+    <div style={{
+      fontFamily:"'JetBrains Mono',monospace", fontSize:'0.58rem',
+      color:'#444', textTransform:'uppercase', letterSpacing:'0.1em',
+      borderBottom:'1px solid #222', paddingBottom:6, marginBottom:10, marginTop:18,
+    }}>{label}</div>
+  );
+}
+
 /* ── Agent Edit Panel ── */
-function LiveAgentPanel({ data, onClose, onSaved }) {
-  const [agentName, setAgentName] = React.useState(data.label || data.agentId || '');
-  const [model, setModel] = React.useState(data.model || '');
-  const [fallbacks, setFallbacks] = React.useState((data.fallbackModels||[]).join('\n'));
-  const [prompt, setPrompt] = React.useState(data.systemPrompt || '');
-  const [workspace, setWorkspace] = React.useState(data.workspace || '');
-  const [thinking, setThinking] = React.useState(data.thinking || '');
-  const [saving, setSaving] = React.useState(false);
-  const [saveStatus, setSaveStatus] = React.useState('');
+function LiveAgentPanel({ data, models, onClose, onSaved, onDeleted }) {
+  const [agentName,    setAgentName]    = React.useState(data.label || data.agentId || '');
+  const [model,        setModel]        = React.useState(data.model || '');
+  const [fallbacks,    setFallbacks]    = React.useState((data.fallbackModels||[]).join('\n'));
+  const [thinking,     setThinking]     = React.useState(data.thinking || '');
+  const [workspace,    setWorkspace]    = React.useState(data.workspace || '');
+  const [maxConc,      setMaxConc]      = React.useState(data.maxConcurrent ?? 4);
+  const [compaction,   setCompaction]   = React.useState(data.compaction?.mode || 'safeguard');
+  const [subModel,     setSubModel]     = React.useState(data.subagents?.model || data.model || '');
+  const [subMaxConc,   setSubMaxConc]   = React.useState(data.subagents?.maxConcurrent ?? 8);
+  const [memEnabled,   setMemEnabled]   = React.useState(data.memorySearch?.enabled !== false);
+  const [memSession,   setMemSession]   = React.useState(data.memorySearch?.experimental?.sessionMemory === true);
+  const [memCache,     setMemCache]     = React.useState(data.memorySearch?.cache?.enabled !== false);
+  const [memProvider,  setMemProvider]  = React.useState(data.memorySearch?.provider || 'gemini');
+  const [memModel,     setMemModel]     = React.useState(data.memorySearch?.model || 'gemini-embedding-001');
+  const [prompt,       setPrompt]       = React.useState(data.systemPrompt || '');
+  const [saving,       setSaving]       = React.useState(false);
+  const [saveStatus,   setSaveStatus]   = React.useState('');
+  const [deleting,     setDeleting]     = React.useState(false);
+  const [confirmDel,   setConfirmDel]   = React.useState(false);
+
+  const modelList = models?.map(m => `${m.provider}/${m.id}`) || [];
 
   const save = async () => {
     setSaving(true); setSaveStatus('');
@@ -2875,7 +3009,24 @@ function LiveAgentPanel({ data, onClose, onSaved }) {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ agentPatch: {
           agentId: data.agentId || 'main',
-          patch: { name: agentName, model, fallbackModels: fallbackList, systemPrompt: prompt, workspace, ...(thinking ? { thinking } : {}) },
+          patch: {
+            name: agentName,
+            model,
+            fallbackModels: fallbackList,
+            thinking: thinking || undefined,
+            workspace,
+            maxConcurrent: Number(maxConc),
+            compaction: { mode: compaction },
+            subagents: { model: subModel, maxConcurrent: Number(subMaxConc) },
+            memorySearch: {
+              enabled: memEnabled,
+              provider: memProvider,
+              model: memModel,
+              cache: { enabled: memCache },
+              experimental: { sessionMemory: memSession },
+            },
+            systemPrompt: prompt,
+          },
         }}),
       });
       const d = await r.json();
@@ -2886,111 +3037,307 @@ function LiveAgentPanel({ data, onClose, onSaved }) {
     setTimeout(() => setSaveStatus(''), 4000);
   };
 
-  const MODELS = ['anthropic/claude-sonnet-4-6','anthropic/claude-3-5-haiku','anthropic/claude-opus-4-5','openai/gpt-4o','openai/gpt-4o-mini','google/gemini-2.0-flash-exp:free','google/gemini-2.5-pro-exp-03-25:free','meta-llama/llama-3.3-70b-instruct:free','upstage/solar-pro-3:free','deepseek/deepseek-r1:free'];
-  const THINKING = ['', 'low', 'medium', 'high'];
+  const MS = (v, onChange, placeholder='') => (
+    <input value={v} onChange={e=>onChange(e.target.value)} style={panelInput} placeholder={placeholder}/>
+  );
+  const SEL = (v, onChange, opts) => (
+    <select value={v} onChange={e=>onChange(e.target.value)} style={panelInput}>
+      {opts.map(([val,label]) => <option key={val} value={val}>{label}</option>)}
+      {!opts.find(([val])=>val===v) && <option value={v}>{v}</option>}
+    </select>
+  );
+  const TOG = (v, onChange, label) => (
+    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+      <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>{label}</span>
+      <PanelToggle value={v} onChange={onChange}/>
+    </div>
+  );
 
   return (
-    <PanelShell emoji="🤖" title={data.label||'Agent'} subtitle={model.split('/').pop()} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
+    <PanelShell emoji="🤖" title={data.label||'Agent'} subtitle={`${data.agentId||'main'} · ${model.split('/').pop()}`} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
 
-      {panelField({ label:'Agent ID', children:
-        <input value={data.agentId||'main'} disabled style={{...panelInput,opacity:0.35,cursor:'not-allowed'}}/>
-      })}
+      <PanelSection label="Identity"/>
+      {panelField({ label:'Agent ID', children: <input value={data.agentId||'main'} disabled style={{...panelInput,opacity:0.35,cursor:'not-allowed'}}/> })}
+      {panelField({ label:'Display Name', children: MS(agentName, setAgentName, 'e.g. Cynthia') })}
 
-      {panelField({ label:'Display Name', children:
-        <input value={agentName} onChange={e=>setAgentName(e.target.value)} style={panelInput} placeholder="e.g. Cynthia"/>
-      })}
-
-      {panelField({ label:'Primary Model', children:
-        <select value={model} onChange={e=>setModel(e.target.value)} style={panelInput}>
-          {MODELS.map(m => <option key={m} value={m}>{m}</option>)}
-          {!MODELS.includes(model) && <option value={model}>{model}</option>}
-        </select>
-      })}
-
-      {panelField({ label:'Fallback Models', children:
+      <PanelSection label="Models"/>
+      {panelField({ label:'Primary', children: SEL(model, setModel, modelList.map(m=>[m,m])) })}
+      {panelField({ label:'Fallbacks', children:
         <>
-          <textarea value={fallbacks} onChange={e=>setFallbacks(e.target.value)}
-            rows={3} style={{...panelInput,resize:'vertical',lineHeight:1.6}}
-            placeholder={'one model per line\ne.g. openai/gpt-4o'}/>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>one per line · used if primary fails or rate-limits</div>
+          <textarea value={fallbacks} onChange={e=>setFallbacks(e.target.value)} rows={3}
+            style={{...panelInput,resize:'vertical',lineHeight:1.6}} placeholder={'one per line — used if primary fails'}/>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>tried in order if primary rate-limits or errors</div>
         </>
       })}
+      {panelField({ label:'Thinking', children: SEL(thinking, setThinking, [['','off'],['low','low'],['medium','medium'],['high','high']]) })}
 
-      {panelField({ label:'Thinking Mode', children:
-        <select value={thinking} onChange={e=>setThinking(e.target.value)} style={panelInput}>
-          {THINKING.map(t => <option key={t} value={t}>{t || 'off'}</option>)}
-        </select>
-      })}
+      <PanelSection label="Concurrency"/>
+      {panelField({ label:'Max Concurrent', children: <input type="number" min={1} max={32} value={maxConc} onChange={e=>setMaxConc(e.target.value)} style={panelInput}/> })}
+      {panelField({ label:'Compaction', children: SEL(compaction, setCompaction, [['safeguard','safeguard'],['aggressive','aggressive'],['off','off']]) })}
 
-      {panelField({ label:'Workspace', children:
-        <input value={workspace} onChange={e=>setWorkspace(e.target.value)} style={panelInput} placeholder="/path/to/workspace"/>
-      })}
+      <PanelSection label="Subagents"/>
+      {panelField({ label:'Sub Max Concurrent', children: <input type="number" min={1} max={64} value={subMaxConc} onChange={e=>setSubMaxConc(e.target.value)} style={panelInput}/> })}
+      {panelField({ label:'Sub Model', children: SEL(subModel, setSubModel, modelList.map(m=>[m,m])) })}
 
-      {panelField({ label:'System Prompt', children:
+      <PanelSection label="Memory Search"/>
+      {TOG(memEnabled, setMemEnabled, 'Enabled')}
+      {memEnabled && <>
+        {TOG(memSession, setMemSession, 'Session Memory (experimental)')}
+        {TOG(memCache, setMemCache, 'Cache')}
+        {panelField({ label:'Provider', children: MS(memProvider, setMemProvider, 'gemini') })}
+        {panelField({ label:'Embedding Model', children: MS(memModel, setMemModel, 'gemini-embedding-001') })}
+      </>}
+
+      <PanelSection label="Workspace"/>
+      {panelField({ label:'Path', children: MS(workspace, setWorkspace, '/path/to/workspace') })}
+
+      <PanelSection label="System Prompt"/>
+      <textarea value={prompt} onChange={e=>setPrompt(e.target.value)} rows={8}
+        style={{...panelInput,resize:'vertical',lineHeight:1.5,width:'100%',boxSizing:'border-box'}}
+        placeholder={'Leave empty to use workspace SOUL.md / AGENTS.md'}/>
+      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>workspace files override this at runtime</div>
+
+      {data.agentId && data.agentId !== 'main' && data.agentId !== 'defaults' && (
         <>
-          <textarea value={prompt} onChange={e=>setPrompt(e.target.value)}
-            rows={10} style={{...panelInput,resize:'vertical',lineHeight:1.5}}
-            placeholder={'Leave empty to use workspace files\n(SOUL.md, AGENTS.md, USER.md etc.)'}/>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>tip: workspace SOUL.md / AGENTS.md override this at runtime</div>
+          <PanelSection label="Danger Zone"/>
+          {confirmDel
+            ? <div style={{display:'flex',gap:6}}>
+                <button onClick={async () => {
+                  setDeleting(true);
+                  await fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ agentDelete: { agentId: data.agentId } }) });
+                  setDeleting(false);
+                  onDeleted?.();
+                }} disabled={deleting} style={{flex:1,background:'#7f1d1d',border:'1px solid #ef4444',borderRadius:5,padding:'7px',color:'#fca5a5',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>{deleting?'Deleting…':'⚠ Confirm Delete'}</button>
+                <button onClick={()=>setConfirmDel(false)} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:5,padding:'7px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>Cancel</button>
+              </div>
+            : <button onClick={()=>setConfirmDel(true)} style={{width:'100%',background:'none',border:'1px solid #3a1818',borderRadius:5,padding:'7px',color:'#ef4444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>✕ Delete Agent</button>
+          }
         </>
-      })}
+      )}
 
     </PanelShell>
   );
 }
 
 /* ── Channel Edit Panel ── */
-function LiveChannelPanel({ data, onClose, onSaved }) {
-  const skip = new Set(['label','_nodeType','id','type','accounts']);
-  const editableFields = Object.entries(data).filter(([k]) => !skip.has(k));
-  const [fields, setFields] = React.useState(
-    Object.fromEntries(editableFields.map(([k,v]) => [k, Array.isArray(v) ? v.join('\n') : typeof v === 'object' ? JSON.stringify(v,null,2) : String(v??'')]))
-  );
-  const [saving, setSaving] = React.useState(false);
+const CHANNEL_EMOJIS = { whatsapp:'💬', discord:'🎮', slack:'#️⃣', telegram:'✈️', sms:'📱', email:'✉️', web:'🌐', imessage:'💙', default:'📡' };
+const CHANNEL_TYPES  = ['whatsapp','discord','slack','telegram','sms','email','web','imessage'];
 
-  const [saveStatus, setSaveStatus] = React.useState('');
+function LiveChannelPanel({ data, onClose, onSaved, onDeleted, onCreated }) {
+  const isNew       = !!data._new;
+  const channelType = data.id || data.type || '';
+  const POLICY_OPTS = [['allowlist','allowlist'],['all','allow all'],['none','block all']];
+
+  // Create-mode fields
+  const [newTypeSelect, setNewTypeSelect] = React.useState('whatsapp');
+  const [customTypeId,  setCustomTypeId]  = React.useState('');
+  const newType = newTypeSelect === 'custom' ? (customTypeId || 'custom') : newTypeSelect;
+
+  // Common
+  const [enabled,     setEnabled]     = React.useState(data.enabled !== false);
+  const [dmPolicy,    setDmPolicy]    = React.useState(data.dmPolicy     || 'allowlist');
+  const [groupPolicy, setGroupPolicy] = React.useState(data.groupPolicy  || 'allowlist');
+  const [allowFrom,   setAllowFrom]   = React.useState((data.allowFrom||[]).join('\n'));
+  const [selfChat,    setSelfChat]    = React.useState(data.selfChatMode === true);
+  const [debounce,    setDebounce]    = React.useState(data.debounceMs   ?? 0);
+  const [mediaMax,    setMediaMax]    = React.useState(data.mediaMaxMb   ?? 50);
+  const [extraJson,   setExtraJson]   = React.useState('');
+
+  // Per-account overrides (whatsapp only)
+  const [accounts,       setAccounts]       = React.useState(Object.entries(data.accounts||{}).map(([id,cfg])=>({id,...cfg})));
+  const [editingAcct,    setEditingAcct]    = React.useState(null);
+  const [newAcctId,      setNewAcctId]      = React.useState('');
+  const [addingAcct,     setAddingAcct]     = React.useState(false);
+
+  // Danger zone
+  const [confirmDel,  setConfirmDel]  = React.useState(false);
+  const [deleting,    setDeleting]    = React.useState(false);
+  const [saving,      setSaving]      = React.useState(false);
+  const [saveStatus,  setSaveStatus]  = React.useState('');
+
+  const patch = async (body) => fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }).then(r=>r.json());
+
   const save = async () => {
     setSaving(true); setSaveStatus('');
     try {
-      const patch = {};
-      for (const [k,v] of Object.entries(fields)) {
-        const orig = data[k];
-        if (Array.isArray(orig)) patch[k] = v.split('\n').map(s=>s.trim()).filter(Boolean);
-        else if (typeof orig === 'boolean') patch[k] = v === 'true';
-        else if (typeof orig === 'number') patch[k] = Number(v);
-        else patch[k] = v;
-      }
-      const r = await fetch('/api/gateway-patch', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ channelPatch: { channelId: data.id, patch } }),
-      });
-      const d = await r.json();
-      setSaveStatus(d.ok ? '✓ Saved' : `✗ ${d.error}`);
-      if (d.ok) onSaved?.();
+      const chId = isNew ? newType : channelType;
+      const cfg = {
+        enabled, dmPolicy, groupPolicy,
+        allowFrom: allowFrom.split('\n').map(s=>s.trim()).filter(Boolean),
+        selfChatMode: selfChat,
+        debounceMs: Number(debounce),
+        mediaMaxMb: Number(mediaMax),
+      };
+      if (extraJson.trim()) { try { Object.assign(cfg, JSON.parse(extraJson)); } catch {} }
+
+      const r = isNew
+        ? await patch({ channelCreate: { channelId: chId, channel: cfg } })
+        : await patch({ channelPatch:  { channelId: chId, patch: cfg  } });
+
+      setSaveStatus(r.ok ? '✓ Saved — restart to apply' : `✗ ${r.error}`);
+      if (r.ok) { if (isNew) onCreated?.({ id: chId, type: chId, ...cfg }); else onSaved?.(); }
     } catch(e) { setSaveStatus(`✗ ${e.message}`); }
     setSaving(false);
     setTimeout(() => setSaveStatus(''), 3000);
   };
 
+  const saveAccount = async (acctId, acctPatch) => {
+    await patch({ channelAccountPatch: { channelId: channelType, accountId: acctId, patch: acctPatch } });
+  };
+
+  const deleteAccount = async (acctId) => {
+    await patch({ channelAccountDelete: { channelId: channelType, accountId: acctId } });
+    setAccounts(prev => prev.filter(a => a.id !== acctId));
+  };
+
+  const addAccount = async () => {
+    if (!newAcctId.trim()) return;
+    const init = { dmPolicy: 'allowlist', groupPolicy: 'allowlist', debounceMs: 0 };
+    await patch({ channelAccountPatch: { channelId: channelType, accountId: newAcctId.trim(), patch: init } });
+    setAccounts(prev => [...prev, { id: newAcctId.trim(), ...init }]);
+    setAddingAcct(false); setNewAcctId('');
+  };
+
+  const SEL = (v, onChange, opts) => (
+    <select value={v} onChange={e=>onChange(e.target.value)} style={panelInput}>
+      {opts.map(([val,label]) => <option key={val} value={val}>{label}</option>)}
+    </select>
+  );
+  const TOG = (v, set, label) => (
+    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+      <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>{label}</span>
+      <PanelToggle value={v} onChange={set}/>
+    </div>
+  );
+
+  const chEmoji = CHANNEL_EMOJIS[isNew ? newType : channelType] || CHANNEL_EMOJIS.default;
+  const chTitle = isNew ? 'New Channel' : (data.label || channelType);
+
   return (
-    <PanelShell emoji="📡" title={data.label||data.id} subtitle={data.enabled?'enabled':'disabled'} subtitleColor={data.enabled?'#4ade80':'#555'} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
-      {editableFields.map(([k,v]) => (
-        panelField({ label: k, children:
-          typeof v === 'boolean'
-            ? <select value={fields[k]} onChange={e=>setFields(f=>({...f,[k]:e.target.value}))} style={panelInput}>
-                <option value="true">true</option><option value="false">false</option>
-              </select>
-            : Array.isArray(v)
-              ? <textarea value={fields[k]} onChange={e=>setFields(f=>({...f,[k]:e.target.value}))} rows={3} style={{...panelInput,resize:'vertical'}} placeholder="one per line"/>
-              : <input value={fields[k]} onChange={e=>setFields(f=>({...f,[k]:e.target.value}))} style={panelInput}/>
-        })
-      ))}
+    <PanelShell emoji={chEmoji} title={chTitle} subtitle={isNew ? 'create' : (enabled?'enabled':'disabled')} subtitleColor={isNew ? '#22d3ee' : (enabled?'#4ade80':'#555')} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
+
+      {isNew && (
+        <>
+          <PanelSection label="Channel Type"/>
+          {panelField({ label:'Type', children:
+            <select value={newTypeSelect} onChange={e=>setNewTypeSelect(e.target.value)} style={panelInput}>
+              {CHANNEL_TYPES.map(t => <option key={t} value={t}>{CHANNEL_EMOJIS[t]||'📡'} {t}</option>)}
+              <option value="custom">custom…</option>
+            </select>
+          })}
+          {newTypeSelect === 'custom' && panelField({ label:'Custom ID', children:
+            <input value={customTypeId} onChange={e=>setCustomTypeId(e.target.value)} style={panelInput} placeholder="e.g. signal"/>
+          })}
+        </>
+      )}
+
+      <PanelSection label="Status"/>
+      {TOG(enabled, setEnabled, 'Enabled')}
+
+      <PanelSection label="Policy"/>
+      {panelField({ label:'DM Policy',    children: SEL(dmPolicy,    setDmPolicy,    POLICY_OPTS) })}
+      {panelField({ label:'Group Policy', children: SEL(groupPolicy, setGroupPolicy, POLICY_OPTS) })}
+      {TOG(selfChat, setSelfChat, 'Self Chat Mode')}
+
+      <PanelSection label="Allowlist"/>
+      {panelField({ label:'Allow From', children:
+        <>
+          <textarea value={allowFrom} onChange={e=>setAllowFrom(e.target.value)} rows={4}
+            style={{...panelInput,resize:'vertical',lineHeight:1.7}}
+            placeholder={'+447700900000\n+447700900001'}/>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>one number per line · only used when dmPolicy = allowlist</div>
+        </>
+      })}
+
+      <PanelSection label="Media & Timing"/>
+      {panelField({ label:'Debounce (ms)',  children: <input type="number" min={0} value={debounce} onChange={e=>setDebounce(e.target.value)} style={panelInput}/> })}
+      {panelField({ label:'Max Media (MB)', children: <input type="number" min={1} max={500} value={mediaMax} onChange={e=>setMediaMax(e.target.value)} style={panelInput}/> })}
+
+      {!isNew && (
+        <>
+          <PanelSection label="Extra Config (JSON)"/>
+          <textarea value={extraJson} onChange={e=>setExtraJson(e.target.value)} rows={3}
+            style={{...panelInput,resize:'vertical',lineHeight:1.5}}
+            placeholder={'{"customField": "value"}'}/>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>merged on top of the above fields</div>
+        </>
+      )}
+
+      {/* Per-account overrides — whatsapp only */}
+      {!isNew && (channelType === 'whatsapp' || accounts.length > 0) && (
+        <>
+          <PanelSection label="Account Overrides"/>
+          {accounts.map(acct => (
+            <div key={acct.id} style={{background:'#141414',border:'1px solid #1e1e1e',borderRadius:6,marginBottom:8,overflow:'hidden'}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'6px 10px',borderBottom:'1px solid #1a1a1a'}}>
+                <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#22d3ee'}}>{acct.id}</span>
+                <div style={{display:'flex',gap:4}}>
+                  <button onClick={() => setEditingAcct(editingAcct?.id === acct.id ? null : {...acct})}
+                    style={{background:'none',border:'1px solid #2a2a2a',borderRadius:3,padding:'2px 7px',color:'#888',fontSize:'0.58rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
+                    {editingAcct?.id === acct.id ? 'done' : '⚙ edit'}
+                  </button>
+                  <button onClick={() => deleteAccount(acct.id)}
+                    style={{background:'none',border:'1px solid #3a1818',borderRadius:3,padding:'2px 7px',color:'#ef4444',fontSize:'0.58rem',cursor:'pointer'}}>✕</button>
+                </div>
+              </div>
+              {editingAcct?.id === acct.id && (
+                <div style={{padding:'8px 10px',display:'flex',flexDirection:'column',gap:6}}>
+                  {panelField({ label:'DM Policy', children: SEL(editingAcct.dmPolicy||'allowlist', v=>setEditingAcct(a=>({...a,dmPolicy:v})), POLICY_OPTS) })}
+                  {panelField({ label:'Group Policy', children: SEL(editingAcct.groupPolicy||'allowlist', v=>setEditingAcct(a=>({...a,groupPolicy:v})), POLICY_OPTS) })}
+                  {panelField({ label:'Debounce (ms)', children: <input type="number" min={0} value={editingAcct.debounceMs??0} onChange={e=>setEditingAcct(a=>({...a,debounceMs:Number(e.target.value)}))} style={panelInput}/> })}
+                  <button onClick={async () => {
+                    const {id,...rest} = editingAcct;
+                    await saveAccount(id, rest);
+                    setAccounts(prev => prev.map(a => a.id === id ? {...a,...rest} : a));
+                    setEditingAcct(null);
+                  }} style={{background:'#22d3ee',border:'none',borderRadius:4,padding:'5px',color:'#000',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',fontWeight:700,cursor:'pointer'}}>
+                    Save Override
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+          {addingAcct ? (
+            <div style={{display:'flex',gap:4,marginBottom:8}}>
+              <input value={newAcctId} onChange={e=>setNewAcctId(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addAccount()}
+                style={{...panelInput,flex:1,fontSize:'0.65rem'}} placeholder="account ID (e.g. custom-1)"/>
+              <button onClick={addAccount} style={{background:'#22d3ee',border:'none',borderRadius:4,padding:'3px 8px',color:'#000',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',cursor:'pointer'}}>+</button>
+              <button onClick={()=>{setAddingAcct(false);setNewAcctId('');}} style={{background:'none',border:'1px solid #333',borderRadius:4,padding:'3px 7px',color:'#666',fontSize:'0.65rem',cursor:'pointer'}}>✕</button>
+            </div>
+          ) : (
+            <button onClick={()=>setAddingAcct(true)} style={{width:'100%',background:'none',border:'1px dashed #1e1e1e',borderRadius:5,padding:'5px',color:'#444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.62rem',cursor:'pointer',marginBottom:8}}>+ add account override</button>
+          )}
+        </>
+      )}
+
+      {/* Danger zone — delete channel */}
+      {!isNew && (
+        <>
+          <PanelSection label="Danger Zone"/>
+          {confirmDel
+            ? <div style={{display:'flex',gap:6}}>
+                <button onClick={async () => {
+                  setDeleting(true);
+                  await patch({ channelDelete: { channelId: channelType } });
+                  setDeleting(false);
+                  onDeleted?.();
+                }} disabled={deleting} style={{flex:1,background:'#7f1d1d',border:'1px solid #ef4444',borderRadius:5,padding:'7px',color:'#fca5a5',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>
+                  {deleting ? 'Deleting…' : '⚠ Confirm Delete'}
+                </button>
+                <button onClick={()=>setConfirmDel(false)} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:5,padding:'7px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>Cancel</button>
+              </div>
+            : <button onClick={()=>setConfirmDel(true)} style={{width:'100%',background:'none',border:'1px solid #3a1818',borderRadius:5,padding:'7px',color:'#ef4444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>✕ Remove Channel</button>
+          }
+        </>
+      )}
     </PanelShell>
   );
 }
 
 /* ── Cron Edit Panel ── */
-function LiveCronPanel({ data, onClose, onSaved }) {
+function LiveCronPanel({ data, onClose, onSaved, onCreated, onAgentList }) {
+  const isNew = !data.id;
   const STATUS_COLOR = { ok:'#4ade80', error:'#ef4444', running:'#f59e0b' };
 
   // Editable state
@@ -3006,9 +3353,11 @@ function LiveCronPanel({ data, onClose, onSaved }) {
   const [deliveryMode,  setDeliveryMode]  = React.useState(data.deliveryMode || data.delivery?.mode || 'announce');
   const [deliveryTo,    setDeliveryTo]    = React.useState(data.delivery?.to || data.delivery?.channel || '');
 
-  const [saving,    setSaving]    = React.useState(false);
-  const [saveStatus,setSaveStatus]= React.useState('');
-  const [triggering,setTriggering]= React.useState(false);
+  const [saving,      setSaving]      = React.useState(false);
+  const [saveStatus,  setSaveStatus]  = React.useState('');
+  const [triggering,  setTriggering]  = React.useState(false);
+  const [deletingJob, setDeletingJob] = React.useState(false);
+  const [confirmJob,  setConfirmJob]  = React.useState(false);
 
   const sel = (val, set, opts) => (
     <select value={val} onChange={e=>set(e.target.value)} style={panelInput}>
@@ -3030,14 +3379,17 @@ function LiveCronPanel({ data, onClose, onSaved }) {
         : deliveryMode === 'webhook' ? { mode:'webhook', to:deliveryTo }
         : { mode:'announce', ...(deliveryTo ? { channel:deliveryTo } : {}) };
 
-      const patch = { name, enabled, schedule, sessionTarget, payload, delivery };
+      const jobData = { name, enabled, schedule, sessionTarget, payload, delivery };
       const r = await fetch('/api/gateway-patch', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ cronPatch: { jobId: data.id, patch } }),
+        body: isNew
+          ? JSON.stringify({ cronCreate: { job: jobData } })
+          : JSON.stringify({ cronPatch: { jobId: data.id, patch: jobData } }),
       });
       const d = await r.json();
-      setSaveStatus(d.ok ? '✓ Saved' : `✗ ${d.error||'failed'}`);
-      if (d.ok) onSaved?.(patch);
+      setSaveStatus(d.ok ? (isNew ? '✓ Created' : '✓ Saved') : `✗ ${d.error||'failed'}`);
+      if (d.ok && isNew) onCreated?.({ ...jobData, id: d.id });
+      if (d.ok && !isNew) onSaved?.(jobData);
     } catch(e) { setSaveStatus(`✗ ${e.message}`); }
     setSaving(false);
     setTimeout(() => setSaveStatus(''), 3500);
@@ -3055,10 +3407,10 @@ function LiveCronPanel({ data, onClose, onSaved }) {
   };
 
   return (
-    <PanelShell emoji="⏱" title={name||data.id} subtitle={data.lastStatus} subtitleColor={STATUS_COLOR[data.lastStatus]||'#555'} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
+    <PanelShell emoji="⏱" title={isNew ? 'New Cron Job' : (name||data.id)} subtitle={isNew ? 'create' : data.lastStatus} subtitleColor={isNew ? '#a855f7' : (STATUS_COLOR[data.lastStatus]||'#555')} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
 
-      {/* Read-only stats */}
-      {[
+      {/* Read-only stats (existing jobs only) */}
+      {!isNew && [
         ['Next Run',  data.nextRunAt  ? new Date(data.nextRunAt).toLocaleString()  : '—'],
         ['Last Run',  data.lastRunAt  ? `${new Date(data.lastRunAt).toLocaleString()}${data.lastDurationMs?` · ${data.lastDurationMs}ms`:''}` : 'never'],
         ['Runs',      data.totalRuns  || 0],
@@ -3094,58 +3446,257 @@ function LiveCronPanel({ data, onClose, onSaved }) {
         })}
       </div>
 
-      <button onClick={trigger} disabled={triggering} style={{
-        width:'100%',background:'transparent',border:'1px solid #2a2a2a',borderRadius:6,
-        padding:'7px',color:'#666',fontFamily:"'JetBrains Mono',monospace",
-        fontSize:'0.7rem',cursor:'pointer',marginTop:12,
-      }}>{triggering ? '↺ Running…' : '▶ Trigger Now'}</button>
+      {!isNew && (
+        <button onClick={trigger} disabled={triggering} style={{
+          width:'100%',background:'transparent',border:'1px solid #2a2a2a',borderRadius:6,
+          padding:'7px',color:'#666',fontFamily:"'JetBrains Mono',monospace",
+          fontSize:'0.7rem',cursor:'pointer',marginTop:12,marginBottom:6,
+        }}>{triggering ? '↺ Running…' : '▶ Trigger Now'}</button>
+      )}
+
+      {!isNew && (confirmJob
+        ? <div style={{display:'flex',gap:6,marginTop:4}}>
+            <button onClick={async () => {
+              setDeletingJob(true);
+              await fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ cronDelete: { jobId: data.id } }) });
+              setDeletingJob(false);
+              onClose?.();
+            }} disabled={deletingJob} style={{flex:1,background:'#7f1d1d',border:'1px solid #ef4444',borderRadius:5,padding:'6px',color:'#fca5a5',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',cursor:'pointer'}}>{deletingJob?'Deleting…':'⚠ Confirm Delete'}</button>
+            <button onClick={()=>setConfirmJob(false)} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:5,padding:'6px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',cursor:'pointer'}}>Cancel</button>
+          </div>
+        : <button onClick={()=>setConfirmJob(true)} style={{width:'100%',background:'none',border:'1px solid #3a1818',borderRadius:5,padding:'6px',color:'#ef4444',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',cursor:'pointer',marginTop:4}}>✕ Delete Job</button>
+      )}
     </PanelShell>
   );
 }
 
-/* ── Gateway Info Panel ── */
+/* ── Gateway Info + Config Panel ── */
 function LiveGatewayPanel({ data, onClose }) {
-  const [restarting, setRestarting] = React.useState(false);
-  const [restartMsg, setRestartMsg] = React.useState('');
+  const cfg = data._config || {};
+  const mem = cfg.memory   || {};
+  const msg = cfg.messages || {};
+  const tts = msg.tts      || {};
+  const el  = tts.elevenlabs || {};
+  const diag= cfg.diagnostics || {};
+  const upd = cfg.update   || {};
+  const disc= cfg.discovery|| {};
+  const canvas= cfg.canvas || {};
+
+  // Gateway config state
+  const [port,           setPort]           = React.useState(data.port || 18789);
+  const [mode,           setMode]           = React.useState(data.mode || 'local');
+  const [bind,           setBind]           = React.useState(data.bind || 'loopback');
+  const [tailscale,      setTailscale]      = React.useState(data.tailscale?.mode || 'off');
+  const [allowedOrigins, setAllowedOrigins] = React.useState((data.allowedOrigins||[]).join('\n'));
+  const [authToken,      setAuthToken]      = React.useState(data.auth?.token || '');
+
+  // Memory state
+  const [memBackend,     setMemBackend]     = React.useState(mem.backend || 'qmd');
+  const [memInterval,    setMemInterval]    = React.useState(mem.qmd?.update?.interval || '5m');
+  const [memMaxResults,  setMemMaxResults]  = React.useState(mem.qmd?.limits?.maxResults ?? 6);
+  const [memTimeout,     setMemTimeout]     = React.useState(mem.qmd?.limits?.timeoutMs ?? 8000);
+
+  // TTS state
+  const [ttsProvider,    setTtsProvider]    = React.useState(tts.provider || 'elevenlabs');
+  const [ttsAuto,        setTtsAuto]        = React.useState(tts.auto || 'inbound');
+  const [ttsMode,        setTtsMode]        = React.useState(tts.mode || 'final');
+  const [elVoiceId,      setElVoiceId]      = React.useState(el.voiceId || '');
+  const [elModelId,      setElModelId]      = React.useState(el.modelId || 'eleven_multilingual_v2');
+  const [elStability,    setElStability]    = React.useState(el.voiceSettings?.stability ?? 0.5);
+  const [elSimilarity,   setElSimilarity]   = React.useState(el.voiceSettings?.similarityBoost ?? 0.75);
+  const [elStyle,        setElStyle]        = React.useState(el.voiceSettings?.style ?? 0.3);
+  const [elSpeed,        setElSpeed]        = React.useState(el.voiceSettings?.speed ?? 1);
+  const [elApiKey,       setElApiKey]       = React.useState(el.apiKey || '');
+  const [responsePrefix, setResponsePrefix] = React.useState(msg.responsePrefix || '');
+  const [ackScope,       setAckScope]       = React.useState(msg.ackReactionScope || 'group-mentions');
+
+  // Diagnostics & Update
+  const [diagEnabled,    setDiagEnabled]    = React.useState(diag.enabled !== false);
+  const [updateChannel,  setUpdateChannel]  = React.useState(upd.channel || 'beta');
+  const [checkOnStart,   setCheckOnStart]   = React.useState(upd.checkOnStart !== false);
+  const [mdnsMode,       setMdnsMode]       = React.useState(disc.mdns?.mode || 'full');
+  const [canvasEnabled,  setCanvasEnabled]  = React.useState(canvas.enabled !== false);
+  const [canvasLiveRld,  setCanvasLiveRld]  = React.useState(canvas.liveReload !== false);
+  const [a2aEnabled,     setA2aEnabled]     = React.useState(cfg.tools?.agentToAgent?.enabled !== false);
+  // New agent form
+  const [creatingAgent,  setCreatingAgent]  = React.useState(false);
+  const [newAgentId,     setNewAgentId]     = React.useState('');
+  const [newAgentModel,  setNewAgentModel]  = React.useState('');
+  const [newAgentSaving, setNewAgentSaving] = React.useState(false);
+  const [newAgentMsg,    setNewAgentMsg]    = React.useState('');
+
+  const [saving,      setSaving]      = React.useState(false);
+  const [saveStatus,  setSaveStatus]  = React.useState('');
+  const [restarting,  setRestarting]  = React.useState(false);
+  const [restartMsg,  setRestartMsg]  = React.useState('');
+
+  const save = async () => {
+    setSaving(true); setSaveStatus('');
+    try {
+      const calls = [
+        fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ gatewayPatch: { patch: {
+            port: Number(port), mode, bind,
+            tailscale: { mode: tailscale },
+            auth: { token: authToken },
+            allowedOrigins: allowedOrigins.split('\n').map(s=>s.trim()).filter(Boolean),
+          }}}) }),
+        fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ memoryPatch: {
+            backend: memBackend,
+            qmd: { update: { interval: memInterval }, limits: { maxResults: Number(memMaxResults), timeoutMs: Number(memTimeout) } },
+          }}) }),
+        fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ messagesPatch: {
+            responsePrefix,
+            ackReactionScope: ackScope,
+            tts: {
+              provider: ttsProvider, auto: ttsAuto, mode: ttsMode,
+              elevenlabs: { apiKey: elApiKey, voiceId: elVoiceId, modelId: elModelId,
+                voiceSettings: { stability: Number(elStability), similarityBoost: Number(elSimilarity), style: Number(elStyle), speed: Number(elSpeed) } },
+            },
+          }}) }),
+        fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ diagnosticsPatch: { enabled: diagEnabled }}) }),
+        fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ updatePatch: { channel: updateChannel, checkOnStart }}) }),
+        fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ discoveryPatch: { mdns: { mode: mdnsMode } }}) }),
+        fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ canvasHostPatch: { enabled: canvasEnabled, liveReload: canvasLiveRld }}) }),
+      ];
+      await Promise.all(calls);
+      setSaveStatus('✓ Saved — restart to apply');
+    } catch(e) { setSaveStatus(`✗ ${e.message}`); }
+    setSaving(false);
+    setTimeout(() => setSaveStatus(''), 4000);
+  };
 
   const restart = async () => {
     setRestarting(true);
     try {
-      await fetch('/api/gateway-patch', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action: 'restart' }),
-      });
+      await fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action: 'restart' }) });
       setRestartMsg('↺ Restart signal sent');
     } catch(e) { setRestartMsg(`✗ ${e.message}`); }
     setRestarting(false);
     setTimeout(() => setRestartMsg(''), 4000);
   };
 
+  const SEL = (v, set, opts) => <select value={v} onChange={e=>set(e.target.value)} style={panelInput}>{opts.map(([a,b])=><option key={a} value={a}>{b}</option>)}</select>;
+  const INP = (v, set, props={}) => <input value={v} onChange={e=>set(e.target.value)} style={panelInput} {...props}/>;
+  const NUM = (v, set, props={}) => <input type="number" value={v} onChange={e=>set(e.target.value)} style={panelInput} {...props}/>;
+  const TOG = (v, set, label) => <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>{label}</span><PanelToggle value={v} onChange={set}/></div>;
+  const STAT = (k, v) => <div style={{display:'flex',justifyContent:'space-between',padding:'6px 10px',background:'#181818',borderRadius:5,border:'1px solid #2a2a2a',marginBottom:6}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#999'}}>{k}</span><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#ccc'}}>{v}</span></div>;
+
   return (
-    <PanelShell emoji="🖥️" title="OpenClaw Gateway" subtitle="● online" subtitleColor="#4ade80" onClose={onClose}>
-      {[
-        ['Port', data.port],
-        ['Version', `v${data.version}`],
-        ['Agents', data.agentCount],
-        ['Skills', data.skillCount],
-        ['Channels', data.channelCount],
-        ['Sessions', data.sessionCount],
-        ['Cron Jobs', data.cronCount],
-        ['Nodes', data.nodeCount],
-      ].map(([k,v]) => (
-        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'8px 12px',background:'#181818',borderRadius:6,border:'1px solid #2a2a2a',marginBottom:8}}>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#999'}}>{k}</span>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#ccc'}}>{v}</span>
+    <PanelShell emoji="🖥️" title="OpenClaw Gateway" subtitle="● online" subtitleColor="#4ade80" onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
+
+      <PanelSection label="Overview"/>
+      {STAT('Port',     data.port)}
+      {STAT('Version',  `v${data.version}`)}
+      {STAT('Agents',   data.agentCount)}
+      {STAT('Skills',   data.skillCount)}
+      {STAT('Channels', data.channelCount)}
+      {STAT('Sessions', data.sessionCount)}
+      {STAT('Cron',     data.cronCount)}
+      {STAT('Nodes',    data.nodeCount)}
+
+      {creatingAgent ? (
+        <div style={{background:'#141414',border:'1px solid #818cf8',borderRadius:7,padding:'10px 12px',marginBottom:12,display:'flex',flexDirection:'column',gap:6}}>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#818cf8',marginBottom:2}}>New Named Agent</div>
+          {panelField({ label:'Agent ID', children: <input value={newAgentId} onChange={e=>setNewAgentId(e.target.value)} style={panelInput} placeholder="e.g. researcher"/> })}
+          {panelField({ label:'Model',    children: <input value={newAgentModel} onChange={e=>setNewAgentModel(e.target.value)} style={panelInput} placeholder="inherits defaults"/> })}
+          {newAgentMsg && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#4ade80'}}>{newAgentMsg}</div>}
+          <div style={{display:'flex',gap:6}}>
+            <button onClick={async () => {
+              if (!newAgentId.trim()) return;
+              setNewAgentSaving(true);
+              const r = await fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ agentCreate: { agentId: newAgentId.trim(), agent: { name: newAgentId.trim(), model: newAgentModel || undefined } } }) });
+              const d = await r.json();
+              setNewAgentMsg(d.ok ? '✓ Created — restart to apply' : `✗ ${d.error}`);
+              setNewAgentSaving(false);
+              if (d.ok) { setCreatingAgent(false); setNewAgentId(''); setNewAgentModel(''); }
+              setTimeout(() => setNewAgentMsg(''), 3500);
+            }} disabled={newAgentSaving} style={{flex:1,background:'#818cf8',border:'none',borderRadius:5,padding:'6px',color:'#000',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.67rem',fontWeight:700,cursor:'pointer'}}>Create</button>
+            <button onClick={()=>{setCreatingAgent(false);setNewAgentId('');setNewAgentModel('');}} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:5,padding:'6px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.67rem',cursor:'pointer'}}>Cancel</button>
+          </div>
         </div>
-      ))}
-      <div style={{marginTop:16,borderTop:'1px solid #2a2a2a',paddingTop:16}}>
-        <button onClick={restart} disabled={restarting} style={{
-          width:'100%',background:'transparent',border:'1px solid #333',borderRadius:6,
-          padding:'8px',color:'#888',fontFamily:"'JetBrains Mono',monospace",
-          fontSize:'0.72rem',cursor:'pointer',
-        }}>{restarting ? '↺ Restarting…' : '↺ Restart Gateway'}</button>
-        {restartMsg && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#4ade80',marginTop:8,textAlign:'center'}}>{restartMsg}</div>}
-      </div>
+      ) : (
+        <button onClick={()=>setCreatingAgent(true)} style={{width:'100%',background:'none',border:'1px dashed #2a2a2a',borderRadius:6,padding:'6px',color:'#555',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.67rem',cursor:'pointer',marginBottom:12}}>
+          ＋ New Named Agent
+        </button>
+      )}
+
+      <PanelSection label="Gateway Config"/>
+      {panelField({ label:'Port',      children: NUM(port, setPort, {min:1024,max:65535}) })}
+      {panelField({ label:'Mode',      children: SEL(mode, setMode, [['local','local'],['remote','remote']]) })}
+      {panelField({ label:'Bind',      children: SEL(bind, setBind, [['loopback','loopback'],['all','all interfaces']]) })}
+      {panelField({ label:'Tailscale', children: SEL(tailscale, setTailscale, [['off','off'],['serve','serve'],['funnel','funnel']]) })}
+      {panelField({ label:'Auth Token', children: INP(authToken, setAuthToken, {type:'password'}) })}
+      {panelField({ label:'Allowed Origins', children:
+        <textarea value={allowedOrigins} onChange={e=>setAllowedOrigins(e.target.value)} rows={3} style={{...panelInput,resize:'vertical',lineHeight:1.7}} placeholder={'http://localhost:5173\nhttps://myapp.com'}/>
+      })}
+
+      <PanelSection label="Memory"/>
+      {panelField({ label:'Backend',      children: INP(memBackend, setMemBackend) })}
+      {panelField({ label:'Update Interval', children: INP(memInterval, setMemInterval, {placeholder:'5m'}) })}
+      {panelField({ label:'Max Results',  children: NUM(memMaxResults, setMemMaxResults, {min:1,max:50}) })}
+      {panelField({ label:'Timeout (ms)', children: NUM(memTimeout,    setMemTimeout,    {min:1000}) })}
+
+      <PanelSection label="TTS / Messages"/>
+      {panelField({ label:'Provider',     children: SEL(ttsProvider, setTtsProvider, [['elevenlabs','ElevenLabs'],['none','none']]) })}
+      {panelField({ label:'Auto',         children: SEL(ttsAuto,     setTtsAuto,     [['inbound','inbound'],['off','off'],['all','all']]) })}
+      {panelField({ label:'Mode',         children: SEL(ttsMode,     setTtsMode,     [['final','final'],['streaming','streaming']]) })}
+      {panelField({ label:'EL API Key',   children: INP(elApiKey,    setElApiKey,    {type:'password'}) })}
+      {panelField({ label:'EL Voice ID',  children: INP(elVoiceId,   setElVoiceId) })}
+      {panelField({ label:'EL Model',     children: INP(elModelId,   setElModelId) })}
+      {panelField({ label:'Stability',    children: NUM(elStability,  setElStability,  {min:0,max:1,step:0.05}) })}
+      {panelField({ label:'Similarity',   children: NUM(elSimilarity, setElSimilarity, {min:0,max:1,step:0.05}) })}
+      {panelField({ label:'Style',        children: NUM(elStyle,      setElStyle,      {min:0,max:1,step:0.05}) })}
+      {panelField({ label:'Speed',        children: NUM(elSpeed,      setElSpeed,      {min:0.5,max:2,step:0.1}) })}
+      {panelField({ label:'Resp Prefix',  children: INP(responsePrefix, setResponsePrefix, {placeholder:'optional prepend text'}) })}
+      {panelField({ label:'ACK Scope',    children: SEL(ackScope, setAckScope, [['group-mentions','group mentions'],['all','all'],['none','none']]) })}
+
+      <PanelSection label="Diagnostics & Updates"/>
+      {TOG(diagEnabled, setDiagEnabled, 'Diagnostics enabled')}
+      {panelField({ label:'Update Channel', children: SEL(updateChannel, setUpdateChannel, [['beta','beta'],['stable','stable']]) })}
+      {TOG(checkOnStart, setCheckOnStart, 'Check on start')}
+      {panelField({ label:'mDNS Mode',  children: SEL(mdnsMode, setMdnsMode, [['full','full'],['announce','announce'],['off','off']]) })}
+
+      <PanelSection label="Canvas"/>
+      {TOG(canvasEnabled, setCanvasEnabled, 'Canvas Host Enabled')}
+      {TOG(canvasLiveRld, setCanvasLiveRld, 'Live Reload')}
+
+      <PanelSection label="Tools"/>
+      {TOG(a2aEnabled, v => {
+        setA2aEnabled(v);
+        fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ toolsPatch: { agentToAgent: { enabled: v } } }) });
+      }, 'Agent-to-Agent calls')}
+
+      {cfg.plugins && Object.keys(cfg.plugins).length > 0 && <>
+        <PanelSection label="Plugins"/>
+        {Object.entries(cfg.plugins).map(([pid, pc]) => (
+          <div key={pid} style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>{pid}</span>
+            <PanelToggle value={pc.enabled !== false} onChange={v => {
+              fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ pluginsPatch: { [pid]: { enabled: v } } }) });
+            }}/>
+          </div>
+        ))}
+      </>}
+
+      <PanelSection label="Actions"/>
+      <button onClick={restart} disabled={restarting} style={{
+        width:'100%',background:'transparent',border:'1px solid #333',borderRadius:6,
+        padding:'8px',color:'#888',fontFamily:"'JetBrains Mono',monospace",
+        fontSize:'0.72rem',cursor:'pointer',marginBottom:6,
+      }}>{restarting ? '↺ Restarting…' : '↺ Restart Gateway'}</button>
+      {restartMsg && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#4ade80',textAlign:'center'}}>{restartMsg}</div>}
+
     </PanelShell>
   );
 }
@@ -3154,64 +3705,261 @@ function LiveGatewayPanel({ data, onClose }) {
 function SingleSkillPanel({ data, skills, onClose, onToggleSkill }) {
   const skillId = data.skillId || data.label || '';
   const live = skills.find(s => s.id === skillId) || { id: skillId, enabled: data.enabled !== false };
-  const [toggling, setToggling] = React.useState(false);
-  const [status, setStatus] = React.useState('');
+  const [enabled,   setEnabled]   = React.useState(live.enabled);
+  const [apiKey,    setApiKey]    = React.useState(live.config?.apiKey || '');
+  const [saving,    setSaving]    = React.useState(false);
+  const [saveStatus,setSaveStatus]= React.useState('');
 
-  const handleToggle = async () => {
-    setToggling(true);
+  const save = async () => {
+    setSaving(true); setSaveStatus('');
     try {
+      const patch = { enabled, ...(apiKey ? { apiKey } : {}) };
       await fetch('/api/gateway-patch', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ patch: { skills: { entries: { [skillId]: { enabled: !live.enabled } } } } }),
+        body: JSON.stringify({ skillPatch: { skillId, patch } }),
       });
-      onToggleSkill?.(skillId, !live.enabled);
-      setStatus(live.enabled ? 'disabled' : 'enabled');
-    } catch(e) { setStatus('error'); }
-    setToggling(false);
-    setTimeout(() => setStatus(''), 2500);
+      onToggleSkill?.(skillId, enabled);
+      setSaveStatus('✓ Saved');
+    } catch(e) { setSaveStatus(`✗ ${e.message}`); }
+    setSaving(false);
+    setTimeout(() => setSaveStatus(''), 3000);
   };
 
   const cat = SKILL_CATS[skillId] || 'Other';
   const color = SKILL_CAT_COLOR[cat] || '#555';
-
-  const fields = [
-    ['Skill ID', skillId],
-    ['Category', cat],
-    ['Status', live.enabled ? 'enabled' : 'disabled'],
-    ...(data.description ? [['Description', data.description]] : []),
-  ];
+  const hasApiKey = !!(live.config?.apiKey || apiKey);
 
   return (
-    <PanelShell emoji="🔧" title={skillId} subtitle={cat} subtitleColor={color} onClose={onClose}>
-      {fields.map(([k,v]) => (
-        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'8px 12px',background:'#181818',borderRadius:6,border:'1px solid #2a2a2a',marginBottom:8}}>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#999'}}>{k}</span>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#ccc',textAlign:'right',maxWidth:180,wordBreak:'break-all'}}>{String(v)}</span>
+    <PanelShell emoji="🔧" title={skillId} subtitle={cat} subtitleColor={color} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
+
+      <PanelSection label="Info"/>
+      {[['Skill ID', skillId], ['Category', cat], ...(data.description ? [['Description', data.description]] : [])].map(([k,v]) => (
+        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'7px 10px',background:'#181818',borderRadius:5,border:'1px solid #2a2a2a',marginBottom:6}}>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#999'}}>{k}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#ccc',textAlign:'right',maxWidth:180,wordBreak:'break-all'}}>{String(v)}</span>
         </div>
       ))}
-      <div style={{marginTop:16,borderTop:'1px solid #2a2a2a',paddingTop:16,display:'flex',flexDirection:'column',gap:8}}>
-        <button onClick={handleToggle} disabled={toggling} style={{
-          width:'100%', background:'transparent',
-          border:`1px solid ${live.enabled ? '#2a5c3a' : '#3a3a2a'}`,
-          borderRadius:6, padding:'9px',
-          color: live.enabled ? '#4ade80' : '#888',
-          fontFamily:"'JetBrains Mono',monospace", fontSize:'0.72rem', cursor:'pointer',
-        }}>
-          {toggling ? '…' : live.enabled ? '⊘ Disable Skill' : '⊕ Enable Skill'}
-        </button>
-        {status && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#4ade80',textAlign:'center'}}>{status}</div>}
+
+      <PanelSection label="Config"/>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>Enabled</span>
+        <PanelToggle value={enabled} onChange={setEnabled}/>
       </div>
+      {panelField({ label:'API Key', children:
+        <>
+          <input type="password" value={apiKey} onChange={e=>setApiKey(e.target.value)}
+            style={panelInput} placeholder={hasApiKey ? '••••••••••••' : 'optional API key'}/>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.54rem',color:'#333',marginTop:3}}>required for some skills (image gen, TTS, etc.)</div>
+        </>
+      })}
+
+    </PanelShell>
+  );
+}
+
+/* ── Commands + Web Panel ── */
+function LiveCommandsPanel({ data, onClose }) {
+  const cfg     = data._config || {};
+  const cmdsCfg = cfg.commands || {};
+  const webCfg  = cfg.web      || {};
+  const talkCfg = cfg.talk     || {};
+
+  const [native,       setNative]       = React.useState(cmdsCfg.native       ?? 'auto');
+  const [nativeSkills, setNativeSkills] = React.useState(cmdsCfg.nativeSkills ?? 'auto');
+  const [restartCmd,   setRestartCmd]   = React.useState(cmdsCfg.restart !== false);
+  const [webEnabled,   setWebEnabled]   = React.useState(webCfg.enabled !== false);
+  const [talkEnabled,  setTalkEnabled]  = React.useState(talkCfg.enabled !== false);
+  const [talkPort,     setTalkPort]     = React.useState(talkCfg.port || 3000);
+  const [saving,       setSaving]       = React.useState(false);
+  const [saveStatus,   setSaveStatus]   = React.useState('');
+
+  const save = async () => {
+    setSaving(true); setSaveStatus('');
+    try {
+      await Promise.all([
+        fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ commandsPatch: { native, nativeSkills, restart: restartCmd } }) }),
+        fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ webPatch: { enabled: webEnabled } }) }),
+        fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ patch: { talk: { enabled: talkEnabled, port: Number(talkPort) } } }) }),
+      ]);
+      setSaveStatus('✓ Saved — restart to apply');
+    } catch(e) { setSaveStatus(`✗ ${e.message}`); }
+    setSaving(false);
+    setTimeout(() => setSaveStatus(''), 3000);
+  };
+
+  const SEL = (v, set, opts) => <select value={v} onChange={e=>set(e.target.value)} style={panelInput}>{opts.map(([a,b])=><option key={a} value={a}>{b}</option>)}</select>;
+  const TOG = (v, set, label) => <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>{label}</span><PanelToggle value={v} onChange={set}/></div>;
+
+  return (
+    <PanelShell emoji="⚙️" title="System Config" subtitle="commands · web · talk" subtitleColor="#a855f7" onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
+
+      <PanelSection label="Native Commands"/>
+      {panelField({ label:'Commands Mode',    children: SEL(String(native),       setNative,       [['auto','auto (detect)'],['true','always on'],['false','off']]) })}
+      {panelField({ label:'Skills Mode',      children: SEL(String(nativeSkills), setNativeSkills, [['auto','auto (detect)'],['true','always on'],['false','off']]) })}
+      {TOG(restartCmd, setRestartCmd, 'Restart command enabled')}
+
+      <PanelSection label="Web UI"/>
+      {TOG(webEnabled, setWebEnabled, 'Web UI Enabled')}
+
+      <PanelSection label="Talk (Voice)"/>
+      {TOG(talkEnabled, setTalkEnabled, 'Talk Server Enabled')}
+      {panelField({ label:'Talk Port', children: <input type="number" min={1024} max={65535} value={talkPort} onChange={e=>setTalkPort(e.target.value)} style={panelInput}/> })}
+
+    </PanelShell>
+  );
+}
+
+/* ── Models Management Panel ── */
+function LiveModelsPanel({ data, onClose }) {
+  const [providers, setProviders] = React.useState(data.providers || []);
+  const [editing,   setEditing]   = React.useState(null); // { providerId, provider }
+  const [newProv,   setNewProv]   = React.useState(false);
+  const [newProvId, setNewProvId] = React.useState('');
+  const [newApiKey, setNewApiKey] = React.useState('');
+  const [newBaseUrl,setNewBaseUrl]= React.useState('');
+  const [newModelId,setNewModelId]= React.useState('');
+  const [addingTo,  setAddingTo]  = React.useState(null);
+  const [saving,    setSaving]    = React.useState(false);
+  const [status,    setStatus]    = React.useState('');
+
+  const patch = async (body) => {
+    const r = await fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    return r.json();
+  };
+
+  const saveProvider = async (providerId, providerData) => {
+    setSaving(true);
+    const d = await patch({ providerUpsert: { providerId, provider: providerData } });
+    setStatus(d.ok ? '✓ Saved' : `✗ ${d.error}`);
+    setSaving(false);
+    setTimeout(() => setStatus(''), 3000);
+  };
+
+  const removeProvider = async (providerId) => {
+    if (!confirm(`Remove provider "${providerId}"?`)) return;
+    setSaving(true);
+    await patch({ providerRemove: { providerId } });
+    setProviders(p => p.filter(x => x.id !== providerId));
+    setSaving(false);
+  };
+
+  const addModel = async (providerId) => {
+    if (!newModelId.trim()) return;
+    setSaving(true);
+    await patch({ modelAdd: { providerId, model: { id: newModelId.trim(), name: newModelId.trim() } } });
+    setProviders(p => p.map(x => x.id === providerId
+      ? { ...x, models: [...(x.models||[]), { id: newModelId.trim() }] }
+      : x));
+    setNewModelId(''); setAddingTo(null);
+    setSaving(false);
+  };
+
+  const removeModel = async (providerId, modelId) => {
+    await patch({ modelRemove: { providerId, modelId } });
+    setProviders(p => p.map(x => x.id === providerId
+      ? { ...x, models: (x.models||[]).filter(m => m.id !== modelId) }
+      : x));
+  };
+
+  const createProvider = async () => {
+    if (!newProvId.trim()) return;
+    const prov = { models: [], ...(newApiKey ? { apiKey: newApiKey } : {}), ...(newBaseUrl ? { baseUrl: newBaseUrl } : {}) };
+    await patch({ providerUpsert: { providerId: newProvId.trim(), provider: prov } });
+    setProviders(p => [...p, { id: newProvId.trim(), ...prov }]);
+    setNewProv(false); setNewProvId(''); setNewApiKey(''); setNewBaseUrl('');
+  };
+
+  return (
+    <PanelShell emoji="🧠" title="Model Providers" subtitle={`${providers.length} providers`} subtitleColor="#f97316" onClose={onClose}>
+      {status && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#4ade80',marginBottom:8,textAlign:'center'}}>{status}</div>}
+
+      {providers.map(prov => (
+        <div key={prov.id} style={{background:'#141414',border:'1px solid #2a2a2a',borderRadius:8,marginBottom:10,overflow:'hidden'}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 12px',borderBottom:'1px solid #1e1e1e'}}>
+            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.75rem',fontWeight:700,color:'#f97316'}}>{prov.id}</span>
+            <div style={{display:'flex',gap:6}}>
+              <button onClick={() => setEditing(editing?.providerId === prov.id ? null : { providerId:prov.id, apiKey:prov.apiKey||'', baseUrl:prov.baseUrl||'' })}
+                style={{background:'none',border:'1px solid #333',borderRadius:4,padding:'2px 8px',color:'#888',fontSize:'0.6rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
+                {editing?.providerId === prov.id ? 'done' : '⚙ edit'}
+              </button>
+              <button onClick={() => removeProvider(prov.id)}
+                style={{background:'none',border:'1px solid #3a1818',borderRadius:4,padding:'2px 8px',color:'#ef4444',fontSize:'0.6rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
+                ✕
+              </button>
+            </div>
+          </div>
+
+          {editing?.providerId === prov.id && (
+            <div style={{padding:'8px 12px',borderBottom:'1px solid #1e1e1e',display:'flex',flexDirection:'column',gap:6}}>
+              {panelField({ label:'API Key', children:
+                <input type="password" value={editing.apiKey} onChange={e=>setEditing(ed=>({...ed,apiKey:e.target.value}))} style={panelInput} placeholder="sk-..."/>
+              })}
+              {panelField({ label:'Base URL', children:
+                <input value={editing.baseUrl} onChange={e=>setEditing(ed=>({...ed,baseUrl:e.target.value}))} style={panelInput} placeholder="https://api.openai.com/v1"/>
+              })}
+              <button onClick={() => saveProvider(prov.id, { apiKey:editing.apiKey, baseUrl:editing.baseUrl })}
+                disabled={saving} style={{background:'#f97316',border:'none',borderRadius:4,padding:'4px 10px',color:'#000',fontSize:'0.65rem',fontFamily:"'JetBrains Mono',monospace",fontWeight:700,cursor:'pointer'}}>
+                Save
+              </button>
+            </div>
+          )}
+
+          <div style={{padding:'8px 12px'}}>
+            <div style={{display:'flex',flexWrap:'wrap',gap:4,marginBottom:6}}>
+              {(prov.models||[]).map(m => (
+                <div key={m.id} style={{display:'flex',alignItems:'center',gap:3,background:'rgba(249,115,22,0.08)',border:'1px solid rgba(249,115,22,0.2)',borderRadius:4,padding:'2px 6px'}}>
+                  <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',color:'#f97316'}}>{m.id}</span>
+                  <button onClick={() => removeModel(prov.id, m.id)} style={{background:'none',border:'none',color:'#555',cursor:'pointer',fontSize:'0.6rem',padding:'0 2px',lineHeight:1}}>✕</button>
+                </div>
+              ))}
+            </div>
+            {addingTo === prov.id ? (
+              <div style={{display:'flex',gap:4}}>
+                <input value={newModelId} onChange={e=>setNewModelId(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addModel(prov.id)}
+                  style={{...panelInput,flex:1,fontSize:'0.65rem'}} placeholder="model-id e.g. gpt-4.1"/>
+                <button onClick={() => addModel(prov.id)} style={{background:'#f97316',border:'none',borderRadius:4,padding:'3px 8px',color:'#000',fontSize:'0.65rem',fontFamily:"'JetBrains Mono',monospace",cursor:'pointer'}}>+</button>
+                <button onClick={() => { setAddingTo(null); setNewModelId(''); }} style={{background:'none',border:'1px solid #333',borderRadius:4,padding:'3px 8px',color:'#666',fontSize:'0.65rem',cursor:'pointer'}}>✕</button>
+              </div>
+            ) : (
+              <button onClick={() => setAddingTo(prov.id)} style={{background:'none',border:'1px solid #2a2a2a',borderRadius:4,padding:'3px 10px',color:'#555',fontSize:'0.6rem',fontFamily:"'JetBrains Mono',monospace",cursor:'pointer',width:'100%'}}>+ add model</button>
+            )}
+          </div>
+        </div>
+      ))}
+
+      {newProv ? (
+        <div style={{background:'#141414',border:'1px solid #f97316',borderRadius:8,padding:'10px 12px',display:'flex',flexDirection:'column',gap:6}}>
+          {panelField({ label:'Provider ID', children: <input value={newProvId} onChange={e=>setNewProvId(e.target.value)} style={panelInput} placeholder="e.g. openai"/> })}
+          {panelField({ label:'API Key',     children: <input type="password" value={newApiKey} onChange={e=>setNewApiKey(e.target.value)} style={panelInput} placeholder="sk-..."/> })}
+          {panelField({ label:'Base URL',    children: <input value={newBaseUrl} onChange={e=>setNewBaseUrl(e.target.value)} style={panelInput} placeholder="optional custom base URL"/> })}
+          <div style={{display:'flex',gap:6}}>
+            <button onClick={createProvider} style={{flex:1,background:'#f97316',border:'none',borderRadius:4,padding:'6px',color:'#000',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',fontWeight:700,cursor:'pointer'}}>Create</button>
+            <button onClick={() => { setNewProv(false); setNewProvId(''); setNewApiKey(''); setNewBaseUrl(''); }} style={{flex:1,background:'none',border:'1px solid #333',borderRadius:4,padding:'6px',color:'#666',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer'}}>Cancel</button>
+          </div>
+        </div>
+      ) : (
+        <button onClick={() => setNewProv(true)} style={{width:'100%',background:'none',border:'1px dashed #2a2a2a',borderRadius:6,padding:'8px',color:'#555',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',cursor:'pointer',marginTop:4}}>+ add provider</button>
+      )}
     </PanelShell>
   );
 }
 
 /* ── Live Node Panel — routes to the right editor by node type ── */
-function LiveNodePanel({ node, skills, onClose, onToggleSkill, onNodeUpdate }) {
+function LiveNodePanel({ node, skills, models, onClose, onToggleSkill, onNodeUpdate, onAgentCreated, onCronCreated, onChannelCreated }) {
   if (!node) return null;
   if (node._nodeType === 'livegateway') return <LiveGatewayPanel data={node} onClose={onClose}/>;
-  if (node._nodeType === 'channel') return <LiveChannelPanel data={node} onClose={onClose} onSaved={onClose}/>;
-  if (node._nodeType === 'cronlist') return <LiveCronPanel data={node} onClose={onClose} onSaved={d => { onNodeUpdate?.(node, d); onClose(); }}/>;
-  if (node._nodeType === 'agent') return <LiveAgentPanel data={node} onClose={onClose} onSaved={d => { onNodeUpdate?.(node, d); }}/>;
+  if (node._nodeType === 'modelslist') return <LiveModelsPanel data={node} onClose={onClose}/>;
+  if (node._nodeType === 'commands')   return <LiveCommandsPanel data={node} onClose={onClose}/>;
+  if (node._nodeType === 'channel' || node._nodeType === 'newchannel')
+    return <LiveChannelPanel data={node} onClose={onClose}
+      onSaved={onClose}
+      onDeleted={onClose}
+      onCreated={ch => { onChannelCreated?.(ch); onClose(); }}/>;
+  if (node._nodeType === 'cronlist') return <LiveCronPanel data={node} onClose={onClose} onAgentList={models} onCreated={onCronCreated} onSaved={d => { onNodeUpdate?.(node, d); onClose(); }}/>;
+  if (node._nodeType === 'agent') return <LiveAgentPanel data={node} models={models} onClose={onClose} onSaved={d => { onNodeUpdate?.(node, d); }} onDeleted={onClose}/>;
   if (node._nodeType === 'singleskill') return <SingleSkillPanel data={node} skills={skills} onClose={onClose} onToggleSkill={onToggleSkill}/>;
   if (node._nodeType === 'group') return <GroupSummaryPanel data={node} onClose={onClose}/>;
   return <LiveSkillPanel agent={node} skills={skills} onClose={onClose} onToggleSkill={onToggleSkill}/>;
@@ -3510,13 +4258,13 @@ function ForgeApp() {
         }, 50);
       } else {
         // Remove expanded content, restore section card
-        const prefixMap = { agents:'live-ag-', channels:'live-ch-', skills:'live-skills', sessions:'live-sessions', cron:'live-cron', nodes:'live-nodes' };
-        const edgePrefixMap = { agents:'eag-', channels:'ech-', skills:'eskills', sessions:'esessions', cron:'ecron', nodes:'enodes' };
+        const prefixMap = { agents:'live-ag-', channels:'live-ch-', skills:'live-skills', sessions:'live-sessions', cron:'live-cron', nodes:'live-nodes', models:'live-models' };
+        const edgePrefixMap = { agents:'eag-', channels:'ech-', skills:'eskills', sessions:'esessions', cron:'ecron', nodes:'enodes', models:'emodels' };
         const prefix = prefixMap[section] || `live-${section}`;
         const edgePrefix = edgePrefixMap[section] || `e${section}`;
-        const COLORS = { agents:'#818cf8', skills:'#4ade80', channels:'#22d3ee', sessions:'#f59e0b', cron:'#a855f7', nodes:'#22d3ee' };
-        const LABELS = { agents:'Agents', skills:'Skills', channels:'Channels', sessions:'Sessions', cron:'Cron Jobs', nodes:'Nodes' };
-        const COUNTS = { agents:data.agents?.length||0, skills:data.skills?.length||0, channels:data.channels?.length||0, sessions:data.sessions?.length||0, cron:data.cronJobs?.length||0, nodes:data.nodes?.length||0 };
+        const COLORS = { agents:'#818cf8', skills:'#4ade80', channels:'#22d3ee', sessions:'#f59e0b', cron:'#a855f7', nodes:'#22d3ee', models:'#f97316' };
+        const LABELS = { agents:'Agents', skills:'Skills', channels:'Channels', sessions:'Sessions', cron:'Cron Jobs', nodes:'Nodes', models:'Models' };
+        const COUNTS = { agents:data.agents?.length||0, skills:data.skills?.length||0, channels:data.channels?.length||0, sessions:data.sessions?.length||0, cron:data.cronJobs?.length||0, nodes:data.nodes?.length||0, models:data.models?.length||0 };
 
         setNodes(nds => [
           ...nds.filter(n => !n.id.startsWith(prefix) && n.id !== sectionCardId),
@@ -3552,9 +4300,15 @@ function ForgeApp() {
     window.__liveCronClick = (job) => {
       setLiveSelectedAgent({ ...job, _nodeType: 'cronlist' });
     };
+    window.__liveNewCron = () => {
+      setLiveSelectedAgent({ _nodeType: 'cronlist' }); // no id = create mode
+    };
+    window.__liveNewChannel = () => {
+      setLiveSelectedAgent({ _nodeType: 'newchannel', _new: true });
+    };
     window.__liveShowGateway = () => {
       const gwNode = nodes.find(n => n.id === 'live-gw');
-      if (gwNode) setLiveSelectedAgent({ ...gwNode.data, _nodeType: 'livegateway' });
+      if (gwNode) setLiveSelectedAgent({ ...gwNode.data, _config: liveDataRef.current?.config || {}, _nodeType: 'livegateway' });
     };
     window.__liveSkillToggled = (skillId, newEnabled) => {
       // Update the skills list node data in-place
@@ -3606,6 +4360,8 @@ function ForgeApp() {
         sessionCount: d.sessions?.length || 0,
         cronCount:    d.cronJobs?.length || 0,
         nodeCount:    d.nodes?.length || 0,
+        modelCount:   d.models?.length || 0,
+        _config:      d.config || {},
         _nodeType: 'livegateway',
       });
       return;
@@ -3780,9 +4536,26 @@ function ForgeApp() {
           <LiveNodePanel
             node={liveSelectedAgent}
             skills={liveSkills}
+            models={liveData?.models || []}
             onClose={() => setLiveSelectedAgent(null)}
             onToggleSkill={handleToggleSkill}
             onNodeUpdate={handleNodeUpdate}
+            onCronCreated={(job) => {
+              if (liveDataRef.current) {
+                liveDataRef.current = { ...liveDataRef.current, cronJobs: [...(liveDataRef.current.cronJobs||[]), job] };
+                setLiveData(liveDataRef.current);
+              }
+              setLiveSelectedAgent(null);
+              setTimeout(() => applyFamilyTree(ftExpandedIds, false), 50);
+            }}
+            onChannelCreated={(ch) => {
+              if (liveDataRef.current) {
+                liveDataRef.current = { ...liveDataRef.current, channels: [...(liveDataRef.current.channels||[]), ch] };
+                setLiveData(liveDataRef.current);
+              }
+              setLiveSelectedAgent(null);
+              setTimeout(() => applyFamilyTree(ftExpandedIds, false), 50);
+            }}
           />
         </div>
       )}

@@ -147,32 +147,43 @@ export default async (req) => {
     const agentDefs = config.agents?.entries ?? {};
     const agentDefaults = config.agents?.defaults ?? {};
     const defaultModel = agentDefaults.model?.primary || 'unknown';
-    const defaultFallback = agentDefaults.model?.fallback || [];
+    const defaultFallbacks = agentDefaults.model?.fallbacks || agentDefaults.model?.fallback || [];
 
     const agents = [
       {
         id: 'main', name: 'main',
         model: defaultModel,
-        fallbackModels: defaultFallback,
+        fallbackModels: defaultFallbacks,
         systemPrompt: agentDefaults.systemPrompt || '',
         workspace: agentDefaults.workspace || '',
         thinking: agentDefaults.thinking,
         enabled: true,
+        // Full defaults for editing
+        maxConcurrent: agentDefaults.maxConcurrent ?? 4,
+        compaction: agentDefaults.compaction || { mode: 'safeguard' },
+        memorySearch: agentDefaults.memorySearch || { enabled: false },
+        subagents: agentDefaults.subagents || { maxConcurrent: 4, model: defaultModel },
       },
       ...Object.entries(agentDefs).map(([id, ag]) => ({
         id, name: ag.name || id,
         model: ag.model?.primary || defaultModel,
-        fallbackModels: ag.model?.fallback || [],
+        fallbackModels: ag.model?.fallbacks || ag.model?.fallback || defaultFallbacks,
         systemPrompt: ag.systemPrompt || '',
         workspace: ag.workspace || agentDefaults.workspace || '',
         thinking: ag.thinking,
         enabled: ag.enabled !== false,
+        maxConcurrent: ag.maxConcurrent ?? agentDefaults.maxConcurrent ?? 4,
+        compaction: ag.compaction || agentDefaults.compaction || { mode: 'safeguard' },
+        memorySearch: ag.memorySearch || agentDefaults.memorySearch || { enabled: false },
+        subagents: ag.subagents || agentDefaults.subagents || { maxConcurrent: 4, model: defaultModel },
       })),
     ];
 
     const skills = installedSkills.map(s => ({
       ...s,
       enabled: skillEntries[s.id] ? skillEntries[s.id].enabled !== false : true,
+      // Include any skill-level config (apiKey, etc) — local admin tool so keys are ok
+      config: skillEntries[s.id] ? { ...skillEntries[s.id] } : {},
     }));
 
     const channels = Object.entries(config.channels ?? {}).map(([id, ch]) => ({
@@ -180,10 +191,12 @@ export default async (req) => {
     }));
 
     const models = [];
+    const modelProviders = [];
     for (const [provider, pc] of Object.entries(config.models?.providers ?? {})) {
       for (const m of (pc.models ?? [])) {
-        models.push({ id: `${provider}/${m.id}`, provider, name: m.name || m.id, contextWindow: m.contextWindow, reasoning: m.reasoning });
+        models.push({ id: m.id, provider, name: m.name || m.id, contextWindow: m.contextWindow, reasoning: m.reasoning });
       }
+      modelProviders.push({ id: provider, baseUrl: pc.baseUrl, apiKey: pc.apiKey, api: pc.api, models: pc.models || [] });
     }
 
     const [sessions, cronJobs, nodes] = await Promise.all([
@@ -192,14 +205,52 @@ export default async (req) => {
       getPairedNodes(),
     ]);
 
+    const gw = config.gateway || {};
+    const gatewayConfig = {
+      port:    gw.port    || 18789,
+      mode:    gw.mode    || 'local',
+      bind:    gw.bind    || 'loopback',
+      version: config.meta?.lastTouchedVersion,
+      wsUrl:   `ws://127.0.0.1:${gw.port || 18789}`,
+      auth: {
+        mode:  gw.auth?.mode  || 'token',
+        token: gw.auth?.token || '',
+        allowTailscale: gw.auth?.allowTailscale !== false,
+      },
+      tailscale: { mode: gw.tailscale?.mode || 'off' },
+      allowedOrigins: gw.controlUi?.allowedOrigins || [],
+    };
+
+    const memoryConfig   = config.memory      || {};
+    const messagesConfig = config.messages    || {};
+    const diagConfig     = config.diagnostics || {};
+    const updateConfig   = config.update      || {};
+    const toolsConfig    = config.tools       || {};
+    const discoveryConfig= config.discovery   || {};
+    const canvasConfig   = config.canvasHost  || {};
+    const pluginsConfig  = config.plugins     || {};
+    const talkConfig     = config.talk        || {};
+    const commandsConfig = config.commands    || {};
+    const webConfig      = config.web         || {};
+
     return new Response(JSON.stringify({
       ok: true,
-      gateway: {
-        port: config.gateway?.port || 18789,
-        version: config.meta?.lastTouchedVersion,
-        wsUrl: `ws://127.0.0.1:${config.gateway?.port || 18789}`,
+      gateway: gatewayConfig,
+      agents, skills, channels, models, modelProviders,
+      sessions, cronJobs, nodes, defaultModel,
+      config: {
+        memory: memoryConfig,
+        messages: messagesConfig,
+        diagnostics: diagConfig,
+        update: updateConfig,
+        tools: toolsConfig,
+        discovery: discoveryConfig,
+        canvas: canvasConfig,
+        plugins: pluginsConfig,
+        talk: talkConfig,
+        commands: commandsConfig,
+        web: webConfig,
       },
-      agents, skills, channels, models, sessions, cronJobs, nodes, defaultModel,
     }), { status: 200, headers });
   } catch (err) {
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers });

@@ -3249,6 +3249,13 @@ function ForgeApp() {
   // On mount: load live data immediately
   React.useEffect(() => { loadLive(); }, []);
 
+  // Re-centre diagram when window is resized (zoom stays locked via minZoom=maxZoom)
+  React.useEffect(() => {
+    const onResize = () => rfInstance.current?.fitView({ padding: 0.25, duration: 0 });
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   // Track which sections are expanded
   const [liveExpanded, setLiveExpanded] = useState({});
   const liveDataRef = useRef(null);
@@ -3278,53 +3285,15 @@ function ForgeApp() {
     'elk.edgeRouting': 'ORTHOGONAL',
   };
 
-  const applyFamilyTree = useCallback(async (expandedIds, forceRelayout = false) => {
+  const applyFamilyTree = useCallback(async (expandedIds) => {
     const data = liveDataRef.current;
     if (!data) return;
     const { nodes: lnodes, edges: ledges } = buildFamilyTree(data, expandedIds);
     setEdges(ledges);
-
-    // On first load or forced re-layout, use ELK for full positioning
-    const currentNodes = rfInstance.current?.getNodes() || [];
-    const existingPos = new Map(currentNodes.map(n => [n.id, n.position]));
-    const isFirstLoad = existingPos.size === 0;
-
-    if (isFirstLoad || forceRelayout) {
-      const laid = await elkLayout(lnodes, ledges, TREE_ELK);
-      setNodes(laid);
-      setTimeout(() => rfInstance.current?.fitView({ padding: 0.12, duration: 350 }), 150);
-      return;
-    }
-
-    // For expansions/collapses: preserve existing positions, manually place new children
-    const hasNew = lnodes.some(n => !existingPos.has(n.id));
-
-    if (!hasNew) {
-      // Collapsing — just restore known positions (removes children from node list)
-      setNodes(lnodes.map(n => ({ ...n, position: existingPos.get(n.id) || n.position })));
-      return;
-    }
-
-    // Expanding — place new child nodes below their parent
-    const laid = lnodes.map(n => {
-      if (existingPos.has(n.id)) return { ...n, position: existingPos.get(n.id) };
-      const parentEdge = ledges.find(e => e.target === n.id);
-      const parentPos = parentEdge ? existingPos.get(parentEdge.source) : null;
-      if (parentPos) {
-        const siblings = lnodes.filter(s =>
-          !existingPos.has(s.id) &&
-          ledges.some(e => e.target === s.id && e.source === parentEdge.source)
-        );
-        const idx = siblings.findIndex(s => s.id === n.id);
-        const spacing = 150;
-        const offset = (idx - (siblings.length - 1) / 2) * spacing;
-        return { ...n, position: { x: parentPos.x + offset, y: parentPos.y + 200 } };
-      }
-      return n;
-    });
-
+    // Always run ELK so the layout is clean after every expand / collapse
+    const laid = await elkLayout(lnodes, ledges, TREE_ELK);
     setNodes(laid);
-    setTimeout(() => rfInstance.current?.fitView({ padding: 0.15, duration: 350 }), 150);
+    setTimeout(() => rfInstance.current?.fitView({ padding: 0.25, duration: 350 }), 150);
   }, []);
 
   const handleExpandServer = useCallback(async () => {
@@ -3492,7 +3461,7 @@ function ForgeApp() {
           if (!cur) return;
           const laid = await elkLayout(cur.getNodes(), cur.getEdges());
           setNodes(laid);
-          setTimeout(() => cur.fitView({ padding:0.15, duration:400 }), 80);
+          setTimeout(() => cur.fitView({ padding:0.25, duration:400 }), 80);
         }, 50);
       } else {
         // Remove expanded content, restore section card
@@ -3519,7 +3488,7 @@ function ForgeApp() {
           if (!cur) return;
           const laid = await elkLayout(cur.getNodes(), cur.getEdges());
           setNodes(laid);
-          setTimeout(() => cur.fitView({ padding:0.15, duration:400 }), 80);
+          setTimeout(() => cur.fitView({ padding:0.25, duration:400 }), 80);
         }, 50);
       }
 
@@ -3671,7 +3640,7 @@ function ForgeApp() {
   return (
     <div style={{display:'flex', height:'calc(100vh - 57px)', overflow:'hidden'}}>
       {/* Palette removed — canvas is the admin, not a designer */}
-      <div style={{flex:1, position:'relative'}}>
+      <div style={{flex:1, position:'relative', minHeight:0, height:'100%'}}>
         {/* Live mode banner */}
         {liveMode && (
           <div style={{
@@ -3701,9 +3670,15 @@ function ForgeApp() {
           onInit={inst => rfInstance.current = inst}
           nodeTypes={nodeTypes}
           defaultEdgeOptions={{ type:'smoothstep', style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65} }}
-          fitView
           nodesDraggable={!liveMode}
           nodesConnectable={!liveMode}
+          minZoom={0.85}
+          maxZoom={0.85}
+          zoomOnScroll={false}
+          zoomOnPinch={false}
+          zoomOnDoubleClick={false}
+          panOnDrag={false}
+          panOnScroll={false}
           style={{ background:'#0a0a0a', paddingTop: liveMode ? 32 : 0 }}
           proOptions={{ hideAttribution: true }}
         >
@@ -3716,7 +3691,7 @@ function ForgeApp() {
                 if (!cur) return;
                 const laid = await elkLayout(cur.getNodes(), cur.getEdges());
                 setNodes(laid);
-                setTimeout(() => cur.fitView({ padding:0.15, duration:400 }), 80);
+                setTimeout(() => cur.fitView({ padding:0.25, duration:400 }), 80);
               }}>⟳ Arrange</NavBtn>
               <NavBtn onClick={handleCollapseToServer}>⊟ Collapse</NavBtn>
             </>}

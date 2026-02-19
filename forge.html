@@ -1721,8 +1721,7 @@ function TreeIconNode({ data, selected }) {
         <span style={{
           position:'absolute', top:8, right:8, width:6, height:6, borderRadius:'50%',
           background: isEnabled ? '#4ade80' : '#333',
-          boxShadow: isEnabled ? '0 0 6px rgba(74,222,128,0.9)' : 'none',
-          animation: isEnabled ? 'vfPulse 2s ease-in-out infinite' : 'none',
+          boxShadow: isEnabled ? '0 0 5px rgba(74,222,128,0.6)' : 'none',
         }}/>
         <div style={{
           width:54, height:54, borderRadius:14,
@@ -1896,7 +1895,7 @@ function ConfigPanel({ node, onClose, onUpdate }) {
 
   return (
     <div style={panelStyle}>
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderBottom:'1px solid #1c1c1c'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderBottom:'1px solid #272727'}}>
         <span style={{fontSize:'0.85rem',fontWeight:600,color:'#e0e0e0'}}>
           {emojis[type]} {d.label}
         </span>
@@ -2292,7 +2291,7 @@ function LiveGatewayNode({ data, selected }) {
         style={{background:'#ff5c5c',border:'2px solid #ff5c5c',width:10,height:10,top:'50%',transform:'translateY(-50%)'}}/>
 
       {/* Header */}
-      <div style={{display:'flex',alignItems:'center',gap:10,padding:'10px 14px',borderBottom:'1px solid #1c1c1c'}}>
+      <div style={{display:'flex',alignItems:'center',gap:10,padding:'10px 14px',borderBottom:'1px solid #272727'}}>
         <div style={{background:'color-mix(in srgb,#ff5c5c 18%,#0a0a0a)',borderRadius:8,padding:7,display:'flex'}}>
           <IcoGateway/>
         </div>
@@ -2357,11 +2356,44 @@ function LiveGatewayNode({ data, selected }) {
   );
 }
 
+/* ── Skill category map ── */
+const SKILL_CATS = {
+  // Dev & Code
+  'coding-agent':'Dev','github':'Dev','gh-issues':'Dev','ai-elements':'Dev',
+  'clawhub':'Dev','skill-creator':'Dev','mcporter':'Dev','tmux':'Dev','oracle':'Dev',
+  // Productivity
+  'apple-notes':'Productivity','bear-notes':'Productivity','obsidian':'Productivity',
+  'apple-reminders':'Productivity','things-mac':'Productivity','notion':'Productivity',
+  'trello':'Productivity','summarize':'Productivity','session-logs':'Productivity','nano-pdf':'Productivity',
+  // Messaging & Comms
+  'himalaya':'Messaging','imap':'Messaging','discord':'Messaging','slack':'Messaging',
+  'wacli':'Messaging','imsg':'Messaging','gog':'Messaging','bluebubbles':'Messaging','voice-call':'Messaging',
+  // AI & Media
+  'gemini':'AI','openai-image-gen':'AI','nano-banana-pro':'AI','model-usage':'AI',
+  'openai-whisper':'AI','openai-whisper-api':'AI','sherpa-onnx-tts':'AI','sag':'AI',
+  'video-frames':'AI','songsee':'AI','camsnap':'AI','gifgrep':'AI','spotify-player':'AI',
+  // Smart Home
+  'openhue':'Smart Home','eightctl':'Smart Home','blucli':'Smart Home',
+  'sonoscli':'Smart Home','eigrnctl':'Smart Home',
+  // System & Security
+  'healthcheck':'System','peekaboo':'System','canvas':'System','1password':'System',
+  'fieldkit':'System','find-skills':'System','gvg':'System',
+  // Web & Info
+  'blogwatcher':'Web','weather':'Web','goplaces':'Web','ordercli':'Web',
+  'food-order':'Web','gifrep':'Web','gifgrep':'Web',
+};
+const SKILL_CAT_COLOR = {
+  'Dev':'#818cf8','Productivity':'#f59e0b','Messaging':'#22d3ee',
+  'AI':'#a855f7','Smart Home':'#4ade80','System':'#ef4444','Web':'#f97316',
+  'Other':'#666',
+};
+function skillCat(id) { return SKILL_CATS[id] || 'Other'; }
+
 /* ── Family Tree: ~10 icon nodes + expandable children ── */
 function buildFamilyTree(data, expandedIds = new Set()) {
   const E = (id, s, t, color) => ({
     id, source:s, target:t, type:'step',
-    style:{ stroke:color, strokeWidth:1.5, opacity:0.55 },
+    style:{ stroke:color, strokeWidth:1, opacity:0.25 },
   });
 
   const nodes = [{
@@ -2387,7 +2419,9 @@ function buildFamilyTree(data, expandedIds = new Set()) {
       agents.forEach((ag,i) => {
         const agId = `ft-ag-${ag.id||i}`;
         nodes.push({ id:agId, type:'treeicon', position:{x:0,y:0},
-          data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false, expandable:true, expanded:expandedIds.has(agId) } });
+          data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false,
+                 expandable:true, expanded:expandedIds.has(agId),
+                 _nodeType:'agent', ...ag } });
         edges.push(E(`e-ag-${i}`, 'ft-agents-group', agId, '#818cf8'));
         if (expandedIds.has(agId)) {
           if (ag.model) {
@@ -2418,7 +2452,8 @@ function buildFamilyTree(data, expandedIds = new Set()) {
       channels.forEach((ch,i) => {
         const id = `ft-ch-${ch.id||i}`;
         nodes.push({ id, type:'treeicon', position:{x:0,y:0},
-          data:{ label:ch.type||ch.id||'Channel', category:'channel', enabled:ch.enabled!==false } });
+          data:{ label:ch.type||ch.id||'Channel', category:'channel', enabled:ch.enabled!==false,
+                 _nodeType:'channel', ...ch } });
         edges.push(E(`e-ch-${i}`, 'ft-channels-group', id, '#22d3ee'));
       });
     }
@@ -2438,7 +2473,9 @@ function buildFamilyTree(data, expandedIds = new Set()) {
           : job.schedule?.kind === 'every' ? `every ${Math.round((job.schedule.everyMs||0)/60000)}m`
           : job.schedule?.kind || 'scheduled';
         nodes.push({ id, type:'treeicon', position:{x:0,y:0},
-          data:{ label:job.name||job.id||'Cron', category:'cron', enabled:job.enabled!==false, expandable:true, expanded:expandedIds.has(id) } });
+          data:{ label:job.name||job.id||'Cron', category:'cron', enabled:job.enabled!==false,
+                 expandable:true, expanded:expandedIds.has(id),
+                 _nodeType:'cronlist', ...job } });
         edges.push(E(`e-cr-${i}`, 'ft-cron-group', id, '#a855f7'));
         if (expandedIds.has(id)) {
           const schedId = `${id}-sched`;
@@ -2466,18 +2503,36 @@ function buildFamilyTree(data, expandedIds = new Set()) {
     }
   }
 
-  // Skills — summary node, expands to all individual skills
+  // Skills — summary node → category groups → individual skills
   const enabledSkills = (data.skills||[]).filter(s=>s.enabled!==false);
   if (enabledSkills.length > 0) {
     nodes.push({ id:'ft-skills', type:'treeicon', position:{x:0,y:0},
       data:{ label:`${enabledSkills.length} Skills`, category:'skill', enabled:true, expandable:true, expanded:expandedIds.has('ft-skills') } });
     edges.push(E('e-skills', 'live-server', 'ft-skills', '#4ade80'));
     if (expandedIds.has('ft-skills')) {
-      enabledSkills.forEach((sk,i) => {
-        const skId = `ft-sk-${sk.id||i}`;
-        nodes.push({ id:skId, type:'treeicon', position:{x:0,y:0},
-          data:{ label:sk.id||sk.name||'Skill', category:'skill', enabled:true } });
-        edges.push(E(`e-sk-${i}`, 'ft-skills', skId, '#4ade80'));
+      // Group by category
+      const cats = {};
+      enabledSkills.forEach(sk => {
+        const c = skillCat(sk.id||sk.name||'');
+        if (!cats[c]) cats[c] = [];
+        cats[c].push(sk);
+      });
+      Object.entries(cats).forEach(([cat, skills], ci) => {
+        const catId = `ft-skcat-${cat.replace(/\s+/g,'-').toLowerCase()}`;
+        const catColor = SKILL_CAT_COLOR[cat] || SKILL_CAT_COLOR['Other'];
+        nodes.push({ id:catId, type:'treeicon', position:{x:0,y:0},
+          data:{ label:`${cat} (${skills.length})`, category:'skill', enabled:true,
+                 expandable:true, expanded:expandedIds.has(catId), color:catColor } });
+        edges.push(E(`e-skcat-${ci}`, 'ft-skills', catId, catColor));
+        if (expandedIds.has(catId)) {
+          skills.forEach((sk,i) => {
+            const skId = `ft-sk-${catId}-${i}`;
+            nodes.push({ id:skId, type:'treeicon', position:{x:0,y:0},
+              data:{ label:sk.id||sk.name||'Skill', category:'skill', enabled:sk.enabled!==false,
+                     skillId:sk.id, description:sk.description||'', _nodeType:'singleskill' } });
+            edges.push(E(`e-sk-${catId}-${i}`, catId, skId, catColor));
+          });
+        }
       });
     }
   }
@@ -2671,36 +2726,35 @@ function LiveSkillPanel({ agent, skills, onClose, onToggleSkill }) {
 
   return (
     <div style={{
-      width:300, flexShrink:0, display:'flex', flexDirection:'column',
-      background:'rgba(10,10,10,0.97)', borderLeft:'1px solid #1c1c1c',
-      transition:'width 0.2s', overflow:'hidden',
+      width:'100%', display:'flex', flexDirection:'column',
+      background:'rgba(22,22,22,0.99)', overflow:'hidden', height:'100%',
     }}>
       {/* Header */}
-      <div style={{padding:'12px 14px',borderBottom:'1px solid #1c1c1c',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+      <div style={{padding:'12px 14px',borderBottom:'1px solid #272727',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <div>
           <div style={{fontSize:'0.82rem',fontWeight:600,color:'#e0e0e0'}}>
             {agent.isSkillsView ? '🔧 Skills' : `🤖 ${agent.label}`}
           </div>
           {!agent.isSkillsView && (
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#444',marginTop:2}}>{agent.model}</div>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#888',marginTop:2}}>{agent.model}</div>
           )}
         </div>
         <button onClick={onClose} style={{background:'none',border:'none',color:'#444',fontSize:'1.1rem',cursor:'pointer',padding:'2px 6px'}}>×</button>
       </div>
       {/* Stats bar */}
-      <div style={{padding:'8px 14px',borderBottom:'1px solid #1c1c1c',display:'flex',gap:14}}>
+      <div style={{padding:'8px 14px',borderBottom:'1px solid #272727',display:'flex',gap:14}}>
         <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#4ade80'}}>
           ◉ {enabled.length} on
         </span>
-        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#444'}}>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#777'}}>
           ○ {disabled.length} off
         </span>
-        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#333'}}>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#555'}}>
           {skills.length} total
         </span>
       </div>
       {/* Search */}
-      <div style={{padding:'8px 14px',borderBottom:'1px solid #1c1c1c'}}>
+      <div style={{padding:'8px 14px',borderBottom:'1px solid #272727'}}>
         <input
           placeholder="filter skills…"
           value={filter} onChange={e => setFilter(e.target.value)}
@@ -2735,12 +2789,12 @@ function LiveSkillPanel({ agent, skills, onClose, onToggleSkill }) {
 
 /* ── Shared edit panel shell ── */
 const panelInput = {
-  background:'#0e0e0e', border:'1px solid #242424', borderRadius:6,
-  color:'#e0e0e0', padding:'7px 10px', fontFamily:"'JetBrains Mono',monospace",
+  background:'#1a1a1a', border:'1px solid #2e2e2e', borderRadius:6,
+  color:'#e8e8e8', padding:'7px 10px', fontFamily:"'JetBrains Mono',monospace",
   fontSize:'0.72rem', width:'100%', outline:'none', boxSizing:'border-box',
 };
 const panelLabel = { fontFamily:"'JetBrains Mono',monospace", fontSize:'0.58rem',
-  textTransform:'uppercase', letterSpacing:'0.08em', color:'#444', display:'block', marginBottom:4 };
+  textTransform:'uppercase', letterSpacing:'0.08em', color:'#888', display:'block', marginBottom:4 };
 const panelField = ({ label, children }) => (
   <div style={{marginBottom:12}}>
     <span style={panelLabel}>{label}</span>
@@ -2749,17 +2803,17 @@ const panelField = ({ label, children }) => (
 );
 function PanelShell({ emoji, title, subtitle, subtitleColor='#4ade80', onClose, children, saving, onSave, saveStatus }) {
   return (
-    <div style={{width:320,flexShrink:0,display:'flex',flexDirection:'column',background:'rgba(10,10,10,0.97)',borderLeft:'1px solid #1c1c1c',overflow:'hidden'}}>
-      <div style={{padding:'12px 14px',borderBottom:'1px solid #1c1c1c',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0}}>
+    <div style={{width:'100%',display:'flex',flexDirection:'column',background:'rgba(22,22,22,0.99)',overflow:'hidden',height:'100%'}}>
+      <div style={{padding:'12px 14px',borderBottom:'1px solid #272727',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0}}>
         <div>
-          <div style={{fontSize:'0.82rem',fontWeight:600,color:'#e0e0e0'}}>{emoji} {title}</div>
+          <div style={{fontSize:'0.82rem',fontWeight:600,color:'#f0f0f0'}}>{emoji} {title}</div>
           {subtitle && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:subtitleColor,marginTop:2}}>{subtitle}</div>}
         </div>
-        <button onClick={onClose} style={{background:'none',border:'none',color:'#444',fontSize:'1.1rem',cursor:'pointer'}}>×</button>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'#888',fontSize:'1.1rem',cursor:'pointer'}}>×</button>
       </div>
       <div style={{overflowY:'auto',flex:1,padding:16}}>{children}</div>
       {onSave && (
-        <div style={{padding:'12px 16px',borderTop:'1px solid #1c1c1c',flexShrink:0}}>
+        <div style={{padding:'12px 16px',borderTop:'1px solid #272727',flexShrink:0}}>
           {saveStatus && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:saveStatus.startsWith('✓')?'#4ade80':'#ef4444',marginBottom:8,textAlign:'center'}}>{saveStatus}</div>}
           <button onClick={onSave} disabled={saving} style={{
             width:'100%',background:'#ff5c5c',border:'none',borderRadius:6,
@@ -2907,86 +2961,114 @@ function LiveChannelPanel({ data, onClose, onSaved }) {
 
 /* ── Cron Edit Panel ── */
 function LiveCronPanel({ data, onClose, onSaved }) {
-  const [enabled, setEnabled] = React.useState(data.enabled !== false);
-  const [saving, setSaving] = React.useState(false);
+  const STATUS_COLOR = { ok:'#4ade80', error:'#ef4444', running:'#f59e0b' };
 
-  const [saveStatus, setSaveStatus] = React.useState('');
+  // Editable state
+  const [name,          setName]          = React.useState(data.name || '');
+  const [enabled,       setEnabled]       = React.useState(data.enabled !== false);
+  const [schedKind,     setSchedKind]     = React.useState(data.schedule?.kind || 'cron');
+  const [schedExpr,     setSchedExpr]     = React.useState(data.schedule?.expr || '');
+  const [schedEveryMin, setSchedEveryMin] = React.useState(data.schedule?.everyMs ? String(data.schedule.everyMs/60000) : '60');
+  const [schedAt,       setSchedAt]       = React.useState(data.schedule?.at || '');
+  const [sessionTarget, setSessionTarget] = React.useState(data.sessionTarget || 'isolated');
+  const [payloadKind,   setPayloadKind]   = React.useState(data.payloadKind || data.payload?.kind || 'systemEvent');
+  const [payloadMsg,    setPayloadMsg]    = React.useState(data.payloadMessage || data.payload?.text || data.payload?.message || '');
+  const [deliveryMode,  setDeliveryMode]  = React.useState(data.deliveryMode || data.delivery?.mode || 'announce');
+  const [deliveryTo,    setDeliveryTo]    = React.useState(data.delivery?.to || data.delivery?.channel || '');
+
+  const [saving,    setSaving]    = React.useState(false);
+  const [saveStatus,setSaveStatus]= React.useState('');
+  const [triggering,setTriggering]= React.useState(false);
+
+  const sel = (val, set, opts) => (
+    <select value={val} onChange={e=>set(e.target.value)} style={panelInput}>
+      {opts.map(([v,l])=><option key={v} value={v}>{l}</option>)}
+    </select>
+  );
+
   const save = async () => {
     setSaving(true); setSaveStatus('');
     try {
+      const schedule =
+        schedKind === 'cron'  ? { kind:'cron',  expr:schedExpr } :
+        schedKind === 'every' ? { kind:'every', everyMs:Math.round(parseFloat(schedEveryMin)*60000) } :
+                                { kind:'at',    at:schedAt };
+      const payload =
+        payloadKind === 'systemEvent' ? { kind:'systemEvent', text:payloadMsg } :
+                                        { kind:'agentTurn',   message:payloadMsg };
+      const delivery = deliveryMode === 'none' ? { mode:'none' }
+        : deliveryMode === 'webhook' ? { mode:'webhook', to:deliveryTo }
+        : { mode:'announce', ...(deliveryTo ? { channel:deliveryTo } : {}) };
+
+      const patch = { name, enabled, schedule, sessionTarget, payload, delivery };
       const r = await fetch('/api/gateway-patch', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ cronPatch: { jobId: data.id, patch: { enabled } } }),
+        body: JSON.stringify({ cronPatch: { jobId: data.id, patch } }),
       });
       const d = await r.json();
-      setSaveStatus(d.ok ? '✓ Saved' : `✗ ${d.error}`);
-      if (d.ok) onSaved?.({ enabled });
+      setSaveStatus(d.ok ? '✓ Saved' : `✗ ${d.error||'failed'}`);
+      if (d.ok) onSaved?.(patch);
     } catch(e) { setSaveStatus(`✗ ${e.message}`); }
     setSaving(false);
-    setTimeout(() => setSaveStatus(''), 3000);
+    setTimeout(() => setSaveStatus(''), 3500);
   };
 
-  const STATUS_COLOR = { ok:'#4ade80', error:'#ef4444', running:'#f59e0b' };
-  const scheduleStr = data.schedule?.expr || data.schedule?.kind || 'unknown';
-
-  const [triggering, setTriggering] = React.useState(false);
   const trigger = async () => {
     setTriggering(true);
     try {
       await fetch('/api/gateway-patch', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ cronPatch: { jobId: data.id, patch: { _triggerNow: true } } }),
+        body: JSON.stringify({ cronPatch: { jobId: data.id, patch: { _triggerNow:true } } }),
       });
     } catch {}
     setTimeout(() => setTriggering(false), 2000);
   };
 
   return (
-    <PanelShell emoji="⏱" title={data.name||data.id} subtitle={data.lastStatus} subtitleColor={STATUS_COLOR[data.lastStatus]||'#555'} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
+    <PanelShell emoji="⏱" title={name||data.id} subtitle={data.lastStatus} subtitleColor={STATUS_COLOR[data.lastStatus]||'#555'} onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
+
+      {/* Read-only stats */}
       {[
-        ['Schedule', scheduleStr + (data.schedule?.tz ? ` (${data.schedule.tz})` : '')],
-        ['Next Run', data.nextRunAt ? new Date(data.nextRunAt).toLocaleString() : '—'],
-        ['Last Run', data.lastRunAt ? `${new Date(data.lastRunAt).toLocaleString()}${data.lastDurationMs ? ` · ${data.lastDurationMs}ms` : ''}` : 'never'],
-        ['Total Runs', data.totalRuns || 0],
-        ['Payload', data.payloadKind],
-        ['Delivery', data.deliveryMode || 'none'],
-        ['Target', data.sessionTarget],
-      ].map(([k,v]) => v !== undefined && (
-        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'7px 10px',background:'#0e0e0e',borderRadius:5,border:'1px solid #1a1a1a',marginBottom:6}}>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#444'}}>{k}</span>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#888',textAlign:'right',maxWidth:180,wordBreak:'break-all'}}>{String(v)}</span>
+        ['Next Run',  data.nextRunAt  ? new Date(data.nextRunAt).toLocaleString()  : '—'],
+        ['Last Run',  data.lastRunAt  ? `${new Date(data.lastRunAt).toLocaleString()}${data.lastDurationMs?` · ${data.lastDurationMs}ms`:''}` : 'never'],
+        ['Runs',      data.totalRuns  || 0],
+        ...(data.consecutiveErrors > 0 ? [['Errors', data.consecutiveErrors]] : []),
+      ].map(([k,v]) => (
+        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'6px 10px',background:'#181818',borderRadius:5,border:'1px solid #2a2a2a',marginBottom:5}}>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.63rem',color:'#999'}}>{k}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.63rem',color: k==='Errors'?'#ef4444':'#777',textAlign:'right',maxWidth:180}}>{String(v)}</span>
         </div>
       ))}
-      {data.payloadMessage && (
-        <div style={{marginBottom:10,padding:'8px 10px',background:'#0e0e0e',border:'1px solid #1a1a1a',borderRadius:5}}>
-          <div style={panelLabel}>Message</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#666',lineHeight:1.5}}>{data.payloadMessage}</div>
-        </div>
-      )}
-      {data.consecutiveErrors > 0 && (
-        <div style={{marginBottom:10,padding:'8px 10px',background:'rgba(239,68,68,0.05)',border:'1px solid #3a1a1a',borderRadius:5}}>
-          <div style={panelLabel}>Consecutive Errors</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#ef4444'}}>{data.consecutiveErrors}</div>
-        </div>
-      )}
+
+      <div style={{marginTop:4,borderTop:'1px solid #2a2a2a',paddingTop:12}}>
+        {panelField({ label:'Name',           children: <input value={name}          onChange={e=>setName(e.target.value)}          style={panelInput}/> })}
+        {panelField({ label:'Enabled',        children: sel(String(enabled), v=>setEnabled(v==='true'), [['true','Enabled'],['false','Disabled']]) })}
+        {panelField({ label:'Session Target', children: sel(sessionTarget,   setSessionTarget,          [['isolated','isolated'],['main','main']]) })}
+
+        {/* Schedule */}
+        {panelField({ label:'Schedule Type',  children: sel(schedKind, setSchedKind, [['cron','Cron expression'],['every','Every N minutes'],['at','One-shot at time']]) })}
+        {schedKind === 'cron'  && panelField({ label:'Cron Expr',   children: <input value={schedExpr}     onChange={e=>setSchedExpr(e.target.value)}     placeholder="0 9 * * *"  style={panelInput}/> })}
+        {schedKind === 'every' && panelField({ label:'Every (min)', children: <input value={schedEveryMin} onChange={e=>setSchedEveryMin(e.target.value)} placeholder="60"          style={panelInput} type="number" min="1"/> })}
+        {schedKind === 'at'    && panelField({ label:'Run At',      children: <input value={schedAt}       onChange={e=>setSchedAt(e.target.value)}       placeholder="ISO datetime" style={panelInput}/> })}
+
+        {/* Payload */}
+        {panelField({ label:'Payload Type',   children: sel(payloadKind, setPayloadKind, [['systemEvent','System Event'],['agentTurn','Agent Turn']]) })}
+        {panelField({ label: payloadKind==='agentTurn' ? 'Agent Message' : 'Event Text', children:
+          <textarea value={payloadMsg} onChange={e=>setPayloadMsg(e.target.value)} rows={3} style={{...panelInput,resize:'vertical'}}/>
+        })}
+
+        {/* Delivery */}
+        {panelField({ label:'Delivery',       children: sel(deliveryMode, setDeliveryMode, [['announce','Announce'],['none','None'],['webhook','Webhook']]) })}
+        {deliveryMode !== 'none' && panelField({ label: deliveryMode==='webhook' ? 'Webhook URL' : 'Channel/To', children:
+          <input value={deliveryTo} onChange={e=>setDeliveryTo(e.target.value)} placeholder={deliveryMode==='webhook'?'https://…':'channel id or empty'} style={panelInput}/>
+        })}
+      </div>
+
       <button onClick={trigger} disabled={triggering} style={{
         width:'100%',background:'transparent',border:'1px solid #2a2a2a',borderRadius:6,
         padding:'7px',color:'#666',fontFamily:"'JetBrains Mono',monospace",
-        fontSize:'0.7rem',cursor:'pointer',marginBottom:12,
-      }}>{triggering ? '↺ Triggering…' : '▶ Trigger Now'}</button>
-      {panelField({ label:'Enabled', children:
-        <div style={{display:'flex',gap:8}}>
-          {[true,false].map(v => (
-            <button key={String(v)} onClick={()=>setEnabled(v)} style={{
-              flex:1, padding:'7px', borderRadius:6, cursor:'pointer',
-              fontFamily:"'JetBrains Mono',monospace", fontSize:'0.7rem',
-              background: enabled===v ? (v?'rgba(74,222,128,0.1)':'rgba(239,68,68,0.1)') : '#0e0e0e',
-              border: `1px solid ${enabled===v ? (v?'#4ade80':'#ef4444') : '#242424'}`,
-              color: enabled===v ? (v?'#4ade80':'#ef4444') : '#444',
-            }}>{v ? 'Enabled' : 'Disabled'}</button>
-          ))}
-        </div>
-      })}
+        fontSize:'0.7rem',cursor:'pointer',marginTop:12,
+      }}>{triggering ? '↺ Running…' : '▶ Trigger Now'}</button>
     </PanelShell>
   );
 }
@@ -3021,12 +3103,12 @@ function LiveGatewayPanel({ data, onClose }) {
         ['Cron Jobs', data.cronCount],
         ['Nodes', data.nodeCount],
       ].map(([k,v]) => (
-        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'8px 12px',background:'#0e0e0e',borderRadius:6,border:'1px solid #1a1a1a',marginBottom:8}}>
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#444'}}>{k}</span>
+        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'8px 12px',background:'#181818',borderRadius:6,border:'1px solid #2a2a2a',marginBottom:8}}>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#999'}}>{k}</span>
           <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#ccc'}}>{v}</span>
         </div>
       ))}
-      <div style={{marginTop:16,borderTop:'1px solid #1a1a1a',paddingTop:16}}>
+      <div style={{marginTop:16,borderTop:'1px solid #2a2a2a',paddingTop:16}}>
         <button onClick={restart} disabled={restarting} style={{
           width:'100%',background:'transparent',border:'1px solid #333',borderRadius:6,
           padding:'8px',color:'#888',fontFamily:"'JetBrains Mono',monospace",
@@ -3038,15 +3120,99 @@ function LiveGatewayPanel({ data, onClose }) {
   );
 }
 
+/* ── Single Skill Panel ── */
+function SingleSkillPanel({ data, skills, onClose, onToggleSkill }) {
+  const skillId = data.skillId || data.label || '';
+  const live = skills.find(s => s.id === skillId) || { id: skillId, enabled: data.enabled !== false };
+  const [toggling, setToggling] = React.useState(false);
+  const [status, setStatus] = React.useState('');
+
+  const handleToggle = async () => {
+    setToggling(true);
+    try {
+      await fetch('/api/gateway-patch', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ patch: { skills: { entries: { [skillId]: { enabled: !live.enabled } } } } }),
+      });
+      onToggleSkill?.(skillId, !live.enabled);
+      setStatus(live.enabled ? 'disabled' : 'enabled');
+    } catch(e) { setStatus('error'); }
+    setToggling(false);
+    setTimeout(() => setStatus(''), 2500);
+  };
+
+  const cat = SKILL_CATS[skillId] || 'Other';
+  const color = SKILL_CAT_COLOR[cat] || '#555';
+
+  const fields = [
+    ['Skill ID', skillId],
+    ['Category', cat],
+    ['Status', live.enabled ? 'enabled' : 'disabled'],
+    ...(data.description ? [['Description', data.description]] : []),
+  ];
+
+  return (
+    <PanelShell emoji="🔧" title={skillId} subtitle={cat} subtitleColor={color} onClose={onClose}>
+      {fields.map(([k,v]) => (
+        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'8px 12px',background:'#181818',borderRadius:6,border:'1px solid #2a2a2a',marginBottom:8}}>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#999'}}>{k}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#ccc',textAlign:'right',maxWidth:180,wordBreak:'break-all'}}>{String(v)}</span>
+        </div>
+      ))}
+      <div style={{marginTop:16,borderTop:'1px solid #2a2a2a',paddingTop:16,display:'flex',flexDirection:'column',gap:8}}>
+        <button onClick={handleToggle} disabled={toggling} style={{
+          width:'100%', background:'transparent',
+          border:`1px solid ${live.enabled ? '#2a5c3a' : '#3a3a2a'}`,
+          borderRadius:6, padding:'9px',
+          color: live.enabled ? '#4ade80' : '#888',
+          fontFamily:"'JetBrains Mono',monospace", fontSize:'0.72rem', cursor:'pointer',
+        }}>
+          {toggling ? '…' : live.enabled ? '⊘ Disable Skill' : '⊕ Enable Skill'}
+        </button>
+        {status && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#4ade80',textAlign:'center'}}>{status}</div>}
+      </div>
+    </PanelShell>
+  );
+}
+
 /* ── Live Node Panel — routes to the right editor by node type ── */
 function LiveNodePanel({ node, skills, onClose, onToggleSkill, onNodeUpdate }) {
-  if (!node) return <div style={{width:0,overflow:'hidden',background:'rgba(10,10,10,0.97)',borderLeft:'1px solid #1c1c1c',transition:'width 0.2s'}}/>;
+  if (!node) return null;
   if (node._nodeType === 'livegateway') return <LiveGatewayPanel data={node} onClose={onClose}/>;
   if (node._nodeType === 'channel') return <LiveChannelPanel data={node} onClose={onClose} onSaved={onClose}/>;
   if (node._nodeType === 'cronlist') return <LiveCronPanel data={node} onClose={onClose} onSaved={d => { onNodeUpdate?.(node, d); onClose(); }}/>;
   if (node._nodeType === 'agent') return <LiveAgentPanel data={node} onClose={onClose} onSaved={d => { onNodeUpdate?.(node, d); }}/>;
+  if (node._nodeType === 'singleskill') return <SingleSkillPanel data={node} skills={skills} onClose={onClose} onToggleSkill={onToggleSkill}/>;
+  if (node._nodeType === 'group') return <GroupSummaryPanel data={node} onClose={onClose}/>;
   return <LiveSkillPanel agent={node} skills={skills} onClose={onClose} onToggleSkill={onToggleSkill}/>;
 }
+
+/* ── Floating Tree Node Properties Panel ── */
+/* ── Group Summary Panel — consistent size/position with all other panels ── */
+function GroupSummaryPanel({ data, onClose }) {
+  const cfg = TREE_CATEGORIES[data.category] || TREE_CATEGORIES.skill;
+  const color = data.color || cfg.color;
+  const catLabel = data.category ? data.category.charAt(0).toUpperCase() + data.category.slice(1) : 'Group';
+
+  const infoRows = [
+    ['Type',    catLabel],
+    ['Count',   data.label?.match(/\d+/)?.[0] || '—'],
+    ['Status',  data.enabled !== false ? 'active' : 'inactive'],
+    ...(data.expandable ? [['Tip', 'click node to expand']] : []),
+  ];
+
+  return (
+    <PanelShell emoji={cfg.icon ? '' : '📦'} title={data.label || 'Group'} subtitle={catLabel} subtitleColor={color} onClose={onClose}>
+      {infoRows.map(([k,v]) => (
+        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'8px 12px',background:'#181818',borderRadius:6,border:'1px solid #2a2a2a',marginBottom:8}}>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color:'#999'}}>{k}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.7rem',color: k==='Status'&&data.enabled!==false?'#4ade80':'#ccc'}}>{v}</span>
+        </div>
+      ))}
+    </PanelShell>
+  )
+}
+
 
 /* ── Main App ── */
 const INITIAL_NODES = [{
@@ -3059,6 +3225,7 @@ function ForgeApp() {
   const [nodes, setNodes, onNodesChange] = useNodesState(INITIAL_NODES);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedTreeNode, setSelectedTreeNode] = useState(null);
   const [showAiModal, setShowAiModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const rfInstance = useRef(null);
@@ -3415,14 +3582,32 @@ function ForgeApp() {
   }, [edges, nodes, save, liveMode]);
 
   const onNodeClick = useCallback((_, node) => {
-    if (node.type === 'collapsedserver') return;
-    if (node.type === 'livegateway') return;
+    if (node.type === 'collapsedserver' || node.type === 'livegateway') {
+      const d = liveDataRef.current;
+      if (d) setLiveSelectedAgent({
+        ...(d.gateway || {}),
+        agentCount:   d.agents?.length || 0,
+        skillCount:   d.skills?.filter(s=>s.enabled!==false).length || 0,
+        channelCount: d.channels?.length || 0,
+        sessionCount: d.sessions?.length || 0,
+        cronCount:    d.cronJobs?.length || 0,
+        nodeCount:    d.nodes?.length || 0,
+        _nodeType: 'livegateway',
+      });
+      return;
+    }
     if (node.type === 'sectioncard') {
       handleLiveToggle(node.data.sectionKey);
       return;
     }
     if (node.type === 'treeicon') {
       handleTreeNodeToggle(node);
+      const nt = node.data?._nodeType;
+      // All treeicon nodes route through liveSelectedAgent — consistent panel for everything
+      setLiveSelectedAgent(prev =>
+        prev?._nodeType === (nt||'group') && prev?.id === (node.data?.id||node.id) ? null
+        : { ...node.data, _nodeType: nt || 'group', id: node.data?.id || node.id }
+      );
       return;
     }
     setLiveSelectedAgent({ ...node.data, _nodeType: node.type });
@@ -3437,6 +3622,7 @@ function ForgeApp() {
 
   const onPaneClick = useCallback(() => {
     setSelectedNode(null);
+    setSelectedTreeNode(null);
     if (liveMode) setLiveSelectedAgent(null);
   }, [liveMode]);
 
@@ -3567,15 +3753,26 @@ function ForgeApp() {
         </ReactFlow>
       </div>
 
-      {liveMode ? (
-        <LiveNodePanel
-          node={liveSelectedAgent}
-          skills={liveSkills}
-          onClose={() => setLiveSelectedAgent(null)}
-          onToggleSkill={handleToggleSkill}
-          onNodeUpdate={handleNodeUpdate}
-        />
-      ) : (
+      
+
+      {liveMode && liveSelectedAgent && (
+        <div style={{
+          position:'fixed', top:80, bottom:80, right:16,
+          width:340, zIndex:150,
+          borderRadius:16, overflow:'hidden',
+          boxShadow:'0 24px 64px rgba(0,0,0,0.9), 0 0 0 1px #333',
+          display:'flex', flexDirection:'column',
+        }}>
+          <LiveNodePanel
+            node={liveSelectedAgent}
+            skills={liveSkills}
+            onClose={() => setLiveSelectedAgent(null)}
+            onToggleSkill={handleToggleSkill}
+            onNodeUpdate={handleNodeUpdate}
+          />
+        </div>
+      )}
+      {!liveMode && (
         <ConfigPanel node={selectedNode} onClose={() => setSelectedNode(null)} onUpdate={updateNode} />
       )}
 

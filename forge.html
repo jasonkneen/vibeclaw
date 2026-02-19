@@ -1223,13 +1223,20 @@
     }
     .react-flow__controls-button {
       background: #141414 !important;
-      border-bottom-color: #242424 !important;
-      color: #555 !important;
-      fill: #555 !important;
+      border-bottom-color: #2a2a2a !important;
+      color: #aaa !important;
+      fill: #aaa !important;
+      width: 28px !important;
+      height: 28px !important;
     }
     .react-flow__controls-button:hover {
-      background: #1e1e1e !important;
-      fill: #e0e0e0 !important;
+      background: #222 !important;
+      fill: #fff !important;
+      color: #fff !important;
+    }
+    .react-flow__controls-button svg {
+      width: 14px !important;
+      height: 14px !important;
     }
     .react-flow__edge-path { stroke-opacity: 0.7; }
     .react-flow__handle {
@@ -1328,7 +1335,7 @@ import { createRoot } from 'react-dom/client';
 import {
   ReactFlow,
   Background,
-
+  Controls,
   addEdge,
   useNodesState,
   useEdgesState,
@@ -1343,6 +1350,15 @@ const elk = new ELK();
 const ELK_OPTS = {
   'elk.algorithm': 'radial',
   'elk.spacing.nodeNode': '80',
+};
+
+const LAYOUT_PRESETS = {
+  down:   { label:'Down',   icon:'↓', elk:{ 'elk.algorithm':'layered','elk.direction':'DOWN',  'elk.layered.spacing.nodeNodeBetweenLayers':'220','elk.spacing.nodeNode':'30','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+  right:  { label:'Right',  icon:'→', elk:{ 'elk.algorithm':'layered','elk.direction':'RIGHT', 'elk.layered.spacing.nodeNodeBetweenLayers':'280','elk.spacing.nodeNode':'30','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+  up:     { label:'Up',     icon:'↑', elk:{ 'elk.algorithm':'layered','elk.direction':'UP',    'elk.layered.spacing.nodeNodeBetweenLayers':'220','elk.spacing.nodeNode':'30','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+  left:   { label:'Left',   icon:'←', elk:{ 'elk.algorithm':'layered','elk.direction':'LEFT',  'elk.layered.spacing.nodeNodeBetweenLayers':'280','elk.spacing.nodeNode':'30','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+  radial: { label:'Radial', icon:'◎', elk:{ 'elk.algorithm':'radial', 'elk.spacing.nodeNode':'80' } },
+  stress: { label:'Force',  icon:'⬡', elk:{ 'elk.algorithm':'stress', 'elk.spacing.nodeNode':'80','elk.stress.desiredEdgeLength':'180' } },
 };
 
 async function elkLayout(nodes, edges, opts = {}) {
@@ -1778,22 +1794,22 @@ function TreeIconNode({ data, selected }) {
         {data.expandable && (
           <span style={{
             position:'absolute', bottom:7, left:'50%', transform:'translateX(-50%)',
-            fontSize:'0.55rem', color: data.expanded ? cfg.color : '#3a3a3a',
+            fontSize:'0.75rem', color: data.expanded ? cfg.color : '#666',
             lineHeight:1, zIndex:2,
           }}>{data.expanded ? '▾' : '▸'}</span>
         )}
       </div>
       <div style={{
-        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.8rem',
-        fontWeight:600, color:'#888', textAlign:'center',
-        maxWidth:140, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+        fontFamily:"'JetBrains Mono',monospace", fontSize:'1rem',
+        fontWeight:600, color:'#e0e0e0', textAlign:'center',
+        maxWidth:150, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
       }}>{data.label}</div>
       {data.badge && (
         <div style={{
-          fontFamily:"'JetBrains Mono',monospace", fontSize:'0.55rem',
-          color: cfg.color + '99', textAlign:'center',
-          maxWidth:140, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
-          marginTop:-4,
+          fontFamily:"'JetBrains Mono',monospace", fontSize:'0.78rem',
+          color: cfg.color, textAlign:'center',
+          maxWidth:150, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+          marginTop:-4, opacity:0.85,
         }}>{data.badge}</div>
       )}
     </div>
@@ -1818,20 +1834,22 @@ const nodeTypes = {
 };
 
 /* ── Nav Button ── */
-function NavBtn({ children, onClick, primary }) {
+function NavBtn({ children, onClick, primary, title, style: extraStyle }) {
   const [hov, setHov] = React.useState(false);
   return (
-    <button onClick={onClick}
+    <button onClick={onClick} title={title}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.65rem',
-        fontWeight:700, textTransform:'uppercase', letterSpacing:'0.05em',
-        background: primary ? '#ff5c5c' : hov ? '#1a1a1a' : 'transparent',
-        border: `1px solid ${primary ? '#ff5c5c' : hov ? '#ff5c5c' : '#2a2a2a'}`,
-        color: primary ? '#000' : hov ? '#e0e0e0' : '#666',
-        padding:'5px 12px', borderRadius:5, cursor:'pointer',
+        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.82rem',
+        fontWeight:600,
+        background: primary ? '#ff5c5c' : hov ? '#2a2a2a' : '#1c1c1c',
+        border: `1px solid ${primary ? '#ff5c5c' : hov ? '#ff5c5c' : '#444'}`,
+        color: primary ? '#000' : hov ? '#fff' : '#ddd',
+        padding:'5px 12px', borderRadius:6, cursor:'pointer',
         transition:'all 0.15s',
+        boxShadow: hov && !primary ? '0 0 0 1px #ff5c5c22' : 'none',
+        ...extraStyle,
       }}>
       {children}
     </button>
@@ -1941,7 +1959,7 @@ function ConfigPanel({ node, onClose, onUpdate }) {
 
   const Field = ({ label, children }) => (
     <div style={{display:'flex',flexDirection:'column',gap:5}}>
-      <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',textTransform:'uppercase',letterSpacing:'0.08em',color:'#444'}}>{label}</label>
+      <label style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.72rem',textTransform:'uppercase',letterSpacing:'0.08em',color:'#888'}}>{label}</label>
       {children}
     </div>
   );
@@ -2489,10 +2507,11 @@ const SKILL_CAT_COLOR = {
 function skillCat(id) { return SKILL_CATS[id] || 'Other'; }
 
 /* ── Family Tree: ~10 icon nodes + expandable children ── */
-function buildFamilyTree(data, expandedIds = new Set()) {
-  const E = (id, s, t, color) => ({
-    id, source:s, target:t, type:'step',
-    style:{ stroke:color, strokeWidth:1, opacity:0.25 },
+function buildFamilyTree(data, expandedIds = new Set(), edgeDash) {
+  const E = (id, s, t, color='#666') => ({
+    id, source:s, target:t, type:'default',
+    style:{ stroke:color, strokeWidth:2.5, opacity:0.85,
+      ...(edgeDash ? { strokeDasharray: edgeDash } : {}) },
   });
 
   const nodes = [{
@@ -2974,11 +2993,11 @@ function LiveSkillPanel({ agent, skills, onClose, onToggleSkill }) {
 /* ── Shared edit panel shell ── */
 const panelInput = {
   background:'#1a1a1a', border:'1px solid #2e2e2e', borderRadius:6,
-  color:'#e8e8e8', padding:'7px 10px', fontFamily:"'JetBrains Mono',monospace",
-  fontSize:'0.72rem', width:'100%', outline:'none', boxSizing:'border-box',
+  color:'#e8e8e8', padding:'8px 12px', fontFamily:"'JetBrains Mono',monospace",
+  fontSize:'0.9rem', width:'100%', outline:'none', boxSizing:'border-box',
 };
-const panelLabel = { fontFamily:"'JetBrains Mono',monospace", fontSize:'0.58rem',
-  textTransform:'uppercase', letterSpacing:'0.08em', color:'#888', display:'block', marginBottom:4 };
+const panelLabel = { fontFamily:"'JetBrains Mono',monospace", fontSize:'0.72rem',
+  textTransform:'uppercase', letterSpacing:'0.08em', color:'#999', display:'block', marginBottom:5 };
 const panelField = ({ label, children }) => (
   <div style={{marginBottom:12}}>
     <span style={panelLabel}>{label}</span>
@@ -2993,7 +3012,7 @@ function PanelShell({ emoji, title, subtitle, subtitleColor='#4ade80', onClose, 
           <div style={{fontSize:'0.82rem',fontWeight:600,color:'#f0f0f0'}}>{emoji} {title}</div>
           {subtitle && <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:subtitleColor,marginTop:2}}>{subtitle}</div>}
         </div>
-        <button onClick={onClose} style={{background:'none',border:'none',color:'#888',fontSize:'1.1rem',cursor:'pointer'}}>×</button>
+        <button onClick={onClose} title="Deselect node" style={{background:'none',border:'1px solid #222',borderRadius:5,color:'#555',fontSize:'0.7rem',cursor:'pointer',padding:'3px 7px',fontFamily:"'JetBrains Mono',monospace",lineHeight:1}}>← back</button>
       </div>
       <div style={{overflowY:'auto',flex:1,padding:16}}>{children}</div>
       {onSave && (
@@ -3033,9 +3052,9 @@ function PanelToggle({ value, onChange }) {
 function PanelSection({ label }) {
   return (
     <div style={{
-      fontFamily:"'JetBrains Mono',monospace", fontSize:'0.58rem',
-      color:'#444', textTransform:'uppercase', letterSpacing:'0.1em',
-      borderBottom:'1px solid #222', paddingBottom:6, marginBottom:10, marginTop:18,
+      fontFamily:"'JetBrains Mono',monospace", fontSize:'0.7rem',
+      color:'#777', textTransform:'uppercase', letterSpacing:'0.1em',
+      borderBottom:'1px solid #2a2a2a', paddingBottom:6, marginBottom:10, marginTop:18,
     }}>{label}</div>
   );
 }
@@ -3111,7 +3130,7 @@ function LiveAgentPanel({ data, models, onClose, onSaved, onDeleted }) {
   );
   const TOG = (v, onChange, label) => (
     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
-      <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>{label}</span>
+      <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.88rem',color:'#bbb'}}>{label}</span>
       <PanelToggle value={v} onChange={onChange}/>
     </div>
   );
@@ -3269,7 +3288,7 @@ function LiveChannelPanel({ data, onClose, onSaved, onDeleted, onCreated }) {
   );
   const TOG = (v, set, label) => (
     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
-      <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>{label}</span>
+      <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.88rem',color:'#bbb'}}>{label}</span>
       <PanelToggle value={v} onChange={set}/>
     </div>
   );
@@ -3649,8 +3668,8 @@ function LiveGatewayPanel({ data, onClose }) {
   const SEL = (v, set, opts) => <select value={v} onChange={e=>set(e.target.value)} style={panelInput}>{opts.map(([a,b])=><option key={a} value={a}>{b}</option>)}</select>;
   const INP = (v, set, props={}) => <input value={v} onChange={e=>set(e.target.value)} style={panelInput} {...props}/>;
   const NUM = (v, set, props={}) => <input type="number" value={v} onChange={e=>set(e.target.value)} style={panelInput} {...props}/>;
-  const TOG = (v, set, label) => <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>{label}</span><PanelToggle value={v} onChange={set}/></div>;
-  const STAT = (k, v) => <div style={{display:'flex',justifyContent:'space-between',padding:'6px 10px',background:'#181818',borderRadius:5,border:'1px solid #2a2a2a',marginBottom:6}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#999'}}>{k}</span><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#ccc'}}>{v}</span></div>;
+  const TOG = (v, set, label) => <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.88rem',color:'#bbb'}}>{label}</span><PanelToggle value={v} onChange={set}/></div>;
+  const STAT = (k, v) => <div style={{display:'flex',justifyContent:'space-between',padding:'8px 12px',background:'#181818',borderRadius:6,border:'1px solid #2a2a2a',marginBottom:6}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',color:'#888'}}>{k}</span><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.85rem',fontWeight:600,color:'#e0e0e0'}}>{v}</span></div>;
 
   return (
     <PanelShell emoji="🖥️" title="OpenClaw Gateway" subtitle="● online" subtitleColor="#4ade80" onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
@@ -3935,7 +3954,7 @@ function LiveCommandsPanel({ data, onClose }) {
   };
 
   const SEL = (v, set, opts) => <select value={v} onChange={e=>set(e.target.value)} style={panelInput}>{opts.map(([a,b])=><option key={a} value={a}>{b}</option>)}</select>;
-  const TOG = (v, set, label) => <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:'#888'}}>{label}</span><PanelToggle value={v} onChange={set}/></div>;
+  const TOG = (v, set, label) => <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.88rem',color:'#bbb'}}>{label}</span><PanelToggle value={v} onChange={set}/></div>;
 
   return (
     <PanelShell emoji="⚙️" title="System Config" subtitle="commands · web · talk" subtitleColor="#a855f7" onClose={onClose} saving={saving} onSave={save} saveStatus={saveStatus}>
@@ -4022,15 +4041,15 @@ function LiveModelsPanel({ data, onClose }) {
 
       {providers.map(prov => (
         <div key={prov.id} style={{background:'#141414',border:'1px solid #2a2a2a',borderRadius:8,marginBottom:10,overflow:'hidden'}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 12px',borderBottom:'1px solid #1e1e1e'}}>
-            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.75rem',fontWeight:700,color:'#f97316'}}>{prov.id}</span>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 14px',borderBottom:'1px solid #1e1e1e'}}>
+            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'1rem',fontWeight:700,color:'#fb923c'}}>{prov.id}</span>
             <div style={{display:'flex',gap:6}}>
               <button onClick={() => setEditing(editing?.providerId === prov.id ? null : { providerId:prov.id, apiKey:prov.apiKey||'', baseUrl:prov.baseUrl||'' })}
-                style={{background:'none',border:'1px solid #333',borderRadius:4,padding:'2px 8px',color:'#888',fontSize:'0.6rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
+                style={{background:'none',border:'1px solid #444',borderRadius:4,padding:'4px 10px',color:'#bbb',fontSize:'0.78rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
                 {editing?.providerId === prov.id ? 'done' : '⚙ edit'}
               </button>
               <button onClick={() => removeProvider(prov.id)}
-                style={{background:'none',border:'1px solid #3a1818',borderRadius:4,padding:'2px 8px',color:'#ef4444',fontSize:'0.6rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
+                style={{background:'none',border:'1px solid #5a2020',borderRadius:4,padding:'4px 10px',color:'#f87171',fontSize:'0.78rem',cursor:'pointer',fontFamily:"'JetBrains Mono',monospace"}}>
                 ✕
               </button>
             </div>
@@ -4054,9 +4073,9 @@ function LiveModelsPanel({ data, onClose }) {
           <div style={{padding:'8px 12px'}}>
             <div style={{display:'flex',flexWrap:'wrap',gap:4,marginBottom:6}}>
               {(prov.models||[]).map(m => (
-                <div key={m.id} style={{display:'flex',alignItems:'center',gap:3,background:'rgba(249,115,22,0.08)',border:'1px solid rgba(249,115,22,0.2)',borderRadius:4,padding:'2px 6px'}}>
-                  <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.55rem',color:'#f97316'}}>{m.id}</span>
-                  <button onClick={() => removeModel(prov.id, m.id)} style={{background:'none',border:'none',color:'#555',cursor:'pointer',fontSize:'0.6rem',padding:'0 2px',lineHeight:1}}>✕</button>
+                <div key={m.id} style={{display:'flex',alignItems:'center',gap:4,background:'rgba(249,115,22,0.12)',border:'1px solid rgba(249,115,22,0.35)',borderRadius:5,padding:'4px 8px'}}>
+                  <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.82rem',color:'#fdba74'}}>{m.id}</span>
+                  <button onClick={() => removeModel(prov.id, m.id)} style={{background:'none',border:'none',color:'#888',cursor:'pointer',fontSize:'0.75rem',padding:'0 2px',lineHeight:1}}>✕</button>
                 </div>
               ))}
             </div>
@@ -4163,6 +4182,11 @@ function ForgeApp() {
   const [liveLoading, setLiveLoading] = useState(false);
   const [liveError, setLiveError] = useState(null);
   const [liveSelectedAgent, setLiveSelectedAgent] = useState(null);
+  const [sidePanelOpen,     setSidePanelOpen]     = useState(true);
+  const [layoutKey,         setLayoutKey]         = useState(() => localStorage.getItem('forge-layout') || 'down');
+  const [edgeStyleKey,      setEdgeStyleKey]      = useState(() => localStorage.getItem('forge-edge-style') || 'solid');
+  const treeElkRef     = useRef(null);
+  const edgeStyleRef   = useRef(localStorage.getItem('forge-edge-style') || 'solid');
   const [liveLastRefresh,   setLiveLastRefresh]   = useState(null);
   const [liveRefreshTick,   setLiveRefreshTick]   = useState(0); // seconds since last refresh
   const liveNodesRef = useRef([]);
@@ -4176,6 +4200,11 @@ function ForgeApp() {
 
   // Keep ref in sync with ftExpandedIds state
   React.useEffect(() => { ftExpandedIdsRef.current = ftExpandedIds; }, [ftExpandedIds]);
+
+  // Auto-open side panel when a node is selected
+  React.useEffect(() => {
+    if (liveSelectedAgent) setSidePanelOpen(true);
+  }, [liveSelectedAgent]);
 
   // On mount: load live data immediately
   React.useEffect(() => { loadLive(); }, []);
@@ -4206,25 +4235,46 @@ function ForgeApp() {
     } : { label: 'OpenClaw Gateway' },
   }], []);
 
-  // Expand from collapsed to full radial view
-  const TREE_ELK = {
-    'elk.algorithm': 'layered',
-    'elk.direction': 'DOWN',
-    'elk.layered.spacing.nodeNodeBetweenLayers': '220',
-    'elk.spacing.nodeNode': '20',
-    'elk.layered.nodePlacement.strategy': 'SIMPLE',
-    'elk.edgeRouting': 'ORTHOGONAL',
+  // ── Layout presets ──────────────────────────────────────────────
+  const LAYOUT_OPTS = {
+    down:   { label:'Down',   icon:'↓', elk:{ 'elk.algorithm':'layered','elk.direction':'DOWN',  'elk.layered.spacing.nodeNodeBetweenLayers':'200','elk.spacing.nodeNode':'40','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+    right:  { label:'Right',  icon:'→', elk:{ 'elk.algorithm':'layered','elk.direction':'RIGHT', 'elk.layered.spacing.nodeNodeBetweenLayers':'260','elk.spacing.nodeNode':'40','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+    up:     { label:'Up',     icon:'↑', elk:{ 'elk.algorithm':'layered','elk.direction':'UP',    'elk.layered.spacing.nodeNodeBetweenLayers':'200','elk.spacing.nodeNode':'40','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+    left:   { label:'Left',   icon:'←', elk:{ 'elk.algorithm':'layered','elk.direction':'LEFT',  'elk.layered.spacing.nodeNodeBetweenLayers':'260','elk.spacing.nodeNode':'40','elk.layered.nodePlacement.strategy':'SIMPLE','elk.edgeRouting':'ORTHOGONAL' } },
+    radial: { label:'Radial', icon:'◎', elk:{ 'elk.algorithm':'radial', 'elk.spacing.nodeNode':'100' } },
+    stress: { label:'Force',  icon:'⬡', elk:{ 'elk.algorithm':'stress', 'elk.spacing.nodeNode':'120','elk.stress.desiredEdgeLength':'200' } },
   };
+
+  const EDGE_STYLES = {
+    solid:    { label:'—',    dash: undefined },
+    dashed:   { label:'╌',    dash: '10 5' },
+    dotted:   { label:'···',  dash: '2 6' },
+    longdash: { label:'╍',    dash: '18 7' },
+  };
+
+  // Keep treeElkRef in sync with layoutKey
+  React.useEffect(() => {
+    treeElkRef.current = (LAYOUT_OPTS[layoutKey] || LAYOUT_OPTS.down).elk;
+    localStorage.setItem('forge-layout', layoutKey);
+  }, [layoutKey]);
+  if (!treeElkRef.current) treeElkRef.current = (LAYOUT_OPTS[layoutKey] || LAYOUT_OPTS.down).elk;
+
+  // Keep edgeStyleRef in sync with edgeStyleKey
+  React.useEffect(() => {
+    edgeStyleRef.current = edgeStyleKey;
+    localStorage.setItem('forge-edge-style', edgeStyleKey);
+    // Re-apply so all edges pick up the new dash pattern
+    applyFamilyTree(ftExpandedIdsRef.current);
+  }, [edgeStyleKey]);
 
   const applyFamilyTree = useCallback(async (expandedIds) => {
     const data = liveDataRef.current;
     if (!data) return;
     const { nodes: lnodes, edges: ledges } = buildFamilyTree(data, expandedIds);
     setEdges(ledges);
-    // Always run ELK so the layout is clean after every expand / collapse
-    const laid = await elkLayout(lnodes, ledges, TREE_ELK);
+    const laid = await elkLayout(lnodes, ledges, treeElkRef.current);
     setNodes(laid);
-    setTimeout(() => rfInstance.current?.fitView({ padding: 0.25, duration: 350 }), 150);
+    setTimeout(() => rfInstance.current?.fitView({ padding: 0.15, duration: 350 }), 150);
   }, []);
 
   const handleExpandServer = useCallback(async () => {
@@ -4339,7 +4389,7 @@ function ForgeApp() {
       setTimeout(async () => {
         const cur = rfInstance.current;
         if (!cur) return;
-        const laid = await elkLayout(cur.getNodes(), cur.getEdges(), TREE_ELK);
+        const laid = await elkLayout(cur.getNodes(), cur.getEdges(), treeElkRef.current);
         setNodes(laid.map(n => ({ ...n, style: { ...(n.style||{}), opacity:1, transition:'opacity 0.2s' } })));
         setTimeout(() => cur.fitView({ padding:0.25, duration:400 }), 80);
       }, 30);
@@ -4426,7 +4476,7 @@ function ForgeApp() {
   React.useEffect(() => {
     const handler = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-      if (e.key === 'Escape') setLiveSelectedAgent(null);
+      if (e.key === 'Escape') { setLiveSelectedAgent(null); }  // panel stays open
       if ((e.key === 'r' || e.key === 'R') && !e.metaKey && !e.ctrlKey) { e.preventDefault(); refreshLive(); }
     };
     window.addEventListener('keydown', handler);
@@ -4454,7 +4504,7 @@ function ForgeApp() {
         setTimeout(async () => {
           const cur = rfInstance.current;
           if (!cur) return;
-          const laid = await elkLayout(cur.getNodes(), cur.getEdges());
+          const laid = await elkLayout(cur.getNodes(), cur.getEdges(), treeElkRef.current);
           setNodes(laid.map(n => ({ ...n, style: { ...(n.style||{}), opacity:1, transition:'opacity 0.2s' } })));
           setTimeout(() => cur.fitView({ padding:0.25, duration:400 }), 80);
         }, 50);
@@ -4481,7 +4531,7 @@ function ForgeApp() {
         setTimeout(async () => {
           const cur = rfInstance.current;
           if (!cur) return;
-          const laid = await elkLayout(cur.getNodes(), cur.getEdges());
+          const laid = await elkLayout(cur.getNodes(), cur.getEdges(), treeElkRef.current);
           setNodes(laid);
           setTimeout(() => cur.fitView({ padding:0.25, duration:400 }), 80);
         }, 50);
@@ -4638,35 +4688,99 @@ function ForgeApp() {
   }, []);
 
   const runningCron = liveData?.cronJobs?.filter(j => j.lastStatus === 'running').length || 0;
-  const activeSessions = liveData?.sessions?.length || 0;
-  const liveStatusText = liveLoading ? 'loading…' : liveError ? `error: ${liveError}` :
-    liveData ? [
-      `v${liveData.gateway?.version||'?'}`,
-      `${liveData.agents?.length||0} agent${liveData.agents?.length!==1?'s':''}`,
-      `${liveSkills.filter(s=>s.enabled).length} skills`,
-      `${liveData.channels?.length||0} channel${liveData.channels?.length!==1?'s':''}`,
-      activeSessions > 0 ? `${activeSessions} sessions` : null,
-      runningCron > 0 ? `${runningCron} cron running` : null,
-    ].filter(Boolean).join(' · ') : '';
+
+  const PANEL_W = 340;
+  const TAB_W   = 20;
+
+  // After panel open/close, re-fit the view so the diagram uses the new canvas width
+  React.useEffect(() => {
+    const t = setTimeout(() => rfInstance.current?.fitView({ padding:0.25, duration:300 }), 280);
+    return () => clearTimeout(t);
+  }, [sidePanelOpen]);
 
   return (
     <div style={{display:'flex', height:'calc(100vh - 57px)', overflow:'hidden'}}>
-      {/* Palette removed — canvas is the admin, not a designer */}
-      <div style={{flex:1, position:'relative', minHeight:0, height:'100%'}}>
-        {/* Live mode banner */}
+      {/* Canvas — flex:1 so it shrinks/grows with the side panel */}
+      <div style={{flex:1, position:'relative', minHeight:0, height:'100%', minWidth:0}}>
+        {/* ── Live status bar ── */}
         {liveMode && (
           <div style={{
             position:'absolute', top:0, left:0, right:0, zIndex:10,
-            background:'rgba(74,222,128,0.07)', borderBottom:'1px solid #1a3a28',
-            padding:'6px 14px', display:'flex', alignItems:'center', gap:10,
-            fontFamily:"'JetBrains Mono',monospace", fontSize:'0.65rem',
+            background:'rgba(12,12,12,0.97)',
+            borderBottom:'1px solid #1f1f1f',
+            padding:'0 16px',
+            height:34,
+            display:'flex', alignItems:'center', gap:0,
+            fontFamily:"'JetBrains Mono',monospace", fontSize:'0.68rem',
+            userSelect:'none',
           }}>
-            {liveLoading
-              ? <span className="refresh-spin" style={{color:'#4ade80',fontSize:'0.75rem'}}>⟳</span>
-              : <span style={{width:6,height:6,borderRadius:'50%',background:'#4ade80',boxShadow:'0 0 8px #4ade80'}}/>}
-            <span style={{color:'#4ade80'}}>LIVE</span>
-            <span style={{color:'#2a4a38'}}>{liveStatusText}</span>
-            {runningCron > 0 && <span style={{color:'#f59e0b',marginLeft:4}}>· <span className="refresh-spin">⟳</span> {runningCron} job{runningCron>1?'s':''} running</span>}
+
+            {/* LIVE / status badge */}
+            <div style={{
+              display:'flex', alignItems:'center', gap:7,
+              paddingRight:14, marginRight:14,
+              borderRight:'1px solid #222',
+            }}>
+              {liveLoading
+                ? <span className="refresh-spin" style={{color:'#4ade80',fontSize:'0.8rem',lineHeight:1}}>⟳</span>
+                : liveError
+                  ? <span style={{width:7,height:7,borderRadius:'50%',background:'#ef4444',boxShadow:'0 0 8px rgba(239,68,68,0.8)',flexShrink:0}}/>
+                  : <span style={{width:7,height:7,borderRadius:'50%',background:'#4ade80',boxShadow:'0 0 8px rgba(74,222,128,0.8)',flexShrink:0}}/>}
+              <span style={{color: liveError ? '#ef4444' : '#4ade80', fontWeight:700, letterSpacing:'0.08em', fontSize:'0.65rem'}}>
+                {liveError ? 'ERROR' : 'LIVE'}
+              </span>
+              {liveError
+                ? <span style={{color:'#7f1d1d',fontSize:'0.6rem',maxWidth:200,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{liveError}</span>
+                : liveData?.gateway?.version
+                  ? <span style={{color:'#444',fontSize:'0.6rem'}}>v{liveData.gateway.version}</span>
+                  : null
+              }
+            </div>
+
+            {/* Stats */}
+            {!liveCollapsed && liveData && (() => {
+              const SEP = <span style={{color:'#252525',margin:'0 10px'}}>│</span>;
+              const VAL = (n, label) => (
+                <span>
+                  <span style={{color:'#ccc',fontWeight:600}}>{n}</span>
+                  <span style={{color:'#555',marginLeft:4}}>{label}</span>
+                </span>
+              );
+              return (
+                <>
+                  {VAL(liveData.agents?.length||0, 'agents')}
+                  {SEP}
+                  {VAL(liveSkills.filter(s=>s.enabled).length, 'skills')}
+                  {SEP}
+                  {VAL(liveData.channels?.length||0, 'channels')}
+                  {SEP}
+                  {VAL(liveData.sessions?.length||0, 'sessions')}
+                  {SEP}
+                  {VAL(nodes.length, 'nodes')}
+                  {runningCron > 0 && (
+                    <>{SEP}<span style={{color:'#f59e0b'}}><span className="refresh-spin" style={{display:'inline-block'}}>⟳</span> {runningCron} running</span></>
+                  )}
+                </>
+              );
+            })()}
+
+            {liveCollapsed && (
+              <span style={{color:'#555'}}>collapsed · click ⊞ Expand to open diagram</span>
+            )}
+
+            {/* Refresh info — pushed to right */}
+            <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:10}}>
+              <span style={{color:'#444'}}>
+                {liveRefreshTick < 5
+                  ? <span style={{color:'#4ade80'}}>just refreshed</span>
+                  : liveRefreshTick < 60
+                    ? `refreshed ${liveRefreshTick}s ago`
+                    : `refreshed ${Math.floor(liveRefreshTick/60)}m ago`}
+              </span>
+              <span style={{color:'#2a2a2a'}}>│</span>
+              <span style={{color:'#3a6b47'}}>↺ {Math.max(0, 30 - liveRefreshTick)}s</span>
+            </div>
+
           </div>
         )}
         <ReactFlow
@@ -4682,95 +4796,141 @@ function ForgeApp() {
           defaultEdgeOptions={{ type:'smoothstep', style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65} }}
           nodesDraggable={!liveMode}
           nodesConnectable={!liveMode}
-          minZoom={0.85}
-          maxZoom={0.85}
-          zoomOnScroll={false}
-          zoomOnPinch={false}
+          minZoom={0.05}
+          maxZoom={4}
+          zoomOnScroll={true}
+          zoomOnPinch={true}
           zoomOnDoubleClick={false}
-          panOnDrag={false}
+          panOnDrag={true}
           panOnScroll={false}
-          style={{ background:'#0a0a0a', paddingTop: liveMode ? 32 : 0 }}
+          style={{ background:'#0a0a0a', paddingTop: liveMode ? 34 : 0 }}
           proOptions={{ hideAttribution: true }}
         >
           <Background variant="dots" gap={28} size={1} color="#252525" />
-          <Panel position="top-right" style={{display:'flex',gap:8,margin:'8px 8px 0 0'}}>
+          <Controls position="bottom-left" showInteractive={false} style={{
+            background:'#111', border:'1px solid #2a2a2a', borderRadius:8,
+            overflow:'hidden', boxShadow:'0 4px 16px rgba(0,0,0,0.6)',
+          }}/>
+          <Panel position="top-right" style={{display:'flex',gap:6,marginTop: liveMode ? 42 : 8,marginRight:8,alignItems:'center'}}>
             {!liveCollapsed && <>
-              <NavBtn onClick={async () => {
-                const cur = rfInstance.current;
-                if (!cur) return;
-                const laid = await elkLayout(cur.getNodes(), cur.getEdges());
-                setNodes(laid);
-                setTimeout(() => cur.fitView({ padding:0.25, duration:400 }), 80);
-              }}>⟳ Arrange</NavBtn>
-              <NavBtn onClick={handleCollapseToServer}>⊟ Collapse</NavBtn>
+              {Object.entries(LAYOUT_OPTS).map(([key, preset]) => (
+                <NavBtn key={key} title={preset.label}
+                  style={layoutKey === key ? {background:'#ff5c5c',color:'#000',borderColor:'#ff5c5c'} : {}}
+                  onClick={() => {
+                    setLayoutKey(key);
+                    treeElkRef.current = preset.elk;
+                    applyFamilyTree(ftExpandedIdsRef.current);
+                  }}>{preset.icon}</NavBtn>
+              ))}
+              <div style={{width:1,height:18,background:'#333',margin:'0 2px'}}/>
+              <NavBtn onClick={handleCollapseToServer}>⊟</NavBtn>
             </>}
-            {liveCollapsed && (
-              <NavBtn onClick={handleExpandServer} primary>⊞ Expand</NavBtn>
-            )}
-            <NavBtn onClick={refreshLive} primary>{liveLoading ? '↻…' : '↺ Refresh'}</NavBtn>
+            {liveCollapsed && <NavBtn onClick={handleExpandServer} primary>⊞ Expand</NavBtn>}
+            <NavBtn onClick={liveLoading ? undefined : loadLive} primary>{liveLoading ? '↻…' : '↺ Refresh'}</NavBtn>
           </Panel>
-          <Panel position="bottom-center">
-            <div style={{
-              background:'rgba(10,10,10,0.92)', border:'1px solid #1e1e1e',
-              borderRadius:8, padding:'5px 14px',
-              display:'flex', alignItems:'center', gap:10,
-              fontFamily:"'JetBrains Mono',monospace", fontSize:'0.62rem', color:'#444',
-            }}>
-              <span style={{color:'#4ade80'}}>●</span>
-              {liveCollapsed ? (
-                <span style={{color:'#555'}}>1 virtual server · use ⊞ Expand to open diagram</span>
-              ) : (
-                <>
-                  <span>{nodes.length} nodes</span>
-                  <span style={{color:'#1e1e1e'}}>|</span>
-                  <span>{liveData?.agents?.length||0} agents · {liveSkills.filter(s=>s.enabled).length} skills · {liveData?.sessions?.length||0} sessions</span>
-                  <span style={{color:'#1e1e1e'}}>|</span>
-                  <span style={{color:'#222'}}>refreshed {liveRefreshTick < 5 ? 'just now' : liveRefreshTick < 60 ? `${liveRefreshTick}s ago` : `${Math.floor(liveRefreshTick/60)}m ago`}</span>
-                  <span style={{color:'#1e1e1e'}}>|</span>
-                  <span style={{color:'#1a3a28'}}>auto in {Math.max(0,30-liveRefreshTick)}s</span>
-                </>
-              )}
-            </div>
-          </Panel>
+
         </ReactFlow>
       </div>
 
-      
-
-      {liveMode && liveSelectedAgent && (
+      {/* ── Side panel ── */}
+      {liveMode && (
         <div style={{
-          position:'fixed', top:80, bottom:80, right:16,
-          width:340, zIndex:150,
-          borderRadius:16, overflow:'hidden',
-          boxShadow:'0 24px 64px rgba(0,0,0,0.9), 0 0 0 1px #333',
-          display:'flex', flexDirection:'column',
+          display:'flex', flexShrink:0,
+          width: sidePanelOpen ? TAB_W + PANEL_W : TAB_W,
+          transition:'width 0.25s cubic-bezier(0.4,0,0.2,1)',
+          overflow:'hidden',
+          borderLeft:'1px solid #141414',
+          background:'#0a0a0a',
+          position:'relative',
         }}>
-          <LiveNodePanel
-            node={liveSelectedAgent}
-            skills={liveSkills}
-            models={liveData?.models || []}
-            onClose={() => setLiveSelectedAgent(null)}
-            onToggleSkill={handleToggleSkill}
-            onNodeUpdate={handleNodeUpdate}
-            onCronCreated={(job) => {
-              if (liveDataRef.current) {
-                liveDataRef.current = { ...liveDataRef.current, cronJobs: [...(liveDataRef.current.cronJobs||[]), job] };
-                setLiveData(liveDataRef.current);
-              }
-              setLiveSelectedAgent(null);
-              setTimeout(() => applyFamilyTree(ftExpandedIdsRef.current, false), 50);
+
+          {/* Collapse tab — always visible */}
+          <button
+            onClick={() => setSidePanelOpen(p => !p)}
+            title={sidePanelOpen ? 'Collapse panel' : 'Open panel'}
+            style={{
+              width: TAB_W, flexShrink:0, height:'100%',
+              background:'transparent', border:'none', borderRight:'1px solid #141414',
+              cursor:'pointer', display:'flex', flexDirection:'column',
+              alignItems:'center', justifyContent:'center', gap:12,
+              color:'#2a2a2a', transition:'color 0.15s, background 0.15s',
+              padding:0,
             }}
-            onChannelCreated={(ch) => {
-              if (liveDataRef.current) {
-                liveDataRef.current = { ...liveDataRef.current, channels: [...(liveDataRef.current.channels||[]), ch] };
-                setLiveData(liveDataRef.current);
-              }
-              setLiveSelectedAgent(null);
-              setTimeout(() => applyFamilyTree(ftExpandedIdsRef.current, false), 50);
-            }}
-          />
+            onMouseEnter={e => { e.currentTarget.style.background='#111'; e.currentTarget.style.color='#555'; }}
+            onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='#2a2a2a'; }}
+          >
+            {/* Chevron */}
+            <span style={{
+              fontSize:'0.65rem', lineHeight:1,
+              transform: sidePanelOpen ? 'rotate(0deg)' : 'rotate(180deg)',
+              transition:'transform 0.25s',
+              display:'inline-block',
+            }}>‹</span>
+
+            {/* Vertical label when collapsed */}
+            {!sidePanelOpen && liveSelectedAgent && (
+              <span style={{
+                fontFamily:"'JetBrains Mono',monospace", fontSize:'0.5rem', color:'#333',
+                writingMode:'vertical-rl', textOrientation:'mixed',
+                transform:'rotate(180deg)', maxHeight:120,
+                overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
+                letterSpacing:'0.05em',
+              }}>
+                {liveSelectedAgent.label || liveSelectedAgent._nodeType || 'node'}
+              </span>
+            )}
+          </button>
+
+          {/* Panel content — fixed width inside the expanding container */}
+          <div style={{
+            width: PANEL_W, flexShrink:0, height:'100%',
+            display:'flex', flexDirection:'column', overflow:'hidden',
+          }}>
+            {liveSelectedAgent ? (
+              <LiveNodePanel
+                node={liveSelectedAgent}
+                skills={liveSkills}
+                models={liveData?.models || []}
+                onClose={() => setLiveSelectedAgent(null)}
+                onToggleSkill={handleToggleSkill}
+                onNodeUpdate={handleNodeUpdate}
+                onCronCreated={(job) => {
+                  if (liveDataRef.current) {
+                    liveDataRef.current = { ...liveDataRef.current, cronJobs: [...(liveDataRef.current.cronJobs||[]), job] };
+                    setLiveData(liveDataRef.current);
+                  }
+                  setLiveSelectedAgent(null);
+                  setTimeout(() => applyFamilyTree(ftExpandedIdsRef.current, false), 50);
+                }}
+                onChannelCreated={(ch) => {
+                  if (liveDataRef.current) {
+                    liveDataRef.current = { ...liveDataRef.current, channels: [...(liveDataRef.current.channels||[]), ch] };
+                    setLiveData(liveDataRef.current);
+                  }
+                  setLiveSelectedAgent(null);
+                  setTimeout(() => applyFamilyTree(ftExpandedIdsRef.current, false), 50);
+                }}
+              />
+            ) : (
+              /* Empty state — panel open but nothing selected */
+              <div style={{
+                height:'100%', display:'flex', flexDirection:'column',
+                alignItems:'center', justifyContent:'center', gap:14,
+                padding:24, textAlign:'center',
+              }}>
+                <div style={{fontSize:'2.5rem', opacity:0.35}}>⌥</div>
+                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.9rem',color:'#777',lineHeight:1.7}}>
+                  click any node<br/>to inspect &amp; edit
+                </div>
+                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.75rem',color:'#444',marginTop:4,lineHeight:1.9}}>
+                  ESC · clear selection<br/>R · refresh
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
+
       {!liveMode && (
         <ConfigPanel node={selectedNode} onClose={() => setSelectedNode(null)} onUpdate={updateNode} />
       )}

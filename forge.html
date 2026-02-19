@@ -1638,72 +1638,59 @@ function ChannelNode({ data, selected }) {
   );
 }
 
-/* ── Collapsed Server Node — the top-level "one virtual server" entry point ── */
+/* ── Collapsed Server Node — square icon card ── */
 function CollapsedServerNode({ data, selected }) {
+  const SZ = 140;
   return (
-    <div className={`vf-node${selected ? ' selected' : ''}`}
-         style={{
-           border: '1.5px solid #ff5c5c',
-           padding: 0, overflow: 'hidden', width: 230,
-           cursor: 'pointer',
-           background: '#111111',
-           boxShadow: '0 0 32px rgba(255,92,92,0.08)',
-         }}>
+    <div style={{
+      width: SZ, height: SZ,
+      border: `1.5px solid ${selected ? '#ff5c5c' : '#2a2a2a'}`,
+      borderRadius: 16,
+      background: '#111111',
+      boxShadow: selected ? '0 0 24px rgba(255,92,92,0.18)' : '0 0 16px rgba(0,0,0,0.6)',
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      gap: 10, position: 'relative', overflow: 'hidden',
+      transition: 'border-color 0.2s, box-shadow 0.2s',
+    }}>
       <Handle type="source" position={Position.Right} style={{ opacity: 0, pointerEvents: 'none' }}/>
-      {/* Main row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px' }}>
-        <div style={{
-          width: 48, height: 48, borderRadius: 12, flexShrink: 0,
-          background: 'color-mix(in srgb, #ff5c5c 16%, #0a0a0a)',
-          border: '1px solid rgba(255,92,92,0.22)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 20px rgba(255,92,92,0.12)',
-        }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff5c5c" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="2" width="20" height="8" rx="2"/>
-            <rect x="2" y="14" width="20" height="8" rx="2"/>
-            <line x1="6" y1="6" x2="6.01" y2="6"/>
-            <line x1="6" y1="18" x2="6.01" y2="18"/>
-          </svg>
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{
-            fontFamily: "'JetBrains Mono', monospace", fontSize: '0.82rem',
-            fontWeight: 700, color: '#e0e0e0',
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          }}>{data.label || 'OpenClaw'}</div>
-          <div style={{
-            fontFamily: "'JetBrains Mono', monospace", fontSize: '0.58rem',
-            color: '#555', marginTop: 3,
-          }}>virtual server</div>
-        </div>
-        <span style={{
-          width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-          background: '#4ade80', boxShadow: '0 0 8px rgba(74,222,128,0.5)',
-          animation: 'vfPulse 2s ease-in-out infinite',
-        }}/>
+      {/* Status dot — top right */}
+      <span style={{
+        position: 'absolute', top: 10, right: 10,
+        width: 7, height: 7, borderRadius: '50%',
+        background: '#4ade80', boxShadow: '0 0 8px rgba(74,222,128,0.6)',
+        animation: 'vfPulse 2s ease-in-out infinite',
+      }}/>
+      {/* Icon */}
+      <div style={{
+        width: 52, height: 52, borderRadius: 14,
+        background: 'color-mix(in srgb, #ff5c5c 14%, #0a0a0a)',
+        border: '1px solid rgba(255,92,92,0.2)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: '0 0 20px rgba(255,92,92,0.1)',
+      }}>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ff5c5c" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="2" width="20" height="8" rx="2"/>
+          <rect x="2" y="14" width="20" height="8" rx="2"/>
+          <line x1="6" y1="6" x2="6.01" y2="6"/>
+          <line x1="6" y1="18" x2="6.01" y2="18"/>
+        </svg>
       </div>
-      {/* Stats bar */}
-      {data.agentCount !== undefined ? (
+      {/* Label */}
+      <div style={{ textAlign: 'center', padding: '0 10px' }}>
         <div style={{
-          borderTop: '1px solid #1a1a1a', padding: '6px 16px',
-          display: 'flex', alignItems: 'center', gap: 8, background: '#0c0c0c',
-        }}>
-          <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:'0.55rem', color:'#818cf8' }}>{data.agentCount} agents</span>
-          <span style={{ color:'#222' }}>·</span>
-          <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:'0.55rem', color:'#4ade80' }}>{data.skillCount} skills</span>
-          <span style={{ color:'#222' }}>·</span>
-          <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:'0.55rem', color:'#22d3ee' }}>{data.channelCount} ch</span>
-          {data.cronCount > 0 && <>
-            <span style={{ color:'#222' }}>·</span>
-            <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:'0.55rem', color:'#a855f7' }}>{data.cronCount} cron</span>
-          </>}
-        </div>
-      ) : (
-        <div style={{ borderTop:'1px solid #1a1a1a', padding:'6px 16px', background:'#0c0c0c' }}>
-          <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:'0.55rem', color:'#333' }}>connecting…</span>
-        </div>
-      )}
+          fontFamily: "'JetBrains Mono', monospace", fontSize: '0.7rem',
+          fontWeight: 700, color: '#e0e0e0',
+          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          maxWidth: 118,
+        }}>{data.label || 'OpenClaw'}</div>
+        {data.agentCount !== undefined && (
+          <div style={{
+            fontFamily: "'JetBrains Mono', monospace", fontSize: '0.52rem',
+            color: '#444', marginTop: 3,
+          }}>{data.agentCount}a · {data.skillCount}s · {data.channelCount}ch</div>
+        )}
+      </div>
     </div>
   );
 }

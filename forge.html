@@ -1338,19 +1338,24 @@ const ELK_OPTS = {
 async function elkLayout(nodes, edges, opts = {}) {
   if (!nodes.length) return nodes;
 
+  const algorithm = opts['elk.algorithm'] || ELK_OPTS['elk.algorithm'];
+  const isRadial = algorithm === 'radial';
+
   // Scale radius based on node count so things don't overlap when expanded
   const nodeCount = nodes.length;
   const radius = nodeCount <= 8 ? 280 : nodeCount <= 20 ? 380 : 500;
 
-  // Find the gateway node to use as root
-  const rootNode = nodes.find(n => n.type === 'livegateway' || n.id === 'live-gw' || n.id === 'g1');
+  // Find the gateway node to use as root (radial only)
+  const rootNode = isRadial && nodes.find(n => n.type === 'livegateway' || n.id === 'live-gw' || n.id === 'g1');
 
   const graph = {
     id: 'root',
     layoutOptions: {
       ...ELK_OPTS,
-      'elk.radial.radius': String(radius),
-      ...(rootNode ? { 'elk.radial.rootNode': rootNode.id } : {}),
+      ...(isRadial ? {
+        'elk.radial.radius': String(radius),
+        ...(rootNode ? { 'elk.radial.rootNode': rootNode.id } : {}),
+      } : {}),
       ...opts,
     },
     children: nodes.map(n => ({
@@ -1642,7 +1647,7 @@ function ChannelNode({ data, selected }) {
 function CollapsedServerNode({ data, selected }) {
   return (
     <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:9, background:'transparent' }}>
-      <Handle type="source" position={Position.Right} style={{ opacity:0, pointerEvents:'none' }}/>
+      <Handle type="source" position={Position.Bottom} style={{ opacity:0, pointerEvents:'none' }}/>
       {/* Icon square — dark maroon, iOS-style radius */}
       <div style={{
         width:100, height:100, borderRadius:22, flexShrink:0,
@@ -1681,8 +1686,63 @@ function CollapsedServerNode({ data, selected }) {
   );
 }
 
+/* ── Tree Icon Node — same style as gateway icon, colored by category ── */
+const TREE_CATEGORIES = {
+  agent:   { color:'#818cf8', bg:'#0c0a1c', border:'#261e4a',
+    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg> },
+  skill:   { color:'#4ade80', bg:'#050f08', border:'#163324',
+    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> },
+  channel: { color:'#22d3ee', bg:'#03100f', border:'#0b3038',
+    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill={c} stroke="none"/></svg> },
+  cron:    { color:'#a855f7', bg:'#0d0618', border:'#2e1258',
+    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
+  node:    { color:'#f59e0b', bg:'#120900', border:'#3d2500',
+    icon: (c) => <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> },
+};
+
+function TreeIconNode({ data, selected }) {
+  const cfg = TREE_CATEGORIES[data.category] || TREE_CATEGORIES.agent;
+  const isEnabled = data.enabled !== false;
+  return (
+    <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:9, background:'transparent' }}>
+      <Handle type="target" position={Position.Top} style={{ opacity:0, pointerEvents:'none' }}/>
+      <Handle type="source" position={Position.Bottom} style={{ opacity:0, pointerEvents:'none' }}/>
+      <div style={{
+        width:100, height:100, borderRadius:22,
+        background: cfg.bg,
+        border:`1.5px solid ${selected ? cfg.color : cfg.border}`,
+        display:'flex', alignItems:'center', justifyContent:'center',
+        position:'relative', opacity: isEnabled ? 1 : 0.4,
+        boxShadow: selected ? `0 0 0 3px ${cfg.color}22, 0 8px 32px rgba(0,0,0,0.9)` : '0 6px 28px rgba(0,0,0,0.8)',
+        transition:'border-color 0.2s, box-shadow 0.2s',
+      }}>
+        <span style={{
+          position:'absolute', top:8, right:8, width:6, height:6, borderRadius:'50%',
+          background: isEnabled ? '#4ade80' : '#333',
+          boxShadow: isEnabled ? '0 0 6px rgba(74,222,128,0.9)' : 'none',
+          animation: isEnabled ? 'vfPulse 2s ease-in-out infinite' : 'none',
+        }}/>
+        <div style={{
+          width:54, height:54, borderRadius:14,
+          background:`color-mix(in srgb, ${cfg.color} 10%, #0a0a0a)`,
+          border:`1px solid ${cfg.color}28`,
+          display:'flex', alignItems:'center', justifyContent:'center',
+        }}>
+          {cfg.icon(cfg.color)}
+        </div>
+      </div>
+      <div style={{
+        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.65rem',
+        fontWeight:600, color:'#888', textAlign:'center',
+        maxWidth:120, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+      }}>{data.label}</div>
+    </div>
+  );
+}
+
 const nodeTypes = {
   collapsedserver: CollapsedServerNode,
+  treeicon: TreeIconNode,
   gateway:      GatewayNode,
   livegateway:  LiveGatewayNode,
   sectioncard:  SectionCardNode,
@@ -2286,6 +2346,58 @@ function LiveGatewayNode({ data, selected }) {
       })}
     </div>
   );
+}
+
+/* ── Family Tree: top-down network diagram from gateway ── */
+function buildFamilyTree(data) {
+  const EDGE = (id, s, t, color) => ({
+    id, source:s, target:t, type:'smoothstep',
+    style:{ stroke:color, strokeWidth:1.5, opacity:0.5 },
+  });
+
+  const nodes = [{
+    id:'live-server', type:'collapsedserver', position:{x:0,y:0},
+    data:{
+      label: data.gateway?.name || 'OpenClaw Gateway',
+      agentCount: data.agents?.length || 0,
+      skillCount: data.skills?.filter(s=>s.enabled!==false).length || 0,
+      channelCount: data.channels?.length || 0,
+      cronCount: data.cronJobs?.length || 0,
+    },
+  }];
+  const edges = [];
+
+  (data.agents||[]).forEach((ag,i) => {
+    const id=`tree-ag-${ag.id||i}`;
+    nodes.push({ id, type:'treeicon', position:{x:0,y:0}, data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false } });
+    edges.push(EDGE(`e-ag-${i}`,'live-server',id,'#818cf8'));
+  });
+
+  (data.skills||[]).filter(s=>s.enabled!==false).forEach((sk,i) => {
+    const id=`tree-sk-${sk.id||i}`;
+    nodes.push({ id, type:'treeicon', position:{x:0,y:0}, data:{ label:sk.id||sk.name||'Skill', category:'skill', enabled:true } });
+    edges.push(EDGE(`e-sk-${i}`,'live-server',id,'#4ade80'));
+  });
+
+  (data.channels||[]).forEach((ch,i) => {
+    const id=`tree-ch-${ch.id||i}`;
+    nodes.push({ id, type:'treeicon', position:{x:0,y:0}, data:{ label:ch.type||ch.id||'Channel', category:'channel', enabled:ch.enabled!==false } });
+    edges.push(EDGE(`e-ch-${i}`,'live-server',id,'#22d3ee'));
+  });
+
+  (data.cronJobs||[]).filter(j=>j.enabled!==false).forEach((job,i) => {
+    const id=`tree-cr-${job.id||i}`;
+    nodes.push({ id, type:'treeicon', position:{x:0,y:0}, data:{ label:job.name||job.id||'Cron', category:'cron', enabled:true } });
+    edges.push(EDGE(`e-cr-${i}`,'live-server',id,'#a855f7'));
+  });
+
+  (data.nodes||[]).forEach((nd,i) => {
+    const id=`tree-nd-${nd.id||i}`;
+    nodes.push({ id, type:'treeicon', position:{x:0,y:0}, data:{ label:nd.name||nd.id||'Node', category:'node', enabled:true } });
+    edges.push(EDGE(`e-nd-${i}`,'live-server',id,'#f59e0b'));
+  });
+
+  return { nodes, edges };
 }
 
 /* ── Live Mode: gateway + all section nodes visible but collapsed ── */
@@ -2909,9 +3021,15 @@ function ForgeApp() {
     if (!data) return;
     setLiveCollapsed(false);
     setLiveExpanded({});
-    const { nodes: lnodes, edges: ledges } = buildLiveInitial(data);
+    const { nodes: lnodes, edges: ledges } = buildFamilyTree(data);
     setEdges(ledges);
-    const laid = await elkLayout(lnodes, ledges);
+    const laid = await elkLayout(lnodes, ledges, {
+      'elk.algorithm': 'layered',
+      'elk.direction': 'DOWN',
+      'elk.layered.spacing.nodeNodeBetweenLayers': '80',
+      'elk.spacing.nodeNode': '50',
+      'elk.layered.nodePlacement.strategy': 'SIMPLE',
+    });
     setNodes(laid);
     setLiveSelectedAgent(null);
     setTimeout(() => rfInstance.current?.fitView({ padding: 0.15, duration: 400 }), 150);

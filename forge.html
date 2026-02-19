@@ -2360,8 +2360,8 @@ function LiveGatewayNode({ data, selected }) {
 /* ── Family Tree: ~10 icon nodes + expandable children ── */
 function buildFamilyTree(data, expandedIds = new Set()) {
   const E = (id, s, t, color) => ({
-    id, source:s, target:t, type:'smoothstep',
-    style:{ stroke:color, strokeWidth:1.5, opacity:0.45 },
+    id, source:s, target:t, type:'step',
+    style:{ stroke:color, strokeWidth:1.5, opacity:0.55 },
   });
 
   const nodes = [{
@@ -3105,9 +3105,10 @@ function ForgeApp() {
   const TREE_ELK = {
     'elk.algorithm': 'layered',
     'elk.direction': 'DOWN',
-    'elk.layered.spacing.nodeNodeBetweenLayers': '60',
+    'elk.layered.spacing.nodeNodeBetweenLayers': '220',
     'elk.spacing.nodeNode': '20',
     'elk.layered.nodePlacement.strategy': 'SIMPLE',
+    'elk.edgeRouting': 'ORTHOGONAL',
   };
 
   const applyFamilyTree = useCallback(async (expandedIds, forceRelayout = false) => {
@@ -3169,9 +3170,75 @@ function ForgeApp() {
     setLiveSelectedAgent(null);
   }, [applyFamilyTree]);
 
+  // ── Child layout engine ──────────────────────────────────────────────────
+  // Places new children below their parents:
+  //  • max MAX_PER_ROW nodes per row, centered under parent
+  //  • overlapping rows shift down until clear
+  //  • parent positions are NEVER touched
+  const placeNewChildren = useCallback((lnodes, ledges, snapshotPos) => {
+    const COL_GAP   = 150;   // center-to-center horizontal spacing
+    const ROW_GAP   = 200;   // center-to-center vertical spacing
+    const MAX_ROW   = 10;    // max nodes per row
+    const NODE_W    = 120;   // collision box width
+    const NODE_H    = 120;   // collision box height
+
+    // Working copy of all positions (parents + newly placed)
+    const allPos = new Map(snapshotPos);
+
+    // Group new nodes by their direct parent
+    const childrenByParent = new Map();
+    lnodes.forEach(n => {
+      if (snapshotPos.has(n.id)) return;
+      const pe = ledges.find(e => e.target === n.id);
+      if (!pe) return;
+      if (!childrenByParent.has(pe.source)) childrenByParent.set(pe.source, []);
+      childrenByParent.get(pe.source).push(n);
+    });
+
+    const overlaps = (x, y) => {
+      for (const pos of allPos.values()) {
+        if (Math.abs(x - pos.x) < NODE_W && Math.abs(y - pos.y) < NODE_H) return true;
+      }
+      return false;
+    };
+
+    childrenByParent.forEach((children, parentId) => {
+      const parentPos = allPos.get(parentId);
+      if (!parentPos) return;
+
+      // Split into rows of ≤ MAX_ROW
+      for (let ri = 0; ri < Math.ceil(children.length / MAX_ROW); ri++) {
+        const row = children.slice(ri * MAX_ROW, (ri + 1) * MAX_ROW);
+        const halfW = ((row.length - 1) * COL_GAP) / 2;
+
+        // Start one row below parent (or previous row)
+        let rowY = parentPos.y + ROW_GAP * (ri + 1);
+
+        // Shift down until the whole row is clear of all known positions
+        let attempts = 0;
+        let blocked = true;
+        while (blocked && attempts < 20) {
+          blocked = false;
+          for (let ci = 0; ci < row.length; ci++) {
+            const x = parentPos.x - halfW + ci * COL_GAP;
+            if (overlaps(x, rowY)) { blocked = true; rowY += ROW_GAP; break; }
+          }
+          attempts++;
+        }
+
+        row.forEach((child, ci) => {
+          const x = parentPos.x - halfW + ci * COL_GAP;
+          allPos.set(child.id, { x, y: rowY });
+        });
+      }
+    });
+
+    return lnodes.map(n => ({ ...n, position: allPos.get(n.id) || snapshotPos.get(n.id) || n.position }));
+  }, []);
+
   const handleTreeNodeToggle = useCallback(async (node) => {
     if (!node.data?.expandable) return;
-    // Capture positions NOW, before any state change, so they're never stale
+    // Snapshot positions BEFORE any state change
     const currentNodes = rfInstance.current?.getNodes() || [];
     const snapshotPos = new Map(currentNodes.map(n => [n.id, n.position]));
 
@@ -3184,37 +3251,21 @@ function ForgeApp() {
       if (!data) return next;
       const { nodes: lnodes, edges: ledges } = buildFamilyTree(data, next);
 
+      setEdges(ledges);
+
       const hasNew = lnodes.some(n => !snapshotPos.has(n.id));
 
       if (!hasNew) {
-        // Collapsing — restore known positions, drop removed children
-        setEdges(ledges);
+        // Collapsing — restore parent positions, remove children
         setNodes(lnodes.map(n => ({ ...n, position: snapshotPos.get(n.id) || n.position })));
-        return next;
+      } else {
+        // Expanding — place new children, parents stay put
+        setNodes(placeNewChildren(lnodes, ledges, snapshotPos));
       }
-
-      // Expanding — preserve existing, place new children below parent
-      setEdges(ledges);
-      setNodes(lnodes.map(n => {
-        if (snapshotPos.has(n.id)) return { ...n, position: snapshotPos.get(n.id) };
-        const parentEdge = ledges.find(e => e.target === n.id);
-        const parentPos = parentEdge ? snapshotPos.get(parentEdge.source) : null;
-        if (parentPos) {
-          const siblings = lnodes.filter(s =>
-            !snapshotPos.has(s.id) &&
-            ledges.some(e => e.target === s.id && e.source === parentEdge.source)
-          );
-          const idx = siblings.findIndex(s => s.id === n.id);
-          const spacing = 150;
-          const offset = (idx - (siblings.length - 1) / 2) * spacing;
-          return { ...n, position: { x: parentPos.x + offset, y: parentPos.y + 200 } };
-        }
-        return n;
-      }));
 
       return next;
     });
-  }, [applyFamilyTree]);
+  }, [applyFamilyTree, placeNewChildren]);
 
   // Collapse back to the single server icon
   const handleCollapseToServer = useCallback(() => {

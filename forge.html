@@ -1265,6 +1265,7 @@
       100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
     }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
     .cron-running { animation: pulse-ring 1.4s ease infinite; }
     .refresh-spin { animation: cronSpin 1s linear infinite; display:inline-block; }
 
@@ -1434,6 +1435,57 @@ async function elkLayout(nodes, edges, opts = {}) {
     console.warn('[elk] layout failed', err);
     return nodes;
   }
+}
+
+/* ── Overlap resolver — keeps ELK-placed nodes from landing on user-pinned ones ──
+   After the user manually moves nodes, ELK doesn't know about those positions.
+   This runs after every layout:
+     1. Pinned nodes (in savedPos) snap to the user's saved position.
+     2. Floating nodes (ELK-only) are iteratively pushed away from pinned nodes
+        and from each other until nothing overlaps.
+   NODE_W / NODE_H are the effective bounding box per node (icon + label + badge + margins).
+──────────────────────────────────────────────────────────────────────── */
+function resolveNewNodeOverlaps(laidNodes, savedPos) {
+  const NODE_W = 180;  // effective width  (100px icon + 40px padding each side)
+  const NODE_H = 200;  // effective height (100px icon + label + badge + spacing)
+
+  // Split into pinned (user-moved) and floating (ELK-positioned)
+  const pinned   = [];
+  const floating = [];
+  for (const n of laidNodes) {
+    if (savedPos[n.id]) pinned.push({ ...n, position: { ...savedPos[n.id] } });
+    else                floating.push({ ...n, position: { ...n.position } });
+  }
+
+  // Obstacles start as all pinned nodes; grows as each floating node is resolved
+  const obstacles = pinned.map(n => n.position);
+
+  for (const node of floating) {
+    let moved = true;
+    let iters = 0;
+    while (moved && iters < 120) {
+      moved = false;
+      iters++;
+      for (const obs of obstacles) {
+        const dx = node.position.x - obs.x;
+        const dy = node.position.y - obs.y;
+        const overlapX = NODE_W  - Math.abs(dx);
+        const overlapY = NODE_H - Math.abs(dy);
+        if (overlapX > 0 && overlapY > 0) {
+          // Push along the axis with less penetration (gentler correction)
+          if (overlapX <= overlapY) {
+            node.position = { ...node.position, x: node.position.x + (dx >= 0 ? overlapX : -overlapX) };
+          } else {
+            node.position = { ...node.position, y: node.position.y + (dy >= 0 ? overlapY : -overlapY) };
+          }
+          moved = true;
+        }
+      }
+    }
+    obstacles.push(node.position); // treat resolved node as obstacle for subsequent ones
+  }
+
+  return [...pinned, ...floating];
 }
 
 /* ── Smart edge — uses ReactFlow's actual handle positions ── */
@@ -1741,15 +1793,16 @@ function ChannelNode({ data, selected }) {
 
 /* ── Collapsed Server Node — matches reference icon exactly ── */
 const GEMINI_KEY = 'AIzaSyDTlXfmBkl7MDztXV-NlVlLui06jM1Nccw';
+const NO_TEXT = ', no text, no words, no labels, no letters, no numbers, no watermarks, purely visual';
 const GEMINI_IMG_PROMPTS = {
-  agent:   (l) => `cinematic square portrait for an AI agent called "${l}", glowing purple neural circuits, dark background, dramatic lighting`,
-  model:   (l) => `cinematic square visualization for an AI model called "${l}", amber glowing data streams, dark background, dramatic lighting`,
-  skill:   (l) => `cinematic square image for a tool called "${l}", emerald green light, dark background, sharp macro detail`,
-  channel: (l) => `cinematic square abstract for a communication channel called "${l}", cyan radio waves, dark background, dramatic lighting`,
-  cron:    (l) => `cinematic square image for a scheduled job called "${l}", purple glowing clock gears, dark background`,
-  session: (l) => `cinematic square abstract memory for a session, teal particle trails, dark background`,
-  node:    (l) => `cinematic square image for a server node called "${l}", red server rack hardware, dark background, dramatic lighting`,
-  command: (l) => `cinematic square terminal interface, purple command prompt, dark background, code glow`,
+  agent:   (l) => `cinematic square portrait for an AI agent called "${l}", glowing purple neural circuits, dark background, dramatic lighting${NO_TEXT}`,
+  model:   (l) => `cinematic square visualization for an AI model called "${l}", amber glowing data streams, dark background, dramatic lighting${NO_TEXT}`,
+  skill:   (l) => `cinematic square image for a tool called "${l}", emerald green light, dark background, sharp macro detail${NO_TEXT}`,
+  channel: (l) => `cinematic square abstract for a communication channel called "${l}", cyan radio waves, dark background, dramatic lighting${NO_TEXT}`,
+  cron:    (l) => `cinematic square image for a scheduled job called "${l}", purple glowing clock gears, dark background${NO_TEXT}`,
+  session: (l) => `cinematic square abstract memory, teal particle trails, dark background${NO_TEXT}`,
+  node:    (l) => `cinematic square image for a server node called "${l}", red server rack hardware, dark background, dramatic lighting${NO_TEXT}`,
+  command: (l) => `cinematic square terminal interface, purple command prompt glow, dark background${NO_TEXT}`,
 };
 
 // Throttle concurrent Gemini image calls — only 2 at a time
@@ -1783,7 +1836,7 @@ function geminiImageThrottled(prompt) {
 function useNodeImage(label, category) {
   const [imgUrl, setImgUrl] = React.useState(null);
   React.useEffect(() => {
-    const cacheKey = `node-img::${category}::${label}`;
+    const cacheKey = `node-img-v2::${category}::${label}`;
     const cached = localStorage.getItem(cacheKey);
     if (cached) { setImgUrl(cached); return; }
     const promptFn = GEMINI_IMG_PROMPTS[category] || GEMINI_IMG_PROMPTS.node;
@@ -1812,8 +1865,8 @@ function CollapsedServerNode({ data, selected }) {
         boxShadow: selected ? '0 0 0 3px rgba(232,69,60,0.2), 0 8px 32px rgba(0,0,0,0.9)' : '0 6px 28px rgba(0,0,0,0.8)',
       }}>
         {/* Live dot */}
-        {/* Dim overlay tinted red */}
-        <div style={{position:'absolute',inset:0,background:'color-mix(in srgb,#1c0b0e 70%,transparent)',zIndex:0}}/>
+        {/* Dim overlay tinted red — light so background image shows through */}
+        <div style={{position:'absolute',inset:0,background:'color-mix(in srgb,#1c0b0e 20%,transparent)',zIndex:0}}/>
         <span style={{
           position:'absolute', top:8, right:8, zIndex:2,
           width:6, height:6, borderRadius:'50%',
@@ -1841,6 +1894,156 @@ function CollapsedServerNode({ data, selected }) {
         maxWidth:180, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
         letterSpacing:'-0.01em',
       }}>{data.label || 'OpenClaw Gateway'}</div>
+    </div>
+  );
+}
+
+/* ── Category docs — educational tooltip content per node type ── */
+const CATEGORY_DOCS = {
+  agent: {
+    title: 'AI Agent',
+    desc: 'A configured AI personality with its own model, system prompt, and tool access. Agents handle conversations and run autonomous tasks independently.',
+    getDetails: d => [
+      d.model         && ['Model',    d.model.split('/').pop()],
+      d.temperature !== undefined && ['Temp', d.temperature],
+      d.maxTokens     && ['Max tokens', Number(d.maxTokens).toLocaleString()],
+      d.tools?.length && ['Tools',   d.tools.length],
+    ].filter(Boolean),
+  },
+  model: {
+    title: 'Language Model',
+    desc: 'An LLM used by agents to think and respond. Models differ in speed, reasoning depth, cost per token, and how much context they can hold.',
+    getDetails: d => [
+      d.provider       && ['Provider', d.provider],
+      d.contextWindow  && ['Context', `${Math.round(d.contextWindow/1000)}K tok`],
+    ].filter(Boolean),
+  },
+  skill: {
+    title: 'Skill / Tool',
+    desc: 'A callable function that extends what agents can do — web search, file access, code execution, API calls, browser control, and more.',
+    getDetails: d => [
+      d.skillId && ['ID', d.skillId],
+    ].filter(Boolean),
+  },
+  channel: {
+    title: 'Channel',
+    desc: 'A live interface (Slack, Discord, CLI, HTTP webhook) that agents listen on — routing incoming messages in and AI responses back out in real time.',
+    getDetails: d => [
+      d.type        && ['Type',    d.type],
+      d.id          && ['ID',      d.id],
+      d.webhookUrl  && ['Webhook', '✓ configured'],
+    ].filter(Boolean),
+  },
+  cron: {
+    title: 'Cron Job',
+    desc: 'A scheduled workflow that fires an agent on a timer — for automated posts, monitoring, data pulls, or any repeating AI task.',
+    getDetails: d => [
+      d.schedule?.kind === 'cron'  && ['Schedule', d.schedule.expr],
+      d.schedule?.kind === 'every' && ['Interval', `every ${Math.round((d.schedule.everyMs||0)/60000)}m`],
+      d.nextRunAt  && ['Next run', new Date(d.nextRunAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})],
+      d.agentId    && ['Agent',    d.agentId],
+    ].filter(Boolean),
+  },
+  session: {
+    title: 'Session',
+    desc: 'A conversation thread stored as a replayable message log. Each session captures the full back-and-forth between a user and an agent.',
+    getDetails: d => [
+      d._session?.messageCount && ['Messages', d._session.messageCount],
+      d._session?.sizeKb       && ['Size',     `${d._session.sizeKb} KB`],
+      d._session?.agentId      && ['Agent',    d._session.agentId],
+    ].filter(Boolean),
+  },
+  node: {
+    title: 'Remote Node',
+    desc: 'A paired OpenClaw gateway on another machine — enables agent federation, distributed task routing, and cross-device coordination.',
+    getDetails: d => [
+      (d.host || d.url) && ['Host',   d.host || d.url],
+      d.status          && ['Status', d.status],
+    ].filter(Boolean),
+  },
+  command: {
+    title: 'System Config',
+    desc: 'Gateway-level runtime settings: web server port, voice mode, CLI slash-commands, memory limits, and core OpenClaw behaviour flags.',
+    getDetails: d => [
+      d._config?.web?.port   && ['Port',  d._config.web.port],
+      d._config?.talk?.enabled && ['Voice', 'enabled'],
+    ].filter(Boolean),
+  },
+};
+
+/* ── NodeInfoBtn — the ⓘ circle that reveals an educational tooltip on hover ── */
+function NodeInfoBtn({ data, cfg }) {
+  const [show, setShow] = React.useState(false);
+  const doc = CATEGORY_DOCS[data.category] || {};
+  const details = doc.getDetails ? doc.getDetails(data) : [];
+  return (
+    <div style={{ position:'relative', zIndex:20 }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {/* ⓘ pill */}
+      <div style={{
+        width:18, height:18, borderRadius:'50%',
+        background: show ? `${cfg.color}28` : 'rgba(0,0,0,0.55)',
+        border: `1.5px solid ${show ? cfg.color : 'rgba(255,255,255,0.18)'}`,
+        display:'flex', alignItems:'center', justifyContent:'center',
+        cursor:'default', transition:'all 0.15s',
+        color: show ? cfg.color : 'rgba(255,255,255,0.35)',
+        fontSize:'0.62rem', fontWeight:800, lineHeight:1,
+        userSelect:'none', backdropFilter:'blur(4px)',
+        boxShadow: show ? `0 0 8px ${cfg.color}44` : 'none',
+      }}>i</div>
+
+      {/* Tooltip — floats above and to the right */}
+      {show && (
+        <div style={{
+          position:'absolute', bottom:'calc(100% + 10px)', left:0,
+          width:218, pointerEvents:'none', zIndex:9999,
+          background:'rgba(6,6,10,0.98)', border:`1px solid ${cfg.color}30`,
+          borderRadius:12, overflow:'hidden',
+          boxShadow:`0 24px 64px rgba(0,0,0,0.95), 0 0 0 1px ${cfg.color}18`,
+          fontFamily:"'JetBrains Mono',monospace",
+          animation:'fadeInUp 0.12s ease',
+        }}>
+          {/* Header */}
+          <div style={{
+            padding:'7px 12px',
+            background:`${cfg.color}12`, borderBottom:`1px solid ${cfg.color}1e`,
+            display:'flex', alignItems:'center', gap:6,
+          }}>
+            <div style={{ width:6, height:6, borderRadius:'50%', background:cfg.color, flexShrink:0,
+              boxShadow:`0 0 6px ${cfg.color}` }}/>
+            <span style={{ fontSize:'0.72rem', fontWeight:700, color:cfg.color,
+              letterSpacing:'0.06em', textTransform:'uppercase' }}>
+              {doc.title || data.category}
+            </span>
+          </div>
+          {/* Description */}
+          <div style={{ padding:'9px 12px', fontSize:'0.68rem', color:'#888', lineHeight:1.6 }}>
+            {doc.desc || ''}
+          </div>
+          {/* Detail rows */}
+          {details.length > 0 && (
+            <div style={{ padding:'5px 12px 9px', borderTop:'1px solid #141414' }}>
+              {details.map(([k, v]) => (
+                <div key={k} style={{ display:'flex', justifyContent:'space-between', gap:8, marginBottom:4 }}>
+                  <span style={{ fontSize:'0.62rem', color:'#484848', textTransform:'uppercase',
+                    letterSpacing:'0.07em', whiteSpace:'nowrap' }}>{k}</span>
+                  <span style={{ fontSize:'0.62rem', color:'#c0c0c0', overflow:'hidden',
+                    textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:120 }}>{v}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {/* Arrow */}
+          <div style={{
+            position:'absolute', bottom:-5, left:5,
+            width:9, height:9,
+            background:'rgba(6,6,10,0.98)', border:`1px solid ${cfg.color}30`,
+            borderTop:'none', borderLeft:'none', transform:'rotate(45deg)',
+          }}/>
+        </div>
+      )}
     </div>
   );
 }
@@ -1893,10 +2096,10 @@ function TreeIconNode({ data, selected }) {
           : `0 6px 28px rgba(0,0,0,0.8), 0 0 0 0px transparent`,
         transition:'border-color 0.2s, box-shadow 0.2s',
       }}>
-        {/* Layer 0 — colour-mix tint so AI image feels themed */}
+        {/* Layer 0 — light colour-mix tint so AI image shows through clearly */}
         <div style={{
           position:'absolute', inset:0, zIndex:0, pointerEvents:'none',
-          background:`color-mix(in srgb, ${cfg.bg} 65%, transparent)`,
+          background:`color-mix(in srgb, ${cfg.bg} 20%, transparent)`,
         }}/>
 
         {/* Icon */}
@@ -1904,14 +2107,14 @@ function TreeIconNode({ data, selected }) {
           {cfg.icon(cfg.color)}
         </div>
 
-        {/* Layer 2 — glass gradient: dark base → transparent → faint top light */}
+        {/* Layer 2 — subtle bottom vignette only, keeps image visible */}
         <div style={{
           position:'absolute', inset:0, borderRadius:20, zIndex:2, pointerEvents:'none',
           background:`linear-gradient(to top,
-            rgba(0,0,0,0.55) 0%,
-            rgba(0,0,0,0.20) 38%,
-            rgba(0,0,0,0.00) 60%,
-            rgba(255,255,255,0.04) 100%)`,
+            rgba(0,0,0,0.30) 0%,
+            rgba(0,0,0,0.08) 30%,
+            rgba(0,0,0,0.00) 55%,
+            rgba(255,255,255,0.03) 100%)`,
         }}/>
 
         {/* Layer 3 — top specular blob: convex glass catching overhead light */}
@@ -1946,12 +2149,16 @@ function TreeIconNode({ data, selected }) {
           }}>{data.expanded ? '▾' : '▸'}</span>
         )}
       </div>
-      <div style={{
-        fontFamily:"'JetBrains Mono',monospace", fontSize:'1.05rem',
-        fontWeight:700, color:'#fff', textAlign:'center',
-        maxWidth:160, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
-        letterSpacing:'-0.01em',
-      }}>{data.label}</div>
+      {/* Label row — ⓘ button inline before the name */}
+      <div style={{ display:'flex', alignItems:'center', gap:5, maxWidth:160 }}>
+        <NodeInfoBtn data={data} cfg={cfg} />
+        <div style={{
+          fontFamily:"'JetBrains Mono',monospace", fontSize:'1.05rem',
+          fontWeight:700, color:'#fff',
+          whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+          letterSpacing:'-0.01em',
+        }}>{data.label}</div>
+      </div>
       {data.badge && (
         <div style={{
           fontFamily:"'JetBrains Mono',monospace", fontSize:'0.82rem',
@@ -2707,7 +2914,7 @@ function buildFamilyTree(data, expandedIds = new Set(), edgeDash) {
   if (agents.length > 0) {
     const activeAgents = agents.filter(a => a.enabled !== false).length;
     nodes.push({ id:'ft-agents-group', type:'treeicon', position:{x:0,y:0},
-      data:{ label:`${agents.length} Agent${agents.length===1?'':'s'}`, category:'agent', enabled:activeAgents>0, expandable:true, expanded:expandedIds.has('ft-agents-group') } });
+      data:{ label:`${agents.length} Agent${agents.length===1?'':'s'}`, badge:`${activeAgents} active`, category:'agent', enabled:activeAgents>0, expandable:true, expanded:expandedIds.has('ft-agents-group') } });
     edges.push(E('e-agents-group', 'live-server', 'ft-agents-group', '#818cf8'));
     if (expandedIds.has('ft-agents-group')) {
       // Compute session counts per agent
@@ -2719,7 +2926,7 @@ function buildFamilyTree(data, expandedIds = new Set(), edgeDash) {
         nodes.push({ id:agId, type:'treeicon', position:{x:0,y:0},
           data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false,
                  expandable:true, expanded:expandedIds.has(agId),
-                 badge: sessCnt > 0 ? `${sessCnt} session${sessCnt===1?'':'s'}` : undefined,
+                 badge: [ag.model?.split('/').pop(), sessCnt > 0 ? `${sessCnt} sess` : null].filter(Boolean).join(' · ') || undefined,
                  _nodeType:'agent', ...ag } });
         edges.push(E(`e-ag-${i}`, 'ft-agents-group', agId, '#818cf8'));
         if (expandedIds.has(agId)) {
@@ -2745,13 +2952,14 @@ function buildFamilyTree(data, expandedIds = new Set(), edgeDash) {
   if (channels.length > 0) {
     const activeChannels = channels.filter(c => c.enabled !== false).length;
     nodes.push({ id:'ft-channels-group', type:'treeicon', position:{x:0,y:0},
-      data:{ label:`${channels.length} Channel${channels.length===1?'':'s'}`, category:'channel', enabled:activeChannels>0, expandable:true, expanded:expandedIds.has('ft-channels-group') } });
+      data:{ label:`${channels.length} Channel${channels.length===1?'':'s'}`, badge:`${activeChannels} active`, category:'channel', enabled:activeChannels>0, expandable:true, expanded:expandedIds.has('ft-channels-group') } });
     edges.push(E('e-channels-group', 'live-server', 'ft-channels-group', '#22d3ee'));
     if (expandedIds.has('ft-channels-group')) {
       channels.forEach((ch,i) => {
         const id = `ft-ch-${ch.id||i}`;
         nodes.push({ id, type:'treeicon', position:{x:0,y:0},
           data:{ label:ch.type||ch.id||'Channel', category:'channel', enabled:ch.enabled!==false,
+                 badge: ch.enabled===false ? 'disabled' : (ch.id||'').slice(0,18)||undefined,
                  _nodeType:'channel', ...ch } });
         edges.push(E(`e-ch-${i}`, 'ft-channels-group', id, '#22d3ee'));
       });
@@ -2779,6 +2987,7 @@ function buildFamilyTree(data, expandedIds = new Set(), edgeDash) {
           : job.schedule?.kind || 'scheduled';
         nodes.push({ id, type:'treeicon', position:{x:0,y:0},
           data:{ label:job.name||job.id||'Cron', category:'cron', enabled:job.enabled!==false,
+                 badge: schedLabel,
                  expandable:true, expanded:expandedIds.has(id),
                  _nodeType:'cronlist', ...job } });
         edges.push(E(`e-cr-${i}`, 'ft-cron-group', id, '#a855f7'));
@@ -2812,7 +3021,7 @@ function buildFamilyTree(data, expandedIds = new Set(), edgeDash) {
   const enabledSkills = (data.skills||[]).filter(s=>s.enabled!==false);
   if (enabledSkills.length > 0) {
     nodes.push({ id:'ft-skills', type:'treeicon', position:{x:0,y:0},
-      data:{ label:`${enabledSkills.length} Skills`, category:'skill', enabled:true, expandable:true, expanded:expandedIds.has('ft-skills') } });
+      data:{ label:`${enabledSkills.length} Skills`, badge:'tools loaded', category:'skill', enabled:true, expandable:true, expanded:expandedIds.has('ft-skills') } });
     edges.push(E('e-skills', 'live-server', 'ft-skills', '#4ade80'));
     if (expandedIds.has('ft-skills')) {
       // Group by category
@@ -2834,6 +3043,7 @@ function buildFamilyTree(data, expandedIds = new Set(), edgeDash) {
             const skId = `ft-sk-${catId}-${i}`;
             nodes.push({ id:skId, type:'treeicon', position:{x:0,y:0},
               data:{ label:sk.id||sk.name||'Skill', category:'skill', enabled:sk.enabled!==false,
+                     badge: (sk.description||'').slice(0,36) || undefined,
                      skillId:sk.id, description:sk.description||'', _nodeType:'singleskill' } });
             edges.push(E(`e-sk-${catId}-${i}`, catId, skId, catColor));
           });
@@ -2894,6 +3104,7 @@ function buildFamilyTree(data, expandedIds = new Set(), edgeDash) {
         const provId = `ft-prov-${prov.id||i}`;
         nodes.push({ id:provId, type:'treeicon', position:{x:0,y:0},
           data:{ label:prov.id, category:'model', enabled:true, expandable:(prov.models?.length||0)>0,
+                 badge: `${prov.models?.length||0} model${prov.models?.length===1?'':'s'}`,
                  expanded:expandedIds.has(provId) } });
         edges.push(E(`e-prov-${i}`, 'ft-models-group', provId, '#f97316'));
         if (expandedIds.has(provId)) {
@@ -4348,6 +4559,19 @@ function ForgeApp() {
   const [showExportModal, setShowExportModal] = useState(false);
   const rfInstance = useRef(null);
 
+  // Persisted node positions — user can drag nodes; positions survive refresh
+  const nodePositionsRef = useRef(
+    (() => { try { return JSON.parse(localStorage.getItem('forge-node-pos') || '{}'); } catch { return {}; } })()
+  );
+  const onNodeDragStop = useCallback((_evt, node) => {
+    nodePositionsRef.current[node.id] = { x: node.position.x, y: node.position.y };
+    try { localStorage.setItem('forge-node-pos', JSON.stringify(nodePositionsRef.current)); } catch {}
+  }, []);
+  const clearSavedPositions = useCallback(() => {
+    nodePositionsRef.current = {};
+    try { localStorage.removeItem('forge-node-pos'); } catch {}
+  }, []);
+
   // Live mode
   const liveMode = true;
   const [liveCollapsed, setLiveCollapsed] = useState(false);
@@ -4361,6 +4585,17 @@ function ForgeApp() {
   const [sidePanelOpen,     setSidePanelOpen]     = useState(true);
   const [layoutKey,         setLayoutKey]         = useState(() => localStorage.getItem('forge-layout') || 'down');
   const [edgeStyleKey,      setEdgeStyleKey]      = useState(() => localStorage.getItem('forge-edge-style') || 'solid');
+  const [flyoutKey,         setFlyoutKey]         = useState(null); // 'layout' | 'edge' | null
+  const [reframing,         setReframing]         = useState(false);
+  const towerRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!flyoutKey) return;
+    const handler = (e) => {
+      if (towerRef.current && !towerRef.current.contains(e.target)) setFlyoutKey(null);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [flyoutKey]);
   const treeElkRef     = useRef(null);
   const edgeStyleRef   = useRef(localStorage.getItem('forge-edge-style') || 'solid');
   const [liveLastRefresh,   setLiveLastRefresh]   = useState(null);
@@ -4443,7 +4678,7 @@ function ForgeApp() {
     applyFamilyTree(ftExpandedIdsRef.current);
   }, [edgeStyleKey]);
 
-  const applyFamilyTree = useCallback(async (expandedIds) => {
+  const applyFamilyTree = useCallback(async (expandedIds, { skipFit = false, fitPadding = 0.15, fitDuration = 350 } = {}) => {
     const data = liveDataRef.current;
     if (!data) return;
     const EDGE_STYLE_DASHES = { solid:undefined, dashed:'10 5', dotted:'2 6', longdash:'18 7' };
@@ -4451,8 +4686,10 @@ function ForgeApp() {
     const { nodes: lnodes, edges: ledges } = buildFamilyTree(data, expandedIds, dash);
     setEdges(ledges);
     const laid = await elkLayout(lnodes, ledges, treeElkRef.current);
-    setNodes(laid);
-    setTimeout(() => rfInstance.current?.fitView({ padding: 0.15, duration: 350 }), 150);
+    // Apply saved positions and push ELK-placed nodes away from user-pinned ones
+    const final = resolveNewNodeOverlaps(laid, nodePositionsRef.current);
+    setNodes(final);
+    if (!skipFit) setTimeout(() => rfInstance.current?.fitView({ padding: fitPadding, duration: fitDuration }), 150);
   }, []);
 
   const handleExpandServer = useCallback(async () => {
@@ -4568,7 +4805,8 @@ function ForgeApp() {
         const cur = rfInstance.current;
         if (!cur) return;
         const laid = await elkLayout(cur.getNodes(), cur.getEdges(), treeElkRef.current);
-        setNodes(laid.map(n => ({ ...n, style: { ...(n.style||{}), opacity:1, transition:'opacity 0.2s' } })));
+        const resolved = resolveNewNodeOverlaps(laid, nodePositionsRef.current);
+        setNodes(resolved.map(n => ({ ...n, style: { ...(n.style||{}), opacity:1, transition:'opacity 0.2s' } })));
         setTimeout(() => cur.fitView({ padding:0.25, duration:400 }), 80);
       }, 30);
 
@@ -4683,7 +4921,8 @@ function ForgeApp() {
           const cur = rfInstance.current;
           if (!cur) return;
           const laid = await elkLayout(cur.getNodes(), cur.getEdges(), treeElkRef.current);
-          setNodes(laid.map(n => ({ ...n, style: { ...(n.style||{}), opacity:1, transition:'opacity 0.2s' } })));
+          const resolved2 = resolveNewNodeOverlaps(laid, nodePositionsRef.current);
+          setNodes(resolved2.map(n => ({ ...n, style: { ...(n.style||{}), opacity:1, transition:'opacity 0.2s' } })));
           setTimeout(() => cur.fitView({ padding:0.25, duration:400 }), 80);
         }, 50);
       } else {
@@ -4998,17 +5237,18 @@ function ForgeApp() {
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={liveMode ? undefined : onNodesChange}
-          onEdgesChange={liveMode ? undefined : onEdgesChange}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodeClick={onNodeClick}
           onPaneClick={onPaneClick}
+          onNodeDragStop={onNodeDragStop}
           onInit={inst => rfInstance.current = inst}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           defaultEdgeOptions={{ type:'smartEdge', style:{stroke:'#ff5c5c',strokeWidth:2,opacity:0.45} }}
-          nodesDraggable={!liveMode}
-          nodesConnectable={!liveMode}
+          nodesDraggable={true}
+          nodesConnectable={false}
           minZoom={0.05}
           maxZoom={4}
           zoomOnScroll={true}
@@ -5021,46 +5261,125 @@ function ForgeApp() {
         >
           <Background variant="dots" gap={28} size={1} color="#252525" />
 
-          {/* ── Bottom-left control tower ── */}
+          {/* ── Bottom-left control tower (7 buttons + flyouts) ── */}
           <Panel position="bottom-left" style={{ marginBottom:16, marginLeft:16, userSelect:'none' }}>
+            {/* Click-outside overlay to close flyouts */}
+            {flyoutKey && <div onClick={() => setFlyoutKey(null)}
+              style={{ position:'fixed', inset:0, zIndex:9998 }}/>}
+
             <div style={{ display:'flex', flexDirection:'column', gap:2,
               background:'rgba(10,10,10,0.94)', border:'1px solid #1e1e1e',
-              borderRadius:10, padding:4,
-              boxShadow:'0 8px 32px rgba(0,0,0,0.7)',
-              backdropFilter:'blur(8px)',
+              borderRadius:10, padding:4, position:'relative', zIndex:9999,
+              boxShadow:'0 8px 32px rgba(0,0,0,0.7)', backdropFilter:'blur(8px)',
             }}>
-              {/* Zoom */}
-              <TowerBtn title="Zoom In"  onClick={() => rfInstance.current?.zoomIn({ duration:180 })}>
+
+              {/* 1. Zoom In */}
+              <TowerBtn title="Zoom In" onClick={() => rfInstance.current?.zoomIn({ duration:180 })}>
                 <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M15 15l3.5 3.5"/><path d="M8.5 6v5M6 8.5h5"/></svg>
               </TowerBtn>
+
+              {/* 2. Zoom Out */}
               <TowerBtn title="Zoom Out" onClick={() => rfInstance.current?.zoomOut({ duration:180 })}>
                 <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M15 15l3.5 3.5"/><path d="M6 8.5h5"/></svg>
               </TowerBtn>
-              <TowerBtn title="Fit View" onClick={() => rfInstance.current?.fitView({ padding:0.2, duration:300 })}>
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg>
+
+              {/* 3. Auto-arrange & fit */}
+              <TowerBtn title="Auto-arrange & fit view" disabled={reframing}
+                onClick={async () => {
+                  if (reframing) return;
+                  setReframing(true);
+                  try {
+                    // 1. Zoom out for dramatic sweep
+                    rfInstance.current?.zoomTo(0.25, { duration: 320 });
+                    // 2. Clear manual positions so ELK can freely re-arrange
+                    clearSavedPositions();
+                    // 3. Re-run ELK (skip the internal fitView — we'll do our own)
+                    await applyFamilyTree(ftExpandedIdsRef.current, { skipFit: true });
+                    // 4. Dramatic animated zoom-to-fit
+                    setTimeout(() => rfInstance.current?.fitView({ padding: 0.22, duration: 750 }), 80);
+                  } finally {
+                    setTimeout(() => setReframing(false), 900);
+                  }
+                }}>
+                <span style={{ display:'inline-flex', animation: reframing ? 'cronSpin 0.7s linear infinite' : 'none' }}>
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg>
+                </span>
               </TowerBtn>
+
               <TowerSep/>
-              {/* Layout direction */}
-              {Object.entries(LAYOUT_OPTS).map(([key, preset]) => (
-                <TowerBtn key={key} title={preset.label} active={layoutKey===key}
-                  onClick={() => { setLayoutKey(key); treeElkRef.current=preset.elk; applyFamilyTree(ftExpandedIdsRef.current); }}>
-                  <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:'0.82rem', lineHeight:1 }}>
-                    {preset.icon}
+
+              {/* 4. Layout — shows active icon, flyout expands right */}
+              <div style={{ position:'relative' }}>
+                <TowerBtn title="Layout" active={flyoutKey==='layout'}
+                  onClick={() => setFlyoutKey(k => k==='layout' ? null : 'layout')}>
+                  <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:'0.85rem', lineHeight:1 }}>
+                    {LAYOUT_OPTS[layoutKey]?.icon || '◎'}
                   </span>
                 </TowerBtn>
-              ))}
+                {flyoutKey === 'layout' && (
+                  <div style={{
+                    position:'absolute', left:42, bottom:0,
+                    display:'flex', gap:2, padding:4,
+                    background:'rgba(10,10,10,0.97)', border:'1px solid #2a2a2a',
+                    borderRadius:10, boxShadow:'0 8px 32px rgba(0,0,0,0.8)',
+                    zIndex:10000,
+                  }}>
+                    {Object.entries(LAYOUT_OPTS).map(([key, preset]) => (
+                      <TowerBtn key={key} title={preset.label} active={layoutKey===key}
+                        onClick={() => {
+                          setLayoutKey(key); treeElkRef.current=preset.elk;
+                          clearSavedPositions();
+                          applyFamilyTree(ftExpandedIdsRef.current);
+                          setFlyoutKey(null);
+                        }}>
+                        <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:'0.85rem', lineHeight:1 }}>
+                          {preset.icon}
+                        </span>
+                      </TowerBtn>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 5. Edge style — shows active line, flyout expands right */}
+              <div style={{ position:'relative' }}>
+                {(() => {
+                  const edgeDashes = { solid:undefined, dashed:'5 3', dotted:'1.5 4', longdash:'9 4' };
+                  const activeDash = edgeDashes[edgeStyleKey];
+                  return (
+                    <TowerBtn title="Edge style" active={flyoutKey==='edge'}
+                      onClick={() => setFlyoutKey(k => k==='edge' ? null : 'edge')}>
+                      <svg width="20" height="14" viewBox="0 0 20 14">
+                        <line x1="1" y1="7" x2="19" y2="7" stroke="currentColor" strokeWidth="2"
+                          strokeLinecap="round" strokeDasharray={activeDash||undefined}/>
+                      </svg>
+                    </TowerBtn>
+                  );
+                })()}
+                {flyoutKey === 'edge' && (
+                  <div style={{
+                    position:'absolute', left:42, bottom:0,
+                    display:'flex', gap:2, padding:4,
+                    background:'rgba(10,10,10,0.97)', border:'1px solid #2a2a2a',
+                    borderRadius:10, boxShadow:'0 8px 32px rgba(0,0,0,0.8)',
+                    zIndex:10000,
+                  }}>
+                    {[['solid',undefined],['dashed','5 3'],['dotted','1.5 4'],['longdash','9 4']].map(([key,dash]) => (
+                      <TowerBtn key={key} title={key} active={edgeStyleKey===key}
+                        onClick={() => { setEdgeStyleKey(key); setFlyoutKey(null); }}>
+                        <svg width="20" height="14" viewBox="0 0 20 14">
+                          <line x1="1" y1="7" x2="19" y2="7" stroke="currentColor" strokeWidth="2"
+                            strokeLinecap="round" strokeDasharray={dash||undefined}/>
+                        </svg>
+                      </TowerBtn>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <TowerSep/>
-              {/* Edge style */}
-              {[['solid',undefined],['dashed','5 3'],['dotted','1.5 4'],['longdash','9 4']].map(([key,dash]) => (
-                <TowerBtn key={key} title={key} active={edgeStyleKey===key} onClick={() => setEdgeStyleKey(key)}>
-                  <svg width="20" height="14" viewBox="0 0 20 14">
-                    <line x1="1" y1="7" x2="19" y2="7" stroke="currentColor" strokeWidth="2"
-                      strokeLinecap="round" strokeDasharray={dash||undefined}/>
-                  </svg>
-                </TowerBtn>
-              ))}
-              <TowerSep/>
-              {/* Collapse / Expand */}
+
+              {/* 6. Collapse / Expand */}
               {!liveCollapsed
                 ? <TowerBtn title="Collapse to gateway" onClick={handleCollapseToServer}>
                     <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="16" height="16" rx="2"/><path d="M6 10h8"/></svg>
@@ -5069,14 +5388,17 @@ function ForgeApp() {
                     <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="16" height="16" rx="2"/><path d="M10 6v8M6 10h8"/></svg>
                   </TowerBtn>
               }
+
               <TowerSep/>
-              {/* Refresh */}
+
+              {/* 7. Refresh */}
               <TowerBtn title="Refresh live data" accent disabled={liveLoading}
                 onClick={liveLoading ? undefined : loadLive}>
                 <span style={{ display:'inline-flex', animation: liveLoading ? 'cronSpin 1s linear infinite' : 'none' }}>
                   <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M1 4v6h6"/><path d="M3.5 15a8 8 0 1 0 .5-8.6L1 10"/></svg>
                 </span>
               </TowerBtn>
+
             </div>
           </Panel>
 

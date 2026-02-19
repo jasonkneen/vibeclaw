@@ -1954,21 +1954,22 @@ function ExportModal({ nodes, edges, onClose }) {
 function SectionCardNode({ data, selected }) {
   const C = data.color || '#555';
   const ICONS = { Agents:'🤖', Skills:'🔧', Channels:'📡', Sessions:'🕐', 'Cron Jobs':'⏱', Nodes:'📱' };
+  const expanded = data.expanded;
   return (
     <div className={`vf-node${selected?' selected':''}`}
-         style={{border:`1.5px solid ${C}`,padding:0,overflow:'hidden',width:180,cursor:'pointer'}}
+         style={{border:`1.5px solid ${C}`,padding:0,overflow:'hidden',width:180, height: 70, cursor:'pointer'}}
          >
       <Handle type="target" position={Position.Left}
         style={{background:C,border:`2px solid ${C}`,width:10,height:10,top:'50%',transform:'translateY(-50%)'}}/>
       <Handle type="source" position={Position.Right}
         style={{background:C,border:`2px solid ${C}`,width:10,height:10,top:'50%',transform:'translateY(-50%)'}}/>
       <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 14px'}}>
-        <span style={{fontSize:'1rem'}}>{ICONS[data.label]||'📦'}</span>
+        <span style={{fontSize:'1.2rem'}}>{ICONS[data.label]||'📦'}</span>
         <div style={{flex:1}}>
           <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>{data.label}</div>
           <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.58rem',color:C,marginTop:1}}>{data.count} {data.count===1?'item':'items'}</div>
         </div>
-        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#333'}}>▶</span>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.65rem',color:'#333', transition:'transform 0.2s', transform: expanded ? 'rotate(90deg)' : 'none'}}>▶</span>
       </div>
     </div>
   );

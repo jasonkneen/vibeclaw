@@ -1250,6 +1250,16 @@
     .react-flow__node { animation: nodeIn 0.18s ease-out; }
     #forge-root { height: calc(100vh - 57px); overflow: hidden; }
 
+    @keyframes cronSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(245,158,11,0.6); }
+      70%  { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
+      100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .cron-running { animation: pulse-ring 1.4s ease infinite; }
+    .refresh-spin { animation: cronSpin 1s linear infinite; display:inline-block; }
+
     </style>
 
   <!-- React Flow stylesheet -->
@@ -1724,6 +1734,8 @@ const TREE_CATEGORIES = {
     icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> },
   command: { color:'#a855f7', bg:'#0d0618', border:'#2e1258',
     icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> },
+  session: { color:'#f59e0b', bg:'#120900', border:'#3d2500',
+    icon: (c) => <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
 };
 
 function TreeIconNode({ data, selected }) {
@@ -1776,6 +1788,14 @@ function TreeIconNode({ data, selected }) {
         fontWeight:600, color:'#888', textAlign:'center',
         maxWidth:140, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
       }}>{data.label}</div>
+      {data.badge && (
+        <div style={{
+          fontFamily:"'JetBrains Mono',monospace", fontSize:'0.55rem',
+          color: cfg.color + '99', textAlign:'center',
+          maxWidth:140, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+          marginTop:-4,
+        }}>{data.badge}</div>
+      )}
     </div>
   );
 }
@@ -2229,6 +2249,7 @@ function SessionsListNode({ data }) {
 function CronListNode({ data }) {
   const jobs = data.cronJobs || [];
   const STATUS = { ok:'#4ade80', error:'#ef4444', running:'#f59e0b' };
+  const runningCount = jobs.filter(j => j.lastStatus === 'running').length;
   return (
     <div className="vf-node" style={{border:'1.5px solid #a855f7',padding:0,overflow:'hidden',width:300,maxHeight:420,display:'flex',flexDirection:'column'}}>
       <Handle type="target" position={Position.Left} style={{background:'#a855f7',border:'2px solid #a855f7',width:10,height:10,top:24}}/>
@@ -2236,7 +2257,10 @@ function CronListNode({ data }) {
         <div style={{background:'color-mix(in srgb,#a855f7 18%,#0a0a0a)',borderRadius:6,padding:5,display:'flex',fontSize:'0.85rem'}}>⏱</div>
         <div>
           <div style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:'0.75rem',color:'#e0e0e0'}}>Cron Jobs</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:'#a855f7',marginTop:1}}>{jobs.filter(j=>j.enabled).length} active · {jobs.length} total</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.56rem',color:'#a855f7',marginTop:1}}>
+            {jobs.filter(j=>j.enabled).length} active · {jobs.length} total
+            {runningCount > 0 && <span style={{color:'#f59e0b',marginLeft:6}}>· <span className="refresh-spin">⟳</span> {runningCount} running</span>}
+          </div>
         </div>
       </div>
       <div style={{overflowY:'auto',flex:1}} className="nodrag nopan">
@@ -2248,7 +2272,7 @@ function CronListNode({ data }) {
             onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:3}}>
               <div style={{display:'flex',alignItems:'center',gap:6}}>
-                <span style={{width:5,height:5,borderRadius:'50%',background:j.enabled?(STATUS[j.lastStatus]||'#555'):'#222',flexShrink:0}}/>
+                <span className={j.lastStatus==='running'?'cron-running':''} style={{width:5,height:5,borderRadius:'50%',background:j.enabled?(STATUS[j.lastStatus]||'#555'):'#222',flexShrink:0}}/>
                 <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.68rem',color:j.enabled?'#ccc':'#444'}}>{j.name}</span>
               </div>
               <div style={{display:'flex',alignItems:'center',gap:6}}>
@@ -2491,11 +2515,16 @@ function buildFamilyTree(data, expandedIds = new Set()) {
       data:{ label:`${agents.length} Agent${agents.length===1?'':'s'}`, category:'agent', enabled:activeAgents>0, expandable:true, expanded:expandedIds.has('ft-agents-group') } });
     edges.push(E('e-agents-group', 'live-server', 'ft-agents-group', '#818cf8'));
     if (expandedIds.has('ft-agents-group')) {
+      // Compute session counts per agent
+      const sessionsByAgent = {};
+      (data.sessions||[]).forEach(s => { sessionsByAgent[s.agentId||'main'] = (sessionsByAgent[s.agentId||'main']||0) + 1; });
       agents.forEach((ag,i) => {
         const agId = `ft-ag-${ag.id||i}`;
+        const sessCnt = sessionsByAgent[ag.id] || 0;
         nodes.push({ id:agId, type:'treeicon', position:{x:0,y:0},
           data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false,
                  expandable:true, expanded:expandedIds.has(agId),
+                 badge: sessCnt > 0 ? `${sessCnt} session${sessCnt===1?'':'s'}` : undefined,
                  _nodeType:'agent', ...ag } });
         edges.push(E(`e-ag-${i}`, 'ft-agents-group', agId, '#818cf8'));
         if (expandedIds.has(agId)) {
@@ -2542,8 +2571,10 @@ function buildFamilyTree(data, expandedIds = new Set()) {
   const cronJobs = data.cronJobs || [];
   if (cronJobs.length > 0) {
     const activeCron = cronJobs.filter(j => j.enabled !== false).length;
+    const nextJob = cronJobs.filter(j=>j.nextRunAt).sort((a,b) => new Date(a.nextRunAt)-new Date(b.nextRunAt))[0];
+    const cronBadge = nextJob ? `next: ${new Date(nextJob.nextRunAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}` : `${cronJobs.length} total`;
     nodes.push({ id:'ft-cron-group', type:'treeicon', position:{x:0,y:0},
-      data:{ label:`${activeCron} Cron Jobs`, category:'cron', enabled:activeCron>0, expandable:true, expanded:expandedIds.has('ft-cron-group') } });
+      data:{ label:`${activeCron} Cron Jobs`, badge:cronBadge, category:'cron', enabled:activeCron>0, expandable:true, expanded:expandedIds.has('ft-cron-group') } });
     edges.push(E('e-cron-group', 'live-server', 'ft-cron-group', '#a855f7'));
     if (expandedIds.has('ft-cron-group')) {
       cronJobs.forEach((job,i) => {
@@ -2616,6 +2647,37 @@ function buildFamilyTree(data, expandedIds = new Set()) {
     }
   }
 
+  // Sessions — collapsible group → individual session entries
+  const sessions = data.sessions || [];
+  if (sessions.length > 0) {
+    const totalMsgs = sessions.reduce((s, x) => s + (x.messageCount||0), 0);
+    const recentSession = sessions[0];
+    const sessionBadge = recentSession?.lastActive
+      ? `last: ${(() => { const d=Date.now()-new Date(recentSession.lastActive); return d<3600000?`${Math.floor(d/60000)}m ago`:d<86400000?`${Math.floor(d/3600000)}h ago`:`${Math.floor(d/86400000)}d ago`; })()}`
+      : `${totalMsgs} messages`;
+    nodes.push({ id:'ft-sessions-group', type:'treeicon', position:{x:0,y:0},
+      data:{ label:`${sessions.length} Sessions`, badge:sessionBadge,
+             category:'session', enabled:true, expandable:true, expanded:expandedIds.has('ft-sessions-group') } });
+    edges.push(E('e-sessions-group', 'live-server', 'ft-sessions-group', '#f59e0b'));
+    if (expandedIds.has('ft-sessions-group')) {
+      sessions.forEach((s,i) => {
+        const id = `ft-ss-${s.id||i}`;
+        const fmtTime = iso => {
+          if (!iso) return '';
+          const diff = Date.now() - new Date(iso);
+          if (diff < 3600000) return `${Math.floor(diff/60000)}m ago`;
+          if (diff < 86400000) return `${Math.floor(diff/3600000)}h ago`;
+          return new Date(iso).toLocaleDateString();
+        };
+        nodes.push({ id, type:'treeicon', position:{x:0,y:0},
+          data:{ label:s.id?.slice(0,16)||`session-${i}`, category:'session', enabled:true,
+                 _nodeType:'session', _session: s,
+                 badge: `${s.messageCount||0} msg · ${fmtTime(s.lastActive)}` } });
+        edges.push(E(`e-ss-${i}`, 'ft-sessions-group', id, '#f59e0b'));
+      });
+    }
+  }
+
   // System / Commands node
   nodes.push({ id:'ft-commands', type:'treeicon', position:{x:0,y:0},
     data:{ label:'System Config', category:'command', enabled:true, _nodeType:'commands',
@@ -2627,7 +2689,8 @@ function buildFamilyTree(data, expandedIds = new Set()) {
   if (providers.length > 0) {
     const totalModels = providers.reduce((s,p) => s + (p.models?.length||0), 0);
     nodes.push({ id:'ft-models-group', type:'treeicon', position:{x:0,y:0},
-      data:{ label:`${providers.length} Provider${providers.length===1?'':'s'} · ${totalModels} Models`,
+      data:{ label:`${providers.length} Provider${providers.length===1?'':'s'}`,
+             badge:`${totalModels} models configured`,
              category:'model', enabled:true, expandable:true, expanded:expandedIds.has('ft-models-group'),
              _nodeType:'modelslist', providers, models: data.models||[] } });
     edges.push(E('e-models-group', 'live-server', 'ft-models-group', '#f97316'));
@@ -3757,6 +3820,87 @@ function SingleSkillPanel({ data, skills, onClose, onToggleSkill }) {
   );
 }
 
+/* ── Session Detail Panel ── */
+function LiveSessionPanel({ data, onClose }) {
+  const s = data._session || data;
+  const fmtTime = iso => iso ? new Date(iso).toLocaleString() : '—';
+  const fmtDiff = iso => {
+    if (!iso) return '';
+    const diff = Date.now() - new Date(iso);
+    if (diff < 60000) return 'just now';
+    if (diff < 3600000) return `${Math.floor(diff/60000)}m ago`;
+    if (diff < 86400000) return `${Math.floor(diff/3600000)}h ago`;
+    return `${Math.floor(diff/86400000)}d ago`;
+  };
+  const C = '#f59e0b';
+
+  const copyId = () => navigator.clipboard?.writeText(s.id || '').catch(()=>{});
+
+  return (
+    <PanelShell emoji="🕐" title="Session" subtitle={`${s.messageCount||0} messages`} subtitleColor={C} onClose={onClose}>
+
+      <PanelSection label="Identity"/>
+      <div onClick={copyId} title="click to copy" style={{
+        fontFamily:"'JetBrains Mono',monospace",fontSize:'0.6rem',color:'#555',
+        background:'#111',borderRadius:5,padding:'7px 10px',marginBottom:10,
+        cursor:'pointer',wordBreak:'break-all',border:'1px solid #1e1e1e',
+      }}>
+        {s.id || '—'}
+        <span style={{color:'#2a2a2a',marginLeft:6}}>⎘</span>
+      </div>
+
+      {[
+        ['Last Active', `${fmtTime(s.lastActive)} (${fmtDiff(s.lastActive)})`],
+        ['Messages',    s.messageCount || 0],
+        ['Size',        s.sizeKb ? `${s.sizeKb} KB` : '—'],
+        ['Model',       s.model || '—'],
+        ['Agent',       s.agentId || 'main'],
+      ].map(([k,v]) => (
+        <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'6px 10px',background:'#141414',borderRadius:5,border:'1px solid #1e1e1e',marginBottom:5}}>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.63rem',color:'#666'}}>{k}</span>
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'0.63rem',color:'#888',textAlign:'right',maxWidth:200}}>{String(v)}</span>
+        </div>
+      ))}
+
+      {s.lastUserMessage && (
+        <>
+          <PanelSection label="Last User Message"/>
+          <div style={{
+            fontFamily:"'JetBrains Mono',monospace",fontSize:'0.67rem',color:'#aaa',
+            background:'#111',borderRadius:6,padding:'8px 10px',
+            borderLeft:'2px solid #f59e0b',lineHeight:1.6,
+          }}>{s.lastUserMessage}</div>
+        </>
+      )}
+
+      {s.lastAssistantMessage && (
+        <>
+          <PanelSection label="Last Assistant Message"/>
+          <div style={{
+            fontFamily:"'JetBrains Mono',monospace",fontSize:'0.67rem',color:'#888',
+            background:'#111',borderRadius:6,padding:'8px 10px',
+            borderLeft:'2px solid #333',lineHeight:1.6,
+          }}>{s.lastAssistantMessage}</div>
+        </>
+      )}
+
+      <PanelSection label="Actions"/>
+      <button onClick={() => {
+        if (confirm(`Delete session ${(s.id||'').slice(0,12)}…? This cannot be undone.`)) {
+          fetch('/api/gateway-patch', { method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ sessionDelete: { agentId: s.agentId||'main', sessionId: s.id } }) });
+          onClose?.();
+        }
+      }} style={{
+        width:'100%',background:'none',border:'1px solid #3a1818',borderRadius:5,
+        padding:'7px',color:'#ef4444',fontFamily:"'JetBrains Mono',monospace",
+        fontSize:'0.68rem',cursor:'pointer',
+      }}>✕ Delete Session</button>
+
+    </PanelShell>
+  );
+}
+
 /* ── Commands + Web Panel ── */
 function LiveCommandsPanel({ data, onClose }) {
   const cfg     = data._config || {};
@@ -3953,6 +4097,7 @@ function LiveNodePanel({ node, skills, models, onClose, onToggleSkill, onNodeUpd
   if (node._nodeType === 'livegateway') return <LiveGatewayPanel data={node} onClose={onClose}/>;
   if (node._nodeType === 'modelslist') return <LiveModelsPanel data={node} onClose={onClose}/>;
   if (node._nodeType === 'commands')   return <LiveCommandsPanel data={node} onClose={onClose}/>;
+  if (node._nodeType === 'session')    return <LiveSessionPanel   data={node} onClose={onClose}/>;
   if (node._nodeType === 'channel' || node._nodeType === 'newchannel')
     return <LiveChannelPanel data={node} onClose={onClose}
       onSaved={onClose}
@@ -4012,17 +4157,25 @@ function ForgeApp() {
   const liveMode = true;
   const [liveCollapsed, setLiveCollapsed] = useState(false);
   const [ftExpandedIds, setFtExpandedIds] = useState(new Set());
+  const ftExpandedIdsRef = useRef(new Set());
   const [liveData, setLiveData] = useState(null);
   const [liveSkills, setLiveSkills] = useState([]);
   const [liveLoading, setLiveLoading] = useState(false);
   const [liveError, setLiveError] = useState(null);
   const [liveSelectedAgent, setLiveSelectedAgent] = useState(null);
+  const [liveLastRefresh,   setLiveLastRefresh]   = useState(null);
+  const [liveRefreshTick,   setLiveRefreshTick]   = useState(0); // seconds since last refresh
   const liveNodesRef = useRef([]);
   const liveEdgesRef = useRef([]);
+  const autoRefreshRef  = useRef(null);
+  const liveLoadingRef  = useRef(false);
 
   const save = useCallback((nds, eds) => {
     localStorage.setItem('vf-forge', JSON.stringify({ nodes: nds, edges: eds }));
   }, []);
+
+  // Keep ref in sync with ftExpandedIds state
+  React.useEffect(() => { ftExpandedIdsRef.current = ftExpandedIds; }, [ftExpandedIds]);
 
   // On mount: load live data immediately
   React.useEffect(() => { loadLive(); }, []);
@@ -4209,6 +4362,7 @@ function ForgeApp() {
   // Load live data — starts collapsed, just the one server icon
   const loadLive = useCallback(async () => {
     setLiveLoading(true);
+    liveLoadingRef.current = true;
     setLiveError(null);
     setLiveExpanded({});
     setLiveSelectedAgent(null);
@@ -4229,7 +4383,55 @@ function ForgeApp() {
       setLiveError(e.message);
     }
     setLiveLoading(false);
+    liveLoadingRef.current = false;
   }, [buildCollapsedServerNode, applyFamilyTree]);
+
+  // Silent background refresh — updates data without resetting layout/selection
+  const refreshLive = useCallback(async () => {
+    if (liveLoadingRef.current) return;
+    try {
+      const resp = await fetch('/api/gateway-live');
+      const data = await resp.json();
+      if (!data.ok) return;
+      const prev = liveDataRef.current;
+      liveDataRef.current = data;
+      setLiveData(data);
+      setLiveLastRefresh(Date.now());
+      setLiveRefreshTick(0);
+      // Only re-render tree if data actually changed (session count, cron state, etc.)
+      const prevSig = JSON.stringify({ a: prev?.agents?.length, s: prev?.sessions?.length, c: prev?.cronJobs?.map(j=>j.lastStatus) });
+      const nextSig = JSON.stringify({ a: data.agents?.length,  s: data.sessions?.length,  c: data.cronJobs?.map(j=>j.lastStatus) });
+      if (prevSig !== nextSig) await applyFamilyTree(ftExpandedIdsRef.current, false);
+    } catch {}
+  }, [applyFamilyTree]); // ftExpandedIdsRef always current via sync effect; liveLoadingRef always current
+
+  // Auto-refresh every 30 seconds
+  React.useEffect(() => {
+    autoRefreshRef.current = setInterval(refreshLive, 30_000);
+    return () => clearInterval(autoRefreshRef.current);
+  }, [refreshLive]);
+
+  // Tick counter for "N seconds ago" display
+  React.useEffect(() => {
+    const t = setInterval(() => setLiveRefreshTick(s => s + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Set liveLastRefresh on initial load
+  React.useEffect(() => {
+    if (liveData && !liveLastRefresh) setLiveLastRefresh(Date.now());
+  }, [liveData]);
+
+  // Global keyboard shortcuts (defined AFTER refreshLive to avoid temporal dead zone)
+  React.useEffect(() => {
+    const handler = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+      if (e.key === 'Escape') setLiveSelectedAgent(null);
+      if ((e.key === 'r' || e.key === 'R') && !e.metaKey && !e.ctrlKey) { e.preventDefault(); refreshLive(); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [refreshLive]);
 
   // Expand/collapse sections from gateway node
   const handleLiveToggle = useCallback((section) => {
@@ -4435,8 +4637,17 @@ function ForgeApp() {
     setLiveSkills(prev => prev.map(s => s.id === skillId ? {...s, enabled:newEnabled} : s));
   }, []);
 
+  const runningCron = liveData?.cronJobs?.filter(j => j.lastStatus === 'running').length || 0;
+  const activeSessions = liveData?.sessions?.length || 0;
   const liveStatusText = liveLoading ? 'loading…' : liveError ? `error: ${liveError}` :
-    liveData ? `${liveData.agents?.length||0} agent · ${liveSkills.filter(s=>s.enabled).length} skills on · ${liveData.channels?.length||0} channel` : '';
+    liveData ? [
+      `v${liveData.gateway?.version||'?'}`,
+      `${liveData.agents?.length||0} agent${liveData.agents?.length!==1?'s':''}`,
+      `${liveSkills.filter(s=>s.enabled).length} skills`,
+      `${liveData.channels?.length||0} channel${liveData.channels?.length!==1?'s':''}`,
+      activeSessions > 0 ? `${activeSessions} sessions` : null,
+      runningCron > 0 ? `${runningCron} cron running` : null,
+    ].filter(Boolean).join(' · ') : '';
 
   return (
     <div style={{display:'flex', height:'calc(100vh - 57px)', overflow:'hidden'}}>
@@ -4450,9 +4661,12 @@ function ForgeApp() {
             padding:'6px 14px', display:'flex', alignItems:'center', gap:10,
             fontFamily:"'JetBrains Mono',monospace", fontSize:'0.65rem',
           }}>
-            <span style={{width:6,height:6,borderRadius:'50%',background:'#4ade80',boxShadow:'0 0 8px #4ade80'}}/>
+            {liveLoading
+              ? <span className="refresh-spin" style={{color:'#4ade80',fontSize:'0.75rem'}}>⟳</span>
+              : <span style={{width:6,height:6,borderRadius:'50%',background:'#4ade80',boxShadow:'0 0 8px #4ade80'}}/>}
             <span style={{color:'#4ade80'}}>LIVE</span>
             <span style={{color:'#2a4a38'}}>{liveStatusText}</span>
+            {runningCron > 0 && <span style={{color:'#f59e0b',marginLeft:4}}>· <span className="refresh-spin">⟳</span> {runningCron} job{runningCron>1?'s':''} running</span>}
           </div>
         )}
         <ReactFlow
@@ -4493,29 +4707,27 @@ function ForgeApp() {
             {liveCollapsed && (
               <NavBtn onClick={handleExpandServer} primary>⊞ Expand</NavBtn>
             )}
-            <NavBtn onClick={loadLive} primary>↺ Refresh</NavBtn>
+            <NavBtn onClick={refreshLive} primary>{liveLoading ? '↻…' : '↺ Refresh'}</NavBtn>
           </Panel>
           <Panel position="bottom-center">
             <div style={{
               background:'rgba(10,10,10,0.92)', border:'1px solid #1e1e1e',
-              borderRadius:8, padding:'6px 16px',
-              display:'flex', alignItems:'center', gap:12,
-              fontFamily:"'JetBrains Mono',monospace", fontSize:'0.65rem', color:'#444',
+              borderRadius:8, padding:'5px 14px',
+              display:'flex', alignItems:'center', gap:10,
+              fontFamily:"'JetBrains Mono',monospace", fontSize:'0.62rem', color:'#444',
             }}>
               <span style={{color:'#4ade80'}}>●</span>
               {liveCollapsed ? (
-                <>
-                  <span style={{color:'#555'}}>1 virtual server</span>
-                  <span style={{color:'#1e1e1e'}}>|</span>
-                  <span>use ⊞ Expand to open the network diagram</span>
-                </>
+                <span style={{color:'#555'}}>1 virtual server · use ⊞ Expand to open diagram</span>
               ) : (
                 <>
                   <span>{nodes.length} nodes</span>
                   <span style={{color:'#1e1e1e'}}>|</span>
-                  <span>{edges.length} connections</span>
+                  <span>{liveData?.agents?.length||0} agents · {liveSkills.filter(s=>s.enabled).length} skills · {liveData?.sessions?.length||0} sessions</span>
                   <span style={{color:'#1e1e1e'}}>|</span>
-                  <span>click section to expand · click node to edit</span>
+                  <span style={{color:'#222'}}>refreshed {liveRefreshTick < 5 ? 'just now' : liveRefreshTick < 60 ? `${liveRefreshTick}s ago` : `${Math.floor(liveRefreshTick/60)}m ago`}</span>
+                  <span style={{color:'#1e1e1e'}}>|</span>
+                  <span style={{color:'#1a3a28'}}>auto in {Math.max(0,30-liveRefreshTick)}s</span>
                 </>
               )}
             </div>
@@ -4546,7 +4758,7 @@ function ForgeApp() {
                 setLiveData(liveDataRef.current);
               }
               setLiveSelectedAgent(null);
-              setTimeout(() => applyFamilyTree(ftExpandedIds, false), 50);
+              setTimeout(() => applyFamilyTree(ftExpandedIdsRef.current, false), 50);
             }}
             onChannelCreated={(ch) => {
               if (liveDataRef.current) {
@@ -4554,7 +4766,7 @@ function ForgeApp() {
                 setLiveData(liveDataRef.current);
               }
               setLiveSelectedAgent(null);
-              setTimeout(() => applyFamilyTree(ftExpandedIds, false), 50);
+              setTimeout(() => applyFamilyTree(ftExpandedIdsRef.current, false), 50);
             }}
           />
         </div>

@@ -199,11 +199,14 @@ export default async (req) => {
       modelProviders.push({ id: provider, baseUrl: pc.baseUrl, apiKey: pc.apiKey, api: pc.api, models: pc.models || [] });
     }
 
-    const [sessions, cronJobs, nodes] = await Promise.all([
-      getRecentSessions('main', 12),
+    // Fetch sessions for all agents
+    const agentIds = ['main', ...Object.keys(agentDefs)];
+    const [allSessionArrays, cronJobs, nodes] = await Promise.all([
+      Promise.all(agentIds.map(id => getRecentSessions(id, 8).then(ss => ss.map(s => ({ ...s, agentId: id }))))),
       getCronJobs(),
       getPairedNodes(),
     ]);
+    const sessions = allSessionArrays.flat().sort((a,b) => new Date(b.lastActive||0) - new Date(a.lastActive||0)).slice(0, 24);
 
     const gw = config.gateway || {};
     const gatewayConfig = {

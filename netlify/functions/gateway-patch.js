@@ -1,4 +1,4 @@
-import { readFile, writeFile, readdir } from 'fs/promises';
+import { readFile, writeFile, readdir, unlink } from 'fs/promises';
 import { join } from 'path';
 import { homedir } from 'os';
 import { execSync } from 'child_process';
@@ -331,6 +331,14 @@ export default async (req) => {
         execSync('pkill -USR1 -f "openclaw gateway" || true', { timeout: 3000 });
       } catch {}
       return new Response(JSON.stringify({ ok: true, message: 'Restart signal sent' }), { status: 200, headers });
+    }
+
+    // ── Delete session file ──
+    if (body.sessionDelete) {
+      const { agentId = 'main', sessionId } = body.sessionDelete;
+      const sessionPath = join(homedir(), '.openclaw', 'agents', agentId, 'sessions', `${sessionId}.jsonl`);
+      await unlink(sessionPath).catch(() => {});
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
     }
 
     // ── Generic config patch ──

@@ -2350,9 +2350,13 @@ function LiveGatewayNode({ data, selected }) {
   );
 }
 
-/* ── Family Tree: expand all sections using existing rich nodes, top-down layout ── */
+/* ── Family Tree: ~10 icon nodes mirroring what's in the gateway admin ── */
 function buildFamilyTree(data) {
-  // Root: gateway icon
+  const E = (id, s, t, color) => ({
+    id, source:s, target:t, type:'smoothstep',
+    style:{ stroke:color, strokeWidth:1.5, opacity:0.45 },
+  });
+
   const nodes = [{
     id:'live-server', type:'collapsedserver', position:{x:0,y:0},
     data:{
@@ -2365,23 +2369,51 @@ function buildFamilyTree(data) {
   }];
   const edges = [];
 
-  // Expand every section using the existing rich node builders,
-  // then remap all edges that touch 'live-gw' → 'live-server',
-  // flipping direction so gateway is always the parent.
-  ['agents','skills','channels','cron','nodes','sessions'].forEach(section => {
-    const { addNodes, addEdges } = buildExpandedNodes(section, data, {});
-    nodes.push(...addNodes);
-    addEdges.forEach(e => {
-      const src = e.source === 'live-gw' ? 'live-server' : e.source;
-      const tgt = e.target === 'live-gw' ? 'live-server' : e.target;
-      // Ensure gateway is always the source (parent), child is always the target
-      if (tgt === 'live-server') {
-        edges.push({ ...e, source:'live-server', target:src });
-      } else {
-        edges.push({ ...e, source:src, target:tgt });
-      }
-    });
+  // Each agent — with its model as a child
+  (data.agents||[]).forEach((ag,i) => {
+    const agId = `ft-ag-${ag.id||i}`;
+    nodes.push({ id:agId, type:'treeicon', position:{x:0,y:0},
+      data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false } });
+    edges.push(E(`e-ag-${i}`, 'live-server', agId, '#818cf8'));
+    if (ag.model) {
+      const mId = `ft-model-${i}`;
+      nodes.push({ id:mId, type:'treeicon', position:{x:0,y:0},
+        data:{ label:ag.model.split('/').pop(), category:'model', enabled:true } });
+      edges.push(E(`e-model-${i}`, agId, mId, '#f59e0b'));
+    }
   });
+
+  // Each channel
+  (data.channels||[]).forEach((ch,i) => {
+    const id = `ft-ch-${ch.id||i}`;
+    nodes.push({ id, type:'treeicon', position:{x:0,y:0},
+      data:{ label:ch.type||ch.id||'Channel', category:'channel', enabled:ch.enabled!==false } });
+    edges.push(E(`e-ch-${i}`, 'live-server', id, '#22d3ee'));
+  });
+
+  // Each cron job
+  (data.cronJobs||[]).forEach((job,i) => {
+    const id = `ft-cr-${job.id||i}`;
+    nodes.push({ id, type:'treeicon', position:{x:0,y:0},
+      data:{ label:job.name||job.id||'Cron', category:'cron', enabled:job.enabled!==false } });
+    edges.push(E(`e-cr-${i}`, 'live-server', id, '#a855f7'));
+  });
+
+  // Each paired node/device
+  (data.nodes||[]).forEach((nd,i) => {
+    const id = `ft-nd-${nd.id||i}`;
+    nodes.push({ id, type:'treeicon', position:{x:0,y:0},
+      data:{ label:nd.name||nd.id||'Node', category:'node', enabled:true } });
+    edges.push(E(`e-nd-${i}`, 'live-server', id, '#22d3ee'));
+  });
+
+  // Skills as a single summary
+  const enabledSkills = (data.skills||[]).filter(s=>s.enabled!==false);
+  if (enabledSkills.length > 0) {
+    nodes.push({ id:'ft-skills', type:'treeicon', position:{x:0,y:0},
+      data:{ label:`${enabledSkills.length} Skills`, category:'skill', enabled:true } });
+    edges.push(E('e-skills', 'live-server', 'ft-skills', '#4ade80'));
+  }
 
   return { nodes, edges };
 }

@@ -1313,7 +1313,7 @@
   <div id="forge-root"></div>
 
   <script type="text/babel" data-type="module">
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   ReactFlow,
@@ -1331,8 +1331,10 @@ import ELK from 'elkjs';
 /* ── ELK auto-layout ── */
 const elk = new ELK();
 const ELK_OPTS = {
-  'elk.algorithm': 'mrtree',
-  'elk.spacing.nodeNode': '80',
+  'elk.algorithm': 'layered',
+  'elk.direction': 'RIGHT',
+  'elk.layered.spacing.nodeNodeBetweenLayers': '80',
+  'elk.spacing.nodeNode': '40',
 };
 
 async function elkLayout(nodes, edges, opts = {}) {
@@ -2307,12 +2309,15 @@ function buildLiveInitial(data) {
   });
 
   const sections = [
-    { id:'live-sec-agents',   label:'Agents',    count: data.agents?.length||0,   color:'#818cf8', x:380,  y:-180 },
-    { id:'live-sec-skills',   label:'Skills',    count: data.skills?.length||0,   color:'#4ade80', x:380,  y:-40  },
-    { id:'live-sec-channels', label:'Channels',  count: data.channels?.length||0, color:'#22d3ee', x:-380, y:-100 },
-    { id:'live-sec-sessions', label:'Sessions',  count: data.sessions?.length||0, color:'#f59e0b', x:380,  y:100  },
-    { id:'live-sec-cron',     label:'Cron Jobs', count: data.cronJobs?.length||0, color:'#a855f7', x:0,    y:300  },
-    { id:'live-sec-nodes',    label:'Nodes',     count: data.nodes?.length||0,    color:'#22d3ee', x:-380, y:60   },
+    // Right Zone (Core)
+    { id:'live-sec-agents',   label:'Agents',    count: data.agents?.length||0,   color:'#818cf8', x:300, y:-120 },
+    { id:'live-sec-skills',   label:'Skills',    count: data.skills?.length||0,   color:'#4ade80', x:300, y:0    },
+    { id:'live-sec-sessions', label:'Sessions',  count: data.sessions?.length||0, color:'#f59e0b', x:300, y:120  },
+    // Left Zone (I/O)
+    { id:'live-sec-channels', label:'Channels',  count: data.channels?.length||0, color:'#22d3ee', x:-300, y:-60  },
+    { id:'live-sec-nodes',    label:'Nodes',     count: data.nodes?.length||0,    color:'#22d3ee', x:-300, y:60   },
+    // Bottom Zone (System)
+    { id:'live-sec-cron',     label:'Cron Jobs', count: data.cronJobs?.length||0, color:'#a855f7', x:0,    y:220  },
   ];
 
   const nodes = [{
@@ -2912,6 +2917,24 @@ function ForgeApp() {
     const ns = cur.getNodes();
     const es = cur.getEdges();
 
+    const laid = await elkLayout(ns, es, opts);
+    setNodes(laid);
+    setTimeout(() => cur.fitView({ padding:0.15, duration:400 }), 80);
+  }, [setNodes]);
+
+  const debouncedLayout = useCallback(debounce(runLayout, 100), [runLayout]);
+
+  // Re-layout when node/edge count changes (expand/collapse)
+  useEffect(() => {
+    if (liveMode) debouncedLayout();
+  }, [nodes.length, edges.length, liveMode]);
+
+  const runLayout = useCallback(async (opts = {}) => {
+    const cur = rfInstance.current;
+    if (!cur) return;
+    const ns = cur.getNodes();
+    const es = cur.getEdges();
+
     // Use 'radial' for the initial global layout, 'layered' for incremental
     const isInitialLayout = ns.length <= (Object.keys(liveDataRef.current || {}).length + 1);
     const algorithm = isInitialLayout ? 'radial' : 'layered';
@@ -2963,9 +2986,8 @@ function ForgeApp() {
       liveDataRef.current = data;
       setLiveSkills(data.skills || []);
       const { nodes: lnodes, edges: ledges } = buildLiveInitial(data);
+      setNodes(lnodes);
       setEdges(ledges);
-      const laid = await elkLayout(lnodes, ledges);
-      setNodes(laid);
       setLiveSelectedAgent(null);
       setTimeout(() => rfInstance.current?.fitView({ padding:0.15, duration:400 }), 150);
     } catch(e) {

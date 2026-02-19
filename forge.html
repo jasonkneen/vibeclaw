@@ -1638,59 +1638,51 @@ function ChannelNode({ data, selected }) {
   );
 }
 
-/* ── Collapsed Server Node — square icon card ── */
+/* ── Collapsed Server Node — app icon style, name below ── */
 function CollapsedServerNode({ data, selected }) {
-  const SZ = 140;
   return (
     <div style={{
-      width: SZ, height: SZ,
-      border: `1.5px solid ${selected ? '#ff5c5c' : '#2a2a2a'}`,
-      borderRadius: 16,
-      background: '#111111',
-      boxShadow: selected ? '0 0 24px rgba(255,92,92,0.18)' : '0 0 16px rgba(0,0,0,0.6)',
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-      gap: 10, position: 'relative', overflow: 'hidden',
-      transition: 'border-color 0.2s, box-shadow 0.2s',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 9,
+      background: 'transparent',
     }}>
       <Handle type="source" position={Position.Right} style={{ opacity: 0, pointerEvents: 'none' }}/>
-      {/* Status dot — top right */}
-      <span style={{
-        position: 'absolute', top: 10, right: 10,
-        width: 7, height: 7, borderRadius: '50%',
-        background: '#4ade80', boxShadow: '0 0 8px rgba(74,222,128,0.6)',
-        animation: 'vfPulse 2s ease-in-out infinite',
-      }}/>
-      {/* Icon */}
+      {/* Square icon — dark maroon, neon red glyph */}
       <div style={{
-        width: 52, height: 52, borderRadius: 14,
-        background: 'color-mix(in srgb, #ff5c5c 14%, #0a0a0a)',
-        border: '1px solid rgba(255,92,92,0.2)',
+        width: 88, height: 88, borderRadius: 22, flexShrink: 0,
+        background: 'radial-gradient(ellipse at 40% 35%, #2a0a0a 0%, #100404 100%)',
+        border: `1.5px solid ${selected ? 'rgba(255,80,80,0.7)' : 'rgba(255,60,60,0.28)'}`,
+        boxShadow: selected
+          ? '0 0 0 3px rgba(255,60,60,0.12), 0 8px 32px rgba(0,0,0,0.7)'
+          : '0 4px 24px rgba(0,0,0,0.7)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: '0 0 20px rgba(255,92,92,0.1)',
+        position: 'relative',
+        transition: 'border-color 0.2s, box-shadow 0.2s',
       }}>
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ff5c5c" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        {/* Live dot */}
+        <span style={{
+          position: 'absolute', top: 9, right: 9,
+          width: 6, height: 6, borderRadius: '50%',
+          background: '#4ade80', boxShadow: '0 0 6px rgba(74,222,128,0.8)',
+          animation: 'vfPulse 2s ease-in-out infinite',
+        }}/>
+        {/* Server rack SVG */}
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+             stroke="#ff5c5c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+             style={{ filter: 'drop-shadow(0 0 6px rgba(255,80,80,0.5))' }}>
           <rect x="2" y="2" width="20" height="8" rx="2"/>
           <rect x="2" y="14" width="20" height="8" rx="2"/>
-          <line x1="6" y1="6" x2="6.01" y2="6"/>
-          <line x1="6" y1="18" x2="6.01" y2="18"/>
+          <circle cx="6" cy="6" r="0.5" fill="#ff5c5c"/>
+          <circle cx="6" cy="18" r="0.5" fill="#ff5c5c"/>
+          <line x1="9" y1="6" x2="16" y2="6"/>
+          <line x1="9" y1="18" x2="16" y2="18"/>
         </svg>
       </div>
-      {/* Label */}
-      <div style={{ textAlign: 'center', padding: '0 10px' }}>
-        <div style={{
-          fontFamily: "'JetBrains Mono', monospace", fontSize: '0.7rem',
-          fontWeight: 700, color: '#e0e0e0',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          maxWidth: 118,
-        }}>{data.label || 'OpenClaw'}</div>
-        {data.agentCount !== undefined && (
-          <div style={{
-            fontFamily: "'JetBrains Mono', monospace", fontSize: '0.52rem',
-            color: '#444', marginTop: 3,
-          }}>{data.agentCount}a · {data.skillCount}s · {data.channelCount}ch</div>
-        )}
-      </div>
+      {/* Name below the icon */}
+      <div style={{
+        fontFamily: "'JetBrains Mono', monospace", fontSize: '0.72rem',
+        fontWeight: 600, color: '#c0c0c0', textAlign: 'center',
+        maxWidth: 130, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+      }}>{data.label || 'OpenClaw Gateway'}</div>
     </div>
   );
 }

@@ -1318,7 +1318,7 @@ import { createRoot } from 'react-dom/client';
 import {
   ReactFlow,
   Background,
-  Controls,
+
   addEdge,
   useNodesState,
   useEdgesState,
@@ -1644,37 +1644,59 @@ function ChannelNode({ data, selected }) {
 }
 
 /* ── Collapsed Server Node — matches reference icon exactly ── */
+function useNodeImage(label, category) {
+  const [imgUrl, setImgUrl] = React.useState(null);
+  React.useEffect(() => {
+    const cacheKey = `node-img::${category}::${label}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) { setImgUrl(cached); return; }
+    fetch(`/api/node-image?label=${encodeURIComponent(label)}&category=${encodeURIComponent(category)}`)
+      .then(r => r.json())
+      .then(d => { if (d.ok && d.dataUrl) { localStorage.setItem(cacheKey, d.dataUrl); setImgUrl(d.dataUrl); } })
+      .catch(() => {});
+  }, [label, category]);
+  return imgUrl;
+}
+
 function CollapsedServerNode({ data, selected }) {
+  const imgUrl = useNodeImage(data.label || 'Gateway', 'node');
   return (
     <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:9, background:'transparent' }}>
       <Handle type="source" position={Position.Bottom} style={{ opacity:0, pointerEvents:'none' }}/>
       {/* Icon square — dark maroon, iOS-style radius */}
       <div style={{
         width:100, height:100, borderRadius:22, flexShrink:0,
-        background:'#1c0b0e',
-        border:`1.5px solid ${selected ? '#e8453c' : '#3a1518'}`,
+        backgroundColor:'#1c0b0e',
+        backgroundImage: `url(${imgUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        border:`1.5px solid ${selected ? '#e8453c' : '#ff5c5c'}`,
         display:'flex', alignItems:'center', justifyContent:'center',
-        position:'relative',
+        position:'relative', overflow:'hidden',
         boxShadow: selected ? '0 0 0 3px rgba(232,69,60,0.2), 0 8px 32px rgba(0,0,0,0.9)' : '0 6px 28px rgba(0,0,0,0.8)',
       }}>
         {/* Live dot */}
+        {/* Dim overlay tinted red */}
+        <div style={{position:'absolute',inset:0,background:'color-mix(in srgb,#1c0b0e 70%,transparent)',zIndex:0}}/>
         <span style={{
-          position:'absolute', top:8, right:8,
+          position:'absolute', top:8, right:8, zIndex:2,
           width:6, height:6, borderRadius:'50%',
           background:'#4ade80', boxShadow:'0 0 6px rgba(74,222,128,0.9)',
           animation:'vfPulse 2s ease-in-out infinite',
         }}/>
         {/* Two stacked server rectangles */}
-        <svg width="62" height="54" viewBox="0 0 62 54" fill="none">
-          {/* Top rack */}
-          <rect x="3" y="3" width="56" height="20" rx="4" stroke="#e8453c" strokeWidth="2"/>
-          <circle cx="13" cy="13" r="3.5" fill="#e8453c"/>
-          <line x1="23" y1="13" x2="48" y2="13" stroke="#e8453c" strokeWidth="2" strokeLinecap="round"/>
-          {/* Bottom rack */}
-          <rect x="3" y="31" width="56" height="20" rx="4" stroke="#e8453c" strokeWidth="2"/>
-          <circle cx="13" cy="41" r="3.5" fill="#e8453c"/>
-          <line x1="23" y1="41" x2="48" y2="41" stroke="#e8453c" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
+        <div style={{position:'relative',zIndex:1}}>
+          <svg width="62" height="54" viewBox="0 0 62 54" fill="none">
+            {/* Top rack */}
+            <rect x="3" y="3" width="56" height="20" rx="4" stroke="#e8453c" strokeWidth="2"/>
+            <circle cx="13" cy="13" r="3.5" fill="#e8453c"/>
+            <line x1="23" y1="13" x2="48" y2="13" stroke="#e8453c" strokeWidth="2" strokeLinecap="round"/>
+            {/* Bottom rack */}
+            <rect x="3" y="31" width="56" height="20" rx="4" stroke="#e8453c" strokeWidth="2"/>
+            <circle cx="13" cy="41" r="3.5" fill="#e8453c"/>
+            <line x1="23" y1="41" x2="48" y2="41" stroke="#e8453c" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </div>
       </div>
       {/* Name below */}
       <div style={{
@@ -1705,37 +1727,52 @@ const TREE_CATEGORIES = {
 function TreeIconNode({ data, selected }) {
   const cfg = TREE_CATEGORIES[data.category] || TREE_CATEGORIES.agent;
   const isEnabled = data.enabled !== false;
+  const imgUrl = useNodeImage(data.label || 'node', data.category || 'agent');
   return (
     <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:9, background:'transparent' }}>
       <Handle type="target" position={Position.Top} style={{ opacity:0, pointerEvents:'none' }}/>
       <Handle type="source" position={Position.Bottom} style={{ opacity:0, pointerEvents:'none' }}/>
       <div style={{
         width:100, height:100, borderRadius:22,
-        background: cfg.bg,
-        border:`1.5px solid ${selected ? cfg.color : cfg.border}`,
+        backgroundColor: cfg.bg,
+        backgroundImage: `url(${imgUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        border:`1.5px solid ${cfg.color}`,
         display:'flex', alignItems:'center', justifyContent:'center',
         position:'relative', opacity: isEnabled ? 1 : 0.4,
-        boxShadow: selected ? `0 0 0 3px ${cfg.color}22, 0 8px 32px rgba(0,0,0,0.9)` : '0 6px 28px rgba(0,0,0,0.8)',
+        overflow: 'hidden',
+        boxShadow: selected ? `0 0 0 3px ${cfg.color}33, 0 8px 32px rgba(0,0,0,0.9)` : '0 6px 28px rgba(0,0,0,0.8)',
         transition:'border-color 0.2s, box-shadow 0.2s',
       }}>
+        {/* Dim overlay — tinted with category colour so image feels themed */}
+        <div style={{
+          position:'absolute', inset:0,
+          background:`color-mix(in srgb, ${cfg.bg} 70%, transparent)`,
+          zIndex:0,
+        }}/>
+        {/* Status dot */}
         <span style={{
-          position:'absolute', top:8, right:8, width:6, height:6, borderRadius:'50%',
+          position:'absolute', top:8, right:8, width:6, height:6, borderRadius:'50%', zIndex:2,
           background: isEnabled ? '#4ade80' : '#333',
           boxShadow: isEnabled ? '0 0 5px rgba(74,222,128,0.6)' : 'none',
         }}/>
-        {cfg.icon(cfg.color)}
+        {/* Icon sits above the overlay */}
+        <div style={{position:'relative', zIndex:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
+          {cfg.icon(cfg.color)}
+        </div>
         {data.expandable && (
           <span style={{
             position:'absolute', bottom:7, left:'50%', transform:'translateX(-50%)',
             fontSize:'0.55rem', color: data.expanded ? cfg.color : '#3a3a3a',
-            lineHeight:1,
+            lineHeight:1, zIndex:2,
           }}>{data.expanded ? '▾' : '▸'}</span>
         )}
       </div>
       <div style={{
-        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.65rem',
+        fontFamily:"'JetBrains Mono',monospace", fontSize:'0.8rem',
         fontWeight:600, color:'#888', textAlign:'center',
-        maxWidth:120, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+        maxWidth:140, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
       }}>{data.label}</div>
     </div>
   );
@@ -3365,9 +3402,12 @@ function ForgeApp() {
     return lnodes.map(n => ({ ...n, position: allPos.get(n.id) || snapshotPos.get(n.id) || n.position }));
   }, []);
 
-  const handleTreeNodeToggle = useCallback(async (node) => {
+  const handleTreeNodeToggle = useCallback((node) => {
     if (!node.data?.expandable) return;
-    // Snapshot positions BEFORE any state change
+    const data = liveDataRef.current;
+    if (!data) return;
+
+    // Snapshot positions before any state change
     const currentNodes = rfInstance.current?.getNodes() || [];
     const snapshotPos = new Map(currentNodes.map(n => [n.id, n.position]));
 
@@ -3376,25 +3416,36 @@ function ForgeApp() {
       if (next.has(node.id)) next.delete(node.id);
       else next.add(node.id);
 
-      const data = liveDataRef.current;
-      if (!data) return next;
       const { nodes: lnodes, edges: ledges } = buildFamilyTree(data, next);
-
       setEdges(ledges);
 
       const hasNew = lnodes.some(n => !snapshotPos.has(n.id));
 
-      if (!hasNew) {
-        // Collapsing — restore parent positions, remove children
-        setNodes(lnodes.map(n => ({ ...n, position: snapshotPos.get(n.id) || n.position })));
+      if (hasNew) {
+        // Expanding — park new nodes at their parent's position, hidden
+        setNodes(lnodes.map(n => {
+          if (snapshotPos.has(n.id)) return { ...n, position: snapshotPos.get(n.id) };
+          const parentEdge = ledges.find(e => e.target === n.id);
+          const parentPos = parentEdge ? (snapshotPos.get(parentEdge.source) || {x:0,y:0}) : {x:0,y:0};
+          return { ...n, position: parentPos, style: { ...(n.style||{}), opacity:0 } };
+        }));
       } else {
-        // Expanding — place new children, parents stay put
-        setNodes(placeNewChildren(lnodes, ledges, snapshotPos));
+        // Collapsing — restore known positions, hide outgoing nodes briefly
+        setNodes(lnodes.map(n => ({ ...n, position: snapshotPos.get(n.id) || n.position, style: { ...(n.style||{}), opacity:0 } })));
       }
+
+      // Run ELK then reveal
+      setTimeout(async () => {
+        const cur = rfInstance.current;
+        if (!cur) return;
+        const laid = await elkLayout(cur.getNodes(), cur.getEdges(), TREE_ELK);
+        setNodes(laid.map(n => ({ ...n, style: { ...(n.style||{}), opacity:1, transition:'opacity 0.2s' } })));
+        setTimeout(() => cur.fitView({ padding:0.25, duration:400 }), 80);
+      }, 30);
 
       return next;
     });
-  }, [applyFamilyTree, placeNewChildren]);
+  }, []);
 
   // Collapse back to the single server icon
   const handleCollapseToServer = useCallback(() => {
@@ -3646,11 +3697,6 @@ function ForgeApp() {
             <span style={{width:6,height:6,borderRadius:'50%',background:'#4ade80',boxShadow:'0 0 8px #4ade80'}}/>
             <span style={{color:'#4ade80'}}>LIVE</span>
             <span style={{color:'#2a4a38'}}>{liveStatusText}</span>
-            <button onClick={loadLive} disabled={liveLoading} style={{
-              marginLeft:'auto', background:'none', border:'1px solid #1a3a28',
-              borderRadius:4, padding:'2px 10px', cursor:'pointer',
-              fontFamily:"'JetBrains Mono',monospace", fontSize:'0.6rem', color:'#4ade80',
-            }}>{liveLoading ? '…' : '↺ refresh'}</button>
           </div>
         )}
         <ReactFlow
@@ -3677,7 +3723,6 @@ function ForgeApp() {
           proOptions={{ hideAttribution: true }}
         >
           <Background variant="dots" gap={28} size={1} color="#252525" />
-          <Controls showInteractive={false} />
           <Panel position="top-right" style={{display:'flex',gap:8,margin:'8px 8px 0 0'}}>
             {!liveCollapsed && <>
               <NavBtn onClick={async () => {

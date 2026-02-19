@@ -1313,7 +1313,7 @@
   <div id="forge-root"></div>
 
   <script type="text/babel" data-type="module">
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   ReactFlow,
@@ -1386,6 +1386,15 @@ async function elkLayout(nodes, edges, opts = {}) {
     console.warn('[elk] layout failed', err);
     return nodes;
   }
+}
+
+/* ── Debounce utility ── */
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
 }
 
 /* ── Debounce utility ── */
@@ -2905,6 +2914,30 @@ function ForgeApp() {
   const [showAiModal, setShowAiModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const rfInstance = useRef(null);
+
+  const runLayout = useCallback(async (opts = {}) => {
+    const cur = rfInstance.current;
+    if (!cur) return;
+    const ns = cur.getNodes();
+    const es = cur.getEdges();
+
+    const isInitial = ns.length <= 7;
+    const finalOpts = {
+      ...opts,
+      'elk.algorithm': isInitial ? 'radial' : 'layered',
+      'elk.direction': 'RIGHT',
+    };
+
+    const laid = await elkLayout(ns, es, finalOpts);
+    setNodes(laid);
+    setTimeout(() => cur.fitView({ padding: isInitial ? 0.25 : 0.1, duration: 400 }), 80);
+  }, [setNodes]);
+
+  const debouncedLayout = useCallback(debounce(runLayout, 120), [runLayout]);
+
+  useEffect(() => {
+    if (liveMode) debouncedLayout();
+  }, [nodes.length, edges.length, liveMode]);
 
   const runLayout = useCallback(async (opts = {}) => {
     const cur = rfInstance.current;

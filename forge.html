@@ -1360,8 +1360,8 @@ async function elkLayout(nodes, edges, opts = {}) {
     },
     children: nodes.map(n => ({
       id: n.id,
-      width: n.measured?.width ?? n.width ?? 220,
-      height: n.measured?.height ?? n.height ?? 70,
+      width: n.measured?.width ?? n.width ?? (n.type === 'treeicon' ? 130 : 220),
+      height: n.measured?.height ?? n.height ?? (n.type === 'treeicon' ? 130 : 70),
     })),
     edges: edges
       .filter(e => nodes.find(n => n.id === e.source) && nodes.find(n => n.id === e.target))
@@ -2376,62 +2376,95 @@ function buildFamilyTree(data, expandedIds = new Set()) {
   }];
   const edges = [];
 
-  // Each agent
-  (data.agents||[]).forEach((ag,i) => {
-    const agId = `ft-ag-${ag.id||i}`;
-    nodes.push({ id:agId, type:'treeicon', position:{x:0,y:0},
-      data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false, expandable:true, expanded:expandedIds.has(agId) } });
-    edges.push(E(`e-ag-${i}`, 'live-server', agId, '#818cf8'));
-    if (expandedIds.has(agId)) {
-      // Model
-      if (ag.model) {
-        const mId = `ft-model-${i}`;
-        nodes.push({ id:mId, type:'treeicon', position:{x:0,y:0},
-          data:{ label:ag.model.split('/').pop(), category:'model', enabled:true } });
-        edges.push(E(`e-model-${i}`, agId, mId, '#f59e0b'));
-      }
-      // Fallback models
-      (ag.fallbackModels||[]).forEach((fm,j) => {
-        const fmId = `ft-fm-${i}-${j}`;
-        nodes.push({ id:fmId, type:'treeicon', position:{x:0,y:0},
-          data:{ label:fm.split('/').pop(), category:'model', enabled:true } });
-        edges.push(E(`e-fm-${i}-${j}`, agId, fmId, '#f59e0b'));
+  // Agents — one parent group node
+  const agents = data.agents || [];
+  if (agents.length > 0) {
+    const activeAgents = agents.filter(a => a.enabled !== false).length;
+    nodes.push({ id:'ft-agents-group', type:'treeicon', position:{x:0,y:0},
+      data:{ label:`${agents.length} Agent${agents.length===1?'':'s'}`, category:'agent', enabled:activeAgents>0, expandable:true, expanded:expandedIds.has('ft-agents-group') } });
+    edges.push(E('e-agents-group', 'live-server', 'ft-agents-group', '#818cf8'));
+    if (expandedIds.has('ft-agents-group')) {
+      agents.forEach((ag,i) => {
+        const agId = `ft-ag-${ag.id||i}`;
+        nodes.push({ id:agId, type:'treeicon', position:{x:0,y:0},
+          data:{ label:ag.name||ag.id||'Agent', category:'agent', enabled:ag.enabled!==false, expandable:true, expanded:expandedIds.has(agId) } });
+        edges.push(E(`e-ag-${i}`, 'ft-agents-group', agId, '#818cf8'));
+        if (expandedIds.has(agId)) {
+          if (ag.model) {
+            const mId = `ft-model-${i}`;
+            nodes.push({ id:mId, type:'treeicon', position:{x:0,y:0},
+              data:{ label:ag.model.split('/').pop(), category:'model', enabled:true } });
+            edges.push(E(`e-model-${i}`, agId, mId, '#f59e0b'));
+          }
+          (ag.fallbackModels||[]).forEach((fm,j) => {
+            const fmId = `ft-fm-${i}-${j}`;
+            nodes.push({ id:fmId, type:'treeicon', position:{x:0,y:0},
+              data:{ label:fm.split('/').pop(), category:'model', enabled:true } });
+            edges.push(E(`e-fm-${i}-${j}`, agId, fmId, '#f59e0b'));
+          });
+        }
       });
     }
-  });
+  }
 
-  // Each channel
-  (data.channels||[]).forEach((ch,i) => {
-    const id = `ft-ch-${ch.id||i}`;
-    nodes.push({ id, type:'treeicon', position:{x:0,y:0},
-      data:{ label:ch.type||ch.id||'Channel', category:'channel', enabled:ch.enabled!==false } });
-    edges.push(E(`e-ch-${i}`, 'live-server', id, '#22d3ee'));
-  });
-
-  // Each cron job
-  (data.cronJobs||[]).forEach((job,i) => {
-    const id = `ft-cr-${job.id||i}`;
-    const schedLabel = job.schedule?.kind === 'cron' ? job.schedule.expr
-      : job.schedule?.kind === 'every' ? `every ${Math.round((job.schedule.everyMs||0)/60000)}m`
-      : job.schedule?.kind || 'scheduled';
-    nodes.push({ id, type:'treeicon', position:{x:0,y:0},
-      data:{ label:job.name||job.id||'Cron', category:'cron', enabled:job.enabled!==false, expandable:true, expanded:expandedIds.has(id) } });
-    edges.push(E(`e-cr-${i}`, 'live-server', id, '#a855f7'));
-    if (expandedIds.has(id)) {
-      const schedId = `${id}-sched`;
-      nodes.push({ id:schedId, type:'treeicon', position:{x:0,y:0},
-        data:{ label:schedLabel, category:'cron', enabled:job.enabled!==false } });
-      edges.push(E(`e-cr-sched-${i}`, id, schedId, '#a855f7'));
+  // Channels — one parent group node
+  const channels = data.channels || [];
+  if (channels.length > 0) {
+    const activeChannels = channels.filter(c => c.enabled !== false).length;
+    nodes.push({ id:'ft-channels-group', type:'treeicon', position:{x:0,y:0},
+      data:{ label:`${channels.length} Channel${channels.length===1?'':'s'}`, category:'channel', enabled:activeChannels>0, expandable:true, expanded:expandedIds.has('ft-channels-group') } });
+    edges.push(E('e-channels-group', 'live-server', 'ft-channels-group', '#22d3ee'));
+    if (expandedIds.has('ft-channels-group')) {
+      channels.forEach((ch,i) => {
+        const id = `ft-ch-${ch.id||i}`;
+        nodes.push({ id, type:'treeicon', position:{x:0,y:0},
+          data:{ label:ch.type||ch.id||'Channel', category:'channel', enabled:ch.enabled!==false } });
+        edges.push(E(`e-ch-${i}`, 'ft-channels-group', id, '#22d3ee'));
+      });
     }
-  });
+  }
 
-  // Each paired device
-  (data.nodes||[]).forEach((nd,i) => {
-    const id = `ft-nd-${nd.id||i}`;
-    nodes.push({ id, type:'treeicon', position:{x:0,y:0},
-      data:{ label:nd.name||nd.id||'Node', category:'node', enabled:true } });
-    edges.push(E(`e-nd-${i}`, 'live-server', id, '#22d3ee'));
-  });
+  // Cron jobs — one parent group node, individual jobs hang off it
+  const cronJobs = data.cronJobs || [];
+  if (cronJobs.length > 0) {
+    const activeCron = cronJobs.filter(j => j.enabled !== false).length;
+    nodes.push({ id:'ft-cron-group', type:'treeicon', position:{x:0,y:0},
+      data:{ label:`${activeCron} Cron Jobs`, category:'cron', enabled:activeCron>0, expandable:true, expanded:expandedIds.has('ft-cron-group') } });
+    edges.push(E('e-cron-group', 'live-server', 'ft-cron-group', '#a855f7'));
+    if (expandedIds.has('ft-cron-group')) {
+      cronJobs.forEach((job,i) => {
+        const id = `ft-cr-${job.id||i}`;
+        const schedLabel = job.schedule?.kind === 'cron' ? job.schedule.expr
+          : job.schedule?.kind === 'every' ? `every ${Math.round((job.schedule.everyMs||0)/60000)}m`
+          : job.schedule?.kind || 'scheduled';
+        nodes.push({ id, type:'treeicon', position:{x:0,y:0},
+          data:{ label:job.name||job.id||'Cron', category:'cron', enabled:job.enabled!==false, expandable:true, expanded:expandedIds.has(id) } });
+        edges.push(E(`e-cr-${i}`, 'ft-cron-group', id, '#a855f7'));
+        if (expandedIds.has(id)) {
+          const schedId = `${id}-sched`;
+          nodes.push({ id:schedId, type:'treeicon', position:{x:0,y:0},
+            data:{ label:schedLabel, category:'cron', enabled:job.enabled!==false } });
+          edges.push(E(`e-cr-sched-${i}`, id, schedId, '#a855f7'));
+        }
+      });
+    }
+  }
+
+  // Paired devices — one parent group node
+  const pairedNodes = data.nodes || [];
+  if (pairedNodes.length > 0) {
+    nodes.push({ id:'ft-nodes-group', type:'treeicon', position:{x:0,y:0},
+      data:{ label:`${pairedNodes.length} Node${pairedNodes.length===1?'':'s'}`, category:'node', enabled:true, expandable:true, expanded:expandedIds.has('ft-nodes-group') } });
+    edges.push(E('e-nodes-group', 'live-server', 'ft-nodes-group', '#22d3ee'));
+    if (expandedIds.has('ft-nodes-group')) {
+      pairedNodes.forEach((nd,i) => {
+        const id = `ft-nd-${nd.id||i}`;
+        nodes.push({ id, type:'treeicon', position:{x:0,y:0},
+          data:{ label:nd.name||nd.id||'Node', category:'node', enabled:true } });
+        edges.push(E(`e-nd-${i}`, 'ft-nodes-group', id, '#22d3ee'));
+      });
+    }
+  }
 
   // Skills — summary node, expands to all individual skills
   const enabledSkills = (data.skills||[]).filter(s=>s.enabled!==false);
@@ -3072,8 +3105,8 @@ function ForgeApp() {
   const TREE_ELK = {
     'elk.algorithm': 'layered',
     'elk.direction': 'DOWN',
-    'elk.layered.spacing.nodeNodeBetweenLayers': '80',
-    'elk.spacing.nodeNode': '50',
+    'elk.layered.spacing.nodeNodeBetweenLayers': '60',
+    'elk.spacing.nodeNode': '20',
     'elk.layered.nodePlacement.strategy': 'SIMPLE',
   };
 

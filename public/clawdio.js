@@ -3,47 +3,48 @@
   if (window.__clawdioMounted) return;
   window.__clawdioMounted = true;
 
-  var BUBBLE  = 72;   // px — bubble diameter
-  var PADDING = 28;   // px — default inset from edge (matches TinyClaw default)
+  var BUBBLE = 72;   // bubble button diameter (px)
+  var INSET  = 28;   // TinyClaw default: bubble is at bottom:28 right:28 inside the host
 
-  /* ── Restore / default position ── */
-  var saved = null;
-  try { saved = JSON.parse(localStorage.getItem('tc-pos')); } catch(e) {}
-  var pos = saved || { bottom: PADDING, right: PADDING };
-
-  /* ── Make the host draggable once it's in the DOM ── */
   function attachDrag(widget) {
-    /* TinyClaw appends a fixed host element — find it */
-    var host = null;
-    var all = document.querySelectorAll('body > div');
-    for (var i = 0; i < all.length; i++) {
-      var s = window.getComputedStyle(all[i]);
-      if (s.position === 'fixed' && s.width === '0px') { host = all[i]; break; }
-    }
-    if (!host) return;
+    // TinyClaw sets host.id = 'tc-host'
+    var host = document.getElementById('tc-host');
+    if (!host) { console.warn('[clawdio] tc-host not found'); return; }
 
-    /* Apply saved / default position to the host */
-    host.style.bottom = pos.bottom + 'px';
-    host.style.right  = pos.right  + 'px';
+    // pos tracks the BUBBLE's visual position from screen edges
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem('tc-pos')); } catch(e) {}
+    var pos = saved || { bottom: INSET, right: INSET };
 
-    /* Invisible drag overlay — sits exactly over the bubble */
+    // Drag overlay — sits exactly over the bubble
+    // z-index matches host (2147483647) but overlay is later in DOM so it wins
     var overlay = document.createElement('div');
-    overlay.style.cssText = [
+    overlay.setAttribute('style', [
       'position:fixed',
       'width:'  + BUBBLE + 'px',
       'height:' + BUBBLE + 'px',
-      'bottom:' + pos.bottom + 'px',
-      'right:'  + pos.right  + 'px',
       'border-radius:50%',
       'cursor:grab',
-      'z-index:2147483646',  /* just below TinyClaw's own z-index */
+      'z-index:2147483647',
       'touch-action:none',
-    ].join(';');
+      'pointer-events:all',
+    ].join(';'));
+    // Append AFTER host so same-z-index tiebreak goes to overlay
     document.body.appendChild(overlay);
 
-    /* ── Drag state ── */
-    var active   = false;
-    var didDrag  = false;
+    function applyPos() {
+      // The host is a 0×0 anchor; bubble inside shadow DOM is at bottom:INSET right:INSET
+      // So host must be offset by (pos - INSET) to place bubble at pos
+      var hb = Math.max(0, pos.bottom - INSET);
+      var hr = Math.max(0, pos.right  - INSET);
+      host.style.bottom = hb + 'px';
+      host.style.right  = hr + 'px';
+      overlay.style.bottom = pos.bottom + 'px';
+      overlay.style.right  = pos.right  + 'px';
+    }
+    applyPos();
+
+    var active = false, didDrag = false;
     var startCX, startCY, startBottom, startRight;
 
     overlay.addEventListener('pointerdown', function (e) {
@@ -65,30 +66,28 @@
       if (!didDrag && Math.hypot(dx, dy) < 6) return;
       didDrag = true;
 
-      var W = window.innerWidth,  H = window.innerHeight;
+      var W = window.innerWidth, H = window.innerHeight;
       pos.right  = Math.max(0, Math.min(W - BUBBLE, startRight  - dx));
       pos.bottom = Math.max(0, Math.min(H - BUBBLE, startBottom - dy));
-
-      host.style.right    = pos.right  + 'px';
-      host.style.bottom   = pos.bottom + 'px';
-      overlay.style.right  = pos.right  + 'px';
-      overlay.style.bottom = pos.bottom + 'px';
+      applyPos();
     });
 
-    overlay.addEventListener('pointerup', function (e) {
+    overlay.addEventListener('pointerup', function () {
       overlay.style.cursor = 'grab';
       active = false;
       if (didDrag) {
-        /* Persist position */
         try { localStorage.setItem('tc-pos', JSON.stringify(pos)); } catch(e) {}
       } else {
-        /* Short tap → toggle the chat window */
-        try { widget.toggle(); } catch(err) {}
+        // Tap — fire click on the real bubble button so TinyClaw toggles normally
+        if (widget.bubbleBtn) {
+          widget.bubbleBtn.click();
+        } else {
+          try { widget._toggle(); } catch(e) { try { widget.open(); } catch(e2) {} }
+        }
       }
     });
   }
 
-  /* ── Init ── */
   function init() {
     var W = window.TinyClaw && window.TinyClaw.TinyClawWidget;
     if (!W) return;
@@ -96,10 +95,12 @@
     var widget = new W({ accent: '#ff5c5c', title: 'Clawdio', position: 'bottom-right' });
     widget.mount();
 
-    /* Wait a tick for the host to appear then attach drag */
-    setTimeout(function () { attachDrag(widget); }, 100);
+    // Give the host one frame to appear in the DOM then attach drag
+    requestAnimationFrame(function () {
+      setTimeout(function () { attachDrag(widget); }, 50);
+    });
 
-    /* Re-open if was open on previous page */
+    // Re-open if was open on previous page
     if (localStorage.getItem('tc-open') === '1') {
       var attempts = 0;
       var poll = setInterval(function () {

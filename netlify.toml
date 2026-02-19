@@ -105,6 +105,21 @@
   status = 200
 
 [[redirects]]
+  from = "/api/node-image"
+  to = "/.netlify/functions/node-image"
+  status = 200
+
+[[redirects]]
+  from = "/api/gateway-live"
+  to = "/.netlify/functions/gateway-live"
+  status = 200
+
+[[redirects]]
+  from = "/api/gateway-patch"
+  to = "/.netlify/functions/gateway-patch"
+  status = 200
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200

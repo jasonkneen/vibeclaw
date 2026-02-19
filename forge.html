@@ -51,7 +51,7 @@
       --sans: 'DM Sans', system-ui, sans-serif; --code: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
       --mono: 'Fragment Mono', 'JetBrains Mono', 'Menlo', monospace;
     }
-    html { font-size: 18px; }
+    html { font-size: 14px; }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: var(--sans);
@@ -1374,27 +1374,18 @@ async function elkLayout(nodes, edges, opts = {}) {
 
   const nodeCount = nodes.length;
 
-  // ── Dynamic spacing: shrinks as node count grows ──────────────────────────
-  // nodeNode: 80 at 10 nodes → 8 at 100 nodes
-  const spacingNum   = Math.max(8, Math.round(800 / nodeCount));
-  const dynNodeNode  = String(spacingNum);
+  // ── Spacing: fixed minimum to prevent node overlap ──────────────────────────
+  // Nodes are 160px wide. Never go below 80px gap so nodes never touch.
+  const dynNodeNode      = '80';
 
-  // For radial: compute minimum radius so the ring actually fits all nodes.
-  // Each node is ~160px wide; circumference must be ≥ nodeCount × (nodeWidth + spacing).
-  const nodeWidth    = 160;
-  const minRadius    = Math.ceil((nodeCount * (nodeWidth + spacingNum)) / (2 * Math.PI) * 1.2);
-  const dynRadius    = String(Math.min(700, Math.max(280, minRadius)));
+  // For layered: generous between-layers spacing
+  const dynBetweenLayers = '200';
 
-  // For layered: betweenLayers shrinks similarly
-  const dynBetweenLayers = String(Math.max(80, Math.round(2400 / nodeCount)));
-
-  // Inject dynamic spacing into opts (always applied last, overrides caller values)
+  // Inject dynamic spacing — applied last so it always wins
   const spacingOverrides = {
     'elk.spacing.nodeNode': dynNodeNode,
     ...(isLayered ? { 'elk.layered.spacing.nodeNodeBetweenLayers': dynBetweenLayers } : {}),
-    ...(algorithm === 'stress' ? {
-      'elk.stress.desiredEdgeLength': String(Math.max(60, Math.round(1200 / nodeCount))),
-    } : {}),
+    ...(algorithm === 'stress' ? { 'elk.stress.desiredEdgeLength': '220' } : {}),
   };
 
   // Find the gateway node to use as root (radial only)
@@ -1407,7 +1398,6 @@ async function elkLayout(nodes, edges, opts = {}) {
       ...opts,                       // caller algorithm/direction opts
       ...spacingOverrides,           // dynamic spacing always wins — applied last
       ...(isRadial ? {
-        'elk.radial.radius': dynRadius,
         ...(rootNode ? { 'elk.radial.rootNode': rootNode.id } : {}),
       } : {}),
     },
@@ -1750,15 +1740,55 @@ function ChannelNode({ data, selected }) {
 }
 
 /* ── Collapsed Server Node — matches reference icon exactly ── */
+const GEMINI_KEY = 'AIzaSyDTlXfmBkl7MDztXV-NlVlLui06jM1Nccw';
+const GEMINI_IMG_PROMPTS = {
+  agent:   (l) => `cinematic square portrait for an AI agent called "${l}", glowing purple neural circuits, dark background, dramatic lighting`,
+  model:   (l) => `cinematic square visualization for an AI model called "${l}", amber glowing data streams, dark background, dramatic lighting`,
+  skill:   (l) => `cinematic square image for a tool called "${l}", emerald green light, dark background, sharp macro detail`,
+  channel: (l) => `cinematic square abstract for a communication channel called "${l}", cyan radio waves, dark background, dramatic lighting`,
+  cron:    (l) => `cinematic square image for a scheduled job called "${l}", purple glowing clock gears, dark background`,
+  session: (l) => `cinematic square abstract memory for a session, teal particle trails, dark background`,
+  node:    (l) => `cinematic square image for a server node called "${l}", red server rack hardware, dark background, dramatic lighting`,
+  command: (l) => `cinematic square terminal interface, purple command prompt, dark background, code glow`,
+};
+
+// Throttle concurrent Gemini image calls — only 2 at a time
+const _imgQueue = { active:0, max:2, pending:[] };
+function geminiImageThrottled(prompt) {
+  return new Promise((resolve, reject) => {
+    const run = () => {
+      _imgQueue.active++;
+      fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${GEMINI_KEY}`,
+        { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{responseModalities:['IMAGE']} }) }
+      )
+        .then(r => r.json())
+        .then(d => {
+          const part = d?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+          if (part) resolve(`data:${part.inlineData.mimeType};base64,${part.inlineData.data}`);
+          else reject(new Error('no image'));
+        })
+        .catch(reject)
+        .finally(() => {
+          _imgQueue.active--;
+          if (_imgQueue.pending.length) _imgQueue.pending.shift()();
+        });
+    };
+    if (_imgQueue.active < _imgQueue.max) run();
+    else _imgQueue.pending.push(run);
+  });
+}
+
 function useNodeImage(label, category) {
   const [imgUrl, setImgUrl] = React.useState(null);
   React.useEffect(() => {
     const cacheKey = `node-img::${category}::${label}`;
     const cached = localStorage.getItem(cacheKey);
     if (cached) { setImgUrl(cached); return; }
-    fetch(`/api/node-image?label=${encodeURIComponent(label)}&category=${encodeURIComponent(category)}`)
-      .then(r => r.json())
-      .then(d => { if (d.ok && d.dataUrl) { localStorage.setItem(cacheKey, d.dataUrl); setImgUrl(d.dataUrl); } })
+    const promptFn = GEMINI_IMG_PROMPTS[category] || GEMINI_IMG_PROMPTS.node;
+    geminiImageThrottled(promptFn(label))
+      .then(dataUrl => { localStorage.setItem(cacheKey, dataUrl); setImgUrl(dataUrl); })
       .catch(() => {});
   }, [label, category]);
   return imgUrl;

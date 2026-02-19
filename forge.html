@@ -2980,7 +2980,7 @@ function ForgeApp() {
 
   // Live mode
   const liveMode = true;
-  const [liveCollapsed, setLiveCollapsed] = useState(true);
+  const [liveCollapsed, setLiveCollapsed] = useState(false);
   const [liveData, setLiveData] = useState(null);
   const [liveSkills, setLiveSkills] = useState([]);
   const [liveLoading, setLiveLoading] = useState(false);
@@ -3051,10 +3051,8 @@ function ForgeApp() {
     setLiveLoading(true);
     setLiveError(null);
     setLiveExpanded({});
-    setLiveCollapsed(true);
     setLiveSelectedAgent(null);
-    // Show placeholder immediately
-    setNodes(buildCollapsedServerNode(null));
+    setNodes([]);
     setEdges([]);
     try {
       const resp = await fetch('/api/gateway-live');
@@ -3063,9 +3061,19 @@ function ForgeApp() {
       setLiveData(data);
       liveDataRef.current = data;
       setLiveSkills(data.skills || []);
-      // Stay collapsed — update with real counts
-      setNodes(buildCollapsedServerNode(data));
-      setTimeout(() => rfInstance.current?.fitView({ padding: 0.3, duration: 400 }), 150);
+      // Start expanded — build the full family tree
+      setLiveCollapsed(false);
+      const { nodes: lnodes, edges: ledges } = buildFamilyTree(data);
+      setEdges(ledges);
+      const laid = await elkLayout(lnodes, ledges, {
+        'elk.algorithm': 'layered',
+        'elk.direction': 'DOWN',
+        'elk.layered.spacing.nodeNodeBetweenLayers': '80',
+        'elk.spacing.nodeNode': '50',
+        'elk.layered.nodePlacement.strategy': 'SIMPLE',
+      });
+      setNodes(laid);
+      setTimeout(() => rfInstance.current?.fitView({ padding: 0.15, duration: 400 }), 150);
     } catch(e) {
       setLiveError(e.message);
     }

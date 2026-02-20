@@ -4093,7 +4093,7 @@ function LiveGatewayPanel({ data, onClose }) {
           </div>
         </div>
       ) : (
-        <button onClick={()=>setCreatingAgent(true)} style={{width:'100%',background:'none',border:'1px dashed #2a2a2a',borderRadius:6,padding:'6px',color:'#555',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.67rem',cursor:'pointer',marginBottom:12}}>
+        <button id="new-agent-btn" onClick={()=>setCreatingAgent(true)} style={{width:'100%',background:'none',border:'1px dashed #2a2a2a',borderRadius:6,padding:'6px',color:'#555',fontFamily:"'JetBrains Mono',monospace",fontSize:'0.67rem',cursor:'pointer',marginBottom:12}}>
           ＋ New Named Agent
         </button>
       )}
@@ -4542,6 +4542,108 @@ function GroupSummaryPanel({ data, onClose }) {
   )
 }
 
+/* ── Crafting Toolbar ── */
+function CraftingToolbar() {
+  const IcoAgent = () => (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="8" r="4"/><path d="M4 19c0-3.314 3.134-6 7-6s7 2.686 7 6"/><circle cx="11" cy="2" r="1" fill="currentColor" stroke="none"/></svg>
+  );
+  const IcoChannel = () => (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+  );
+  const IcoCron = () => (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="9"/><path d="M11 6v5l3 3"/></svg>
+  );
+  const IcoGateway = () => (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="18" height="13" rx="2"/><path d="M7 19h8M11 16v3"/></svg>
+  );
+  const IcoSkill = () => (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l.7-.7a2 2 0 10-2.8-2.8l-.9.5z"/><path d="M5 19l9-9"/><path d="M7.3 7.3a1 1 0 000 1.4l6 6a1 1 0 001.4 0"/><path d="M5 5l2 2"/><circle cx="5" cy="17" r="2"/></svg>
+  );
+
+  const tools = [
+    { id: 'agent',   label: 'Agent',   icon: <IcoAgent />,   color: '#818cf8', action: () => { if (window.__liveNewAgent) window.__liveNewAgent(); else window.__liveShowGateway?.(); } },
+    { id: 'channel', label: 'Channel', icon: <IcoChannel />, color: '#22d3ee', action: () => window.__liveNewChannel?.() },
+    { id: 'cron',    label: 'Cron',    icon: <IcoCron />,    color: '#a855f7', action: () => window.__liveNewCron?.() },
+    { id: 'gateway', label: 'Settings', icon: <IcoGateway />, color: '#f87171', action: () => window.__liveShowGateway?.() },
+  ];
+
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Don't trigger if user is typing in an input
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+      
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= tools.length) {
+        tools[num - 1].action();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [tools]);
+
+  return (
+    <div style={{
+      display: 'flex', gap: 6, padding: 6,
+      background: 'rgba(20,20,20,0.85)',
+      border: '1px solid #333',
+      borderRadius: 12,
+      boxShadow: '0 8px 32px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.05)',
+      backdropFilter: 'blur(12px)',
+      userSelect: 'none',
+      alignItems: 'center',
+    }}>
+      {tools.map((t, i) => (
+        <div key={t.id}
+             onClick={t.action}
+             title={`Create ${t.label} (Press ${i+1})`}
+             style={{
+               width: 46, height: 46,
+               display: 'flex', alignItems: 'center', justifyContent: 'center',
+               background: 'rgba(0,0,0,0.4)',
+               border: '2px solid #2a2a2a',
+               borderRadius: 8,
+               cursor: 'pointer',
+               color: '#888',
+               transition: 'all 0.1s',
+               position: 'relative',
+               overflow: 'hidden'
+             }}
+             onMouseEnter={e => {
+               e.currentTarget.style.borderColor = t.color;
+               e.currentTarget.style.color = t.color;
+               e.currentTarget.style.background = 'rgba(0,0,0,0.7)';
+               e.currentTarget.style.transform = 'translateY(-2px)';
+               e.currentTarget.style.boxShadow = `0 4px 12px ${t.color}33`;
+             }}
+             onMouseLeave={e => {
+               e.currentTarget.style.borderColor = '#2a2a2a';
+               e.currentTarget.style.color = '#888';
+               e.currentTarget.style.background = 'rgba(0,0,0,0.4)';
+               e.currentTarget.style.transform = 'translateY(0)';
+               e.currentTarget.style.boxShadow = 'none';
+             }}
+             onMouseDown={e => {
+               e.currentTarget.style.transform = 'translateY(1px)';
+               e.currentTarget.style.background = 'rgba(0,0,0,0.9)';
+             }}
+             onMouseUp={e => {
+               e.currentTarget.style.transform = 'translateY(-2px)';
+               e.currentTarget.style.background = 'rgba(0,0,0,0.7)';
+             }}>
+          <span style={{
+            position:'absolute', top:2, left:4,
+            fontSize:'0.55rem', fontFamily:"'JetBrains Mono',monospace",
+            color:'rgba(255,255,255,0.2)', pointerEvents:'none'
+          }}>{i + 1}</span>
+          <div style={{ transform: 'scale(1.1)', pointerEvents:'none' }}>
+            {t.icon}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 
 /* ── Main App ── */
 const INITIAL_NODES = [{
@@ -4975,6 +5077,11 @@ function ForgeApp() {
     window.__liveNewChannel = () => {
       setLiveSelectedAgent({ _nodeType: 'newchannel', _new: true });
     };
+    window.__liveNewAgent = () => {
+      const gwNode = nodes.find(n => n.id === 'live-gw');
+      if (gwNode) setLiveSelectedAgent({ ...gwNode.data, _config: liveDataRef.current?.config || {}, _nodeType: 'livegateway' });
+      setTimeout(() => document.getElementById('new-agent-btn')?.click(), 50);
+    };
     window.__liveShowGateway = () => {
       const gwNode = nodes.find(n => n.id === 'live-gw');
       if (gwNode) setLiveSelectedAgent({ ...gwNode.data, _config: liveDataRef.current?.config || {}, _nodeType: 'livegateway' });
@@ -4988,7 +5095,7 @@ function ForgeApp() {
       ));
       setLiveSkills(prev => prev.map(s => s.id === skillId ? {...s, enabled:newEnabled} : s));
     };
-    return () => { delete window.__liveToggle; delete window.__liveShowGateway; delete window.__liveSkillToggled; };
+    return () => { delete window.__liveToggle; delete window.__liveShowGateway; delete window.__liveNewAgent; delete window.__liveNewCron; delete window.__liveNewChannel; delete window.__liveSkillToggled; };
   }, [handleLiveToggle, nodes]);
 
   const toggleLive = useCallback(() => {
@@ -5400,6 +5507,11 @@ function ForgeApp() {
               </TowerBtn>
 
             </div>
+          </Panel>
+
+          {/* ── Crafting Toolbar ── */}
+          <Panel position="bottom-center" style={{ marginBottom: 16, zIndex: 9999 }}>
+            <CraftingToolbar />
           </Panel>
 
         </ReactFlow>

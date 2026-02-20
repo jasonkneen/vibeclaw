@@ -1,0 +1,43 @@
+{
+  "version": "5",
+  "remote": {
+    "https://edge.netlify.com/": "fd941d61d88673d5f28aab283fb86fcc50f08a3bc80ee5470498fcfa88c65cfb",
+    "https://edge.netlify.com/bootstrap/config.ts": "6a2ce0e544e15e8f8883a5c18da5948e37fd0f2619f68cb31f3af53c51817025",
+    "https://edge.netlify.com/bootstrap/context.ts": "e97240232121e2f369f6546ce961490f34d961ea1ea54be3ff09633e3f08373f",
+    "https://edge.netlify.com/bootstrap/cookie.ts": "8b0baae708989ca183c6f3b4ab3d029e6abcbc2e43f93edeb0ff447b3bbc3a05",
+    "https://edge.netlify.com/bootstrap/edge_function.ts": "b8253e86aa83c67341f5cfedeba5049d77fbf84dcab7eceff7566b7728ae9b39",
+    "https://edge.netlify.com/bootstrap/globals/types.ts": "eaa6148ded3121d8dee62dd91c86e7fe76601df0f3ca8d7962243a30f4c8935f"
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@noble/ed25519@3",
+        "npm:@noble/hashes@^2.0.1",
+        "npm:@playwright/test@^1.58.0",
+        "npm:@types/css-tree@^2.3.11",
+        "npm:@types/node@^25.0.10",
+        "npm:@types/pako@^2.0.4",
+        "npm:@webcontainer/api@^1.6.1",
+        "npm:acorn-jsx@^5.3.2",
+        "npm:acorn@^8.15.0",
+        "npm:brotli-wasm@^3.0.1",
+        "npm:brotli@^1.3.3",
+        "npm:comlink@^4.4.2",
+        "npm:css-tree@^3.1.0",
+        "npm:esbuild@~0.27.2",
+        "npm:jsdom@^27.4.0",
+        "npm:just-bash@^2.7.0",
+        "npm:marked@^17.0.3",
+        "npm:pako@^2.1.0",
+        "npm:pg@^8.18.0",
+        "npm:resolve.exports@^2.0.3",
+        "npm:tsx@^4.21.0",
+        "npm:typescript@^5.9.3",
+        "npm:vite-plugin-top-level-await@^1.6.0",
+        "npm:vite-plugin-wasm@^3.5.0",
+        "npm:vite@^5.4.0",
+        "npm:vitest@^4.0.18"
+      ]
+    }
+  }
+}

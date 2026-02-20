@@ -1795,14 +1795,14 @@ function ChannelNode({ data, selected }) {
 const GEMINI_KEY = 'AIzaSyDTlXfmBkl7MDztXV-NlVlLui06jM1Nccw';
 const NO_TEXT = ', no text, no words, no labels, no letters, no numbers, no watermarks, purely visual';
 const GEMINI_IMG_PROMPTS = {
-  agent:   (l) => `cinematic square portrait for an AI agent called "${l}", glowing purple neural circuits, dark background, dramatic lighting`,
-  model:   (l) => `cinematic square visualization for an AI model called "${l}", amber glowing data streams, dark background, dramatic lighting`,
-  skill:   (l) => `cinematic square image for a tool called "${l}", emerald green light, dark background, sharp macro detail`,
-  channel: (l) => `cinematic square abstract for a communication channel called "${l}", cyan radio waves, dark background, dramatic lighting`,
-  cron:    (l) => `cinematic square image for a scheduled job called "${l}", purple glowing clock gears, dark background`,
-  session: (l) => `cinematic square abstract memory, teal particle trails, dark background`,
-  node:    (l) => `cinematic square image for a server node called "${l}", red server rack hardware, dark background, dramatic lighting`,
-  command: (l) => `cinematic square terminal interface, purple command prompt glow, dark background`,
+  agent:   (l) => `cinematic square portrait for an AI agent called "${l}", glowing purple neural circuits, dark background, dramatic lighting${NO_TEXT}`,
+  model:   (l) => `cinematic square visualization for an AI model called "${l}", amber glowing data streams, dark background, dramatic lighting${NO_TEXT}`,
+  skill:   (l) => `cinematic square image for a tool called "${l}", emerald green light, dark background, sharp macro detail${NO_TEXT}`,
+  channel: (l) => `cinematic square abstract for a communication channel called "${l}", cyan radio waves, dark background, dramatic lighting${NO_TEXT}`,
+  cron:    (l) => `cinematic square image for a scheduled job called "${l}", purple glowing clock gears, dark background${NO_TEXT}`,
+  session: (l) => `cinematic square abstract memory, teal particle trails, dark background${NO_TEXT}`,
+  node:    (l) => `cinematic square image for a server node called "${l}", red server rack hardware, dark background, dramatic lighting${NO_TEXT}`,
+  command: (l) => `cinematic square terminal interface, purple command prompt glow, dark background${NO_TEXT}`,
 };
 
 // Throttle concurrent Gemini image calls — only 2 at a time
@@ -1840,7 +1840,7 @@ function useNodeImage(label, category) {
     const cached = localStorage.getItem(cacheKey);
     if (cached) { setImgUrl(cached); return; }
     const promptFn = GEMINI_IMG_PROMPTS[category] || GEMINI_IMG_PROMPTS.node;
-    geminiImageThrottled(promptFn(label) + NO_TEXT)
+    geminiImageThrottled(promptFn(label))
       .then(dataUrl => { localStorage.setItem(cacheKey, dataUrl); setImgUrl(dataUrl); })
       .catch(() => {});
   }, [label, category]);

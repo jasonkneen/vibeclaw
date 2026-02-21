@@ -4702,8 +4702,6 @@ function ForgeApp() {
   const edgeStyleRef   = useRef(localStorage.getItem('forge-edge-style') || 'solid');
   const [liveLastRefresh,   setLiveLastRefresh]   = useState(null);
   const [liveRefreshTick,   setLiveRefreshTick]   = useState(0); // seconds since last refresh
-  const liveNodesRef = useRef([]);
-  const liveEdgesRef = useRef([]);
   const autoRefreshRef  = useRef(null);
   const liveLoadingRef  = useRef(false);
 
@@ -4800,7 +4798,7 @@ function ForgeApp() {
     setLiveCollapsed(false);
     setLiveExpanded({});
     setFtExpandedIds(new Set());
-    await applyFamilyTree(new Set(), true);
+    await applyFamilyTree(new Set(), { skipFit: true });
     setLiveSelectedAgent(null);
   }, [applyFamilyTree]);
 
@@ -4969,7 +4967,7 @@ function ForgeApp() {
       // Only re-render tree if data actually changed (session count, cron state, etc.)
       const prevSig = JSON.stringify({ a: prev?.agents?.length, s: prev?.sessions?.length, c: prev?.cronJobs?.map(j=>j.lastStatus) });
       const nextSig = JSON.stringify({ a: data.agents?.length,  s: data.sessions?.length,  c: data.cronJobs?.map(j=>j.lastStatus) });
-      if (prevSig !== nextSig) await applyFamilyTree(ftExpandedIdsRef.current, false);
+      if (prevSig !== nextSig) await applyFamilyTree(ftExpandedIdsRef.current);
     } catch {}
   }, [applyFamilyTree]); // ftExpandedIdsRef always current via sync effect; liveLoadingRef always current
 
@@ -5097,23 +5095,6 @@ function ForgeApp() {
     };
     return () => { delete window.__liveToggle; delete window.__liveShowGateway; delete window.__liveNewAgent; delete window.__liveNewCron; delete window.__liveNewChannel; delete window.__liveSkillToggled; };
   }, [handleLiveToggle, nodes]);
-
-  const toggleLive = useCallback(() => {
-    if (liveMode) {
-      setLiveMode(false);
-      setLiveSelectedAgent(null);
-      setLiveExpanded({});
-      liveDataRef.current = null;
-      try {
-        const saved = JSON.parse(localStorage.getItem('vf-forge'));
-        if (saved?.nodes?.length) { setNodes(saved.nodes); setEdges(saved.edges||[]); }
-        else { setNodes(INITIAL_NODES); setEdges([]); }
-      } catch(e) { setNodes(INITIAL_NODES); setEdges([]); }
-    } else {
-      setLiveMode(true);
-      loadLive();
-    }
-  }, [liveMode, loadLive]);
 
   const onConnect = useCallback(params => {
     if (liveMode) return;
@@ -5601,7 +5582,7 @@ function ForgeApp() {
                     setLiveData(liveDataRef.current);
                   }
                   setLiveSelectedAgent(null);
-                  setTimeout(() => applyFamilyTree(ftExpandedIdsRef.current, false), 50);
+                  setTimeout(() => applyFamilyTree(ftExpandedIdsRef.current), 50);
                 }}
                 onChannelCreated={(ch) => {
                   if (liveDataRef.current) {
@@ -5609,7 +5590,7 @@ function ForgeApp() {
                     setLiveData(liveDataRef.current);
                   }
                   setLiveSelectedAgent(null);
-                  setTimeout(() => applyFamilyTree(ftExpandedIdsRef.current, false), 50);
+                  setTimeout(() => applyFamilyTree(ftExpandedIdsRef.current), 50);
                 }}
               />
             ) : (

@@ -1792,7 +1792,7 @@ function ChannelNode({ data, selected }) {
 }
 
 /* ── Collapsed Server Node — matches reference icon exactly ── */
-const GEMINI_KEY = 'REDACTED_GEMINI_KEY';
+const GEMINI_KEY = (typeof window !== 'undefined' && window.__GEMINI_KEY) ? window.__GEMINI_KEY : '';
 const NO_TEXT = ', no text, no words, no labels, no letters, no numbers, no watermarks, purely visual';
 const GEMINI_IMG_PROMPTS = {
   agent:   (l) => `cinematic square portrait for an AI agent called "${l}", glowing purple neural circuits, dark background, dramatic lighting`,

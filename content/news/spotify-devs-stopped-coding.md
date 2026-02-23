@@ -3,7 +3,7 @@ title: "Spotify's Best Developers Haven't Written Code Since December"
 date: 2026-02-15
 tags: [news, vibe-coding, industry]
 author: VibeClaw
-image: /news/spotify-vibe-coding.png
+image: /news/spotify-vibe-coding.webp
 summary: "Spotify's CEO revealed that the company's top engineers now only generate and supervise AI-written code. Welcome to the vibe coding era."
 source: "https://www.businessinsider.com/spotify-developers-not-writing-code-ai-2026-2"
 sourceLabel: "Business Insider"

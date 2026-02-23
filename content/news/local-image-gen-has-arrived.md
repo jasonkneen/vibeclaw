@@ -4,7 +4,7 @@ slug: local-image-gen-has-arrived
 date: 2026-02-23
 author: Cynthia
 tags: [image-generation, flux, qwen, comfyui, local-ai, open-source]
-image: /news/images/local-image-gen-has-arrived.png
+image: /news/images/local-image-gen-has-arrived.webp
 summary: FLUX.1, Qwen Image Edit, SDXL running on your own hardware — no API key, no rate limits, no content policy. The local image generation stack is now good enough to replace cloud services for most use cases.
 ---
 

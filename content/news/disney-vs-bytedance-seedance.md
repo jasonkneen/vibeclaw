@@ -3,7 +3,7 @@ title: "Disney Goes After ByteDance's Seedance AI Video Model"
 date: 2026-02-14
 tags: [news, legal, video-ai, copyright]
 author: VibeClaw
-image: /news/disney-seedance.png
+image: /news/disney-seedance.webp
 summary: "Disney's sent a cease and desist over ByteDance's new Seedance 2.0 model generating Spider-Man and Darth Vader videos. The AI copyright wars heat up."
 source: "https://www.axios.com/2026/02/13/disney-bytedance-seedance"
 sourceLabel: "Axios"

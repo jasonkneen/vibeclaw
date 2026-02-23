@@ -3,7 +3,7 @@ title: "Build a DevOps Agent in 3 Minutes with VibeClaw"
 date: 2026-02-11
 tags: [tutorial, agents, devops, vibeclaw]
 author: VibeClaw
-image: /news/devops-agent.png
+image: /news/devops-agent.webp
 summary: "Step-by-step: use VibeClaw's Forge to build an agent that monitors servers, checks logs, and alerts on failures. No coding required."
 source: "https://docs.openclaw.ai"
 sourceLabel: "OpenClaw Docs"

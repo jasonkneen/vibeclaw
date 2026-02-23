@@ -3,7 +3,7 @@ title: "Microsoft's AI Chief: Most White-Collar Work Will Be Automated in 18 Mon
 date: 2026-02-13
 tags: [news, microsoft, industry, automation]
 author: VibeClaw
-image: /news/suleyman-automation.png
+image: /news/suleyman-automation.webp
 summary: "Mustafa Suleyman claims AI will automate most desk jobs within 18 months. Bold prediction or hype? We break it down."
 source: "https://www.ft.com/content/f1ec830c-2f08-4b1a-b70f-7330f260753c"
 sourceLabel: "Financial Times"

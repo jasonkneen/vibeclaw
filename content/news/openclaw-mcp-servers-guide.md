@@ -3,7 +3,7 @@ title: "The 10 Best MCP Servers for OpenClaw in 2026"
 date: 2026-02-11
 tags: [openclaw, mcp, guide, tools]
 author: VibeClaw
-image: /news/openclaw-mcp-servers.png
+image: /news/openclaw-mcp-servers.webp
 summary: "OpenClaw supports MCP out of the box. Here are the 10 servers that make your agent genuinely useful."
 source: "https://github.com/modelcontextprotocol/servers"
 sourceLabel: "MCP Server Registry"

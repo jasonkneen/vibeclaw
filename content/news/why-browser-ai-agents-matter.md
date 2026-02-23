@@ -3,7 +3,7 @@ title: "Why In-Browser AI Agents Matter"
 date: 2026-02-12
 tags: [think-piece, agents, browser, vibeclaw]
 author: VibeClaw
-image: /news/browser-agents.png
+image: /news/browser-agents.webp
 summary: "The next wave of AI isn't in the cloud — it's in your browser tab. Here's why that changes everything."
 source: "https://vibeclaw.dev"
 sourceLabel: "VibeClaw Editorial"

@@ -11,7 +11,7 @@
       "open-source"
     ],
     "author": "Cynthia",
-    "image": "/news/images/chatgpt-ads-are-here.png",
+    "image": "/news/images/chatgpt-ads-are-here.webp",
     "summary": "OpenAI has started serving ads inside ChatGPT responses — Expedia, Qualcomm, Best Buy. The honeymoon period is officially over. What this means for open alternatives.",
     "source": "",
     "sourceLabel": "",
@@ -31,7 +31,7 @@
       "open-source"
     ],
     "author": "Cynthia",
-    "image": "/news/images/local-image-gen-has-arrived.png",
+    "image": "/news/images/local-image-gen-has-arrived.webp",
     "summary": "FLUX.1, Qwen Image Edit, SDXL running on your own hardware — no API key, no rate limits, no content policy. The local image generation stack is now good enough to replace cloud services for most use cases.",
     "source": "",
     "sourceLabel": "",
@@ -50,7 +50,7 @@
       "open-source"
     ],
     "author": "Cynthia",
-    "image": "/news/images/microsoft-gaming-no-ai-slop.png",
+    "image": "/news/images/microsoft-gaming-no-ai-slop.webp",
     "summary": "Asha Sharma, taking over Xbox from Phil Spencer, said Microsoft Gaming won't \"flood our ecosystem with soulless AI slop.\" Blunt, correct, and worth amplifying.",
     "source": "",
     "sourceLabel": "",
@@ -69,7 +69,7 @@
       "ai-infrastructure"
     ],
     "author": "Cynthia",
-    "image": "/news/images/nvidia-openai-deal-what-it-means.png",
+    "image": "/news/images/nvidia-openai-deal-what-it-means.webp",
     "summary": "Reports suggest Nvidia is closing in on a major investment in OpenAI. The two companies already have a deeply tangled relationship — this would make it official. And complicated.",
     "source": "",
     "sourceLabel": "",
@@ -87,7 +87,7 @@
       "voice-ai"
     ],
     "author": "VibeClaw",
-    "image": "/news/npr-google-voice.png",
+    "image": "/news/npr-google-voice.webp",
     "summary": "The former Morning Edition host says Google's NotebookLM podcast voice is an 'uncanny' copy of his. The AI voice cloning debate arrives in court.",
     "source": "https://www.washingtonpost.com/technology/2026/02/15/david-greene-google-ai-podcast/",
     "sourceLabel": "Washington Post",
@@ -118,7 +118,7 @@
       "open-source"
     ],
     "author": "VibeClaw",
-    "image": "/news/phi-4-reasoning.png",
+    "image": "/news/phi-4-reasoning.webp",
     "summary": "At just 14B parameters, Phi-4 Reasoning punches way above its weight — and it's MIT licensed. No strings attached.",
     "source": "https://huggingface.co/microsoft",
     "sourceLabel": "HuggingFace",
@@ -148,7 +148,7 @@
       "industry"
     ],
     "author": "VibeClaw",
-    "image": "/news/spotify-vibe-coding.png",
+    "image": "/news/spotify-vibe-coding.webp",
     "summary": "Spotify's CEO revealed that the company's top engineers now only generate and supervise AI-written code. Welcome to the vibe coding era.",
     "source": "https://www.businessinsider.com/spotify-developers-not-writing-code-ai-2026-2",
     "sourceLabel": "Business Insider",
@@ -179,7 +179,7 @@
       "copyright"
     ],
     "author": "VibeClaw",
-    "image": "/news/disney-seedance.png",
+    "image": "/news/disney-seedance.webp",
     "summary": "Disney's sent a cease and desist over ByteDance's new Seedance 2.0 model generating Spider-Man and Darth Vader videos. The AI copyright wars heat up.",
     "source": "https://www.axios.com/2026/02/13/disney-bytedance-seedance",
     "sourceLabel": "Axios",
@@ -209,7 +209,7 @@
       "open-source"
     ],
     "author": "VibeClaw",
-    "image": "/news/llama-4-scout.png",
+    "image": "/news/llama-4-scout.webp",
     "summary": "Meta drops Llama 4 Scout with 10 million token context and 16 mixture-of-experts — and it runs on a single H100.",
     "source": "https://huggingface.co/meta-llama",
     "sourceLabel": "HuggingFace",
@@ -240,7 +240,7 @@
       "ethics"
     ],
     "author": "VibeClaw",
-    "image": "/news/openai-ads.png",
+    "image": "/news/openai-ads.webp",
     "summary": "An ex-OpenAI researcher publicly criticises the company's move to monetise ChatGPT with advertising. The implications for AI trust are serious.",
     "source": "https://www.nytimes.com/2026/02/11/opinion/openai-ads-chatgpt.html",
     "sourceLabel": "New York Times",
@@ -270,7 +270,7 @@
       "changelog"
     ],
     "author": "VibeClaw",
-    "image": "/news/openclaw-release.png",
+    "image": "/news/openclaw-release.webp",
     "summary": "The latest OpenClaw release brings Telegram polls, browser sandbox bind mounts, DM access controls, and a mountain of TUI fixes.",
     "source": "https://github.com/openclaw/openclaw/releases",
     "sourceLabel": "GitHub Releases",
@@ -301,7 +301,7 @@
       "open-source"
     ],
     "author": "VibeClaw",
-    "image": "/news/deepseek-r1.png",
+    "image": "/news/deepseek-r1.webp",
     "summary": "DeepSeek's R1 model matches or beats OpenAI's o3 on math and coding — and it's completely free.",
     "source": "https://huggingface.co/deepseek-ai",
     "sourceLabel": "HuggingFace",
@@ -332,7 +332,7 @@
       "wearables"
     ],
     "author": "VibeClaw",
-    "image": "/news/meta-glasses.png",
+    "image": "/news/meta-glasses.webp",
     "summary": "Meta's Ray-Ban smart glasses hit 7 million units sold, tripling combined 2023-2024 sales. AI wearables are no longer a niche.",
     "source": "https://finance.yahoo.com/quote/ESLOF/earnings/",
     "sourceLabel": "EssilorLuxottica Earnings",
@@ -363,7 +363,7 @@
       "automation"
     ],
     "author": "VibeClaw",
-    "image": "/news/suleyman-automation.png",
+    "image": "/news/suleyman-automation.webp",
     "summary": "Mustafa Suleyman claims AI will automate most desk jobs within 18 months. Bold prediction or hype? We break it down.",
     "source": "https://www.ft.com/content/f1ec830c-2f08-4b1a-b70f-7330f260753c",
     "sourceLabel": "Financial Times",
@@ -394,7 +394,7 @@
       "protocol"
     ],
     "author": "VibeClaw",
-    "image": "/news/mcp-protocol.png",
+    "image": "/news/mcp-protocol.webp",
     "summary": "Anthropic's Model Context Protocol is becoming the USB-C of AI agents. Here's what it is and why it matters.",
     "source": "https://modelcontextprotocol.io/",
     "sourceLabel": "MCP Specification",
@@ -425,7 +425,7 @@
       "tutorial"
     ],
     "author": "VibeClaw",
-    "image": "/news/openrouter-free.png",
+    "image": "/news/openrouter-free.webp",
     "summary": "OpenRouter gives you access to 20+ models for free. Here's what's actually usable, what the limits are, and where the catches hide.",
     "source": "https://openrouter.ai/models",
     "sourceLabel": "OpenRouter",
@@ -456,7 +456,7 @@
       "open-source"
     ],
     "author": "VibeClaw",
-    "image": "/news/qwen3-235b.png",
+    "image": "/news/qwen3-235b.webp",
     "summary": "Alibaba's Qwen3 family brings hybrid thinking — toggle between fast responses and deep reasoning. Eight models, all Apache 2.0.",
     "source": "https://qwenlm.github.io/blog/qwen3/",
     "sourceLabel": "Qwen Blog",
@@ -487,7 +487,7 @@
       "vibeclaw"
     ],
     "author": "VibeClaw",
-    "image": "/news/browser-agents.png",
+    "image": "/news/browser-agents.webp",
     "summary": "The next wave of AI isn't in the cloud — it's in your browser tab. Here's why that changes everything.",
     "source": "https://vibeclaw.dev",
     "sourceLabel": "VibeClaw Editorial",
@@ -518,7 +518,7 @@
       "vibeclaw"
     ],
     "author": "VibeClaw",
-    "image": "/news/devops-agent.png",
+    "image": "/news/devops-agent.webp",
     "summary": "Step-by-step: use VibeClaw's Forge to build an agent that monitors servers, checks logs, and alerts on failures. No coding required.",
     "source": "https://docs.openclaw.ai",
     "sourceLabel": "OpenClaw Docs",
@@ -548,7 +548,7 @@
       "comparison"
     ],
     "author": "VibeClaw",
-    "image": "/news/cost-of-ai.png",
+    "image": "/news/cost-of-ai.webp",
     "summary": "We crunched the numbers on running AI agents with free vs paid models. The gap is smaller than you think.",
     "source": "https://openrouter.ai/models",
     "sourceLabel": "OpenRouter",
@@ -578,7 +578,7 @@
       "open-source"
     ],
     "author": "VibeClaw",
-    "image": "/news/mistral-small.png",
+    "image": "/news/mistral-small.webp",
     "summary": "While everyone argues about Llama vs Qwen, Mistral quietly shipped a 24B model that's faster than both and Apache 2.0 licensed.",
     "source": "https://huggingface.co/mistralai",
     "sourceLabel": "HuggingFace",
@@ -609,7 +609,7 @@
       "tools"
     ],
     "author": "VibeClaw",
-    "image": "/news/openclaw-mcp-servers.png",
+    "image": "/news/openclaw-mcp-servers.webp",
     "summary": "OpenClaw supports MCP out of the box. Here are the 10 servers that make your agent genuinely useful.",
     "source": "https://github.com/modelcontextprotocol/servers",
     "sourceLabel": "MCP Server Registry",
@@ -639,7 +639,7 @@
       "open-source"
     ],
     "author": "VibeClaw",
-    "image": "/news/gemma-3.png",
+    "image": "/news/gemma-3.webp",
     "summary": "Everyone's watching Llama and Qwen. Meanwhile, Google's Gemma 3 quietly became the best small model you can run on consumer hardware.",
     "source": "https://huggingface.co/google/gemma-3-27b-it",
     "sourceLabel": "HuggingFace",
@@ -669,7 +669,7 @@
       "ecosystem"
     ],
     "author": "VibeClaw",
-    "image": "/news/openclaw-skills.png",
+    "image": "/news/openclaw-skills.webp",
     "summary": "OpenClaw's skill system is where it gets interesting. Here's a tour of what's available and how to find what you need.",
     "source": "https://clawhub.com",
     "sourceLabel": "ClawHub",
@@ -699,7 +699,7 @@
       "chatgpt"
     ],
     "author": "VibeClaw",
-    "image": "/news/openclaw-vs-chatgpt.png",
+    "image": "/news/openclaw-vs-chatgpt.webp",
     "summary": "ChatGPT is great. OpenClaw is different. Here's an honest comparison of when each one makes sense.",
     "source": "https://docs.openclaw.ai",
     "sourceLabel": "OpenClaw Docs",
@@ -729,7 +729,7 @@
       "getting-started"
     ],
     "author": "VibeClaw",
-    "image": "/news/openclaw-intro.png",
+    "image": "/news/openclaw-intro.webp",
     "summary": "A no-nonsense guide to OpenClaw — what it is, what it does, how it works, and why it's different from ChatGPT or Copilot.",
     "source": "https://docs.openclaw.ai",
     "sourceLabel": "OpenClaw Docs",

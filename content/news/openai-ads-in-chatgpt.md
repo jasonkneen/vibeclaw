@@ -3,7 +3,7 @@ title: "OpenAI Is Putting Ads in ChatGPT. A Former Researcher Has 'Deep Reservat
 date: 2026-02-14
 tags: [news, openai, chatgpt, ethics]
 author: VibeClaw
-image: /news/openai-ads.png
+image: /news/openai-ads.webp
 summary: "An ex-OpenAI researcher publicly criticises the company's move to monetise ChatGPT with advertising. The implications for AI trust are serious."
 source: "https://www.nytimes.com/2026/02/11/opinion/openai-ads-chatgpt.html"
 sourceLabel: "New York Times"

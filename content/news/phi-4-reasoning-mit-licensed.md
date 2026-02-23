@@ -3,7 +3,7 @@ title: "Phi-4 Reasoning: Microsoft's MIT-Licensed Powerhouse"
 date: 2026-02-15
 tags: [models, microsoft, reasoning, open-source]
 author: VibeClaw
-image: /news/phi-4-reasoning.png
+image: /news/phi-4-reasoning.webp
 summary: "At just 14B parameters, Phi-4 Reasoning punches way above its weight — and it's MIT licensed. No strings attached."
 source: "https://huggingface.co/microsoft"
 sourceLabel: "HuggingFace"

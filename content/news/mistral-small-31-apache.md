@@ -3,7 +3,7 @@ title: "Mistral Small 3.1: The Fast Model Nobody's Talking About"
 date: 2026-02-11
 tags: [models, mistral, open-source]
 author: VibeClaw
-image: /news/mistral-small.png
+image: /news/mistral-small.webp
 summary: "While everyone argues about Llama vs Qwen, Mistral quietly shipped a 24B model that's faster than both and Apache 2.0 licensed."
 source: "https://huggingface.co/mistralai"
 sourceLabel: "HuggingFace"

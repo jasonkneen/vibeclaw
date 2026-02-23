@@ -3,7 +3,7 @@ title: "The OpenClaw Skills Ecosystem: From Smart Homes to Stock Trading"
 date: 2026-02-10
 tags: [openclaw, skills, ecosystem]
 author: VibeClaw
-image: /news/openclaw-skills.png
+image: /news/openclaw-skills.webp
 summary: "OpenClaw's skill system is where it gets interesting. Here's a tour of what's available and how to find what you need."
 source: "https://clawhub.com"
 sourceLabel: "ClawHub"

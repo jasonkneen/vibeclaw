@@ -3,7 +3,7 @@ title: "The Real Cost of AI in 2026: Free vs Pro Models"
 date: 2026-02-11
 tags: [think-piece, pricing, comparison]
 author: VibeClaw
-image: /news/cost-of-ai.png
+image: /news/cost-of-ai.webp
 summary: "We crunched the numbers on running AI agents with free vs paid models. The gap is smaller than you think."
 source: "https://openrouter.ai/models"
 sourceLabel: "OpenRouter"

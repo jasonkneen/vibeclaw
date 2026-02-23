@@ -3,7 +3,7 @@ title: "OpenClaw vs ChatGPT: When to Use Which"
 date: 2026-02-10
 tags: [openclaw, comparison, chatgpt]
 author: VibeClaw
-image: /news/openclaw-vs-chatgpt.png
+image: /news/openclaw-vs-chatgpt.webp
 summary: "ChatGPT is great. OpenClaw is different. Here's an honest comparison of when each one makes sense."
 source: "https://docs.openclaw.ai"
 sourceLabel: "OpenClaw Docs"

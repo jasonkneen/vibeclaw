@@ -3,7 +3,7 @@ title: "OpenRouter's Free Tier: What You Actually Get"
 date: 2026-02-12
 tags: [guide, openrouter, free-models, tutorial]
 author: VibeClaw
-image: /news/openrouter-free.png
+image: /news/openrouter-free.webp
 summary: "OpenRouter gives you access to 20+ models for free. Here's what's actually usable, what the limits are, and where the catches hide."
 source: "https://openrouter.ai/models"
 sourceLabel: "OpenRouter"

@@ -3,7 +3,7 @@ title: "Gemma 3: Google's Dark Horse in the Open Model Race"
 date: 2026-02-10
 tags: [models, google, open-source]
 author: VibeClaw
-image: /news/gemma-3.png
+image: /news/gemma-3.webp
 summary: "Everyone's watching Llama and Qwen. Meanwhile, Google's Gemma 3 quietly became the best small model you can run on consumer hardware."
 source: "https://huggingface.co/google/gemma-3-27b-it"
 sourceLabel: "HuggingFace"

@@ -3,7 +3,7 @@ title: "Llama 4 Scout: 10M Token Context on a Single GPU"
 date: 2026-02-14
 tags: [models, meta, open-source]
 author: VibeClaw
-image: /news/llama-4-scout.png
+image: /news/llama-4-scout.webp
 summary: "Meta drops Llama 4 Scout with 10 million token context and 16 mixture-of-experts — and it runs on a single H100."
 source: "https://huggingface.co/meta-llama"
 sourceLabel: "HuggingFace"

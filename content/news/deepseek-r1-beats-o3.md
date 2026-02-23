@@ -3,7 +3,7 @@ title: "DeepSeek R1: The Open-Source Reasoning Model That Rivals o3"
 date: 2026-02-13
 tags: [models, deepseek, reasoning, open-source]
 author: VibeClaw
-image: /news/deepseek-r1.png
+image: /news/deepseek-r1.webp
 summary: "DeepSeek's R1 model matches or beats OpenAI's o3 on math and coding — and it's completely free."
 source: "https://huggingface.co/deepseek-ai"
 sourceLabel: "HuggingFace"

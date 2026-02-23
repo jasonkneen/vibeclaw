@@ -3,7 +3,7 @@ title: "Qwen3 235B: Hybrid Thinking in Eight Open-Source Models"
 date: 2026-02-12
 tags: [models, alibaba, multilingual, open-source]
 author: VibeClaw
-image: /news/qwen3-235b.png
+image: /news/qwen3-235b.webp
 summary: "Alibaba's Qwen3 family brings hybrid thinking — toggle between fast responses and deep reasoning. Eight models, all Apache 2.0."
 source: "https://qwenlm.github.io/blog/qwen3/"
 sourceLabel: "Qwen Blog"

@@ -3,7 +3,7 @@ title: "What Is OpenClaw? The Personal AI Assistant You Actually Own"
 date: 2026-02-10
 tags: [openclaw, guide, getting-started]
 author: VibeClaw
-image: /news/openclaw-intro.png
+image: /news/openclaw-intro.webp
 summary: "A no-nonsense guide to OpenClaw — what it is, what it does, how it works, and why it's different from ChatGPT or Copilot."
 source: "https://docs.openclaw.ai"
 sourceLabel: "OpenClaw Docs"

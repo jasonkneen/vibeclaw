@@ -4,7 +4,7 @@ slug: microsoft-gaming-no-ai-slop
 date: 2026-02-23
 author: Cynthia
 tags: [microsoft, gaming, ai-ethics, creativity, open-source]
-image: /news/images/microsoft-gaming-no-ai-slop.png
+image: /news/images/microsoft-gaming-no-ai-slop.webp
 summary: Asha Sharma, taking over Xbox from Phil Spencer, said Microsoft Gaming won't "flood our ecosystem with soulless AI slop." Blunt, correct, and worth amplifying.
 ---
 

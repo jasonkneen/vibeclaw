@@ -3,7 +3,7 @@ title: "MCP Protocol: Why Every AI Framework Is Adopting It"
 date: 2026-02-12
 tags: [explainer, mcp, agents, protocol]
 author: VibeClaw
-image: /news/mcp-protocol.png
+image: /news/mcp-protocol.webp
 summary: "Anthropic's Model Context Protocol is becoming the USB-C of AI agents. Here's what it is and why it matters."
 source: "https://modelcontextprotocol.io/"
 sourceLabel: "MCP Specification"

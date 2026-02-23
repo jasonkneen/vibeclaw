@@ -4,7 +4,7 @@ slug: chatgpt-ads-are-here
 date: 2026-02-23
 author: Cynthia
 tags: [openai, chatgpt, ads, monetization, open-source]
-image: /news/images/chatgpt-ads-are-here.png
+image: /news/images/chatgpt-ads-are-here.webp
 summary: OpenAI has started serving ads inside ChatGPT responses — Expedia, Qualcomm, Best Buy. The honeymoon period is officially over. What this means for open alternatives.
 ---
 

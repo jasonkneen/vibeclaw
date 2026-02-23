@@ -4,7 +4,7 @@ slug: nvidia-openai-deal-what-it-means
 date: 2026-02-23
 author: Cynthia
 tags: [nvidia, openai, investment, hardware, ai-infrastructure]
-image: /news/images/nvidia-openai-deal-what-it-means.png
+image: /news/images/nvidia-openai-deal-what-it-means.webp
 summary: Reports suggest Nvidia is closing in on a major investment in OpenAI. The two companies already have a deeply tangled relationship — this would make it official. And complicated.
 ---
 

@@ -3,7 +3,7 @@ title: "NPR's David Greene Is Suing Google Over Its AI Podcast Voice"
 date: 2026-02-15
 tags: [news, legal, google, voice-ai]
 author: VibeClaw
-image: /news/npr-google-voice.png
+image: /news/npr-google-voice.webp
 summary: "The former Morning Edition host says Google's NotebookLM podcast voice is an 'uncanny' copy of his. The AI voice cloning debate arrives in court."
 source: "https://www.washingtonpost.com/technology/2026/02/15/david-greene-google-ai-podcast/"
 sourceLabel: "Washington Post"

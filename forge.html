@@ -4543,6 +4543,50 @@ function GroupSummaryPanel({ data, onClose }) {
 }
 
 
+/* ── ConnectionInfoBar ── */
+function ConnectionInfoBar({ wsUrl, token, tokenVisible, setTokenVisible, liveData, liveError, liveLoading, loadLive }) {
+  const copy = (text) => navigator.clipboard.writeText(text).catch(() => {});
+  const dot = liveLoading ? '#888' : (liveError ? '#ef4444' : (liveData ? '#4ade80' : '#888'));
+  const dotGlow = liveLoading ? 'none' : (liveError ? '0 0 8px rgba(239,68,68,0.8)' : (liveData ? '0 0 8px rgba(74,222,128,0.8)' : 'none'));
+  const displayUrl = wsUrl ? (wsUrl.length > 35 ? wsUrl.slice(0, 35) + '…' : wsUrl) : '—';
+  const btnStyle = { background:'none', border:'1px solid #2a2a2a', borderRadius:3, color:'#555', cursor:'pointer', padding:'1px 5px', fontSize:'0.72rem', fontFamily:'var(--mono)' };
+  return (
+    <div style={{ background:'#0a0a0a', borderBottom:'1px solid #1a1a1a', height:34, padding:'0 16px', display:'flex', alignItems:'center', gap:10, fontFamily:'var(--mono)', fontSize:'0.8rem', flexShrink:0, userSelect:'none' }}>
+      <span style={{ width:7, height:7, borderRadius:'50%', background:dot, boxShadow:dotGlow, flexShrink:0 }} />
+      <span style={{ color:'#444', letterSpacing:'0.08em' }}>GATEWAY</span>
+      <span style={{ color:'#666', fontSize:'0.78rem', maxWidth:260, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{displayUrl}</span>
+      <button onClick={() => copy(wsUrl || '')} title="Copy URL" style={btnStyle}>⎘</button>
+      <span style={{ color:'#252525' }}>|</span>
+      <span style={{ color:'#444', letterSpacing:'0.08em' }}>TOKEN</span>
+      <span style={{ color:'#555', fontSize:'0.78rem' }}>{token ? (tokenVisible ? token.slice(0,20) + (token.length > 20 ? '…' : '') : '••••••••') : '—'}</span>
+      <button onClick={() => setTokenVisible(v => !v)} title={tokenVisible ? 'Hide token' : 'Show token'} style={btnStyle}>{tokenVisible ? '⊙' : '⊘'}</button>
+      <button onClick={() => copy(token || '')} title="Copy token" style={btnStyle}>⎘</button>
+      {liveError && (
+        <button onClick={loadLive} style={{ background:'none', border:'1px solid #7f1d1d', borderRadius:3, color:'#ef4444', cursor:'pointer', padding:'1px 8px', fontSize:'0.72rem', fontFamily:'var(--mono)', marginLeft:4 }}>Retry</button>
+      )}
+    </div>
+  );
+}
+
+/* ── NotConnectedPanel ── */
+function NotConnectedPanel({ connUrl, setConnUrl, connToken, setConnToken, loadLive, sandboxMode, setSandboxMode }) {
+  const inputStyle = { background:'#0a0a0a', border:'1px solid #2a2a2a', borderRadius:6, padding:'8px 12px', color:'#ccc', fontFamily:'var(--mono)', fontSize:'0.85rem', outline:'none', width:'100%' };
+  return (
+    <div style={{ position:'absolute', top:34, left:0, right:0, bottom:0, display:'flex', alignItems:'center', justifyContent:'center', zIndex:20, background:'rgba(10,10,10,0.85)' }}>
+      <div style={{ background:'#141414', border:'1px solid #2a2a2a', borderRadius:12, padding:'32px 40px', maxWidth:420, width:'100%', display:'flex', flexDirection:'column', gap:16, fontFamily:'var(--mono)' }}>
+        <div style={{ fontSize:'1.3rem', color:'#e0e0e0', fontWeight:700 }}>⚡ Gateway Not Connected</div>
+        <div style={{ fontSize:'0.85rem', color:'#666', lineHeight:1.6 }}>Enter your OpenClaw gateway URL and token, or boot a sandbox</div>
+        <input type="text" value={connUrl === 'sandbox' ? '' : connUrl} placeholder="ws://127.0.0.1:18789" onChange={e => setConnUrl(e.target.value)} style={inputStyle} />
+        <input type="password" value={connToken} placeholder="gateway token" onChange={e => setConnToken(e.target.value)} style={inputStyle} />
+        <div style={{ display:'flex', gap:10 }}>
+          <button onClick={() => loadLive()} style={{ flex:1, background:'#1a1a1a', border:'1px solid #3a3a3a', borderRadius:6, color:'#e0e0e0', cursor:'pointer', padding:'9px 16px', fontFamily:'var(--mono)', fontSize:'0.85rem' }}>Connect</button>
+          <button onClick={() => { setSandboxMode(true); setConnUrl('sandbox'); loadLive({ url:'sandbox' }); }} style={{ flex:1, background:'rgba(255,92,92,0.1)', border:'1px solid rgba(255,92,92,0.3)', borderRadius:6, color:'#ff5c5c', cursor:'pointer', padding:'9px 16px', fontFamily:'var(--mono)', fontSize:'0.85rem' }}>Boot Sandbox</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Main App ── */
 const INITIAL_NODES = [{
   id: 'gateway-1', type: 'gateway',
@@ -4587,6 +4631,10 @@ function ForgeApp() {
   const [edgeStyleKey,      setEdgeStyleKey]      = useState(() => localStorage.getItem('forge-edge-style') || 'solid');
   const [flyoutKey,         setFlyoutKey]         = useState(null); // 'layout' | 'edge' | null
   const [reframing,         setReframing]         = useState(false);
+  const [connUrl,    setConnUrl]    = useState(() => { try { return localStorage.getItem('forge-gw-url') || ''; } catch { return ''; } });
+  const [connToken,  setConnToken]  = useState(() => { try { return localStorage.getItem('forge-gw-token') || ''; } catch { return ''; } });
+  const [tokenVisible,  setTokenVisible]  = useState(false);
+  const [sandboxMode,   setSandboxMode]   = useState(false);
   const towerRef = React.useRef(null);
   React.useEffect(() => {
     if (!flyoutKey) return;
@@ -4826,7 +4874,8 @@ function ForgeApp() {
   }, [buildCollapsedServerNode]);
 
   // Load live data — starts collapsed, just the one server icon
-  const loadLive = useCallback(async () => {
+  const loadLive = useCallback(async (opts = {}) => {
+    const { url = connUrl } = opts;
     setLiveLoading(true);
     liveLoadingRef.current = true;
     setLiveError(null);
@@ -4835,12 +4884,26 @@ function ForgeApp() {
     setNodes([]);
     setEdges([]);
     try {
-      const resp = await fetch('/api/gateway-live');
-      const data = await resp.json();
+      let data;
+      if (url === 'sandbox') {
+        data = { ok:true, gateway:{ port:0, version:'sandbox' }, agents:[{id:'main',name:'Claw',model:'solar-pro-3',enabled:true,systemPrompt:'',workspace:''}], skills:[{id:'chat',title:'Chat',enabled:true}], channels:[], models:[], cronJobs:[], nodes:[], sessions:[], defaultModel:'solar-pro-3' };
+      } else {
+        const resp = await fetch('/api/gateway-live');
+        data = await resp.json();
+      }
       if (!data.ok) throw new Error(data.error || 'Failed');
       setLiveData(data);
       liveDataRef.current = data;
       setLiveSkills(data.skills || []);
+      // Store connection info from response if not already saved
+      if (data.connection?.wsUrl && !localStorage.getItem('forge-gw-url')) {
+        setConnUrl(data.connection.wsUrl);
+        try { localStorage.setItem('forge-gw-url', data.connection.wsUrl); } catch {}
+      }
+      if (data.connection?.token && !localStorage.getItem('forge-gw-token')) {
+        setConnToken(data.connection.token);
+        try { localStorage.setItem('forge-gw-token', data.connection.token); } catch {}
+      }
       // Start expanded — build the full family tree
       setLiveCollapsed(false);
       setFtExpandedIds(new Set());
@@ -4850,7 +4913,7 @@ function ForgeApp() {
     }
     setLiveLoading(false);
     liveLoadingRef.current = false;
-  }, [buildCollapsedServerNode, applyFamilyTree]);
+  }, [buildCollapsedServerNode, applyFamilyTree, connUrl]);
 
   // Silent background refresh — updates data without resetting layout/selection
   const refreshLive = useCallback(async () => {
@@ -5150,7 +5213,18 @@ function ForgeApp() {
   }, [sidePanelOpen]);
 
   return (
-    <div style={{display:'flex', height:'calc(100vh - 57px)', overflow:'hidden'}}>
+    <>
+    <ConnectionInfoBar
+      wsUrl={connUrl}
+      token={connToken}
+      tokenVisible={tokenVisible}
+      setTokenVisible={setTokenVisible}
+      liveData={liveData}
+      liveError={liveError}
+      liveLoading={liveLoading}
+      loadLive={loadLive}
+    />
+    <div style={{display:'flex', height:'calc(100vh - 91px)', overflow:'hidden'}}>
       {/* Canvas — flex:1 so it shrinks/grows with the side panel */}
       <div style={{flex:1, position:'relative', minHeight:0, height:'100%', minWidth:0}}>
         {/* ── Live status bar ── */}
@@ -5233,6 +5307,17 @@ function ForgeApp() {
             </div>
 
           </div>
+        )}
+        {liveError && (
+          <NotConnectedPanel
+            connUrl={connUrl}
+            setConnUrl={setConnUrl}
+            connToken={connToken}
+            setConnToken={setConnToken}
+            loadLive={loadLive}
+            sandboxMode={sandboxMode}
+            setSandboxMode={setSandboxMode}
+          />
         )}
         <ReactFlow
           nodes={nodes}
@@ -5534,6 +5619,7 @@ function ForgeApp() {
         <ExportModal nodes={nodes} edges={edges} onClose={() => setShowExportModal(false)} />
       )}
     </div>
+    </>
   );
 }
 

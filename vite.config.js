@@ -122,6 +122,11 @@ export default defineConfig({
               ok: true,
               gateway: { port: config.gateway?.port || 18789, version: config.meta?.lastTouchedVersion },
               agents, skills, channels, models, cronJobs, nodes, sessions, defaultModel,
+              connection: {
+                wsUrl: "ws://127.0.0.1:" + (config.gateway?.port || 18789),
+                httpUrl: "http://127.0.0.1:" + (config.gateway?.port || 18789),
+                token: config.gateway?.auth?.token || null,
+              },
             }));
           } catch (err) {
             res.statusCode = 500;

@@ -4544,7 +4544,7 @@ function GroupSummaryPanel({ data, onClose }) {
 
 
 /* ── ConnectionInfoBar ── */
-function ConnectionInfoBar({ wsUrl, token, tokenVisible, setTokenVisible, liveData, liveError, liveLoading, loadLive }) {
+function ConnectionInfoBar({ wsUrl, token, tokenVisible, setTokenVisible, liveData, liveError, liveLoading, loadLive, onDisconnect }) {
   const copy = (text) => navigator.clipboard.writeText(text).catch(() => {});
   const dot = liveLoading ? '#888' : (liveError ? '#ef4444' : (liveData ? '#4ade80' : '#888'));
   const dotGlow = liveLoading ? 'none' : (liveError ? '0 0 8px rgba(239,68,68,0.8)' : (liveData ? '0 0 8px rgba(74,222,128,0.8)' : 'none'));
@@ -4561,9 +4561,14 @@ function ConnectionInfoBar({ wsUrl, token, tokenVisible, setTokenVisible, liveDa
       <span style={{ color:'#555', fontSize:'0.78rem' }}>{token ? (tokenVisible ? token.slice(0,20) + (token.length > 20 ? '…' : '') : '••••••••') : '—'}</span>
       <button onClick={() => setTokenVisible(v => !v)} title={tokenVisible ? 'Hide token' : 'Show token'} style={btnStyle}>{tokenVisible ? '⊙' : '⊘'}</button>
       <button onClick={() => copy(token || '')} title="Copy token" style={btnStyle}>⎘</button>
-      {liveError && (
-        <button onClick={loadLive} style={{ background:'none', border:'1px solid #7f1d1d', borderRadius:3, color:'#ef4444', cursor:'pointer', padding:'1px 8px', fontSize:'0.72rem', fontFamily:'var(--mono)', marginLeft:4 }}>Retry</button>
-      )}
+      <div style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:8 }}>
+        {liveError && (
+          <button onClick={loadLive} style={{ background:'none', border:'1px solid #7f1d1d', borderRadius:3, color:'#ef4444', cursor:'pointer', padding:'1px 8px', fontSize:'0.72rem', fontFamily:'var(--mono)' }}>Retry</button>
+        )}
+        {!liveError && liveData && (
+          <button onClick={onDisconnect} title="Disconnect" style={{ background:'none', border:'1px solid #2a2a2a', borderRadius:3, color:'#444', cursor:'pointer', padding:'1px 8px', fontSize:'0.72rem', fontFamily:'var(--mono)' }}>Disconnect</button>
+        )}
+      </div>
     </div>
   );
 }
@@ -4579,7 +4584,7 @@ function NotConnectedPanel({ connUrl, setConnUrl, connToken, setConnToken, loadL
         <input type="text" value={connUrl === 'sandbox' ? '' : connUrl} placeholder="ws://127.0.0.1:18789" onChange={e => setConnUrl(e.target.value)} style={inputStyle} />
         <input type="password" value={connToken} placeholder="gateway token" onChange={e => setConnToken(e.target.value)} style={inputStyle} />
         <div style={{ display:'flex', gap:10 }}>
-          <button onClick={() => loadLive()} style={{ flex:1, background:'#1a1a1a', border:'1px solid #3a3a3a', borderRadius:6, color:'#e0e0e0', cursor:'pointer', padding:'9px 16px', fontFamily:'var(--mono)', fontSize:'0.85rem' }}>Connect</button>
+          <button onClick={() => { try { localStorage.setItem('forge-gw-url', connUrl); localStorage.setItem('forge-gw-token', connToken); } catch {} loadLive(); }} style={{ flex:1, background:'#1a1a1a', border:'1px solid #3a3a3a', borderRadius:6, color:'#e0e0e0', cursor:'pointer', padding:'9px 16px', fontFamily:'var(--mono)', fontSize:'0.85rem' }}>Connect</button>
           <button onClick={() => { setSandboxMode(true); setConnUrl('sandbox'); loadLive({ url:'sandbox' }); }} style={{ flex:1, background:'rgba(255,92,92,0.1)', border:'1px solid rgba(255,92,92,0.3)', borderRadius:6, color:'#ff5c5c', cursor:'pointer', padding:'9px 16px', fontFamily:'var(--mono)', fontSize:'0.85rem' }}>Boot Sandbox</button>
         </div>
       </div>
@@ -4624,7 +4629,7 @@ function ForgeApp() {
   const [liveData, setLiveData] = useState(null);
   const [liveSkills, setLiveSkills] = useState([]);
   const [liveLoading, setLiveLoading] = useState(false);
-  const [liveError, setLiveError] = useState(null);
+  const [liveError, setLiveError] = useState('Not connected');
   const [liveSelectedAgent, setLiveSelectedAgent] = useState(null);
   const [sidePanelOpen,     setSidePanelOpen]     = useState(true);
   const [layoutKey,         setLayoutKey]         = useState(() => localStorage.getItem('forge-layout') || 'down');
@@ -4665,8 +4670,11 @@ function ForgeApp() {
     if (liveSelectedAgent) setSidePanelOpen(true);
   }, [liveSelectedAgent]);
 
-  // On mount: load live data immediately
-  React.useEffect(() => { loadLive(); }, []);
+  // On mount: auto-connect only if user has previously saved gateway credentials
+  React.useEffect(() => {
+    const savedUrl = (() => { try { return localStorage.getItem('forge-gw-url'); } catch { return null; } })();
+    if (savedUrl) loadLive();
+  }, []);
 
   // Re-centre diagram when window is resized (zoom stays locked via minZoom=maxZoom)
   React.useEffect(() => {
@@ -4895,12 +4903,12 @@ function ForgeApp() {
       setLiveData(data);
       liveDataRef.current = data;
       setLiveSkills(data.skills || []);
-      // Store connection info from response if not already saved
-      if (data.connection?.wsUrl && !localStorage.getItem('forge-gw-url')) {
+      // Always update connection info from live API response
+      if (data.connection?.wsUrl) {
         setConnUrl(data.connection.wsUrl);
         try { localStorage.setItem('forge-gw-url', data.connection.wsUrl); } catch {}
       }
-      if (data.connection?.token && !localStorage.getItem('forge-gw-token')) {
+      if (data.connection?.token) {
         setConnToken(data.connection.token);
         try { localStorage.setItem('forge-gw-token', data.connection.token); } catch {}
       }
@@ -5223,6 +5231,12 @@ function ForgeApp() {
       liveError={liveError}
       liveLoading={liveLoading}
       loadLive={loadLive}
+      onDisconnect={() => {
+        try { localStorage.removeItem('forge-gw-url'); localStorage.removeItem('forge-gw-token'); } catch {}
+        setConnUrl(''); setConnToken('');
+        setLiveData(null); liveDataRef.current = null;
+        setLiveError('Not connected'); setNodes([]); setEdges([]);
+      }}
     />
     <div style={{display:'flex', height:'calc(100vh - 91px)', overflow:'hidden'}}>
       {/* Canvas — flex:1 so it shrinks/grows with the side panel */}

@@ -1792,60 +1792,8 @@ function ChannelNode({ data, selected }) {
 }
 
 /* ── Collapsed Server Node — matches reference icon exactly ── */
-const GEMINI_KEY = (typeof window !== 'undefined' && window.__GEMINI_KEY) ? window.__GEMINI_KEY : '';
-const NO_TEXT = ', no text, no words, no labels, no letters, no numbers, no watermarks, purely visual';
-const GEMINI_IMG_PROMPTS = {
-  agent:   (l) => `cinematic square portrait for an AI agent called "${l}", glowing purple neural circuits, dark background, dramatic lighting`,
-  model:   (l) => `cinematic square visualization for an AI model called "${l}", amber glowing data streams, dark background, dramatic lighting`,
-  skill:   (l) => `cinematic square image for a tool called "${l}", emerald green light, dark background, sharp macro detail`,
-  channel: (l) => `cinematic square abstract for a communication channel called "${l}", cyan radio waves, dark background, dramatic lighting`,
-  cron:    (l) => `cinematic square image for a scheduled job called "${l}", purple glowing clock gears, dark background`,
-  session: (l) => `cinematic square abstract memory, teal particle trails, dark background`,
-  node:    (l) => `cinematic square image for a server node called "${l}", red server rack hardware, dark background, dramatic lighting`,
-  command: (l) => `cinematic square terminal interface, purple command prompt glow, dark background`,
-};
-
-// Throttle concurrent Gemini image calls — only 2 at a time
-const _imgQueue = { active:0, max:2, pending:[] };
-function geminiImageThrottled(prompt) {
-  return new Promise((resolve, reject) => {
-    const run = () => {
-      _imgQueue.active++;
-      fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${GEMINI_KEY}`,
-        { method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{responseModalities:['IMAGE']} }) }
-      )
-        .then(r => r.json())
-        .then(d => {
-          const part = d?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-          if (part) resolve(`data:${part.inlineData.mimeType};base64,${part.inlineData.data}`);
-          else reject(new Error('no image'));
-        })
-        .catch(reject)
-        .finally(() => {
-          _imgQueue.active--;
-          if (_imgQueue.pending.length) _imgQueue.pending.shift()();
-        });
-    };
-    if (_imgQueue.active < _imgQueue.max) run();
-    else _imgQueue.pending.push(run);
-  });
-}
-
-function useNodeImage(label, category) {
-  const [imgUrl, setImgUrl] = React.useState(null);
-  React.useEffect(() => {
-    const cacheKey = `node-img-v2::${category}::${label}`;
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) { setImgUrl(cached); return; }
-    const promptFn = GEMINI_IMG_PROMPTS[category] || GEMINI_IMG_PROMPTS.node;
-    geminiImageThrottled(promptFn(label) + NO_TEXT)
-      .then(dataUrl => { localStorage.setItem(cacheKey, dataUrl); setImgUrl(dataUrl); })
-      .catch(() => {});
-  }, [label, category]);
-  return imgUrl;
-}
+// Node image generation removed — no external AI image APIs used
+function useNodeImage(label, category) { return null; }
 
 function CollapsedServerNode({ data, selected }) {
   const imgUrl = useNodeImage(data.label || 'Gateway', 'node');

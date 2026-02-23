@@ -1071,7 +1071,7 @@
       const hero = filtered[0];
       const sidebar = filtered.slice(1, 5);
       
-      const heroImg = hero.image && hero.image.startsWith('/');
+      const heroImg = hero.image && (hero.image.startsWith('/') || hero.image.startsWith('http'));
       
       heroEl.innerHTML = `
         <div class="hero-section">
@@ -1094,7 +1094,7 @@
           <div class="sidebar">
             <div class="sidebar-header">Latest Stories</div>
             ${sidebar.map(a => {
-              const img = a.image && a.image.startsWith('/');
+              const img = a.image && (a.image.startsWith('/') || a.image.startsWith('http'));
               return `
               <div class="sidebar-item" onclick="scrollToArticle('${a.slug}')">
                 ${img ? `<img class="sidebar-thumb" src="${a.image}" alt="" loading="lazy">` : ''}
@@ -1115,7 +1115,7 @@
             <div class="trending-header"><span class="trending-dot"></span>Trending Now</div>
             <div class="trending-strip">
               ${trending.map(a => {
-                const img = a.image && a.image.startsWith('/');
+                const img = a.image && (a.image.startsWith('/') || a.image.startsWith('http'));
                 return `
                 <div class="trending-card" onclick="scrollToArticle('${a.slug}')">
                   ${img ? `<img class="trending-card-img" src="${a.image}" alt="${a.title}" loading="lazy">` : ''}
@@ -1163,7 +1163,7 @@
         html += `<div class="section-header"><span class="section-dot"></span>${label}</div>`;
         html += `<div class="more-grid">`;
         html += visibleItems.map(a => {
-          const img = a.image && a.image.startsWith('/');
+          const img = a.image && (a.image.startsWith('/') || a.image.startsWith('http'));
           return `
           <div class="card" id="article-${a.slug}" onclick="toggleArticle('${a.slug}')">
             ${img ? `<img class="card-img" src="${a.image}" alt="${a.title}" loading="lazy">` : ''}

@@ -272,7 +272,7 @@ The gateway dashboard communicates via WebSocket JSON-RPC:
 
 ## License
 
-MIT — see [LICENSE](LICENSE) for details.
+AGPL-3.0 — see [LICENSE](LICENSE) for details.
 
 ---
 

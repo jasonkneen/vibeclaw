@@ -63,4 +63,4 @@ chat.unmount();        // Remove from DOM
 
 ## License
 
-MIT — [VibeClaw](https://vibeclaw.dev)
+AGPL-3.0 — [VibeClaw](https://vibeclaw.dev)

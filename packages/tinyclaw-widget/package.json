@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Drop-in AI chat widget powered by TinyClaw — runs entirely in the browser, no server required",
   "type": "module",
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "keywords": [
     "ai",
     "chat",

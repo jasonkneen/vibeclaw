@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Run OpenClaw in your browser. No server required.",
   "type": "module",
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "keywords": [
     "openclaw",
     "ai-agent",

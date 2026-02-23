@@ -4575,18 +4575,64 @@ function ConnectionInfoBar({ wsUrl, token, tokenVisible, setTokenVisible, liveDa
 
 /* ── NotConnectedPanel ── */
 function NotConnectedPanel({ connUrl, setConnUrl, connToken, setConnToken, loadLive, sandboxMode, setSandboxMode }) {
+  const [flavours, setFlavours] = React.useState([]);
+  const [selectedFlavour, setSelectedFlavour] = React.useState('default');
+
+  React.useEffect(() => {
+    fetch('/flavours.json').then(r => r.json()).then(data => {
+      setFlavours(data || []);
+    }).catch(() => {});
+  }, []);
+
   const inputStyle = { background:'#0a0a0a', border:'1px solid #2a2a2a', borderRadius:6, padding:'8px 12px', color:'#ccc', fontFamily:'var(--mono)', fontSize:'0.85rem', outline:'none', width:'100%' };
+  const selStyle = { background:'#0a0a0a', border:'1px solid #2a2a2a', borderRadius:6, padding:'8px 12px', color:'#ccc', fontFamily:'var(--mono)', fontSize:'0.85rem', outline:'none', width:'100%', cursor:'pointer' };
+
+  const bootSandbox = () => {
+    const fl = flavours.find(f => f.id === selectedFlavour) || flavours[0];
+    setSandboxMode(true);
+    setConnUrl('sandbox');
+    loadLive({ url: 'sandbox', flavour: fl });
+  };
+
   return (
     <div style={{ position:'absolute', top:34, left:0, right:0, bottom:0, display:'flex', alignItems:'center', justifyContent:'center', zIndex:20, background:'rgba(10,10,10,0.85)' }}>
-      <div style={{ background:'#141414', border:'1px solid #2a2a2a', borderRadius:12, padding:'32px 40px', maxWidth:420, width:'100%', display:'flex', flexDirection:'column', gap:16, fontFamily:'var(--mono)' }}>
+      <div style={{ background:'#141414', border:'1px solid #2a2a2a', borderRadius:12, padding:'32px 40px', maxWidth:460, width:'100%', display:'flex', flexDirection:'column', gap:16, fontFamily:'var(--mono)' }}>
         <div style={{ fontSize:'1.3rem', color:'#e0e0e0', fontWeight:700 }}>⚡ Gateway Not Connected</div>
-        <div style={{ fontSize:'0.85rem', color:'#666', lineHeight:1.6 }}>Enter your OpenClaw gateway URL and token, or boot a sandbox</div>
-        <input type="text" value={connUrl === 'sandbox' ? '' : connUrl} placeholder="ws://127.0.0.1:18789" onChange={e => setConnUrl(e.target.value)} style={inputStyle} />
-        <input type="password" value={connToken} placeholder="gateway token" onChange={e => setConnToken(e.target.value)} style={inputStyle} />
-        <div style={{ display:'flex', gap:10 }}>
-          <button onClick={() => { try { localStorage.setItem('forge-gw-url', connUrl); localStorage.setItem('forge-gw-token', connToken); } catch {} loadLive(); }} style={{ flex:1, background:'#1a1a1a', border:'1px solid #3a3a3a', borderRadius:6, color:'#e0e0e0', cursor:'pointer', padding:'9px 16px', fontFamily:'var(--mono)', fontSize:'0.85rem' }}>Connect</button>
-          <button onClick={() => { setSandboxMode(true); setConnUrl('sandbox'); loadLive({ url:'sandbox' }); }} style={{ flex:1, background:'rgba(255,92,92,0.1)', border:'1px solid rgba(255,92,92,0.3)', borderRadius:6, color:'#ff5c5c', cursor:'pointer', padding:'9px 16px', fontFamily:'var(--mono)', fontSize:'0.85rem' }}>Boot Sandbox</button>
+        <div style={{ fontSize:'0.85rem', color:'#666', lineHeight:1.6 }}>Enter your OpenClaw gateway URL and token to connect, or boot a sandbox to preview.</div>
+
+        <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+          <label style={{ fontSize:'0.72rem', color:'#555', letterSpacing:'0.06em', textTransform:'uppercase' }}>Gateway URL</label>
+          <input type="text" value={connUrl === 'sandbox' ? '' : connUrl} placeholder="ws://127.0.0.1:18789" onChange={e => setConnUrl(e.target.value)} style={inputStyle} />
         </div>
+        <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+          <label style={{ fontSize:'0.72rem', color:'#555', letterSpacing:'0.06em', textTransform:'uppercase' }}>Auth Token</label>
+          <input type="password" value={connToken} placeholder="gateway token" onChange={e => setConnToken(e.target.value)} style={inputStyle} />
+        </div>
+
+        <button onClick={() => { try { localStorage.setItem('forge-gw-url', connUrl); localStorage.setItem('forge-gw-token', connToken); } catch {} loadLive(); }}
+          style={{ background:'var(--accent)', border:'none', borderRadius:6, color:'#000', cursor:'pointer', padding:'10px 16px', fontFamily:'var(--mono)', fontSize:'0.85rem', fontWeight:700 }}>
+          Connect →
+        </button>
+
+        <div style={{ display:'flex', alignItems:'center', gap:12, color:'#333', fontSize:'0.78rem' }}>
+          <div style={{ flex:1, height:1, background:'#1e1e1e' }} />
+          <span>or try a sandbox</span>
+          <div style={{ flex:1, height:1, background:'#1e1e1e' }} />
+        </div>
+
+        {flavours.length > 0 && (
+          <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+            <label style={{ fontSize:'0.72rem', color:'#555', letterSpacing:'0.06em', textTransform:'uppercase' }}>Flavour</label>
+            <select value={selectedFlavour} onChange={e => setSelectedFlavour(e.target.value)} style={selStyle}>
+              {flavours.map(f => <option key={f.id} value={f.id}>{f.emoji} {f.name} — {f.description?.slice(0,50)}</option>)}
+            </select>
+          </div>
+        )}
+
+        <button onClick={bootSandbox}
+          style={{ background:'rgba(255,92,92,0.1)', border:'1px solid rgba(255,92,92,0.3)', borderRadius:6, color:'#ff5c5c', cursor:'pointer', padding:'10px 16px', fontFamily:'var(--mono)', fontSize:'0.85rem' }}>
+          ⚡ Boot Sandbox
+        </button>
       </div>
     </div>
   );
@@ -4671,7 +4717,15 @@ function ForgeApp() {
   }, [liveSelectedAgent]);
 
   // On mount: auto-connect only if user has previously saved gateway credentials
+  // ?reset=1 clears saved credentials and forces the connection panel
   React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('reset')) {
+      try { localStorage.removeItem('forge-gw-url'); localStorage.removeItem('forge-gw-token'); } catch {}
+      setConnUrl(''); setConnToken('');
+      history.replaceState({}, '', window.location.pathname);
+      return;
+    }
     const savedUrl = (() => { try { return localStorage.getItem('forge-gw-url'); } catch { return null; } })();
     if (savedUrl) loadLive();
   }, []);
@@ -4883,7 +4937,7 @@ function ForgeApp() {
 
   // Load live data — starts collapsed, just the one server icon
   const loadLive = useCallback(async (opts = {}) => {
-    const { url = connUrl } = opts;
+    const { url = connUrl, flavour = null } = opts;
     setLiveLoading(true);
     liveLoadingRef.current = true;
     setLiveError(null);
@@ -4894,7 +4948,11 @@ function ForgeApp() {
     try {
       let data;
       if (url === 'sandbox') {
-        data = { ok:true, gateway:{ port:0, version:'sandbox' }, agents:[{id:'main',name:'Claw',model:'solar-pro-3',enabled:true,systemPrompt:'',workspace:''}], skills:[{id:'chat',title:'Chat',enabled:true}], channels:[], models:[], cronJobs:[], nodes:[], sessions:[], defaultModel:'solar-pro-3' };
+        const fl = flavour || { id:'default', name:'OpenClaw', emoji:'🦀', agents:[{id:'main',name:'Claw',emoji:'🦀',description:'Coding assistant'}], skills:[{id:'chat',name:'Chat'},{id:'filesystem',name:'Filesystem'},{id:'execute',name:'Execute'},{id:'web-search',name:'Web Search'}] };
+        const agents = (fl.agents||[]).map(a => ({ id:a.id, name:`${a.emoji||''} ${a.name}`.trim(), model:'solar-pro-3', enabled:true, systemPrompt:a.description||'', workspace:'' }));
+        const skills = (fl.skills||[]).map(s => ({ id:s.id||s.name, title:s.name||s.id, enabled:true }));
+        const sessions = (fl.agents||[]).map((a,i) => ({ id:`agent:${a.id}:main`, lastActive: new Date(Date.now()-i*60000).toISOString() }));
+        data = { ok:true, gateway:{ port:0, version:`sandbox/${fl.id}` }, agents, skills, channels:[], models:[{id:'upstage/solar-pro-3:free',provider:'upstage',name:'Solar Pro 3'}], cronJobs:[], nodes:[], sessions, defaultModel:'solar-pro-3' };
       } else {
         const resp = await fetch('/api/gateway-live');
         data = await resp.json();

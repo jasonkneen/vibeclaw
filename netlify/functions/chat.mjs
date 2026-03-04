@@ -94,9 +94,12 @@ export default async (req) => {
     return Response.json({ error: `Model "${model}" is not available.` }, { status: 403 });
   }
 
-  // Proxy to OpenRouter with retry on 429 (free models rate-limit frequently)
-  const MAX_RETRIES = 3;
-  const RETRY_DELAY_MS = 1500;
+  // Free model fallback chain — if primary fails, try next
+  const FREE_FALLBACKS = [
+    'google/gemma-3-27b-it:free',
+    'meta-llama/llama-3.1-8b-instruct:free',
+    'mistralai/mistral-small-3.1-24b-instruct:free',
+  ];
 
   const callUpstream = async (body) => {
     return fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -113,34 +116,61 @@ export default async (req) => {
 
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
+  // Retry transient errors (429, 500, 502, 503) and provider failures
+  const RETRY_STATUSES = new Set([429, 500, 502, 503]);
+  const MAX_RETRIES = 2;
+
+  const tryModel = async (modelId) => {
+    const body = { ...parsed, model: modelId };
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      const upstream = await callUpstream(body);
+      if (!RETRY_STATUSES.has(upstream.status)) return upstream; // success or hard error
+
+      await upstream.body?.cancel().catch(() => {});
+      if (attempt < MAX_RETRIES) await sleep(1000 * (attempt + 1));
+    }
+    return null; // exhausted retries
+  };
+
   try {
     let upstream;
-    let lastStatus;
 
-    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-      upstream = await callUpstream(parsed);
-      lastStatus = upstream.status;
+    // For free models, walk the fallback chain
+    if (model.endsWith(':free') || FREE_MODELS.has(model)) {
+      const chain = model === FREE_FALLBACKS[0]
+        ? FREE_FALLBACKS
+        : [model, ...FREE_FALLBACKS.filter(m => m !== model)];
 
-      if (lastStatus !== 429) break;
+      for (const fallbackModel of chain) {
+        upstream = await tryModel(fallbackModel);
+        if (upstream && upstream.ok) break;           // got a good response
+        if (upstream) await upstream.body?.cancel().catch(() => {}); // drain error body
+        upstream = null;
+      }
 
-      // Drain the 429 body to free the connection
-      await upstream.body?.cancel().catch(() => {});
-
-      // On 429: if not last attempt, wait and retry
-      if (attempt < MAX_RETRIES - 1) {
-        await sleep(RETRY_DELAY_MS * (attempt + 1));
+      if (!upstream) {
+        return Response.json({
+          error: { message: 'The AI model is temporarily busy. Please try again in a moment.', retryable: true }
+        }, { status: 503 });
+      }
+    } else {
+      // Pro / non-free models — single attempt, no fallback
+      upstream = await tryModel(model);
+      if (!upstream || !upstream.ok) {
+        const errBody = await upstream?.json().catch(() => ({}));
+        return Response.json({
+          error: errBody?.error || { message: `HTTP ${upstream?.status ?? 'unknown'}` }
+        }, { status: upstream?.status ?? 502 });
       }
     }
 
-    // If still 429 after all retries, return a friendly error
-    if (lastStatus === 429) {
+    const lastStatus = upstream.status;
+
+    // If still bad after fallbacks
+    if (!upstream.ok) {
       return Response.json({
-        error: {
-          message: 'The AI model is temporarily busy. Please try again in a moment.',
-          code: 429,
-          retryable: true,
-        }
-      }, { status: 429 });
+        error: { message: 'The AI model is temporarily busy. Please try again in a moment.', retryable: true }
+      }, { status: lastStatus });
     }
 
     return new Response(upstream.body, {

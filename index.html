@@ -2631,7 +2631,11 @@ entirely in a browser sandbox.
                     const resp = await fetch('/api/chat', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ messages, model: activeModel })
+                      body: JSON.stringify({
+                        messages,
+                        model: activeModel,
+                        max_tokens: 1024,
+                      })
                     });
 
                     const data = await resp.json().catch(() => ({}));
@@ -2640,6 +2644,11 @@ entirely in a browser sandbox.
                     }
 
                     text = data?.choices?.[0]?.message?.content || '';
+                    const finishReason = data?.choices?.[0]?.finish_reason;
+                    if (finishReason === 'length') {
+                      text = text + '\n\n[truncated by token limit]';
+                    }
+
                     if (text) {
                       ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'delta', message: { content: text } }});
                     }

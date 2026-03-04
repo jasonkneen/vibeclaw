@@ -913,23 +913,35 @@
       .pg-flavour-chip.active { border-color: var(--accent); background: rgba(255,92,92,0.08); color: var(--accent); }
       /* Model chips */
       .pg-model-chip {
-        display: inline-flex; align-items: center; gap: 6px;
-        padding: 5px 12px;
-        font-family: var(--mono); font-size: 0.72rem;
-        border: 1px solid var(--border); border-radius: 20px;
-        background: transparent; color: var(--text-dim);
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 6px 14px 6px 10px;
+        font-family: var(--mono); font-size: 0.7rem;
+        border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+        background: rgba(255,255,255,0.04); color: var(--text-dim);
         cursor: pointer; white-space: nowrap;
-        transition: border-color 0.15s, color 0.15s, background 0.15s;
-        letter-spacing: 0.03em;
+        transition: all 0.15s;
+        letter-spacing: 0.02em;
+        flex-direction: column; align-items: flex-start; gap: 2px;
+        padding: 7px 14px;
+        min-width: 90px;
       }
-      .pg-model-chip:hover { border-color: var(--accent); color: var(--text-bright); }
-      .pg-model-chip.active {
-        border-color: var(--accent); background: rgba(255,92,92,0.08); color: var(--accent);
-      }
-      .pg-model-chip.webgpu-chip.active {
-        border-color: #a78bfa; background: rgba(167,139,250,0.08); color: #a78bfa;
-      }
-      .pg-model-chip.webgpu-chip:hover { border-color: #a78bfa; color: #c4b5fd; }
+      .pg-model-chip-row { display:flex; align-items:center; gap:6px; }
+      .pg-model-chip-label { font-size:0.72rem; font-weight:600; letter-spacing:0.03em; }
+      .pg-model-chip-sub { font-size:0.6rem; color: var(--text-dim); letter-spacing:0.04em; opacity:0.7; }
+      .pg-model-chip:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.07); color: var(--text-bright); }
+      .pg-model-chip:hover .pg-model-chip-sub { opacity:1; }
+      /* WebGPU = local/offline — purple */
+      .pg-model-chip.webgpu-chip { border-color: rgba(167,139,250,0.25); }
+      .pg-model-chip.webgpu-chip .pg-model-chip-label { color: #c4b5fd; }
+      .pg-model-chip.webgpu-chip .pg-model-chip-sub { color: #a78bfa; }
+      .pg-model-chip.webgpu-chip:hover { border-color: rgba(167,139,250,0.5); background: rgba(167,139,250,0.07); }
+      .pg-model-chip.webgpu-chip.active { border-color: #a78bfa; background: rgba(167,139,250,0.12); }
+      /* Cloud chip — blue */
+      .pg-model-chip.cloud-chip { border-color: rgba(96,165,250,0.25); }
+      .pg-model-chip.cloud-chip .pg-model-chip-label { color: #93c5fd; }
+      .pg-model-chip.cloud-chip .pg-model-chip-sub { color: #60a5fa; }
+      .pg-model-chip.cloud-chip:hover { border-color: rgba(96,165,250,0.5); background: rgba(96,165,250,0.07); }
+      .pg-model-chip.cloud-chip.active { border-color: #60a5fa; background: rgba(96,165,250,0.12); }
       .webgpu-dot {
         width: 6px; height: 6px; border-radius: 50%;
         background: #6b7280; flex-shrink: 0;
@@ -2117,31 +2129,48 @@ entirely in a browser sandbox.
       // ── Model chip UI ──
       const modelChipsEl = $('pg-model-chips');
       const modelDefs = [
-        { value: 'webgpu-local', label: '🦀 Local', sub: '1.5B · offline', cls: 'webgpu-chip', dot: true },
-        { value: 'google/gemma-3-27b-it:free', label: '☁️ Cloud', sub: 'Gemma 27B', cls: '' },
+        { value: 'webgpu-local',              label: 'ON-DEVICE', sub: 'WebGPU · runs in browser', cls: 'webgpu-chip', dot: true  },
+        { value: 'google/gemma-3-27b-it:free', label: 'HOSTED',    sub: 'Gemma 27B · cloud API',   cls: 'cloud-chip',  dot: false },
       ];
       function buildModelChips() {
         modelChipsEl.innerHTML = '';
         modelDefs.forEach(def => {
           const btn = document.createElement('button');
-          btn.className = 'pg-model-chip' + (def.cls ? ' ' + def.cls : '') + (modelSelect.value === def.value ? ' active' : '');
-          btn.title = def.sub;
+          btn.className = 'pg-model-chip ' + def.cls + (modelSelect.value === def.value ? ' active' : '');
+
+          // Top row: dot (if local) + label
+          const row = document.createElement('span');
+          row.className = 'pg-model-chip-row';
           if (def.dot) {
             const dot = document.createElement('span');
             dot.className = 'webgpu-dot';
             dot.id = 'webgpu-status-dot';
-            btn.appendChild(dot);
+            row.appendChild(dot);
+          } else {
+            // cloud icon
+            const icon = document.createElement('span');
+            icon.textContent = '☁';
+            icon.style.cssText = 'font-size:0.65rem;opacity:0.7;';
+            row.appendChild(icon);
           }
-          const txt = document.createElement('span');
-          txt.textContent = def.label;
-          btn.appendChild(txt);
+          const lbl = document.createElement('span');
+          lbl.className = 'pg-model-chip-label';
+          lbl.textContent = def.label;
+          row.appendChild(lbl);
+
+          const sub = document.createElement('span');
+          sub.className = 'pg-model-chip-sub';
+          sub.textContent = def.sub;
+
+          btn.appendChild(row);
+          btn.appendChild(sub);
+
           btn.addEventListener('click', () => {
             modelSelect.value = def.value;
             modelSelect.dispatchEvent(new Event('change'));
             modelChipsEl.querySelectorAll('.pg-model-chip').forEach(c => {
               c.classList.toggle('active', c === btn);
             });
-            // Kick off WebGPU preload when user picks local
             if (def.value === 'webgpu-local') startWebGPUPreload();
           });
           modelChipsEl.appendChild(btn);

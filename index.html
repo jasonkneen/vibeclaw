@@ -2628,29 +2628,75 @@ entirely in a browser sandbox.
                       ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'delta', message: { content: text } }});
                     }
                   } else {
+                    // Keep gateway-hosted path aligned with homepage: stream tokens over SSE
+                    const supportsReasoning = activeModel.startsWith('qwen/qwen3') || activeModel.startsWith('deepseek/deepseek-r1') || activeModel.startsWith('microsoft/phi-4-reasoning');
+                    const payload = {
+                      model: activeModel,
+                      max_tokens: 4096,
+                      stream: true,
+                      messages,
+                    };
+                    if (supportsReasoning) payload.reasoning = { enabled: true, effort: 'low' };
+
                     const resp = await fetch('/api/chat', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        messages,
-                        model: activeModel,
-                        max_tokens: 1024,
-                      })
+                      body: JSON.stringify(payload)
                     });
 
-                    const data = await resp.json().catch(() => ({}));
                     if (!resp.ok) {
-                      throw new Error(data?.error?.message || data?.error || `HTTP ${resp.status}`);
+                      const err = await resp.json().catch(() => ({}));
+                      throw new Error(err?.error?.message || err?.error || `HTTP ${resp.status}`);
                     }
 
-                    text = data?.choices?.[0]?.message?.content || '';
-                    const finishReason = data?.choices?.[0]?.finish_reason;
-                    if (finishReason === 'length') {
-                      text = text + '\n\n[truncated by token limit]';
-                    }
+                    const ctype = (resp.headers.get('content-type') || '').toLowerCase();
 
-                    if (text) {
-                      ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'delta', message: { content: text } }});
+                    // Fallback for non-stream JSON responses
+                    if (!ctype.includes('text/event-stream')) {
+                      const data = await resp.json().catch(() => ({}));
+                      text = data?.choices?.[0]?.message?.content || '';
+                      const finishReason = data?.choices?.[0]?.finish_reason;
+                      if (finishReason === 'length') text += '\n\n[truncated by token limit]';
+                      if (text) ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'delta', message: { content: text } }});
+                    } else {
+                      const reader = resp.body?.getReader();
+                      if (!reader) throw new Error('No response body');
+                      const decoder = new TextDecoder();
+                      let buf = '';
+                      let hitLengthLimit = false;
+
+                      while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        buf += decoder.decode(value, { stream: true });
+                        const lines = buf.split('\n');
+                        buf = lines.pop() || '';
+
+                        for (const line of lines) {
+                          if (!line.startsWith('data: ')) continue;
+                          const data = line.slice(6).trim();
+                          if (!data || data === '[DONE]') continue;
+
+                          let evt;
+                          try { evt = JSON.parse(data); } catch { continue; }
+
+                          if (evt?.error?.message) throw new Error(evt.error.message);
+
+                          const choice = evt?.choices?.[0];
+                          if (!choice) continue;
+                          if (choice.finish_reason === 'length') hitLengthLimit = true;
+
+                          const delta = choice?.delta?.content || '';
+                          if (!delta) continue;
+                          text += delta;
+                          ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'delta', message: { content: text } }});
+                        }
+                      }
+
+                      if (hitLengthLimit && text) {
+                        text += '\n\n[truncated by token limit]';
+                        ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'delta', message: { content: text } }});
+                      }
                     }
                   }
 

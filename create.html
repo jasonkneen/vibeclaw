@@ -837,10 +837,10 @@
           <div class="form-group">
             <label>Base Model</label>
             <select id="model-base">
-              <option value="qwen/qwen3-8b:free">Qwen3 8B</option>
+              <option value="qwen/qwen3-coder:free">Qwen3 Coder</option>
               <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B</option>
               <option value="google/gemma-3-4b-it:free">Gemma 3 4B</option>
-              <option value="qwen/qwen3-8b:free">Qwen3 8B</option>
+              <option value="qwen/qwen3-coder:free">Qwen3 Coder</option>
               <option value="deepseek/deepseek-r1:free">DeepSeek R1</option>
               <option value="microsoft/phi-4-reasoning:free">Phi-4 Reasoning</option>
               <option value="mistralai/mistral-small-3.1-24b-instruct:free">Mistral Small 3.1</option>
@@ -1365,7 +1365,7 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              model: 'qwen/qwen3-8b:free',
+              model: 'qwen/qwen3-coder:free',
               messages: [
                 { role: 'system', content: getSystemPrompt() },
                 { role: 'user', content: text }
@@ -1653,9 +1653,9 @@
         plugin: `Generate an OpenClaw plugin config. Return JSON: {name, description, entry: "index.js", hooks: ["hook1"], content: "// plugin entry code"}`,
         tool: `Generate an OpenClaw tool config. Return JSON: {name, description, parameters: [{name, type, description, required}], returnType: "string", implementation: "// tool code"}`,
         model: `Generate an OpenClaw model config. Return JSON: {name, description, provider: "openrouter", modelId: "model/id", parameters: {temperature, maxTokens}}`,
-        recipe: `Generate an OpenClaw recipe/server config. Return JSON: {name, description, agents: [{emoji, name, desc}], skills: [], systemPrompt: "...", model: "qwen/qwen3-8b:free"}`,
+        recipe: `Generate an OpenClaw recipe/server config. Return JSON: {name, description, agents: [{emoji, name, desc}], skills: [], systemPrompt: "...", model: "qwen/qwen3-coder:free"}`,
         knowledge: `Generate an OpenClaw knowledge base config. Return JSON: {name, description, sources: ["url or file"], format: "markdown", tags: []}`,
-        server: `Generate an OpenClaw server config. Return JSON: {name, description, agents: [{emoji, name, desc}], skills: [], systemPrompt: "...", model: "qwen/qwen3-8b:free"}`
+        server: `Generate an OpenClaw server config. Return JSON: {name, description, agents: [{emoji, name, desc}], skills: [], systemPrompt: "...", model: "qwen/qwen3-coder:free"}`
       };
 
       try {
@@ -1663,7 +1663,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: 'qwen/qwen3-8b:free',
+            model: 'qwen/qwen3-coder:free',
             messages: [
               { role: 'system', content: prompts[type] + '\n\nRespond ONLY with valid JSON, no markdown, no explanation.' },
               { role: 'user', content: input }

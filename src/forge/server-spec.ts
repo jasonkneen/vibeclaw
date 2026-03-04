@@ -85,7 +85,7 @@ export function buildSpec(state: ForgeState): ServerSpec {
  * Generate a valid OpenClaw gateway config (JSON5-compatible JSON)
  */
 export function generateOpenClawConfig(spec: ServerSpec): string {
-  const model = spec.runtime?.model?.model || 'qwen/qwen3-8b:free';
+  const model = spec.runtime?.model?.model || 'qwen/qwen3-coder:free';
   const config = {
     agents: {
       defaults: {

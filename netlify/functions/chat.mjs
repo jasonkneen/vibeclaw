@@ -2,10 +2,10 @@ import pg from 'pg';
 const { Pool } = pg;
 
 const FREE_MODELS = new Set([
-  'qwen/qwen3-8b:free',
+  'qwen/qwen3-coder:free',
   'meta-llama/llama-3.1-8b-instruct:free',
   'google/gemma-3-4b-it:free',
-  'qwen/qwen3-8b:free',
+  'qwen/qwen3-coder:free',
   'deepseek/deepseek-r1-0528:free',
   'microsoft/phi-4-reasoning:free',
   'mistralai/mistral-small-3.1-24b-instruct:free',
@@ -73,7 +73,7 @@ export default async (req) => {
     return new Response('Invalid JSON', { status: 400 });
   }
 
-  const model = parsed.model || 'qwen/qwen3-8b:free';
+  const model = parsed.model || 'qwen/qwen3-coder:free';
   parsed.model = model;
 
   // Free models — always allowed

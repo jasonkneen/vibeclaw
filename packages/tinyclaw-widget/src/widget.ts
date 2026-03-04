@@ -128,7 +128,7 @@ export class TinyClawWidget {
   constructor(config: TinyClawConfig = {}) {
     this.cfg = {
       apiKey:            config.apiKey || localStorage.getItem('tc-api-key') || '',
-      model:             config.model || 'qwen/qwen3-8b:free',
+      model:             config.model || 'qwen/qwen3-coder:free',
       webllmModel:       config.webllmModel || DEFAULT_LOCAL,
       preferLocal:       config.preferLocal ?? true,
       kb:                config.kb || DEFAULT_KB,

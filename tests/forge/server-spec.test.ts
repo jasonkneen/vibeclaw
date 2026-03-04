@@ -178,7 +178,7 @@ describe('generateOpenClawConfig', () => {
     const spec = makeSpec();
     spec.runtime.model.model = '';
     const config = JSON.parse(generateOpenClawConfig(spec));
-    expect(config.agents.defaults.model.primary).toBe('qwen/qwen3-8b:free');
+    expect(config.agents.defaults.model.primary).toBe('qwen/qwen3-coder:free');
   });
 
   it('sets workspace path', () => {

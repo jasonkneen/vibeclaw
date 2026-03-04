@@ -1547,7 +1547,7 @@ function loadTemplate(id, setNodes, setEdges, save) {
     quickstart: {
       nodes: [
         { id:'g1', type:'gateway', position:{x:0,y:0}, data:{label:'My Gateway'} },
-        { id:'a1', type:'agent',   position:{x:300,y:0}, data:{label:'Assistant',model:'qwen/qwen3-8b:free'} },
+        { id:'a1', type:'agent',   position:{x:300,y:0}, data:{label:'Assistant',model:'qwen/qwen3-coder:free'} },
       ],
       edges: [{id:'e1',source:'g1',target:'a1',type:'smartEdge',style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65}}],
     },
@@ -1594,7 +1594,7 @@ function applyAiResult(data, setNodes, setEdges) {
       nodes.push({ id:'g1', type:'gateway', position:{x:0,y:0}, data:{label:data.name||'Gateway'} });
       data.agents.forEach((a, i) => {
         const id = `a${i}`;
-        nodes.push({ id, type:'agent', position:{x:320,y:i*220-((data.agents.length-1)*110)}, data:{label:a.name,model:a.model||'qwen/qwen3-8b:free',systemPrompt:a.systemPrompt||''} });
+        nodes.push({ id, type:'agent', position:{x:320,y:i*220-((data.agents.length-1)*110)}, data:{label:a.name,model:a.model||'qwen/qwen3-coder:free',systemPrompt:a.systemPrompt||''} });
         edges.push({ id:`e${i}`, source:'g1', target:id, type:'smartEdge', style:{stroke:'#ff5c5c',strokeWidth:1.5,opacity:0.65} });
       });
       (data.skills||[]).forEach((s, i) => {
@@ -2259,7 +2259,7 @@ function Palette({ onAdd }) {
 function ConfigPanel({ node, onClose, onUpdate }) {
   const emojis = {gateway:'🖥️', agent:'🤖', skill:'🔧', model:'🧠', channel:'📡'};
   const models = [
-    'qwen/qwen3-8b:free','anthropic/claude-3-5-sonnet',
+    'qwen/qwen3-coder:free','anthropic/claude-3-5-sonnet',
     'openai/gpt-4o','meta-llama/llama-3.3-70b-instruct:free',
     'google/gemini-2.0-flash-exp:free',
   ];
@@ -2362,7 +2362,7 @@ function AiBuildModal({ onClose, onResult }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'qwen/qwen3-8b:free',
+          model: 'qwen/qwen3-coder:free',
           messages: [
             { role: 'system', content: `You are an OpenClaw server configurator. Given a user description, output a JSON object with: name (string), agents (array of {name, model, systemPrompt}), skills (array of {source}). Respond ONLY with valid JSON, no markdown.` },
             { role: 'user', content: prompt }
@@ -2417,7 +2417,7 @@ function ExportModal({ nodes, edges, onClose }) {
     name: gateways[0]?.data?.label || 'My Gateway',
     runtime: {
       type: agents.length > 1 ? 'multi' : 'single',
-      model: { provider:'openrouter', model: agents[0]?.data?.model || 'qwen/qwen3-8b:free' },
+      model: { provider:'openrouter', model: agents[0]?.data?.model || 'qwen/qwen3-coder:free' },
     },
     agents: agents.map((a, i) => ({
       id: i===0 ? 'main' : (a.data.label||'').toLowerCase().replace(/\W+/g,'') || `agent${i}`,
@@ -4900,7 +4900,7 @@ function ForgeApp() {
         const agents = (fl.agents||[]).map(a => ({ id:a.id, name:`${a.emoji||''} ${a.name}`.trim(), model:'solar-pro-3', enabled:true, systemPrompt:a.description||'', workspace:'' }));
         const skills = (fl.skills||[]).map(s => ({ id:s.id||s.name, title:s.name||s.id, enabled:true }));
         const sessions = (fl.agents||[]).map((a,i) => ({ id:`agent:${a.id}:main`, lastActive: new Date(Date.now()-i*60000).toISOString() }));
-        data = { ok:true, gateway:{ port:0, version:`sandbox/${fl.id}` }, agents, skills, channels:[], models:[{id:'qwen/qwen3-8b:free',provider:'qwen',name:'Qwen3 8B'}], cronJobs:[], nodes:[], sessions, defaultModel:'qwen3-8b' };
+        data = { ok:true, gateway:{ port:0, version:`sandbox/${fl.id}` }, agents, skills, channels:[], models:[{id:'qwen/qwen3-coder:free',provider:'qwen',name:'Qwen3 Coder'}], cronJobs:[], nodes:[], sessions, defaultModel:'qwen3-coder' };
       } else {
         const resp = await fetch('/api/gateway-live');
         data = await resp.json();
@@ -5164,7 +5164,7 @@ function ForgeApp() {
     }
     const defaults = {
       gateway:{ label:'My Gateway', desc:'' },
-      agent:  { label:'New Agent', model:'qwen/qwen3-8b:free', systemPrompt:'' },
+      agent:  { label:'New Agent', model:'qwen/qwen3-coder:free', systemPrompt:'' },
       skill:  { label:'New Skill', skill:'web-search' },
       model:  { label:'GPT-4o', provider:'openai' },
       channel:{ label:'Telegram', channelType:'telegram' },

@@ -611,7 +611,7 @@
       <!-- Hidden fields for compatibility -->
       <input type="hidden" id="endpoint-url" value="/api/chat" />
       <select id="endpoint-model" style="display:none;">
-        <option value="qwen/qwen3-8b:free" selected>Qwen3 8B</option>
+        <option value="qwen/qwen3-coder:free" selected>Qwen3 Coder</option>
       </select>
       <button id="connect-btn" style="display:none;"></button>
 
@@ -910,7 +910,7 @@
       }
 
       state.endpoint = '/api/chat';
-      state.model = 'qwen/qwen3-8b:free';
+      state.model = 'qwen/qwen3-coder:free';
       state.connected = true;
 
       // Update header name quietly — no status toasts
@@ -955,7 +955,7 @@
             .map(m => ({ role: m.role, content: m.content })),
         ];
         const body = {
-          model: 'qwen/qwen3-8b:free',
+          model: 'qwen/qwen3-coder:free',
           messages: chatMessages,
           max_tokens: 2048,
         };

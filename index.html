@@ -2474,19 +2474,22 @@ entirely in a browser sandbox.
         // Build skills list from flavour
         const skillList = (fl.skills || []).map(s => ({ name: s.name, emoji: s.emoji, description: s.description, eligible: true, source: 'flavour' }));
         // Always include base skills
-        if (!skillList.find(s => s.name === 'chat')) skillList.unshift({ name: 'chat', emoji: '💬', description: 'Chat via OpenRouter (Gemma 3 27B)', eligible: true, source: 'builtin' });
+        if (!skillList.find(s => s.name === 'chat')) skillList.unshift({ name: 'chat', emoji: '💬', description: 'Chat via selected model (WebGPU local or hosted)', eligible: true, source: 'builtin' });
         if (!skillList.find(s => s.name === 'filesystem')) skillList.push({ name: 'filesystem', emoji: '📁', description: 'Virtual filesystem read/write', eligible: true, source: 'builtin' });
         if (!skillList.find(s => s.name === 'execute')) skillList.push({ name: 'execute', emoji: '⚡', description: 'Run commands in container', eligible: true, source: 'builtin' });
+
+        const getActiveModel = () => (modelSelect?.value || 'google/gemma-3-27b-it:free');
 
         // Build session list from agents
         const buildSessions = () => {
           const h = window.__sandboxHistory || [];
           const now = Date.now();
+          const activeModel = getActiveModel();
           return agentList.map((a, i) => ({
             key: `agent:${a.id}:main`,
             displayName: `${a.emoji} ${a.name}`,
             label: a.name,
-            model: 'solar-pro-3',
+            model: activeModel,
             updatedAt: now - (i * 60000),
             totalTokens: i === 0 ? h.length * 100 : 0,
             contextTokens: 4096
@@ -2552,7 +2555,7 @@ entirely in a browser sandbox.
               }});
             } else if (m === 'status') {
               ch.postMessage({ type: 'res', id, ok: true, payload: {
-                sessions: { count: agentList.length, defaults: { model: 'google/gemma-3-27b-it:free' } },
+                sessions: { count: agentList.length, defaults: { model: getActiveModel() } },
                 channelSummary: [],
                 heartbeat: { defaultAgentId: 'main' },
                 flavour: { id: fl.id, name: fl.name, emoji: fl.emoji }
@@ -2567,7 +2570,11 @@ entirely in a browser sandbox.
             } else if (m === 'skills.status' || m === 'skills.list') {
               ch.postMessage({ type: 'res', id, ok: true, payload: { skills: skillList }});
             } else if (m === 'models.list') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: { models: [{ id: 'google/gemma-3-27b-it:free', name: 'Gemma 3 27B', active: true }] }});
+              const activeModel = getActiveModel();
+              ch.postMessage({ type: 'res', id, ok: true, payload: { models: [
+                { id: 'webgpu-local', name: 'WebGPU Local (Qwen2.5 1.5B)', active: activeModel === 'webgpu-local' },
+                { id: 'google/gemma-3-27b-it:free', name: 'Gemma 3 27B (Hosted)', active: activeModel === 'google/gemma-3-27b-it:free' }
+              ] }});
             } else if (m === 'cron.list') {
               ch.postMessage({ type: 'res', id, ok: true, payload: { jobs: [] }});
             } else if (m === 'agents.files.list') {
@@ -2577,10 +2584,11 @@ entirely in a browser sandbox.
               ch.postMessage({ type: 'res', id, ok: true, payload: { workspace: fl.id, file: { name, content: wsContents[name] || '(empty)' } }});
             } else if (m === 'logs.tail' || m === 'logs.query') {
               const ts = new Date().toISOString();
+              const activeModel = getActiveModel();
               ch.postMessage({ type: 'res', id, ok: true, payload: { lines: [
                 JSON.stringify({ time: ts, '2': `${fl.emoji} ${fl.name} sandbox gateway started`, _meta: { logLevelName: 'INFO' } }),
                 JSON.stringify({ time: ts, '2': `Flavour: ${fl.name} (${agentList.length} agents)`, _meta: { logLevelName: 'INFO' } }),
-                JSON.stringify({ time: ts, '2': 'Model: solar-pro-3 (free)', _meta: { logLevelName: 'INFO' } }),
+                JSON.stringify({ time: ts, '2': `Model: ${activeModel === 'webgpu-local' ? 'webgpu-local (on-device)' : activeModel}`, _meta: { logLevelName: 'INFO' } }),
                 JSON.stringify({ time: ts, '2': 'BroadcastChannel bridge active', _meta: { logLevelName: 'DEBUG' } })
               ], cursor: 'sandbox-0' }});
             } else if (m === 'system-presence') {
@@ -2593,22 +2601,57 @@ entirely in a browser sandbox.
               ]}});
             } else if (m === 'chat.send') {
               ch.postMessage({ type: 'res', id, ok: true, payload: {} });
-              const userMsg = msg.params?.message || '';
-              if (!window.__sandboxHistory) window.__sandboxHistory = [];
-              window.__sandboxHistory.push({ role: 'user', content: userMsg });
-              const sysPrompt = fl.systemPrompt || `You are ${fl.emoji} ${fl.name}, a helpful assistant running in a browser sandbox.`;
-              fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: [{ role: 'system', content: sysPrompt }, ...window.__sandboxHistory], model: 'google/gemma-3-27b-it:free' })
-              }).then(r => r.json()).then(data => {
-                const text = data.choices?.[0]?.message?.content || data.error || 'No response';
-                window.__sandboxHistory.push({ role: 'assistant', content: text });
-                ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'delta', message: { content: text } }});
-                ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'final' }});
-              }).catch(err => {
-                ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'error', errorMessage: err.message }});
-              });
+              (async () => {
+                try {
+                  const userMsg = msg.params?.message || '';
+                  if (!window.__sandboxHistory) window.__sandboxHistory = [];
+                  window.__sandboxHistory.push({ role: 'user', content: userMsg });
+                  const sysPrompt = fl.systemPrompt || `You are ${fl.emoji} ${fl.name}, a helpful assistant running in a browser sandbox.`;
+                  const messages = [{ role: 'system', content: sysPrompt }, ...window.__sandboxHistory];
+                  const activeModel = getActiveModel();
+
+                  let text = '';
+
+                  if (activeModel === 'webgpu-local') {
+                    const engine = await ensureWebGPUModel();
+                    const stream = await engine.chat.completions.create({
+                      messages,
+                      max_tokens: 1024,
+                      temperature: 0.7,
+                      stream: true,
+                    });
+
+                    for await (const chunk of stream) {
+                      const delta = chunk.choices?.[0]?.delta?.content || '';
+                      if (!delta) continue;
+                      text += delta;
+                      ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'delta', message: { content: text } }});
+                    }
+                  } else {
+                    const resp = await fetch('/api/chat', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ messages, model: activeModel })
+                    });
+
+                    const data = await resp.json().catch(() => ({}));
+                    if (!resp.ok) {
+                      throw new Error(data?.error?.message || data?.error || `HTTP ${resp.status}`);
+                    }
+
+                    text = data?.choices?.[0]?.message?.content || '';
+                    if (text) {
+                      ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'delta', message: { content: text } }});
+                    }
+                  }
+
+                  if (!text) throw new Error('No response');
+                  window.__sandboxHistory.push({ role: 'assistant', content: text });
+                  ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'final' }});
+                } catch (err) {
+                  ch.postMessage({ type: 'event', event: 'chat', payload: { state: 'error', errorMessage: err.message }});
+                }
+              })();
             } else if (m === 'chat.history') {
               const msgs = (window.__sandboxHistory || []).map((m, i) => ({ id: String(i), role: m.role, content: m.content, createdAt: Date.now() }));
               ch.postMessage({ type: 'res', id, ok: true, payload: { messages: msgs }});

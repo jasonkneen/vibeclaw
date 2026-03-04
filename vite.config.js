@@ -170,7 +170,7 @@ export default defineConfig({
           'google/gemma-2-9b-it:free',
           'google/gemma-3-4b-it:free',
           'google/gemma-3-1b-it:free',
-          'qwen/qwen3-coder:free',
+          'google/gemma-3-4b-it:free',
           'qwen/qwen3-4b:free',
           'qwen/qwen3-1.7b:free',
           'qwen/qwen3-0.6b:free',

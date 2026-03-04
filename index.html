@@ -1689,7 +1689,7 @@
           </select>
           <div id="pg-flavour-chips" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
           <select id="pg-model-select" style="display:none;">
-            <option value="qwen/qwen3-coder:free" selected>Qwen3 Coder</option>
+            <option value="google/gemma-3-4b-it:free" selected>Gemma 3 4B</option>
           </select>
           <script>
             (function() {
@@ -2078,7 +2078,7 @@ entirely in a browser sandbox.
           { title: 'MCP protocol adopted by 50+ AI frameworks', source: 'Anthropic' },
           { title: 'AI coding agents now write 40% of new code at Google', source: 'Bloomberg' },
           { title: 'Qwen3 tops multilingual benchmarks across 119 languages', source: 'Alibaba' },
-          { title: 'Qwen3 Coder delivers fast, capable responses at zero cost', source: 'Qwen' },
+          { title: 'Gemma 3 4B delivers fast, capable responses at zero cost', source: 'Qwen' },
         ];
 
         let items = [];
@@ -2304,7 +2304,7 @@ entirely in a browser sandbox.
         // Build skills list from flavour
         const skillList = (fl.skills || []).map(s => ({ name: s.name, emoji: s.emoji, description: s.description, eligible: true, source: 'flavour' }));
         // Always include base skills
-        if (!skillList.find(s => s.name === 'chat')) skillList.unshift({ name: 'chat', emoji: '💬', description: 'Chat via OpenRouter (Qwen3 Coder)', eligible: true, source: 'builtin' });
+        if (!skillList.find(s => s.name === 'chat')) skillList.unshift({ name: 'chat', emoji: '💬', description: 'Chat via OpenRouter (Gemma 3 4B)', eligible: true, source: 'builtin' });
         if (!skillList.find(s => s.name === 'filesystem')) skillList.push({ name: 'filesystem', emoji: '📁', description: 'Virtual filesystem read/write', eligible: true, source: 'builtin' });
         if (!skillList.find(s => s.name === 'execute')) skillList.push({ name: 'execute', emoji: '⚡', description: 'Run commands in container', eligible: true, source: 'builtin' });
 
@@ -2382,7 +2382,7 @@ entirely in a browser sandbox.
               }});
             } else if (m === 'status') {
               ch.postMessage({ type: 'res', id, ok: true, payload: {
-                sessions: { count: agentList.length, defaults: { model: 'qwen/qwen3-coder:free' } },
+                sessions: { count: agentList.length, defaults: { model: 'google/gemma-3-4b-it:free' } },
                 channelSummary: [],
                 heartbeat: { defaultAgentId: 'main' },
                 flavour: { id: fl.id, name: fl.name, emoji: fl.emoji }
@@ -2397,7 +2397,7 @@ entirely in a browser sandbox.
             } else if (m === 'skills.status' || m === 'skills.list') {
               ch.postMessage({ type: 'res', id, ok: true, payload: { skills: skillList }});
             } else if (m === 'models.list') {
-              ch.postMessage({ type: 'res', id, ok: true, payload: { models: [{ id: 'qwen/qwen3-coder:free', name: 'Qwen3 Coder', active: true }] }});
+              ch.postMessage({ type: 'res', id, ok: true, payload: { models: [{ id: 'google/gemma-3-4b-it:free', name: 'Gemma 3 4B', active: true }] }});
             } else if (m === 'cron.list') {
               ch.postMessage({ type: 'res', id, ok: true, payload: { jobs: [] }});
             } else if (m === 'agents.files.list') {
@@ -2430,7 +2430,7 @@ entirely in a browser sandbox.
               fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: [{ role: 'system', content: sysPrompt }, ...window.__sandboxHistory], model: 'qwen/qwen3-coder:free' })
+                body: JSON.stringify({ messages: [{ role: 'system', content: sysPrompt }, ...window.__sandboxHistory], model: 'google/gemma-3-4b-it:free' })
               }).then(r => r.json()).then(data => {
                 const text = data.choices?.[0]?.message?.content || data.error || 'No response';
                 window.__sandboxHistory.push({ role: 'assistant', content: text });

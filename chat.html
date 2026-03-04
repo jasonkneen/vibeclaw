@@ -611,7 +611,7 @@
       <!-- Hidden fields for compatibility -->
       <input type="hidden" id="endpoint-url" value="/api/chat" />
       <select id="endpoint-model" style="display:none;">
-        <option value="qwen/qwen3-coder:free" selected>Qwen3 Coder</option>
+        <option value="google/gemma-3-4b-it:free" selected>Gemma 3 4B</option>
       </select>
       <button id="connect-btn" style="display:none;"></button>
 
@@ -910,7 +910,7 @@
       }
 
       state.endpoint = '/api/chat';
-      state.model = 'qwen/qwen3-coder:free';
+      state.model = 'google/gemma-3-4b-it:free';
       state.connected = true;
 
       // Update header name quietly — no status toasts
@@ -955,7 +955,7 @@
             .map(m => ({ role: m.role, content: m.content })),
         ];
         const body = {
-          model: 'qwen/qwen3-coder:free',
+          model: 'google/gemma-3-4b-it:free',
           messages: chatMessages,
           max_tokens: 2048,
         };

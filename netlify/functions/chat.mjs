@@ -4,8 +4,6 @@ const { Pool } = pg;
 const FREE_MODELS = new Set([
   'google/gemma-3-27b-it:free',
   'meta-llama/llama-3.1-8b-instruct:free',
-  'google/gemma-3-27b-it:free',
-  'google/gemma-3-27b-it:free',
   'deepseek/deepseek-r1-0528:free',
   'microsoft/phi-4-reasoning:free',
   'mistralai/mistral-small-3.1-24b-instruct:free',
@@ -96,8 +94,12 @@ export default async (req) => {
     return Response.json({ error: `Model "${model}" is not available.` }, { status: 403 });
   }
 
-  try {
-    const upstream = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  // Proxy to OpenRouter with retry on 429 (free models rate-limit frequently)
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY_MS = 1500;
+
+  const callUpstream = async (body) => {
+    return fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -105,8 +107,41 @@ export default async (req) => {
         'HTTP-Referer': 'https://vibeclaw.dev',
         'X-Title': 'vibeclaw sandbox',
       },
-      body: JSON.stringify(parsed),
+      body: JSON.stringify(body),
     });
+  };
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  try {
+    let upstream;
+    let lastStatus;
+
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      upstream = await callUpstream(parsed);
+      lastStatus = upstream.status;
+
+      if (lastStatus !== 429) break;
+
+      // Drain the 429 body to free the connection
+      await upstream.body?.cancel().catch(() => {});
+
+      // On 429: if not last attempt, wait and retry
+      if (attempt < MAX_RETRIES - 1) {
+        await sleep(RETRY_DELAY_MS * (attempt + 1));
+      }
+    }
+
+    // If still 429 after all retries, return a friendly error
+    if (lastStatus === 429) {
+      return Response.json({
+        error: {
+          message: 'The AI model is temporarily busy. Please try again in a moment.',
+          code: 429,
+          retryable: true,
+        }
+      }, { status: 429 });
+    }
 
     return new Response(upstream.body, {
       status: upstream.status,

@@ -911,6 +911,35 @@
       }
       .pg-flavour-chip:hover { border-color: var(--accent); color: var(--text-bright); }
       .pg-flavour-chip.active { border-color: var(--accent); background: rgba(255,92,92,0.08); color: var(--accent); }
+      /* Model chips */
+      .pg-model-chip {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 12px;
+        font-family: var(--mono); font-size: 0.72rem;
+        border: 1px solid var(--border); border-radius: 20px;
+        background: transparent; color: var(--text-dim);
+        cursor: pointer; white-space: nowrap;
+        transition: border-color 0.15s, color 0.15s, background 0.15s;
+        letter-spacing: 0.03em;
+      }
+      .pg-model-chip:hover { border-color: var(--accent); color: var(--text-bright); }
+      .pg-model-chip.active {
+        border-color: var(--accent); background: rgba(255,92,92,0.08); color: var(--accent);
+      }
+      .pg-model-chip.webgpu-chip.active {
+        border-color: #a78bfa; background: rgba(167,139,250,0.08); color: #a78bfa;
+      }
+      .pg-model-chip.webgpu-chip:hover { border-color: #a78bfa; color: #c4b5fd; }
+      .webgpu-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: #6b7280; flex-shrink: 0;
+        transition: background 0.3s, box-shadow 0.3s;
+      }
+      .webgpu-dot.loading { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.7); animation: pulse-dot 1s ease-in-out infinite; }
+      .webgpu-dot.ready   { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,0.6); }
+      @keyframes pulse-dot {
+        0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+      }
       .pg-code-section {
         border-top: 1px solid var(--border);
         display: none;
@@ -1696,10 +1725,12 @@
             <option value="default">🦀 OpenClaw</option>
           </select>
           <div id="pg-flavour-chips" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
+          <!-- Hidden select drives the logic; custom chips render below -->
           <select id="pg-model-select" style="display:none;">
-            <option value="webgpu-local">🦀 WebGPU Local (1.5B)</option>
-            <option value="google/gemma-3-27b-it:free" selected>Gemma 3 27B</option>
+            <option value="webgpu-local" selected>WebGPU Local</option>
+            <option value="google/gemma-3-27b-it:free">Gemma 3 27B</option>
           </select>
+          <div id="pg-model-chips" style="display:none;align-items:center;gap:6px;"></div>
           <script>
             (function() {
               const sel = document.getElementById('pg-flavour-select');
@@ -2083,9 +2114,70 @@ entirely in a browser sandbox.
       }
       function disableBtns(v) { document.querySelectorAll('.pg-launch').forEach(b => b.disabled = v); }
 
+      // ── Model chip UI ──
+      const modelChipsEl = $('pg-model-chips');
+      const modelDefs = [
+        { value: 'webgpu-local', label: '🦀 Local', sub: '1.5B · offline', cls: 'webgpu-chip', dot: true },
+        { value: 'google/gemma-3-27b-it:free', label: '☁️ Cloud', sub: 'Gemma 27B', cls: '' },
+      ];
+      function buildModelChips() {
+        modelChipsEl.innerHTML = '';
+        modelDefs.forEach(def => {
+          const btn = document.createElement('button');
+          btn.className = 'pg-model-chip' + (def.cls ? ' ' + def.cls : '') + (modelSelect.value === def.value ? ' active' : '');
+          btn.title = def.sub;
+          if (def.dot) {
+            const dot = document.createElement('span');
+            dot.className = 'webgpu-dot';
+            dot.id = 'webgpu-status-dot';
+            btn.appendChild(dot);
+          }
+          const txt = document.createElement('span');
+          txt.textContent = def.label;
+          btn.appendChild(txt);
+          btn.addEventListener('click', () => {
+            modelSelect.value = def.value;
+            modelSelect.dispatchEvent(new Event('change'));
+            modelChipsEl.querySelectorAll('.pg-model-chip').forEach(c => {
+              c.classList.toggle('active', c === btn);
+            });
+            // Kick off WebGPU preload when user picks local
+            if (def.value === 'webgpu-local') startWebGPUPreload();
+          });
+          modelChipsEl.appendChild(btn);
+        });
+      }
+
+      function setWebGPUDot(state) { // 'idle'|'loading'|'ready'
+        const dot = document.getElementById('webgpu-status-dot');
+        if (!dot) return;
+        dot.className = 'webgpu-dot' + (state === 'idle' ? '' : ' ' + state);
+      }
+
+      function startWebGPUPreload() {
+        if (webgpuEngine || webgpuLoadingPromise) return; // already loaded/loading
+        setWebGPUDot('loading');
+        ensureWebGPUModel((pct, file) => {
+          const fname = (file || '').split('/').pop();
+          statusEl.textContent = `⬇️ WebGPU ${Math.round(pct)}% — ${fname}`;
+        }).then(() => {
+          setWebGPUDot('ready');
+          statusEl.textContent = '✓ WebGPU model ready';
+        }).catch(err => {
+          setWebGPUDot('idle');
+          statusEl.textContent = 'WebGPU unavailable';
+          console.warn('WebGPU preload:', err.message);
+        });
+      }
+
+      buildModelChips();
+
       // Persist model choice
-      try { const m = localStorage.getItem('oc-model'); if (m) modelSelect.value = m; } catch {}
+      try { const m = localStorage.getItem('oc-model'); if (m) { modelSelect.value = m; buildModelChips(); } } catch {}
       modelSelect.addEventListener('change', () => { try { localStorage.setItem('oc-model', modelSelect.value); } catch {} });
+
+      // Preload WebGPU on arrival if it's the selected model
+      if (modelSelect.value === 'webgpu-local') startWebGPUPreload();
 
       // Tab switching
       document.querySelectorAll('.pg-tab').forEach(tab => {
@@ -2225,6 +2317,7 @@ entirely in a browser sandbox.
         terminal.style.justifyContent = '';
         chatBar.style.display = 'none';
         modelSelect.style.display = 'none';
+        modelChipsEl.style.display = 'none';
         statusEl.textContent = 'Booting…';
         disableBtns(true);
         flavourSelect.disabled = true;
@@ -2299,7 +2392,8 @@ entirely in a browser sandbox.
           if (led) { led.style.background='#4ade80'; led.style.boxShadow='0 0 6px #4ade80, 0 0 14px rgba(74,222,128,0.6)'; led.style.animationDuration='1.5s'; }
           if (powerLabel) { powerLabel.style.color='#4ade80'; powerLabel.style.textShadow='0 0 8px rgba(74,222,128,0.4)'; }
           chatBar.style.display = '';
-          modelSelect.style.display = '';
+          modelSelect.style.display = 'none'; // hidden — chips are shown instead
+          modelChipsEl.style.display = 'flex';
           chatInput.disabled = false;
           chatSend.disabled = false;
           flavourSelect.disabled = true;

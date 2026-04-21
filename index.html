@@ -1742,7 +1742,7 @@
             <option value="webgpu-local" selected>WebGPU Local</option>
             <option value="google/gemma-3-27b-it:free">Gemma 3 27B</option>
           </select>
-          <div id="pg-model-chips" style="display:none;align-items:center;gap:6px;"></div>
+          <div id="pg-model-chips" style="display:flex;align-items:center;gap:6px;"></div>
           <script>
             (function() {
               const sel = document.getElementById('pg-flavour-select');
@@ -2208,9 +2208,9 @@ entirely in a browser sandbox.
 
       buildModelChips();
 
-      // Persist model choice
-      try { const m = localStorage.getItem('oc-model'); if (m) { modelSelect.value = m; buildModelChips(); } } catch {}
-      modelSelect.addEventListener('change', () => { try { localStorage.setItem('oc-model', modelSelect.value); } catch {} });
+      // Persist model choice (v2 key — v1 persisted Gemma before WebGPU was default)
+      try { const m = localStorage.getItem('oc-model-v2'); if (m) { modelSelect.value = m; buildModelChips(); } } catch {}
+      modelSelect.addEventListener('change', () => { try { localStorage.setItem('oc-model-v2', modelSelect.value); } catch {} });
 
       // Preload WebGPU on arrival if it's the selected model
       if (modelSelect.value === 'webgpu-local') startWebGPUPreload();
